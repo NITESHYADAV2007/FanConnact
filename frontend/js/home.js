@@ -1,249 +1,172 @@
-// =========================
-// SIDEBAR COLLAPSE
-// =========================
+// ==========================
+// MOBILE SIDEBAR
+// ==========================
 
-const menuBtn =
-document.getElementById(
-  "menu-btn"
-);
+const menuBtn = document.getElementById("menuBtn");
+const sidebar = document.getElementById("sidebar");
+const slides = document.querySelectorAll(".live-slide");
+const dots = document.querySelectorAll(".dot");
 
-const sidebar =
-document.getElementById(
-  "sidebar"
-);
+let currentSlide = 0;
 
-menuBtn.addEventListener(
-  "click",
-  () => {
+function showSlide(index) {
 
-    sidebar.classList.toggle(
-      "collapsed"
-    );
-  }
-);
+    slides.forEach(slide => {
+        slide.classList.remove("active-slide");
+    });
 
+    dots.forEach(dot => {
+        dot.classList.remove("active");
+    });
 
-// =========================
-// LIVE MATCH DATA
-// =========================
+    slides[index].classList.add("active-slide");
+    dots[index].classList.add("active");
 
-const matches = [
-
-  {
-    team1: "MI",
-    team2: "CSK",
-
-    team1Logo:
-      "./assets/teams/mi.png",
-
-    team2Logo:
-      "./assets/teams/csk.png",
-
-    score1: "185/4",
-    overs1: "(18.2)",
-
-    score2: "165/7",
-    overs2: "(20)",
-
-    status:
-      "MI need 20 runs in 10 balls"
-  },
-
-  {
-    team1: "IND",
-    team2: "AUS",
-
-    team1Logo:
-      "./assets/teams/india.png",
-
-    team2Logo:
-      "./assets/teams/australia.png",
-
-    score1: "287/6",
-    overs1: "(48.2)",
-
-    score2: "Yet to bat",
-    overs2: "",
-
-    status:
-      "IND chose to bat"
-  },
-
-  {
-    team1: "RCB",
-    team2: "KKR",
-
-    team1Logo:
-      "./assets/teams/rcb.png",
-
-    team2Logo:
-      "./assets/teams/kkr.png",
-
-    score1: "142/3",
-    overs1: "(15.4)",
-
-    score2: "141/7",
-    overs2: "(18.1)",
-
-    status:
-      "RCB need 2 runs in 11 balls"
-  }
-
-];
-
-
-// =========================
-// MATCH SLIDER
-// =========================
-
-let currentMatch = 0;
-
-function updateMatch() {
-
-  const match =
-    matches[currentMatch];
-
-
-  // TEAM 1
-  document.querySelector(
-    ".team:first-child img"
-  ).src =
-    match.team1Logo;
-
-  document.querySelector(
-    ".team:first-child h3"
-  ).innerText =
-    match.team1;
-
-
-  // TEAM 2
-  document.querySelector(
-    ".team:last-child img"
-  ).src =
-    match.team2Logo;
-
-  document.querySelector(
-    ".team:last-child h3"
-  ).innerText =
-    match.team2;
-
-
-  // SCORE
-  document.querySelectorAll(
-    ".score-row h2"
-  )[0].innerText =
-    match.score1;
-
-  document.querySelectorAll(
-    ".score-row span"
-  )[0].innerText =
-    match.overs1;
-
-  document.querySelectorAll(
-    ".score-row h2"
-  )[1].innerText =
-    match.score2;
-
-  document.querySelectorAll(
-    ".score-row span"
-  )[1].innerText =
-    match.overs2;
-
-
-  // STATUS
-  document.querySelector(
-    ".match-status"
-  ).innerText =
-    match.status;
+    currentSlide = index;
 }
 
+function nextSlide() {
 
-// =========================
-// NEXT BUTTON
-// =========================
+    let next = currentSlide + 1;
 
-document
-.getElementById(
-  "nextBtn"
-)
-.addEventListener(
-  "click",
-  (e) => {
-
-    e.stopPropagation();
-
-    currentMatch++;
-
-    if (
-      currentMatch >=
-      matches.length
-    ) {
-      currentMatch = 0;
+    if (next >= slides.length) {
+        next = 0;
     }
 
-    updateMatch();
-  }
-);
+    showSlide(next);
+}
 
+function prevSlide() {
 
-// =========================
-// PREVIOUS BUTTON
-// =========================
+    let prev = currentSlide - 1;
 
-document
-.getElementById(
-  "prevBtn"
-)
-.addEventListener(
-  "click",
-  (e) => {
-
-    e.stopPropagation();
-
-    currentMatch--;
-
-    if (
-      currentMatch < 0
-    ) {
-      currentMatch =
-        matches.length - 1;
+    if (prev < 0) {
+        prev = slides.length - 1;
     }
 
-    updateMatch();
-  }
-);
+    showSlide(prev);
+}
 
+/* keyboard arrows */
 
-// =========================
-// HERO CARD CLICK
-// =========================
+document.addEventListener("keydown", (e) => {
 
-document
-.getElementById(
-  "liveCard"
-)
-.addEventListener(
-  "click",
-  (e) => {
-
-    // Ignore arrow button click
-    if (
-      e.target.closest(
-        ".slider-btn"
-      )
-    ) {
-      return;
+    if (e.key === "ArrowRight") {
+        nextSlide();
     }
 
-    // Open match page
-    window.location.href =
-      "./match.html";
-  }
-);
+    if (e.key === "ArrowLeft") {
+        prevSlide();
+    }
+
+});
+
+/* dots click */
+
+dots.forEach((dot, index) => {
+
+    dot.addEventListener("click", () => {
+
+        showSlide(index);
+
+    });
+
+});
+
+menuBtn.addEventListener("click", () => {
+
+    if (window.innerWidth <= 768) {
+        sidebar.classList.toggle("show-sidebar");
+    }
+
+});
+
+// close when click outside
+document.addEventListener("click", (e) => {
+
+    if (
+        window.innerWidth <= 768 &&
+        !sidebar.contains(e.target) &&
+        !menuBtn.contains(e.target)
+    ) {
+        sidebar.classList.remove("show-sidebar");
+    }
+
+});
 
 
-// =========================
-// INITIAL LOAD
-// =========================
+// ==========================
+// DARK / LIGHT MODE
+// ==========================
 
-updateMatch();
+const themeBtn = document.getElementById("themeBtn");
+const body = document.body;
+
+themeBtn.addEventListener("click", () => {
+
+    body.classList.toggle("light-mode");
+
+    const icon = themeBtn.querySelector("i");
+
+    if (body.classList.contains("light-mode")) {
+        icon.className = "fa-solid fa-sun";
+    } else {
+        icon.className = "fa-solid fa-moon";
+    }
+
+});
+
+const liveCard = document.querySelector(".live-match-slider");
+
+let startX = 0;
+let endX = 0;
+
+/* MOBILE TOUCH */
+
+liveCard.addEventListener("touchstart",(e)=>{
+
+    startX = e.touches[0].clientX;
+
+});
+
+liveCard.addEventListener("touchend",(e)=>{
+
+    endX = e.changedTouches[0].clientX;
+
+    handleSwipe();
+
+});
+
+/* DESKTOP DRAG */
+
+liveCard.addEventListener("mousedown",(e)=>{
+
+    startX = e.clientX;
+
+});
+
+liveCard.addEventListener("mouseup",(e)=>{
+
+    endX = e.clientX;
+
+    handleSwipe();
+
+});
+
+function handleSwipe(){
+
+    const distance = startX - endX;
+
+    if(distance > 50){
+
+        nextSlide();
+
+    }
+
+    if(distance < -50){
+
+        prevSlide();
+
+    }
+
+}

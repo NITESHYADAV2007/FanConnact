@@ -2,495 +2,534 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>FanConnect</title>
 
-  <!-- Font -->
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/home.css">
+
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
-    rel="stylesheet" />
+    rel="stylesheet">
 
-  <!-- Remix Icons -->
-  <link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet" />
-
-  <link rel="stylesheet" href="./css/global.css" />
-
-  <link rel="stylesheet" href="./css/home.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
 
 <body>
 
-  <div class="dashboard">
+  <div class="app">
 
     <!-- SIDEBAR -->
     <aside class="sidebar" id="sidebar">
 
-      <!-- TOP WRAPPER -->
-      <div class="sidebar-content">
-
-        <div class="sidebar-top">
-
-          <div class="brand">
-
-            <button id="menu-btn">
-              <i class="ri-menu-line"></i>
-            </button>
-
-            <div class="brand-text">
-              <h2>FanConnect</h2>
-              <span>Cricket Hub</span>
-            </div>
-
-          </div>
-
+      <div class="logo-section">
+        <div class="logo-icon">
+          <i class="fa-solid fa-shield-halved"></i>
         </div>
 
-
-        <!-- MENU -->
-        <nav class="menu">
-
-          <a href="#" class="menu-item active">
-            <i class="ri-home-5-fill"></i>
-            <span>Home</span>
-          </a>
-
-          <a href="#" class="menu-item">
-            <i class="ri-trophy-line"></i>
-            <span>Live Matches</span>
-          </a>
-
-          <a href="#" class="menu-item">
-            <i class="ri-group-line"></i>
-            <span>Communities</span>
-          </a>
-
-          <a href="#" class="menu-item">
-            <i class="ri-bar-chart-line"></i>
-            <span>Predictions</span>
-          </a>
-
-          <a href="#" class="menu-item">
-            <i class="ri-chat-check-line"></i>
-            <span>Quiz Arena</span>
-          </a>
-
-          <a href="#" class="menu-item">
-            <i class="ri-medal-line"></i>
-            <span>Leaderboard</span>
-          </a>
-
-          <a href="#" class="menu-item">
-            <i class="ri-user-star-line"></i>
-            <span>Player Zone</span>
-          </a>
-
-          <a href="#" class="menu-item">
-            <i class="ri-newspaper-line"></i>
-            <span>News</span>
-          </a>
-
-          <a href="#" class="menu-item">
-            <i class="ri-settings-3-line"></i>
-            <span>Settings</span>
-          </a>
-
-        </nav>
-
+        <div>
+          <h2>FanConnect</h2>
+          <p>CONNECT. PREDICT. WIN</p>
+        </div>
       </div>
 
+      <nav class="sidebar-menu">
 
-      <!-- FAN WAR -->
-      <div class="fan-war-card">
+        <a class="active">
+          <i class="fa-solid fa-house"></i>
+          Home
+        </a>
 
-  <div class="fan-war-image">
-    <img
-      src="./assets/fanwar/trophy.png"
-      alt="Fan War"
-    />
-  </div>
+        <a>
+          <i class="fa-regular fa-clock"></i>
+          Live Matches
+        </a>
 
-  <h3>Fan War</h3>
+        <a>
+          <i class="fa-solid fa-users"></i>
+          Communities
+        </a>
 
-  <h2>RCB vs CSK</h2>
+        <a>
+          <i class="fa-solid fa-chart-simple"></i>
+          Predictions
+        </a>
 
-  <p>
-    Join the ultimate
-    fan battle
-  </p>
+        <a>
+          <i class="fa-solid fa-circle-question"></i>
+          Quiz Arena
+        </a>
 
-  <button onclick="openFanWarApp()">
-    Join Now
-  </button>
+        <a>
+          <i class="fa-solid fa-ranking-star"></i>
+          Leaderboard
+        </a>
 
-</div>
+        <a>
+          <i class="fa-solid fa-user"></i>
+          Profile
+        </a>
+
+        <a>
+          <i class="fa-solid fa-gear"></i>
+          Settings
+        </a>
+
+      </nav>
 
     </aside>
+
     <!-- MAIN -->
     <main class="main-content">
 
-      <!-- NAVBAR -->
+      <!-- TOPBAR -->
       <header class="topbar">
 
-        <div class="search-box">
-          <i class="ri-search-line"></i>
+        <button class="menu-btn" id="menuBtn">
+          <i class="fa-solid fa-bars"></i>
+        </button>
 
-          <input type="text" placeholder="Search players, matches..." />
-        </div>
+        <!-- MOBILE LOGO -->
+        <div class="mobile-brand">
 
-        <div class="top-right">
+          <img src="logo.png" alt="logo">
 
-          <div class="coin-card">
-            <i class="ri-coins-line"></i>
-            <span>2,450</span>
+          <div>
+            <h3>FanConnect</h3>
+            <p>CONNECT. PREDICT. WIN</p>
           </div>
 
-          <button class="nav-btn">
-            <i class="ri-notification-3-line"></i>
+        </div>
+
+        <div class="search-box">
+          <i class="fa-solid fa-magnifying-glass"></i>
+
+          <input type="text" placeholder="Search matches, teams...">
+        </div>
+
+        <div class="top-actions">
+
+          <button class="theme-btn" id="themeBtn">
+            <i class="fa-solid fa-moon"></i>
           </button>
 
-          <button class="nav-btn">
-            <i class="ri-moon-line"></i>
+          <div class="coin-box">
+            🪙 2,450
+          </div>
+
+          <button class="icon-btn">
+            <i class="fa-regular fa-bell"></i>
           </button>
 
-          <img class="profile" src="https://i.pravatar.cc/100" />
+          <div class="profile">
+            <img src="https://i.pravatar.cc/100?img=12">
+          </div>
 
         </div>
 
       </header>
-
       <!-- WELCOME -->
       <section class="welcome">
 
-        <div>
-          <h1>
-            Welcome back, Rishu 👋
-          </h1>
+        <h1>
+          Welcome back, Rishu! 👋
+        </h1>
 
-          <p>
-            Stay updated with live cricket
-          </p>
-        </div>
+        <p>
+          Stay connected with the game. Predict. Chat. Win!
+        </p>
 
       </section>
+      <div class="main-layout">
+      <div class="left-content">
 
-      <!-- LIVE MATCH SLIDER -->
-      <section class="live-slider">
 
-        <div class="live-card" id="liveCard">
+        
 
-          <button class="slider-btn prev" id="prevBtn">
-            ❮
-          </button>
+          <div class="hero-grid">
 
-          <button class="slider-btn next" id="nextBtn">
-            ❯
-          </button>
+            <!-- LIVE MATCH -->
+            <section class="live-match-slider">
 
-          <span class="live-badge">
-            🔴 LIVE NOW
-          </span>
+              <div class="slider-header">
 
-          <div class="match-header">
+                <div class="live-badge">
+                  LIVE MATCH
+                </div>
 
-            <div class="team">
 
-              <img src="./assets/teams/india.png" />
 
-              <h3>India</h3>
+                <div class="live-track">
 
-            </div>
+                  <!-- MATCH 1 -->
+                  <div class="live-slide active-slide">
 
-            <h2>VS</h2>
+                    <div class="team-block">
+                      <img src="assets/images/rcb.png" alt="">
+                      <h3>RCB</h3>
+                      <span>186/4</span>
+                    </div>
 
-            <div class="team">
+                    <div class="vs-area">
+                      <h2>VS</h2>
+                      <p>18.2 Overs</p>
+                    </div>
 
-              <img src="./assets/teams/australia.png" />
+                    <div class="team-block">
+                      <img src="assets/images/csk.png" alt="">
+                      <h3>CSK</h3>
+                      <span>172/6</span>
+                    </div>
 
-              <h3>Australia</h3>
+                  </div>
 
-            </div>
+                  <!-- MATCH 2 -->
+                  <div class="live-slide">
 
+                    <div class="team-block">
+                      <img src="assets/images/mi.png" alt="">
+                      <h3>MI</h3>
+                      <span>145/3</span>
+                    </div>
+
+                    <div class="vs-area">
+                      <h2>VS</h2>
+                      <p>15.4 Overs</p>
+                    </div>
+
+                    <div class="team-block">
+                      <img src="assets/images/gt.png" alt="">
+                      <h3>GT</h3>
+                      <span>139/5</span>
+                    </div>
+
+                  </div>
+
+                  <!-- MATCH 3 -->
+                  <div class="live-slide">
+
+                    <div class="team-block">
+                      <img src="assets/images/kkr.png" alt="">
+                      <h3>KKR</h3>
+                      <span>201/7</span>
+                    </div>
+
+                    <div class="vs-area">
+                      <h2>VS</h2>
+                      <p>20 Overs</p>
+                    </div>
+
+                    <div class="team-block">
+                      <img src="assets/images/rr.png" alt="">
+                      <h3>RR</h3>
+                      <span>198/9</span>
+                    </div>
+
+                  </div>
+
+                </div>
+
+                <div class="slider-dots">
+
+                  <span class="dot active" data-slide="0"></span>
+
+                  <span class="dot" data-slide="1"></span>
+
+                  <span class="dot" data-slide="2"></span>
+
+                </div>
+
+            </section>
+            <!-- FAN WAR -->
+            <aside class="fan-war-panel">
+
+              <div class="fan-war-tag">
+                🔥 FAN WAR
+              </div>
+
+              <div class="fan-war-images">
+
+                <img src="assets/images/virat.png" alt="">
+                <img src="assets/images/dhoni.png" alt="">
+
+              </div>
+
+              <h2>RCB vs CSK</h2>
+
+              <p>
+                Join 12K+ fans battling now
+              </p>
+
+              <button class="join-war-btn">
+                Join Now
+              </button>
+
+            </aside>
           </div>
 
-          <div class="score-row">
+          <section class="upcoming-section">
 
-            <div>
-              <h2>185/4</h2>
-              <span>(18.2)</span>
-            </div>
+            <div class="section-header">
 
-            <div>
-              <h2>174/7</h2>
-              <span>(19.0)</span>
-            </div>
+              <h2>Upcoming Matches</h2>
 
-          </div>
-
-          <p class="match-status">
-            Australia need 12 runs in 6 balls
-          </p>
-
-        </div>
-
-      </section>
-      <section class="content-grid">
-
-        <!-- LEFT SECTION -->
-        <div class="left-content">
-
-          <!-- Upcoming Matches -->
-          <div class="card">
-
-            <div class="section-title">
-              <h3>Upcoming Matches</h3>
-              <span class="view-all" onclick="openUpcomingPage()">
+              <a href="#">
                 View All
-              </span>
-            </div>
-
-            <div class="upcoming-slider">
-
-              <div class="upcoming-card">
-                <p>IPL 2024</p>
-                <div class="match-vs">
-                  <img src="./assets/teams/kkr.png">
-                  <span>VS</span>
-                  <img src="./assets/teams/rr.png">
-                </div>
-
-                <h4>KKR vs RR</h4>
-                <span>Today, 7:30 PM</span>
-              </div>
-
-              <div class="upcoming-card">
-                <p>IPL 2024</p>
-
-                <div class="match-vs">
-                  <img src="./assets/teams/rcb.png">
-                  <span>VS</span>
-                  <img src="./assets/teams/pbks.png">
-                </div>
-
-                <h4>RCB vs PBKS</h4>
-                <span>Tomorrow</span>
-              </div>
-
-              <div class="upcoming-card">
-                <p>IPL 2024</p>
-
-                <div class="match-vs">
-                  <img src="./assets/teams/dc.png">
-                  <span>VS</span>
-                  <img src="./assets/teams/srh.png">
-                </div>
-
-                <h4>DC vs SRH</h4>
-                <span>25 May</span>
-              </div>
-
-              <div class="upcoming-card">
-                <p>T20 WC</p>
-
-                <div class="match-vs">
-                  <img src="./assets/teams/india.png">
-                  <span>VS</span>
-                  <img src="./assets/teams/pak.png">
-                </div>
-
-                <h4>IND vs PAK</h4>
-                <span>9 Jun</span>
-              </div>
+              </a>
 
             </div>
 
-          </div>
+            <div class="upcoming-grid">
 
-          <div class="bottom-grid">
+              <div class="upcoming-card">
 
-            <!-- COMMUNITIES -->
-            <div class="card communities-card">
+                <div class="match-mini-logo">
+                  <img src="assets/images/kkr.png" alt="">
+                  <span>VS</span>
+                  <img src="assets/images/rr.png" alt="">
+                </div>
 
-              <div class="section-title">
+                <h3>KKR vs RR</h3>
+
+                <p>Today • 7:30 PM</p>
+
+              </div>
+
+              <div class="upcoming-card">
+
+                <div class="match-mini-logo">
+                  <img src="assets/images/rcb.png" alt="">
+                  <span>VS</span>
+                  <img src="assets/images/pbks.png" alt="">
+                </div>
+
+                <h3>RCB vs PBKS</h3>
+
+                <p>Tomorrow • 7:30 PM</p>
+
+              </div>
+
+              <div class="upcoming-card">
+
+                <div class="match-mini-logo">
+                  <img src="assets/images/india.png" alt="">
+                  <span>VS</span>
+                  <img src="assets/images/pakistan.png" alt="">
+                </div>
+
+                <h3>IND vs PAK</h3>
+
+                <p>9 June • 3:00 PM</p>
+
+              </div>
+
+              <div class="upcoming-card">
+
+                <div class="match-mini-logo">
+                  <img src="assets/images/dc.png" alt="">
+                  <span>VS</span>
+                  <img src="assets/images/srh.png" alt="">
+                </div>
+
+                <h3>DC vs SRH</h3>
+
+                <p>25 May • 7:30 PM</p>
+
+              </div>
+
+            </div>
+
+          </section>
+
+          <div class="community-quiz-grid">
+
+            <!-- FAN COMMUNITIES -->
+            <section class="communities-card">
+
+              <div class="section-header">
                 <h3>Fan Communities</h3>
-
-                <span class="view-all">
-                  View All
-                </span>
+                <a href="#">View All</a>
               </div>
 
-              <div class="community-item">
-                <div class="community-left">
+              <div class="community-list">
 
-                  <img src="./assets/community/rcb.png" class="community-logo" />
-
+                <div class="community-item">
+                  <img src="assets/images/rcb.png" alt="">
                   <div>
                     <h4>RCB Army</h4>
                     <p>125K Members</p>
                   </div>
-
+                  <span class="live-status">🟢 Live</span>
                 </div>
 
-                <span class="live-dot">
-                  ● Live
-                </span>
-              </div>
-
-
-              <div class="community-item">
-                <div class="community-left">
-
-                  <img src="./assets/community/csk.png" class="community-logo" />
-
+                <div class="community-item">
+                  <img src="assets/images/csk.png" alt="">
                   <div>
                     <h4>CSK Super Fans</h4>
                     <p>98K Members</p>
                   </div>
-
+                  <span class="live-status">🟢 Live</span>
                 </div>
 
-                <span class="live-dot">
-                  ● Live
-                </span>
-              </div>
-
-
-              <div class="community-item">
-                <div class="community-left">
-
-                  <img src="./assets/community/mi.png" class="community-logo" />
-
+                <div class="community-item">
+                  <img src="assets/images/mi.png" alt="">
                   <div>
                     <h4>MI Paltan</h4>
                     <p>110K Members</p>
                   </div>
-
+                  <span class="live-status">🟢 Live</span>
                 </div>
 
-                <span class="live-dot">
-                  ● Live
-                </span>
               </div>
 
+            </section>
 
-              <div class="community-item">
-                <div class="community-left">
+            <!-- QUIZ CHALLENGE -->
+            <section class="quiz-card">
 
-                  <img src="./assets/community/india.png" class="community-logo" />
+              <div class="section-header">
+                <h3>Quiz Challenge</h3>
+                <a href="#">View All</a>
+              </div>
 
+              <div class="quiz-box">
+
+                <div class="quiz-top">
                   <div>
-                    <h4>India Cricket Fans</h4>
-                    <p>230K Members</p>
+                    <h4>Daily Cricket Quiz</h4>
+                    <p>Test your cricket knowledge</p>
                   </div>
 
+                  <span class="quiz-reward">
+                    Win 🪙100
+                  </span>
                 </div>
 
-                <span class="live-dot">
-                  ● Live
-                </span>
+                <div class="progress-text">
+                  5/10 Questions
+                </div>
+
+                <div class="progress-bar">
+                  <div class="progress-fill"></div>
+                </div>
+
+                <button class="play-btn">
+                  Play Now
+                </button>
+
               </div>
 
+            </section>
+
+          </div> <!-- community-quiz-grid -->
+
+        </div> <!-- left-content -->
+
+        <div class="right-panel">
+
+
+          <section class="trending-card">
+
+            <div class="section-head">
+              <h3>Trending Predictions</h3>
+              <span>View All</span>
             </div>
 
+            <div class="prediction-item">
+              <div class="prediction-icon">🏆</div>
 
-            <!-- QUIZ -->
-            <div class="quiz-card">
-
-              <div class="quiz-top">
-
-                <div>
-                  <h3>Daily Cricket Quiz</h3>
-
-                  <p>
-                    Test your cricket knowledge
-                  </p>
-                </div>
-
-                <span class="coin">
-                  🪙 100
-                </span>
-
+              <div class="prediction-info">
+                <h4>Who will win this match?</h4>
+                <p>🪙 2,450 &nbsp; 👥 8.1K</p>
               </div>
-
-              <div class="progress-bar">
-                <div class="progress"></div>
-              </div>
-
-              <button>
-                Play Now
-              </button>
-
-              <div class="mini-quiz">
-
-                <div class="quiz-row">
-                  <span>IPL 2024 Quiz</span>
-                  <button>Play</button>
-                </div>
-
-                <div class="quiz-row">
-                  <span>Player Guess Quiz</span>
-                  <button>Play</button>
-                </div>
-
-              </div>
-
             </div>
 
-          </div>
+            <div class="prediction-item">
+              <div class="prediction-icon">👥</div>
+
+              <div class="prediction-info">
+                <h4>Will there be a 100+ partnership?</h4>
+                <p>🪙 1,850 &nbsp; 👥 5.6K</p>
+              </div>
+            </div>
+
+            <div class="prediction-item">
+              <div class="prediction-icon">🏏</div>
+
+              <div class="prediction-info">
+                <h4>Will a six be hit next over?</h4>
+                <p>🪙 950 &nbsp; 👥 3.2K</p>
+              </div>
+            </div>
+
+          </section>
 
 
-    </main>
+          <section class="top-fans-card">
 
-    <!-- RIGHT PANEL -->
-    <aside class="right-panel">
+            <div class="section-head">
+              <h3>Top Fans</h3>
+              <span>This Week</span>
+            </div>
 
-      <div class="prediction-card">
+            <div class="fan-user">
+              <span>#1 Virat18</span>
+              <span>12,560 XP</span>
+            </div>
 
-        <h3>
-          🔥 Trending Prediction
-        </h3>
+            <div class="fan-user">
+              <span>#2 CricketKing</span>
+              <span>9,870 XP</span>
+            </div>
 
-        <p>
-          Will Kohli score 100?
-        </p>
+            <div class="fan-user">
+              <span>#3 MI_Paltan</span>
+              <span>8,230 XP</span>
+            </div>
 
-        <div class="vote-bar">
-          <div class="yes">
-            YES 72%
-          </div>
+            <div class="fan-user">
+              <span>#4 CSK_ForLife</span>
+              <span>7,450 XP</span>
+            </div>
 
-          <div class="no">
-            NO 28%
-          </div>
+          </section>
+
         </div>
-
       </div>
-
-      <div class="top-fans">
-
-        <h3>
-          🏆 Top Fans
-        </h3>
-
-        <div class="fan">
-          #1 CricketKing
-        </div>
-
-        <div class="fan">
-          #2 MI_Paltan
-        </div>
-
-        <div class="fan">
-          #3 Virat18
-        </div>
-
-      </div>
-
-    </aside>
-
   </div>
+  </main>
+  <!-- MOBILE BOTTOM NAV -->
 
-  <script src="./js/home.js"></script>
+  <nav class="mobile-bottom-nav">
+
+    <a class="active">
+      <i class="fa-solid fa-house"></i>
+      Home
+    </a>
+
+    <a>
+      <i class="fa-regular fa-clock"></i>
+      Matches
+    </a>
+
+    <a>
+      <i class="fa-solid fa-chart-simple"></i>
+      Predict
+    </a>
+
+    <a>
+      <i class="fa-solid fa-users"></i>
+      Communities
+    </a>
+
+    <a>
+      <i class="fa-regular fa-user"></i>
+      Profile
+    </a>
+
+  </nav>
+  <script src="js/home.js"></script>
 
 </body>
 
