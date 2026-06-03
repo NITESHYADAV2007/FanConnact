@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FanConnect Login</title>
+
+    <link rel="stylesheet" href="css/login.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <!-- LEFT PANEL -->
+
+        <div class="left-panel">
+
+            <div class="logo">
+
+                <div class="logo-box">
+                    <img src="assets/logo.png" alt="FanConnect Logo">
+
+                    <div class="logo-text">
+                        <h1>FanConnect</h1>
+                        <p>CONNECT • PREDICT • WIN</p>
+                    </div>
+                </div>
+
+            </div>
+            <div class="hero-text">
+
+                <h2>
+                    FOR FANS.<br> BY FANS.<br>
+                    <span>ALWAYS FOR CRICKET.</span>
+                </h2>
+
+                <p>
+                    Join thousands of passionate cricket fans. Predict matches, earn rewards, and connect with the FanConnect community.
+                </p>
+
+            </div>
+
+            <!-- FAN AVATARS -->
+
+            <div class="fans-section">
+
+                <div class="avatars">
+                    <img src="assets/community/avatar1.jpg" alt="Fan">
+                    <img src="assets/community/avatar2.jpg" alt="Fan">
+                    <img src="assets/community/avatar3.jpg" alt="Fan">
+                    <img src="assets/community/avatar4.jpg" alt="Fan">
+                </div>
+
+                <div class="fans-info">
+                    <h3>100K+</h3>
+                    <p>Cricket Fans Joined</p>
+                </div>
+
+            </div>
+
+            <!-- FEATURES -->
+
+            <div class="feature-grid">
+
+                <div class="feature">
+                    <i class="fa-solid fa-radio"></i>
+                    <h4>Live Scores</h4>
+                    <p>Real-time Updates</p>
+                </div>
+
+                <div class="feature">
+                    <i class="fa-solid fa-trophy"></i>
+                    <h4>Predict & Win</h4>
+                    <p>Use your skills</p>
+                </div>
+
+                <div class="feature">
+                    <i class="fa-solid fa-users"></i>
+                    <h4>Communities</h4>
+                    <p>Connect & Chat</p>
+                </div>
+
+                <div class="feature">
+                    <i class="fa-solid fa-ranking-star"></i>
+                    <h4>Leaderboards</h4>
+                    <p>Compete & Climb</p>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- RIGHT PANEL -->
+
+        <div class="right-panel">
+
+            <div class="top-bar">
+
+                <button class="theme-btn">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
+
+                <select>
+                    <option>English</option>
+                    <option>Hindi</option>
+                </select>
+
+            </div>
+
+            <h1>Welcome Back!👋</h1>
+
+            <p class="subtitle">
+                Login to continue your FanConnect journey
+            </p>
+
+            <form id="loginForm">
+
+                <label>Email Address</label>
+
+                <div class="input-box">
+                    <i class="fa-solid fa-envelope"></i>
+                    <input type="email" id="email" placeholder="Enter your email" required>
+                </div>
+
+                <label>Password</label>
+
+                <div class="input-box">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="password" placeholder="Enter your password" required>
+                </div>
+
+                <div class="options">
+
+                    <label class="remember">
+                        <input type="checkbox">
+                        Remember me
+                    </label>
+
+                    <a href="#" id="forgotPassword">
+                        Forgot Password?
+                    </a>
+
+                </div>
+
+                <button type="submit" class="login-btn">
+                    Login
+                </button>
+
+            </form>
+
+            <div class="divider">
+                <span>OR CONTINUE WITH</span>
+            </div>
+
+            <div class="social-grid">
+
+                <button id="googleLogin">
+                    <i class="fa-brands fa-google"></i>
+                    Google
+                </button>
+
+                <button>
+                    <i class="fa-brands fa-facebook"></i>
+                    Facebook
+                </button>
+
+                <button>
+                    <i class="fa-brands fa-apple"></i>
+                    Apple
+                </button>
+
+                <button>
+                    <i class="fa-brands fa-x-twitter"></i>
+                    Twitter/X
+                </button>
+
+            </div>
+
+            <p class="signup-text">
+                Don't have an account?
+                <a href="signup.html">Sign Up</a>
+            </p>
+
+        </div>
+
+    </div>
+
+    <script type="module" src="js/auth.js"></script>
+
+</body>
+
+</html>

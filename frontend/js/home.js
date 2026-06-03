@@ -1,172 +1,83 @@
-// ==========================
-// MOBILE SIDEBAR
-// ==========================
+import { auth, db } from "./firebase-config.js";
 
-const menuBtn = document.getElementById("menuBtn");
-const sidebar = document.getElementById("sidebar");
-const slides = document.querySelectorAll(".live-slide");
-const dots = document.querySelectorAll(".dot");
+import {
+    onAuthStateChanged,
+    signOut
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 
-let currentSlide = 0;
+import {
+    doc,
+    getDoc
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
-function showSlide(index) {
+onAuthStateChanged(auth, async(user) => {
 
-    slides.forEach(slide => {
-        slide.classList.remove("active-slide");
-    });
-
-    dots.forEach(dot => {
-        dot.classList.remove("active");
-    });
-
-    slides[index].classList.add("active-slide");
-    dots[index].classList.add("active");
-
-    currentSlide = index;
-}
-
-function nextSlide() {
-
-    let next = currentSlide + 1;
-
-    if (next >= slides.length) {
-        next = 0;
+    if (!user) {
+        window.location.href = "login.html";
+        return;
     }
 
-    showSlide(next);
-}
+    try {
 
-function prevSlide() {
+        const docRef = doc(
+            db,
+            "users",
+            user.uid
+        );
 
-    let prev = currentSlide - 1;
+        const docSnap = await getDoc(docRef);
 
-    if (prev < 0) {
-        prev = slides.length - 1;
+        if (docSnap.exists()) {
+
+            const userData = docSnap.data();
+
+            const welcomeUser =
+                document.getElementById("welcomeUser");
+
+            const coinBalance =
+                document.getElementById("coinBalance");
+
+            if (welcomeUser) {
+                welcomeUser.innerHTML =
+                    `Welcome back, ${userData.name} 👋`;
+            }
+
+            if (coinBalance) {
+                coinBalance.textContent =
+                    userData.coins || 0;
+            }
+        }
+
+    } catch (error) {
+        console.error(error);
+        alert(error.message);
     }
-
-    showSlide(prev);
-}
-
-/* keyboard arrows */
-
-document.addEventListener("keydown", (e) => {
-
-    if (e.key === "ArrowRight") {
-        nextSlide();
-    }
-
-    if (e.key === "ArrowLeft") {
-        prevSlide();
-    }
-
 });
 
-/* dots click */
+// LOGOUT
+const logoutBtn =
+    document.getElementById("logoutBtn");
 
-dots.forEach((dot, index) => {
+if (logoutBtn) {
 
-    dot.addEventListener("click", () => {
+    logoutBtn.addEventListener(
+        "click",
+        async() => {
 
-        showSlide(index);
+            try {
 
-    });
+                await signOut(auth);
 
-});
+                alert("Logged out successfully!");
 
-menuBtn.addEventListener("click", () => {
+                window.location.href =
+                    "login.html";
 
-    if (window.innerWidth <= 768) {
-        sidebar.classList.toggle("show-sidebar");
-    }
+            } catch (error) {
 
-});
+                alert(error.message);
 
-// close when click outside
-document.addEventListener("click", (e) => {
-
-    if (
-        window.innerWidth <= 768 &&
-        !sidebar.contains(e.target) &&
-        !menuBtn.contains(e.target)
-    ) {
-        sidebar.classList.remove("show-sidebar");
-    }
-
-});
-
-
-// ==========================
-// DARK / LIGHT MODE
-// ==========================
-
-const themeBtn = document.getElementById("themeBtn");
-const body = document.body;
-
-themeBtn.addEventListener("click", () => {
-
-    body.classList.toggle("light-mode");
-
-    const icon = themeBtn.querySelector("i");
-
-    if (body.classList.contains("light-mode")) {
-        icon.className = "fa-solid fa-sun";
-    } else {
-        icon.className = "fa-solid fa-moon";
-    }
-
-});
-
-const liveCard = document.querySelector(".live-match-slider");
-
-let startX = 0;
-let endX = 0;
-
-/* MOBILE TOUCH */
-
-liveCard.addEventListener("touchstart",(e)=>{
-
-    startX = e.touches[0].clientX;
-
-});
-
-liveCard.addEventListener("touchend",(e)=>{
-
-    endX = e.changedTouches[0].clientX;
-
-    handleSwipe();
-
-});
-
-/* DESKTOP DRAG */
-
-liveCard.addEventListener("mousedown",(e)=>{
-
-    startX = e.clientX;
-
-});
-
-liveCard.addEventListener("mouseup",(e)=>{
-
-    endX = e.clientX;
-
-    handleSwipe();
-
-});
-
-function handleSwipe(){
-
-    const distance = startX - endX;
-
-    if(distance > 50){
-
-        nextSlide();
-
-    }
-
-    if(distance < -50){
-
-        prevSlide();
-
-    }
-
+            }
+        }
+    );
 }

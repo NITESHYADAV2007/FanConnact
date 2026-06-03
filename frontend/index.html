@@ -2,534 +2,494 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>FanConnect</title>
+    <title>FanConnect</title>
 
-  <link rel="stylesheet" href="css/global.css">
-  <link rel="stylesheet" href="css/home.css">
+    <!-- Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
 
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
-    rel="stylesheet">
+    <!-- Remix Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet" />
 
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="./css/global.css" />
+
+    <link rel="stylesheet" href="./css/home.css" />
 </head>
 
 <body>
 
-  <div class="app">
+    <div class="dashboard">
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar" id="sidebar">
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <a href="#" class="menu-item" id="logoutBtn">
+                <i class="ri-logout-box-line"></i>
+                <span>Logout</span>
+            </a>
 
-      <div class="logo-section">
-        <div class="logo-icon">
-          <i class="fa-solid fa-shield-halved"></i>
-        </div>
+            <!-- TOP WRAPPER -->
+            <div class="sidebar-content">
 
-        <div>
-          <h2>FanConnect</h2>
-          <p>CONNECT. PREDICT. WIN</p>
-        </div>
-      </div>
+                <div class="sidebar-top">
 
-      <nav class="sidebar-menu">
+                    <div class="brand">
 
-        <a class="active">
-          <i class="fa-solid fa-house"></i>
-          Home
-        </a>
+                        <button id="menu-btn">
+              <i class="ri-menu-line"></i>
+            </button>
 
-        <a>
-          <i class="fa-regular fa-clock"></i>
-          Live Matches
-        </a>
+                        <div class="brand-text">
+                            <h2>FanConnect</h2>
+                            <span>Cricket Hub</span>
+                        </div>
 
-        <a>
-          <i class="fa-solid fa-users"></i>
-          Communities
-        </a>
+                    </div>
 
-        <a>
-          <i class="fa-solid fa-chart-simple"></i>
-          Predictions
-        </a>
-
-        <a>
-          <i class="fa-solid fa-circle-question"></i>
-          Quiz Arena
-        </a>
-
-        <a>
-          <i class="fa-solid fa-ranking-star"></i>
-          Leaderboard
-        </a>
-
-        <a>
-          <i class="fa-solid fa-user"></i>
-          Profile
-        </a>
-
-        <a>
-          <i class="fa-solid fa-gear"></i>
-          Settings
-        </a>
-
-      </nav>
-
-    </aside>
-
-    <!-- MAIN -->
-    <main class="main-content">
-
-      <!-- TOPBAR -->
-      <header class="topbar">
-
-        <button class="menu-btn" id="menuBtn">
-          <i class="fa-solid fa-bars"></i>
-        </button>
-
-        <!-- MOBILE LOGO -->
-        <div class="mobile-brand">
-
-          <img src="logo.png" alt="logo">
-
-          <div>
-            <h3>FanConnect</h3>
-            <p>CONNECT. PREDICT. WIN</p>
-          </div>
-
-        </div>
-
-        <div class="search-box">
-          <i class="fa-solid fa-magnifying-glass"></i>
-
-          <input type="text" placeholder="Search matches, teams...">
-        </div>
-
-        <div class="top-actions">
-
-          <button class="theme-btn" id="themeBtn">
-            <i class="fa-solid fa-moon"></i>
-          </button>
-
-          <div class="coin-box">
-            🪙 2,450
-          </div>
-
-          <button class="icon-btn">
-            <i class="fa-regular fa-bell"></i>
-          </button>
-
-          <div class="profile">
-            <img src="https://i.pravatar.cc/100?img=12">
-          </div>
-
-        </div>
-
-      </header>
-      <!-- WELCOME -->
-      <section class="welcome">
-
-        <h1>
-          Welcome back, Rishu! 👋
-        </h1>
-
-        <p>
-          Stay connected with the game. Predict. Chat. Win!
-        </p>
-
-      </section>
-      <div class="main-layout">
-      <div class="left-content">
-
-
-        
-
-          <div class="hero-grid">
-
-            <!-- LIVE MATCH -->
-            <section class="live-match-slider">
-
-              <div class="slider-header">
-
-                <div class="live-badge">
-                  LIVE MATCH
                 </div>
 
 
+                <!-- MENU -->
+                <nav class="menu">
 
-                <div class="live-track">
+                    <a href="#" class="menu-item active">
+                        <i class="ri-home-5-fill"></i>
+                        <span>Home</span>
+                    </a>
 
-                  <!-- MATCH 1 -->
-                  <div class="live-slide active-slide">
+                    <a href="#" class="menu-item">
+                        <i class="ri-trophy-line"></i>
+                        <span>Live Matches</span>
+                    </a>
 
-                    <div class="team-block">
-                      <img src="assets/images/rcb.png" alt="">
-                      <h3>RCB</h3>
-                      <span>186/4</span>
+                    <a href="#" class="menu-item">
+                        <i class="ri-group-line"></i>
+                        <span>Communities</span>
+                    </a>
+
+                    <a href="#" class="menu-item">
+                        <i class="ri-bar-chart-line"></i>
+                        <span>Predictions</span>
+                    </a>
+
+                    <a href="#" class="menu-item">
+                        <i class="ri-chat-check-line"></i>
+                        <span>Quiz Arena</span>
+                    </a>
+
+                    <a href="#" class="menu-item">
+                        <i class="ri-medal-line"></i>
+                        <span>Leaderboard</span>
+                    </a>
+
+                    <a href="#" class="menu-item">
+                        <i class="ri-user-star-line"></i>
+                        <span>Player Zone</span>
+                    </a>
+
+                    <a href="#" class="menu-item">
+                        <i class="ri-newspaper-line"></i>
+                        <span>News</span>
+                    </a>
+
+                    <a href="#" class="menu-item">
+                        <i class="ri-settings-3-line"></i>
+                        <span>Settings</span>
+                    </a>
+
+                </nav>
+
+            </div>
+
+
+            <!-- FAN WAR -->
+            <div class="fan-war-card">
+
+                <div class="fan-war-image">
+                    <img src="./assets/fanwar/trophy.png" alt="Fan War" />
+                </div>
+
+                <h3>Fan War</h3>
+
+                <h2>RCB vs CSK</h2>
+
+                <p>
+                    Join the ultimate fan battle
+                </p>
+
+                <button onclick="openFanWarApp()">
+    Join Now
+  </button>
+
+            </div>
+
+        </aside>
+        <!-- MAIN -->
+        <main class="main-content">
+
+            <!-- NAVBAR -->
+            <header class="topbar">
+
+                <div class="search-box">
+                    <i class="ri-search-line"></i>
+
+                    <input type="text" placeholder="Search players, matches..." />
+                </div>
+
+                <div class="top-right">
+
+                    <div class="coin-card">
+                        <i class="ri-coins-line"></i>
+                        <span id="coinBalance">0</span>
                     </div>
 
-                    <div class="vs-area">
-                      <h2>VS</h2>
-                      <p>18.2 Overs</p>
-                    </div>
+                    <button class="nav-btn">
+            <i class="ri-notification-3-line"></i>
+          </button>
 
-                    <div class="team-block">
-                      <img src="assets/images/csk.png" alt="">
-                      <h3>CSK</h3>
-                      <span>172/6</span>
-                    </div>
+                    <button class="nav-btn">
+            <i class="ri-moon-line"></i>
+          </button>
 
-                  </div>
-
-                  <!-- MATCH 2 -->
-                  <div class="live-slide">
-
-                    <div class="team-block">
-                      <img src="assets/images/mi.png" alt="">
-                      <h3>MI</h3>
-                      <span>145/3</span>
-                    </div>
-
-                    <div class="vs-area">
-                      <h2>VS</h2>
-                      <p>15.4 Overs</p>
-                    </div>
-
-                    <div class="team-block">
-                      <img src="assets/images/gt.png" alt="">
-                      <h3>GT</h3>
-                      <span>139/5</span>
-                    </div>
-
-                  </div>
-
-                  <!-- MATCH 3 -->
-                  <div class="live-slide">
-
-                    <div class="team-block">
-                      <img src="assets/images/kkr.png" alt="">
-                      <h3>KKR</h3>
-                      <span>201/7</span>
-                    </div>
-
-                    <div class="vs-area">
-                      <h2>VS</h2>
-                      <p>20 Overs</p>
-                    </div>
-
-                    <div class="team-block">
-                      <img src="assets/images/rr.png" alt="">
-                      <h3>RR</h3>
-                      <span>198/9</span>
-                    </div>
-
-                  </div>
+                    <img class="profile" src="https://i.pravatar.cc/100" />
 
                 </div>
 
-                <div class="slider-dots">
+            </header>
 
-                  <span class="dot active" data-slide="0"></span>
+            <!-- WELCOME -->
+            <section class="welcome">
 
-                  <span class="dot" data-slide="1"></span>
+                <div>
+                    <h1 id="welcomeUser">
+                        Welcome back 👋
+                    </h1>
 
-                  <span class="dot" data-slide="2"></span>
+                    <p>
+                        Stay updated with live cricket
+                    </p>
+                </div>
+
+            </section>
+
+            <!-- LIVE MATCH SLIDER -->
+            <section class="live-slider">
+
+                <div class="live-card" id="liveCard">
+
+                    <button class="slider-btn prev" id="prevBtn">
+            ❮
+          </button>
+
+                    <button class="slider-btn next" id="nextBtn">
+            ❯
+          </button>
+
+                    <span class="live-badge">
+            🔴 LIVE NOW
+          </span>
+
+                    <div class="match-header">
+
+                        <div class="team">
+
+                            <img src="./assets/teams/india.png" />
+
+                            <h3>India</h3>
+
+                        </div>
+
+                        <h2>VS</h2>
+
+                        <div class="team">
+
+                            <img src="./assets/teams/australia.png" />
+
+                            <h3>Australia</h3>
+
+                        </div>
+
+                    </div>
+
+                    <div class="score-row">
+
+                        <div>
+                            <h2>185/4</h2>
+                            <span>(18.2)</span>
+                        </div>
+
+                        <div>
+                            <h2>174/7</h2>
+                            <span>(19.0)</span>
+                        </div>
+
+                    </div>
+
+                    <p class="match-status">
+                        Australia need 12 runs in 6 balls
+                    </p>
 
                 </div>
 
             </section>
-            <!-- FAN WAR -->
-            <aside class="fan-war-panel">
+            <section class="content-grid">
 
-              <div class="fan-war-tag">
-                🔥 FAN WAR
-              </div>
+                <!-- LEFT SECTION -->
+                <div class="left-content">
 
-              <div class="fan-war-images">
+                    <!-- Upcoming Matches -->
+                    <div class="card">
 
-                <img src="assets/images/virat.png" alt="">
-                <img src="assets/images/dhoni.png" alt="">
+                        <div class="section-title">
+                            <h3>Upcoming Matches</h3>
+                            <span class="view-all" onclick="openUpcomingPage()">
+                View All
+              </span>
+                        </div>
 
-              </div>
+                        <div class="upcoming-slider">
 
-              <h2>RCB vs CSK</h2>
+                            <div class="upcoming-card">
+                                <p>IPL 2024</p>
+                                <div class="match-vs">
+                                    <img src="./assets/teams/kkr.png">
+                                    <span>VS</span>
+                                    <img src="./assets/teams/rr.png">
+                                </div>
 
-              <p>
-                Join 12K+ fans battling now
-              </p>
+                                <h4>KKR vs RR</h4>
+                                <span>Today, 7:30 PM</span>
+                            </div>
 
-              <button class="join-war-btn">
-                Join Now
+                            <div class="upcoming-card">
+                                <p>IPL 2024</p>
+
+                                <div class="match-vs">
+                                    <img src="./assets/teams/rcb.png">
+                                    <span>VS</span>
+                                    <img src="./assets/teams/pbks.png">
+                                </div>
+
+                                <h4>RCB vs PBKS</h4>
+                                <span>Tomorrow</span>
+                            </div>
+
+                            <div class="upcoming-card">
+                                <p>IPL 2024</p>
+
+                                <div class="match-vs">
+                                    <img src="./assets/teams/dc.png">
+                                    <span>VS</span>
+                                    <img src="./assets/teams/srh.png">
+                                </div>
+
+                                <h4>DC vs SRH</h4>
+                                <span>25 May</span>
+                            </div>
+
+                            <div class="upcoming-card">
+                                <p>T20 WC</p>
+
+                                <div class="match-vs">
+                                    <img src="./assets/teams/india.png">
+                                    <span>VS</span>
+                                    <img src="./assets/teams/pak.png">
+                                </div>
+
+                                <h4>IND vs PAK</h4>
+                                <span>9 Jun</span>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="bottom-grid">
+
+                        <!-- COMMUNITIES -->
+                        <div class="card communities-card">
+
+                            <div class="section-title">
+                                <h3>Fan Communities</h3>
+
+                                <span class="view-all">
+                  View All
+                </span>
+                            </div>
+
+                            <div class="community-item">
+                                <div class="community-left">
+
+                                    <img src="./assets/community/rcb.png" class="community-logo" />
+
+                                    <div>
+                                        <h4>RCB Army</h4>
+                                        <p>125K Members</p>
+                                    </div>
+
+                                </div>
+
+                                <span class="live-dot">
+                  ● Live
+                </span>
+                            </div>
+
+
+                            <div class="community-item">
+                                <div class="community-left">
+
+                                    <img src="./assets/community/csk.png" class="community-logo" />
+
+                                    <div>
+                                        <h4>CSK Super Fans</h4>
+                                        <p>98K Members</p>
+                                    </div>
+
+                                </div>
+
+                                <span class="live-dot">
+                  ● Live
+                </span>
+                            </div>
+
+
+                            <div class="community-item">
+                                <div class="community-left">
+
+                                    <img src="./assets/community/mi.png" class="community-logo" />
+
+                                    <div>
+                                        <h4>MI Paltan</h4>
+                                        <p>110K Members</p>
+                                    </div>
+
+                                </div>
+
+                                <span class="live-dot">
+                  ● Live
+                </span>
+                            </div>
+
+
+                            <div class="community-item">
+                                <div class="community-left">
+
+                                    <img src="./assets/community/india.png" class="community-logo" />
+
+                                    <div>
+                                        <h4>India Cricket Fans</h4>
+                                        <p>230K Members</p>
+                                    </div>
+
+                                </div>
+
+                                <span class="live-dot">
+                  ● Live
+                </span>
+                            </div>
+
+                        </div>
+
+
+                        <!-- QUIZ -->
+                        <div class="quiz-card">
+
+                            <div class="quiz-top">
+
+                                <div>
+                                    <h3>Daily Cricket Quiz</h3>
+
+                                    <p>
+                                        Test your cricket knowledge
+                                    </p>
+                                </div>
+
+                                <span class="coin">
+                  🪙 100
+                </span>
+
+                            </div>
+
+                            <div class="progress-bar">
+                                <div class="progress"></div>
+                            </div>
+
+                            <button>
+                Play Now
               </button>
 
-            </aside>
-          </div>
+                            <div class="mini-quiz">
 
-          <section class="upcoming-section">
+                                <div class="quiz-row">
+                                    <span>IPL 2024 Quiz</span>
+                                    <button>Play</button>
+                                </div>
 
-            <div class="section-header">
+                                <div class="quiz-row">
+                                    <span>Player Guess Quiz</span>
+                                    <button>Play</button>
+                                </div>
 
-              <h2>Upcoming Matches</h2>
+                            </div>
 
-              <a href="#">
-                View All
-              </a>
+                        </div>
 
-            </div>
+                    </div>
 
-            <div class="upcoming-grid">
 
-              <div class="upcoming-card">
+        </main>
 
-                <div class="match-mini-logo">
-                  <img src="assets/images/kkr.png" alt="">
-                  <span>VS</span>
-                  <img src="assets/images/rr.png" alt="">
+        <!-- RIGHT PANEL -->
+        <aside class="right-panel">
+
+            <div class="prediction-card">
+
+                <h3>
+                    🔥 Trending Prediction
+                </h3>
+
+                <p>
+                    Will Kohli score 100?
+                </p>
+
+                <div class="vote-bar">
+                    <div class="yes">
+                        YES 72%
+                    </div>
+
+                    <div class="no">
+                        NO 28%
+                    </div>
                 </div>
 
-                <h3>KKR vs RR</h3>
+            </div>
 
-                <p>Today • 7:30 PM</p>
+            <div class="top-fans">
 
-              </div>
+                <h3>
+                    🏆 Top Fans
+                </h3>
 
-              <div class="upcoming-card">
-
-                <div class="match-mini-logo">
-                  <img src="assets/images/rcb.png" alt="">
-                  <span>VS</span>
-                  <img src="assets/images/pbks.png" alt="">
+                <div class="fan">
+                    #1 CricketKing
                 </div>
 
-                <h3>RCB vs PBKS</h3>
-
-                <p>Tomorrow • 7:30 PM</p>
-
-              </div>
-
-              <div class="upcoming-card">
-
-                <div class="match-mini-logo">
-                  <img src="assets/images/india.png" alt="">
-                  <span>VS</span>
-                  <img src="assets/images/pakistan.png" alt="">
+                <div class="fan">
+                    #2 MI_Paltan
                 </div>
 
-                <h3>IND vs PAK</h3>
-
-                <p>9 June • 3:00 PM</p>
-
-              </div>
-
-              <div class="upcoming-card">
-
-                <div class="match-mini-logo">
-                  <img src="assets/images/dc.png" alt="">
-                  <span>VS</span>
-                  <img src="assets/images/srh.png" alt="">
+                <div class="fan">
+                    #3 Virat18
                 </div>
 
-                <h3>DC vs SRH</h3>
-
-                <p>25 May • 7:30 PM</p>
-
-              </div>
-
             </div>
 
-          </section>
-
-          <div class="community-quiz-grid">
-
-            <!-- FAN COMMUNITIES -->
-            <section class="communities-card">
-
-              <div class="section-header">
-                <h3>Fan Communities</h3>
-                <a href="#">View All</a>
-              </div>
-
-              <div class="community-list">
-
-                <div class="community-item">
-                  <img src="assets/images/rcb.png" alt="">
-                  <div>
-                    <h4>RCB Army</h4>
-                    <p>125K Members</p>
-                  </div>
-                  <span class="live-status">🟢 Live</span>
-                </div>
-
-                <div class="community-item">
-                  <img src="assets/images/csk.png" alt="">
-                  <div>
-                    <h4>CSK Super Fans</h4>
-                    <p>98K Members</p>
-                  </div>
-                  <span class="live-status">🟢 Live</span>
-                </div>
-
-                <div class="community-item">
-                  <img src="assets/images/mi.png" alt="">
-                  <div>
-                    <h4>MI Paltan</h4>
-                    <p>110K Members</p>
-                  </div>
-                  <span class="live-status">🟢 Live</span>
-                </div>
-
-              </div>
-
-            </section>
-
-            <!-- QUIZ CHALLENGE -->
-            <section class="quiz-card">
-
-              <div class="section-header">
-                <h3>Quiz Challenge</h3>
-                <a href="#">View All</a>
-              </div>
-
-              <div class="quiz-box">
-
-                <div class="quiz-top">
-                  <div>
-                    <h4>Daily Cricket Quiz</h4>
-                    <p>Test your cricket knowledge</p>
-                  </div>
-
-                  <span class="quiz-reward">
-                    Win 🪙100
-                  </span>
-                </div>
-
-                <div class="progress-text">
-                  5/10 Questions
-                </div>
-
-                <div class="progress-bar">
-                  <div class="progress-fill"></div>
-                </div>
-
-                <button class="play-btn">
-                  Play Now
-                </button>
-
-              </div>
-
-            </section>
-
-          </div> <!-- community-quiz-grid -->
-
-        </div> <!-- left-content -->
-
-        <div class="right-panel">
-
-
-          <section class="trending-card">
-
-            <div class="section-head">
-              <h3>Trending Predictions</h3>
-              <span>View All</span>
-            </div>
-
-            <div class="prediction-item">
-              <div class="prediction-icon">🏆</div>
-
-              <div class="prediction-info">
-                <h4>Who will win this match?</h4>
-                <p>🪙 2,450 &nbsp; 👥 8.1K</p>
-              </div>
-            </div>
-
-            <div class="prediction-item">
-              <div class="prediction-icon">👥</div>
-
-              <div class="prediction-info">
-                <h4>Will there be a 100+ partnership?</h4>
-                <p>🪙 1,850 &nbsp; 👥 5.6K</p>
-              </div>
-            </div>
-
-            <div class="prediction-item">
-              <div class="prediction-icon">🏏</div>
-
-              <div class="prediction-info">
-                <h4>Will a six be hit next over?</h4>
-                <p>🪙 950 &nbsp; 👥 3.2K</p>
-              </div>
-            </div>
-
-          </section>
-
-
-          <section class="top-fans-card">
-
-            <div class="section-head">
-              <h3>Top Fans</h3>
-              <span>This Week</span>
-            </div>
-
-            <div class="fan-user">
-              <span>#1 Virat18</span>
-              <span>12,560 XP</span>
-            </div>
-
-            <div class="fan-user">
-              <span>#2 CricketKing</span>
-              <span>9,870 XP</span>
-            </div>
-
-            <div class="fan-user">
-              <span>#3 MI_Paltan</span>
-              <span>8,230 XP</span>
-            </div>
-
-            <div class="fan-user">
-              <span>#4 CSK_ForLife</span>
-              <span>7,450 XP</span>
-            </div>
-
-          </section>
+        </aside>
 
         </div>
-      </div>
-  </div>
-  </main>
-  <!-- MOBILE BOTTOM NAV -->
 
-  <nav class="mobile-bottom-nav">
-
-    <a class="active">
-      <i class="fa-solid fa-house"></i>
-      Home
-    </a>
-
-    <a>
-      <i class="fa-regular fa-clock"></i>
-      Matches
-    </a>
-
-    <a>
-      <i class="fa-solid fa-chart-simple"></i>
-      Predict
-    </a>
-
-    <a>
-      <i class="fa-solid fa-users"></i>
-      Communities
-    </a>
-
-    <a>
-      <i class="fa-regular fa-user"></i>
-      Profile
-    </a>
-
-  </nav>
-  <script src="js/home.js"></script>
+        <script type="module" src="./js/home.js"></script>
 
 </body>
 
