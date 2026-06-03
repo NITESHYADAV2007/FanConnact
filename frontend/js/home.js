@@ -1,172 +1,249 @@
-// ==========================
-// MOBILE SIDEBAR
-// ==========================
+// =========================
+// SIDEBAR COLLAPSE
+// =========================
 
-const menuBtn = document.getElementById("menuBtn");
-const sidebar = document.getElementById("sidebar");
-const slides = document.querySelectorAll(".live-slide");
-const dots = document.querySelectorAll(".dot");
+const menuBtn =
+document.getElementById(
+  "menu-btn"
+);
 
-let currentSlide = 0;
+const sidebar =
+document.getElementById(
+  "sidebar"
+);
 
-function showSlide(index) {
+menuBtn.addEventListener(
+  "click",
+  () => {
 
-    slides.forEach(slide => {
-        slide.classList.remove("active-slide");
-    });
+    sidebar.classList.toggle(
+      "collapsed"
+    );
+  }
+);
 
-    dots.forEach(dot => {
-        dot.classList.remove("active");
-    });
 
-    slides[index].classList.add("active-slide");
-    dots[index].classList.add("active");
+// =========================
+// LIVE MATCH DATA
+// =========================
 
-    currentSlide = index;
+const matches = [
+
+  {
+    team1: "MI",
+    team2: "CSK",
+
+    team1Logo:
+      "./assets/teams/mi.png",
+
+    team2Logo:
+      "./assets/teams/csk.png",
+
+    score1: "185/4",
+    overs1: "(18.2)",
+
+    score2: "165/7",
+    overs2: "(20)",
+
+    status:
+      "MI need 20 runs in 10 balls"
+  },
+
+  {
+    team1: "IND",
+    team2: "AUS",
+
+    team1Logo:
+      "./assets/teams/india.png",
+
+    team2Logo:
+      "./assets/teams/australia.png",
+
+    score1: "287/6",
+    overs1: "(48.2)",
+
+    score2: "Yet to bat",
+    overs2: "",
+
+    status:
+      "IND chose to bat"
+  },
+
+  {
+    team1: "RCB",
+    team2: "KKR",
+
+    team1Logo:
+      "./assets/teams/rcb.png",
+
+    team2Logo:
+      "./assets/teams/kkr.png",
+
+    score1: "142/3",
+    overs1: "(15.4)",
+
+    score2: "141/7",
+    overs2: "(18.1)",
+
+    status:
+      "RCB need 2 runs in 11 balls"
+  }
+
+];
+
+
+// =========================
+// MATCH SLIDER
+// =========================
+
+let currentMatch = 0;
+
+function updateMatch() {
+
+  const match =
+    matches[currentMatch];
+
+
+  // TEAM 1
+  document.querySelector(
+    ".team:first-child img"
+  ).src =
+    match.team1Logo;
+
+  document.querySelector(
+    ".team:first-child h3"
+  ).innerText =
+    match.team1;
+
+
+  // TEAM 2
+  document.querySelector(
+    ".team:last-child img"
+  ).src =
+    match.team2Logo;
+
+  document.querySelector(
+    ".team:last-child h3"
+  ).innerText =
+    match.team2;
+
+
+  // SCORE
+  document.querySelectorAll(
+    ".score-row h2"
+  )[0].innerText =
+    match.score1;
+
+  document.querySelectorAll(
+    ".score-row span"
+  )[0].innerText =
+    match.overs1;
+
+  document.querySelectorAll(
+    ".score-row h2"
+  )[1].innerText =
+    match.score2;
+
+  document.querySelectorAll(
+    ".score-row span"
+  )[1].innerText =
+    match.overs2;
+
+
+  // STATUS
+  document.querySelector(
+    ".match-status"
+  ).innerText =
+    match.status;
 }
 
-function nextSlide() {
 
-    let next = currentSlide + 1;
+// =========================
+// NEXT BUTTON
+// =========================
 
-    if (next >= slides.length) {
-        next = 0;
-    }
+document
+.getElementById(
+  "nextBtn"
+)
+.addEventListener(
+  "click",
+  (e) => {
 
-    showSlide(next);
-}
+    e.stopPropagation();
 
-function prevSlide() {
-
-    let prev = currentSlide - 1;
-
-    if (prev < 0) {
-        prev = slides.length - 1;
-    }
-
-    showSlide(prev);
-}
-
-/* keyboard arrows */
-
-document.addEventListener("keydown", (e) => {
-
-    if (e.key === "ArrowRight") {
-        nextSlide();
-    }
-
-    if (e.key === "ArrowLeft") {
-        prevSlide();
-    }
-
-});
-
-/* dots click */
-
-dots.forEach((dot, index) => {
-
-    dot.addEventListener("click", () => {
-
-        showSlide(index);
-
-    });
-
-});
-
-menuBtn.addEventListener("click", () => {
-
-    if (window.innerWidth <= 768) {
-        sidebar.classList.toggle("show-sidebar");
-    }
-
-});
-
-// close when click outside
-document.addEventListener("click", (e) => {
+    currentMatch++;
 
     if (
-        window.innerWidth <= 768 &&
-        !sidebar.contains(e.target) &&
-        !menuBtn.contains(e.target)
+      currentMatch >=
+      matches.length
     ) {
-        sidebar.classList.remove("show-sidebar");
+      currentMatch = 0;
     }
 
-});
+    updateMatch();
+  }
+);
 
 
-// ==========================
-// DARK / LIGHT MODE
-// ==========================
+// =========================
+// PREVIOUS BUTTON
+// =========================
 
-const themeBtn = document.getElementById("themeBtn");
-const body = document.body;
+document
+.getElementById(
+  "prevBtn"
+)
+.addEventListener(
+  "click",
+  (e) => {
 
-themeBtn.addEventListener("click", () => {
+    e.stopPropagation();
 
-    body.classList.toggle("light-mode");
+    currentMatch--;
 
-    const icon = themeBtn.querySelector("i");
-
-    if (body.classList.contains("light-mode")) {
-        icon.className = "fa-solid fa-sun";
-    } else {
-        icon.className = "fa-solid fa-moon";
+    if (
+      currentMatch < 0
+    ) {
+      currentMatch =
+        matches.length - 1;
     }
 
-});
+    updateMatch();
+  }
+);
 
-const liveCard = document.querySelector(".live-match-slider");
 
-let startX = 0;
-let endX = 0;
+// =========================
+// HERO CARD CLICK
+// =========================
 
-/* MOBILE TOUCH */
+document
+.getElementById(
+  "liveCard"
+)
+.addEventListener(
+  "click",
+  (e) => {
 
-liveCard.addEventListener("touchstart",(e)=>{
-
-    startX = e.touches[0].clientX;
-
-});
-
-liveCard.addEventListener("touchend",(e)=>{
-
-    endX = e.changedTouches[0].clientX;
-
-    handleSwipe();
-
-});
-
-/* DESKTOP DRAG */
-
-liveCard.addEventListener("mousedown",(e)=>{
-
-    startX = e.clientX;
-
-});
-
-liveCard.addEventListener("mouseup",(e)=>{
-
-    endX = e.clientX;
-
-    handleSwipe();
-
-});
-
-function handleSwipe(){
-
-    const distance = startX - endX;
-
-    if(distance > 50){
-
-        nextSlide();
-
+    // Ignore arrow button click
+    if (
+      e.target.closest(
+        ".slider-btn"
+      )
+    ) {
+      return;
     }
 
-    if(distance < -50){
+    // Open match page
+    window.location.href =
+      "./match.html";
+  }
+);
 
-        prevSlide();
 
-    }
+// =========================
+// INITIAL LOAD
+// =========================
 
-}
+updateMatch();
