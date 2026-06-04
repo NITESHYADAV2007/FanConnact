@@ -1,0 +1,1058 @@
+<!doctype html>
+
+<html class="light" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800&amp;family=Hanken+Grotesk:wght@300;400;500;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-container-high": "#dce9ff",
+              tertiary: "#545f73",
+              surface: "#f8f9ff",
+              "surface-container": "#e5eeff",
+              "primary-fixed": "#6ffbbe",
+              "outline-variant": "#bbcabf",
+              "inverse-primary": "#4edea3",
+              "secondary-fixed-dim": "#c0c1ff",
+              "secondary-container": "#6063ee",
+              outline: "#6c7a71",
+              "inverse-surface": "#213145",
+              "primary-container": "#10b981",
+              "on-primary-fixed-variant": "#005236",
+              "on-tertiary-fixed-variant": "#3c475a",
+              "on-tertiary": "#ffffff",
+              "on-primary": "#ffffff",
+              "tertiary-fixed-dim": "#bcc7de",
+              "on-surface-variant": "#3c4a42",
+              "secondary-fixed": "#e1e0ff",
+              "on-secondary-fixed": "#07006c",
+              "surface-variant": "#d3e4fe",
+              "surface-container-low": "#eff4ff",
+              "on-surface": "#0b1c30",
+              primary: "#006c49",
+              "on-tertiary-fixed": "#111c2d",
+              "on-tertiary-container": "#2e394c",
+              "tertiary-fixed": "#d8e3fb",
+              "surface-container-lowest": "#ffffff",
+              "on-error": "#ffffff",
+              "on-secondary-container": "#fffbff",
+              "on-primary-container": "#00422b",
+              "surface-dim": "#cbdbf5",
+              "on-secondary-fixed-variant": "#2f2ebe",
+              "on-background": "#0b1c30",
+              "surface-tint": "#006c49",
+              "primary-fixed-dim": "#4edea3",
+              "on-error-container": "#93000a",
+              "on-primary-fixed": "#002113",
+              "surface-container-highest": "#d3e4fe",
+              error: "#ba1a1a",
+              secondary: "#4648d4",
+              "surface-bright": "#f8f9ff",
+              background: "#f8f9ff",
+              "inverse-on-surface": "#eaf1ff",
+              "error-container": "#ffdad6",
+              "tertiary-container": "#98a3ba",
+              "on-secondary": "#ffffff",
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px",
+            },
+            spacing: {
+              xs: "4px",
+              "max-width": "1440px",
+              "margin-desktop": "32px",
+              gutter: "24px",
+              xl: "64px",
+              sm: "12px",
+              lg: "40px",
+              md: "24px",
+              "margin-mobile": "16px",
+              base: "8px",
+            },
+            fontFamily: {
+              "label-md": ["Hanken Grotesk"],
+              "headline-xl": ["Lexend"],
+              "headline-lg": ["Lexend"],
+              "headline-sm": ["Lexend"],
+              "body-sm": ["Hanken Grotesk"],
+              "body-lg": ["Hanken Grotesk"],
+              "body-md": ["Hanken Grotesk"],
+              "label-sm": ["Hanken Grotesk"],
+              "headline-md": ["Lexend"],
+              "headline-lg-mobile": ["Lexend"],
+            },
+            fontSize: {
+              "label-md": [
+                "14px",
+                {
+                  lineHeight: "16px",
+                  letterSpacing: "0.05em",
+                  fontWeight: "600",
+                },
+              ],
+              "headline-xl": [
+                "40px",
+                {
+                  lineHeight: "48px",
+                  letterSpacing: "-0.02em",
+                  fontWeight: "700",
+                },
+              ],
+              "headline-lg": [
+                "32px",
+                {
+                  lineHeight: "40px",
+                  letterSpacing: "-0.01em",
+                  fontWeight: "700",
+                },
+              ],
+              "headline-sm": [
+                "20px",
+                { lineHeight: "28px", fontWeight: "600" },
+              ],
+              "body-sm": ["14px", { lineHeight: "20px", fontWeight: "400" }],
+              "body-lg": ["18px", { lineHeight: "28px", fontWeight: "400" }],
+              "body-md": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+              "label-sm": ["12px", { lineHeight: "14px", fontWeight: "700" }],
+              "headline-md": [
+                "24px",
+                { lineHeight: "32px", fontWeight: "600" },
+              ],
+              "headline-lg-mobile": [
+                "24px",
+                { lineHeight: "32px", fontWeight: "700" },
+              ],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        font-family: "Hanken Grotesk", sans-serif;
+        background-color: #0b1c30;
+      }
+      /* Profile Frames */
+      .frame-gold {
+        border: 4px solid #eab308 !important;
+        box-shadow: 0 0 10px rgba(234, 179, 8, 0.5);
+      }
+      .frame-emerald {
+        border: 4px solid #10b981 !important;
+        box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+      }
+      .frame-diamond {
+        border: 4px solid #22d3ee !important;
+        box-shadow: 0 0 10px rgba(34, 211, 238, 0.5);
+      }
+      .material-symbols-outlined {
+        font-variation-settings:
+          "FILL" 0,
+          "wght" 400,
+          "GRAD" 0,
+          "opsz" 24;
+      }
+      .glass-card {
+        background: rgba(33, 49, 69, 0.4);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(111, 251, 190, 0.1);
+      }
+      .dashboard-container {
+        max-width: 1440px;
+        margin: 0 auto;
+      }
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 4px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05);
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: rgba(111, 251, 190, 0.2);
+        border-radius: 10px;
+      }
+    </style>
+  </head>
+  <body class="overflow-x-hidden bg-inverse-surface">
+    <!-- Top AppBar -->
+    <header
+      class="bg-inverse-surface/90 backdrop-blur-md text-primary-fixed-dim docked full-width top-0 sticky z-50 border-b border-outline-variant/20 shadow-md transition-all duration-300 ease-in-out"
+    >
+      <div
+        class="flex justify-between items-center px-margin-desktop h-16 max-w-max-width mx-auto"
+      >
+        <div class="flex items-center gap-xl">
+          <span
+            class="text-headline-md font-headline-md font-bold text-primary-fixed tracking-tight"
+            >FanConnect</span
+          >
+          <nav class="hidden lg:flex items-center gap-md">
+            <a
+              class="text-primary-fixed-dim hover:text-white transition-colors text-label-md font-label-md"
+              href="index.html"
+              >Home</a
+            >
+            <a
+              class="text-surface-dim hover:text-primary-fixed-dim transition-colors text-label-md font-label-md"
+              href="#"
+              >Matches</a
+            >
+            <a
+              class="text-surface-dim hover:text-primary-fixed-dim transition-colors text-label-md font-label-md"
+              href="#"
+              >Fan War</a
+            >
+            <a
+              class="text-surface-dim hover:text-primary-fixed-dim transition-colors text-label-md font-label-md"
+              href="#"
+              >Quizzes</a
+            >
+            <a
+              class="text-surface-dim hover:text-primary-fixed-dim transition-colors text-label-md font-label-md"
+              href="#"
+              >Community</a
+            >
+          </nav>
+        </div>
+        <div class="flex items-center gap-base">
+          <button
+            class="p-2 hover:bg-surface-variant/10 rounded-full transition-all"
+          >
+            <span class="material-symbols-outlined" data-icon="notifications"
+              >notifications</span
+            >
+          </button>
+          <button
+            id="mobile-logout-btn"
+            class="lg:hidden p-2 hover:bg-error/10 text-error rounded-full transition-all"
+          >
+            <span class="material-symbols-outlined">logout</span>
+          </button>
+          <button
+            class="text-primary-fixed border-b-2 border-primary-fixed pb-2 flex items-center gap-2 p-2 transition-all"
+          >
+            <span class="material-symbols-outlined" data-icon="account_circle"
+              >account_circle</span
+            >
+          </button>
+        </div>
+      </div>
+    </header>
+    <main class="min-h-[calc(100vh-64px)] p-md md:p-xl lg:px-lg xl:px-xl">
+      <div class="dashboard-container space-y-lg">
+        <!-- Profile Hero Section -->
+        <div
+          class="flex flex-col lg:flex-row items-center lg:items-center justify-between gap-xl bg-surface-variant/5 border border-outline-variant/10 p-lg rounded-[2rem]"
+        >
+          <div class="flex flex-col md:flex-row items-center gap-lg">
+            <div class="relative">
+              <div
+                id="hero-img-container"
+                class="w-40 h-40 rounded-full border-4 border-primary-container p-1 overflow-hidden cursor-pointer"
+                onclick="document.getElementById('profile-edit-upload').click()"
+              >
+                <img
+                  id="profile-hero-img"
+                  alt="User Profile"
+                  class="w-full h-full object-cover rounded-full"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuDAdt6gTi9aWhzaWu0AwmUJWpepyI28STYpmAmIvZsPGI47HnY8_gtSarYWPqwucklHgR4EpYzTzVUVBceYaIF8fRK2zVyKc4YkcQpkZ8CvmbKNNXVLaeOjk67dkw7BWenmTMRmgepDKe0-i8yDoykBzMNfmCkuifHV6GliA9VZyv3-BQZhdMzbrLOehMtJ1_WLfCtq9lpWR90qN-dNSGTXKecNse6oUgcP6WHXkvBRbgur10o4TjgVEK0NUIjLvjmDhd79tz4W1RDp"
+                />
+                <input
+                  type="file"
+                  id="profile-edit-upload"
+                  class="hidden"
+                  accept="image/*"
+                />
+              </div>
+
+              <!-- Edit Picture & Frame Controls (Initially hidden) -->
+              <div id="profile-picture-controls" class="hidden mt-4 space-y-4">
+                <div class="flex gap-2 overflow-x-auto pb-2">
+                  <img
+                    src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix"
+                    class="w-10 h-10 rounded-full cursor-pointer default-avatar-edit"
+                    data-url="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix"
+                  />
+                  <img
+                    src="https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka"
+                    class="w-10 h-10 rounded-full cursor-pointer default-avatar-edit"
+                    data-url="https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka"
+                  />
+                  <img
+                    src="https://api.dicebear.com/7.x/avataaars/svg?seed=George"
+                    class="w-10 h-10 rounded-full cursor-pointer default-avatar-edit"
+                    data-url="https://api.dicebear.com/7.x/avataaars/svg?seed=George"
+                  />
+                </div>
+                <div class="flex gap-2 overflow-x-auto pb-2">
+                  <div
+                    class="frame-edit-item w-8 h-8 rounded-full border-2 border-white/20 cursor-pointer"
+                    data-frame="none"
+                  ></div>
+                  <div
+                    class="frame-edit-item w-8 h-8 rounded-full border-2 border-yellow-500 cursor-pointer"
+                    data-frame="gold"
+                  ></div>
+                  <div
+                    class="frame-edit-item w-8 h-8 rounded-full border-2 border-emerald-500 cursor-pointer"
+                    data-frame="emerald"
+                  ></div>
+                  <div
+                    class="frame-edit-item w-8 h-8 rounded-full border-2 border-cyan-400 cursor-pointer"
+                    data-frame="diamond"
+                  ></div>
+                </div>
+                <input type="hidden" id="edit-selected-frame" value="none" />
+                <input type="hidden" id="edit-selected-avatar" value="" />
+              </div>
+
+              <div
+                id="profile-hero-level"
+                class="absolute bottom-2 right-2 bg-primary-container text-on-primary-container px-4 py-1.5 rounded-full text-label-md font-label-md shadow-xl border-2 border-inverse-surface"
+              >
+                LVL 12
+              </div>
+            </div>
+            <div class="text-center md:text-left space-y-xs">
+              <h1
+                id="profile-hero-name"
+                class="text-headline-xl font-headline-xl text-white"
+              >
+                User Name
+              </h1>
+              <p
+                class="text-surface-dim text-body-lg flex items-center justify-center md:justify-start gap-2"
+              >
+                <span
+                  class="material-symbols-outlined text-primary-fixed"
+                  data-icon="verified"
+                  >verified</span
+                >
+                Elite Predictor • Since 2023
+              </p>
+              <div
+                class="flex flex-wrap justify-center md:justify-start gap-sm pt-md"
+              >
+                <div
+                  class="flex items-center gap-2 bg-primary/10 border border-primary/20 px-4 py-2 rounded-full"
+                >
+                  <span
+                    class="material-symbols-outlined text-primary-fixed text-[20px]"
+                    data-icon="monetization_on"
+                    style="font-variation-settings: &quot;FILL&quot; 1"
+                    >monetization_on</span
+                  >
+                  <span
+                    id="profile-hero-coins"
+                    class="text-primary-fixed font-bold"
+                    >0 Coins</span
+                  >
+                </div>
+                <button
+                  id="edit-profile-btn"
+                  class="bg-primary-container text-on-primary-container px-4 py-2 rounded-full font-label-md hover:scale-105 transition-transform flex items-center gap-2"
+                >
+                  <span
+                    class="material-symbols-outlined text-[20px]"
+                    data-icon="add"
+                    >add</span
+                  >
+                  Edit Profile
+                </button>
+              </div>
+            </div>
+          </div>
+          <!-- Achievements Section (New) -->
+          <div class="w-full lg:w-auto space-y-md">
+            <h4
+              class="text-surface-dim text-label-md uppercase tracking-widest text-center lg:text-left"
+            >
+              Achievements
+            </h4>
+            <div class="flex justify-center lg:justify-start gap-md">
+              <div class="group relative">
+                <div
+                  class="w-14 h-14 rounded-full bg-secondary-container/20 flex items-center justify-center border border-secondary/30 text-secondary-fixed hover:scale-110 transition-transform cursor-help"
+                >
+                  <span
+                    class="material-symbols-outlined text-3xl"
+                    data-icon="nest_clock_farsight_analog"
+                    >nest_clock_farsight_analog</span
+                  >
+                </div>
+                <span
+                  class="absolute -bottom-8 left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 transition-transform bg-on-surface text-surface px-2 py-1 rounded text-[10px] whitespace-nowrap"
+                  >Early Bird</span
+                >
+              </div>
+              <div class="group relative">
+                <div
+                  class="w-14 h-14 rounded-full bg-primary/20 flex items-center justify-center border border-primary/30 text-primary-fixed hover:scale-110 transition-transform cursor-help"
+                >
+                  <span
+                    class="material-symbols-outlined text-3xl"
+                    data-icon="psychology_alt"
+                    >psychology_alt</span
+                  >
+                </div>
+                <span
+                  class="absolute -bottom-8 left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 transition-transform bg-on-surface text-surface px-2 py-1 rounded text-[10px] whitespace-nowrap"
+                  >Quiz Master</span
+                >
+              </div>
+              <div class="group relative">
+                <div
+                  class="w-14 h-14 rounded-full bg-yellow-500/20 flex items-center justify-center border border-yellow-500/30 text-yellow-500 hover:scale-110 transition-transform cursor-help"
+                >
+                  <span
+                    class="material-symbols-outlined text-3xl"
+                    data-icon="military_tech"
+                    style="font-variation-settings: &quot;FILL&quot; 1"
+                    >military_tech</span
+                  >
+                </div>
+                <span
+                  class="absolute -bottom-8 left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 transition-transform bg-on-surface text-surface px-2 py-1 rounded text-[10px] whitespace-nowrap"
+                  >Top 1%</span
+                >
+              </div>
+              <div
+                class="w-14 h-14 rounded-full bg-surface-variant/10 flex items-center justify-center border border-outline-variant/10 text-surface-dim opacity-50"
+              >
+                <span
+                  class="material-symbols-outlined text-3xl"
+                  data-icon="lock"
+                  >lock</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Dashboard Grid -->
+        <div class="grid grid-cols-1 xl:grid-cols-12 gap-lg">
+          <!-- Left Column: Stats & Activity -->
+          <div class="xl:col-span-8 space-y-lg">
+            <!-- Performance Stats Grid (New) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-md">
+              <div
+                class="bg-surface-variant/5 border border-outline-variant/10 p-md rounded-2xl"
+              >
+                <p class="text-surface-dim text-label-sm uppercase">
+                  Total Predictions
+                </p>
+                <p class="text-headline-md font-headline-md text-white mt-base">
+                  512
+                </p>
+                <p class="text-primary-fixed text-body-sm mt-xs">
+                  +12 this week
+                </p>
+              </div>
+              <div
+                class="bg-surface-variant/5 border border-outline-variant/10 p-md rounded-2xl"
+              >
+                <p class="text-surface-dim text-label-sm uppercase">
+                  Win Rate %
+                </p>
+                <p
+                  class="text-headline-md font-headline-md text-primary-fixed mt-base"
+                >
+                  68.4%
+                </p>
+                <div
+                  class="w-full bg-surface-variant/20 h-1 rounded-full mt-md"
+                >
+                  <div
+                    class="bg-primary-fixed h-1 rounded-full"
+                    style="width: 68.4%"
+                  ></div>
+                </div>
+              </div>
+              <div
+                class="bg-surface-variant/5 border border-outline-variant/10 p-md rounded-2xl"
+              >
+                <div class="flex justify-between items-start">
+                  <p class="text-surface-dim text-label-sm uppercase">
+                    XP Progress
+                  </p>
+                  <span class="text-surface-dim text-label-sm">LVL 12</span>
+                </div>
+                <p class="text-headline-md font-headline-md text-white mt-base">
+                  1,240 XP
+                </p>
+                <div
+                  class="w-full bg-surface-variant/20 h-1 rounded-full mt-md overflow-hidden"
+                >
+                  <div
+                    class="bg-secondary h-1 rounded-full animate-pulse"
+                    style="width: 45%"
+                  ></div>
+                </div>
+              </div>
+              <div
+                class="bg-surface-variant/5 border border-outline-variant/10 p-md rounded-2xl"
+              >
+                <p class="text-surface-dim text-label-sm uppercase">
+                  Global Rank
+                </p>
+                <p class="text-headline-md font-headline-md text-white mt-base">
+                  #1,204
+                </p>
+                <p class="text-surface-dim text-body-sm mt-xs">
+                  Top 5% Players
+                </p>
+              </div>
+            </div>
+            <!-- Recent Activity (New) -->
+            <div
+              class="bg-surface-variant/5 border border-outline-variant/10 rounded-[2rem] overflow-hidden"
+            >
+              <div
+                class="p-lg border-b border-outline-variant/10 flex justify-between items-center"
+              >
+                <h3 class="text-headline-sm font-headline-sm text-white">
+                  Recent Activity
+                </h3>
+                <button
+                  class="text-primary-fixed text-label-md hover:underline"
+                >
+                  View All
+                </button>
+              </div>
+              <div
+                class="p-lg max-h-[400px] overflow-y-auto custom-scrollbar space-y-md"
+              >
+                <div
+                  class="flex items-center gap-md p-md rounded-xl hover:bg-surface-variant/10 transition-colors group"
+                >
+                  <div
+                    class="w-10 h-10 bg-secondary/20 rounded-lg flex items-center justify-center text-secondary-fixed"
+                  >
+                    <span class="material-symbols-outlined" data-icon="groups"
+                      >groups</span
+                    >
+                  </div>
+                  <div class="flex-1">
+                    <p class="text-white font-medium">
+                      Joined RCB vs CSK Fan War
+                    </p>
+                    <p class="text-surface-dim text-body-sm">2 hours ago</p>
+                  </div>
+                  <span
+                    class="text-primary-fixed font-bold opacity-0 group-hover:opacity-100 transition-opacity"
+                    >JOINED</span
+                  >
+                </div>
+                <div
+                  class="flex items-center gap-md p-md rounded-xl hover:bg-surface-variant/10 transition-colors group"
+                >
+                  <div
+                    class="w-10 h-10 bg-primary/20 rounded-lg flex items-center justify-center text-primary-fixed"
+                  >
+                    <span class="material-symbols-outlined" data-icon="quiz"
+                      >quiz</span
+                    >
+                  </div>
+                  <div class="flex-1">
+                    <p class="text-white font-medium">
+                      Won 50 FanCoins in Daily Quiz
+                    </p>
+                    <p class="text-surface-dim text-body-sm">Yesterday</p>
+                  </div>
+                  <span class="text-primary-fixed font-bold">+50 FC</span>
+                </div>
+                <div
+                  class="flex items-center gap-md p-md rounded-xl hover:bg-surface-variant/10 transition-colors group"
+                >
+                  <div
+                    class="w-10 h-10 bg-tertiary/20 rounded-lg flex items-center justify-center text-tertiary-fixed"
+                  >
+                    <span
+                      class="material-symbols-outlined"
+                      data-icon="sports_cricket"
+                      >sports_cricket</span
+                    >
+                  </div>
+                  <div class="flex-1">
+                    <p class="text-white font-medium">
+                      Placed prediction on MI vs CSK
+                    </p>
+                    <p class="text-surface-dim text-body-sm">2 days ago</p>
+                  </div>
+                  <span class="text-surface-dim text-body-sm italic"
+                    >Pending</span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Right Column: Personal Info & Actions -->
+          <div class="xl:col-span-4 space-y-lg">
+            <!-- Identity Details -->
+            <div
+              class="bg-surface-variant/5 border border-outline-variant/10 p-lg rounded-[2rem] space-y-md"
+            >
+              <h3
+                class="text-primary-fixed font-headline-sm flex items-center gap-2"
+              >
+                <span
+                  class="material-symbols-outlined"
+                  data-icon="person_search"
+                  >person_search</span
+                >
+                Identity Details
+              </h3>
+              <div class="space-y-md pt-md">
+                <div
+                  class="flex justify-between border-b border-outline-variant/10 pb-md"
+                >
+                  <span class="text-surface-dim text-body-md">Full Name</span>
+                  <input
+                    id="profile-detail-fullname"
+                    class="bg-transparent text-right text-white font-medium outline-none focus:border-b border-primary-fixed"
+                    value="User Name"
+                    readonly
+                  />
+                </div>
+                <div
+                  class="flex justify-between border-b border-outline-variant/10 pb-md"
+                >
+                  <span class="text-surface-dim text-body-md">Username</span>
+                  <input
+                    id="profile-detail-username"
+                    class="bg-transparent text-right text-white font-medium outline-none focus:border-b border-primary-fixed"
+                    value="@username"
+                    readonly
+                  />
+                </div>
+                <div
+                  class="flex justify-between border-b border-outline-variant/10 pb-md"
+                >
+                  <span class="text-surface-dim text-body-md">Gender</span>
+                  <input
+                    id="profile-detail-gender"
+                    class="bg-transparent text-right text-white font-medium outline-none focus:border-b border-primary-fixed"
+                    value="Not Specified"
+                    readonly
+                  />
+                </div>
+                <div
+                  class="flex justify-between border-b border-outline-variant/10 pb-md"
+                >
+                  <span class="text-surface-dim text-body-md"
+                    >Date of Birth</span
+                  >
+                  <input
+                    id="profile-detail-dob"
+                    type="date"
+                    class="bg-transparent text-right text-white font-medium outline-none focus:border-b border-primary-fixed"
+                    value=""
+                    readonly
+                  />
+                </div>
+              </div>
+            </div>
+            <!-- Contact Info -->
+            <div
+              class="bg-surface-variant/5 border border-outline-variant/10 p-lg rounded-[2rem] space-y-md"
+            >
+              <h3
+                class="text-primary-fixed font-headline-sm flex items-center gap-2"
+              >
+                <span class="material-symbols-outlined" data-icon="contact_page"
+                  >contact_page</span
+                >
+                Contact Info
+              </h3>
+              <div class="space-y-md pt-md">
+                <div
+                  class="flex flex-col gap-1 border-b border-outline-variant/10 pb-md"
+                >
+                  <span class="text-surface-dim text-label-sm uppercase"
+                    >Email</span
+                  >
+                  <input
+                    id="profile-detail-email"
+                    class="bg-transparent text-white font-medium outline-none"
+                    value="email@example.com"
+                    readonly
+                  />
+                </div>
+                <div
+                  class="flex flex-col gap-1 border-b border-outline-variant/10 pb-md"
+                >
+                  <span class="text-surface-dim text-label-sm uppercase"
+                    >Mobile</span
+                  >
+                  <input
+                    id="profile-detail-mobile"
+                    class="bg-transparent text-white font-medium outline-none focus:border-b border-primary-fixed"
+                    value="+91 ----------"
+                    readonly
+                  />
+                </div>
+                <div
+                  class="flex flex-col gap-1 border-b border-outline-variant/10 pb-md"
+                >
+                  <span class="text-surface-dim text-label-sm uppercase"
+                    >Location</span
+                  >
+                  <input
+                    id="profile-detail-location"
+                    class="bg-transparent text-white font-medium outline-none focus:border-b border-primary-fixed"
+                    value="New Delhi, India"
+                    readonly
+                  />
+                </div>
+              </div>
+            </div>
+            <!-- Actions -->
+            <div class="flex flex-col gap-md">
+              <button
+                id="profile-save-btn"
+                class="w-full py-4 px-md border border-primary-container/30 text-primary-container rounded-2xl font-label-md hover:bg-primary-container/10 transition-colors flex items-center justify-center gap-3"
+              >
+                <span
+                  class="material-symbols-outlined"
+                  data-icon="support_agent"
+                  >support_agent</span
+                >
+                Save Changes
+              </button>
+              <button
+                id="profile-signout-btn"
+                class="w-full py-4 px-md border border-error/20 text-error rounded-2xl font-label-md hover:bg-error/10 transition-colors flex items-center justify-center gap-3"
+              >
+                <span class="material-symbols-outlined" data-icon="logout"
+                  >logout</span
+                >
+                Sign Out Account
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <!-- Crop Modal Profile -->
+    <div
+      id="crop-modal-profile"
+      class="hidden fixed inset-0 z-[100] bg-black/80 flex items-center justify-center p-4"
+    >
+      <div class="bg-inverse-surface rounded-2xl p-6 max-w-lg w-full">
+        <h3 class="text-xl font-bold text-white mb-4">Crop Profile Picture</h3>
+        <div class="max-h-[300px] overflow-hidden rounded-xl">
+          <img id="crop-image-profile" src="" class="max-w-full" />
+        </div>
+        <div class="flex justify-end gap-4 mt-6">
+          <button
+            type="button"
+            id="cancel-crop-profile"
+            class="px-6 py-2 rounded-xl border border-outline-variant/20 text-surface-dim"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            id="confirm-crop-profile"
+            class="px-6 py-2 rounded-xl bg-primary text-white"
+          >
+            Apply Crop
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- BottomNavBar (Mobile Only) -->
+    <nav
+      class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-3 md:hidden bg-inverse-surface/95 backdrop-blur-lg border-t border-outline-variant/20 shadow-lg rounded-t-3xl"
+    >
+      <a
+        href="index.html"
+        class="flex flex-col items-center justify-center text-surface-dim p-2"
+      >
+        <span class="material-symbols-outlined">home</span>
+        <span class="text-[10px] font-label-sm mt-1">Home</span>
+      </a>
+      <div
+        class="flex flex-col items-center justify-center text-surface-dim p-2"
+      >
+        <span class="material-symbols-outlined" data-icon="sports_cricket"
+          >sports_cricket</span
+        >
+        <span class="text-[10px] font-label-sm mt-1">Predict</span>
+      </div>
+      <div
+        class="flex flex-col items-center justify-center text-surface-dim p-2"
+      >
+        <span class="material-symbols-outlined" data-icon="groups">groups</span>
+        <span class="text-[10px] font-label-sm mt-1">Wars</span>
+      </div>
+      <div
+        class="flex flex-col items-center justify-center text-primary-fixed bg-primary/10 rounded-2xl px-5 py-2"
+      >
+        <span
+          class="material-symbols-outlined"
+          data-icon="person"
+          style="font-variation-settings: &quot;FILL&quot; 1"
+          >person</span
+        >
+        <span class="text-[10px] font-label-sm mt-1">Profile</span>
+      </div>
+    </nav>
+    <script>
+      // Tooltip logic
+      document.querySelectorAll(".group").forEach((item) => {
+        item.addEventListener("mouseenter", () => {
+          const tooltip = item.querySelector(".scale-0");
+          if (tooltip) tooltip.classList.replace("scale-0", "scale-100");
+        });
+        item.addEventListener("mouseleave", () => {
+          const tooltip = item.querySelector(".scale-100");
+          if (tooltip) tooltip.classList.replace("scale-100", "scale-0");
+        });
+      });
+    </script>
+    <script type="module">
+      import { auth, db, storage } from "./js/firebase-config.js";
+      import {
+        onAuthStateChanged,
+        signOut,
+        updateProfile,
+      } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+      import {
+        ref,
+        uploadBytes,
+        getDownloadURL,
+      } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+      import {
+        doc,
+        getDoc,
+        setDoc,
+      } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+      let profileCropper = null;
+      let croppedBlobEdit = null;
+
+      onAuthStateChanged(auth, async (user) => {
+        if (!user) {
+          window.location.href = "login.html";
+          return;
+        }
+
+        // Fallback UI while loading Firestore
+        const fallbackHandle = user.displayName || user.email.split("@")[0];
+        document.getElementById("profile-hero-name").textContent =
+          `@${fallbackHandle.toLowerCase().replace(/\s+/g, "")}`;
+
+        document.getElementById("profile-detail-fullname").value =
+          user.displayName || "FanConnect User";
+        document.getElementById("profile-detail-email").value = user.email;
+        if (user.photoURL) {
+          document.getElementById("profile-hero-img").src = user.photoURL;
+        }
+
+        // Fetch Firestore Data
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (userDoc.exists()) {
+          const data = userDoc.data();
+          if (data.frame) {
+            document.getElementById("hero-img-container").className =
+              `w-40 h-40 rounded-full border-4 p-1 overflow-hidden cursor-pointer frame-${data.frame}`;
+            document.getElementById("edit-selected-frame").value = data.frame;
+          }
+          document.getElementById("profile-hero-level").textContent =
+            `LVL ${data.level || 1}`;
+          document.getElementById("profile-hero-coins").textContent =
+            `${data.coins || 0} Coins`;
+
+          const username = data.username || user.email.split("@")[0];
+          document.getElementById("profile-hero-name").textContent =
+            `@${username}`;
+          document.getElementById("profile-detail-username").value =
+            `@${username}`;
+          document.getElementById("profile-detail-gender").value =
+            data.gender || "Not Specified";
+          document.getElementById("profile-detail-dob").value = data.dob || "";
+          document.getElementById("profile-detail-mobile").value =
+            data.mobile || "Not Specified";
+          document.getElementById("profile-detail-location").value =
+            data.location || "Not Specified";
+        }
+      });
+
+      // Edit/Save Handlers
+      document
+        .getElementById("edit-profile-btn")
+        ?.addEventListener("click", () => {
+          document.querySelectorAll("input[readonly]").forEach((input) => {
+            if (input.id !== "profile-detail-email") input.readOnly = false;
+          });
+          document
+            .getElementById("profile-picture-controls")
+            .classList.remove("hidden");
+          alert("Editing enabled! Update your info and click 'Save Changes'.");
+        });
+
+      document
+        .getElementById("profile-edit-upload")
+        .addEventListener("change", (e) => {
+          const file = e.target.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+              const cropModal = document.getElementById("crop-modal-profile");
+              const cropImage = document.getElementById("crop-image-profile");
+              cropImage.src = event.target.result;
+              cropModal.classList.remove("hidden");
+              if (profileCropper) profileCropper.destroy();
+              profileCropper = new Cropper(cropImage, {
+                aspectRatio: 1,
+                viewMode: 1,
+              });
+            };
+            reader.readAsDataURL(file);
+          }
+        });
+
+      document
+        .getElementById("confirm-crop-profile")
+        .addEventListener("click", () => {
+          profileCropper
+            .getCroppedCanvas({ width: 400, height: 400 })
+            .toBlob((blob) => {
+              croppedBlobEdit = blob;
+              document.getElementById("profile-hero-img").src =
+                URL.createObjectURL(blob);
+              document
+                .getElementById("crop-modal-profile")
+                .classList.add("hidden");
+              document.getElementById("edit-selected-avatar").value = "";
+            });
+        });
+
+      document.querySelectorAll(".default-avatar-edit").forEach((img) => {
+        img.addEventListener("click", () => {
+          document.getElementById("edit-selected-avatar").value =
+            img.dataset.url;
+          document.getElementById("profile-hero-img").src = img.dataset.url;
+          croppedBlobEdit = null;
+        });
+      });
+
+      document.querySelectorAll(".frame-edit-item").forEach((item) => {
+        item.addEventListener("click", () => {
+          document.getElementById("edit-selected-frame").value =
+            item.dataset.frame;
+          document.getElementById("hero-img-container").className =
+            `w-40 h-40 rounded-full border-4 p-1 overflow-hidden cursor-pointer frame-${item.dataset.frame}`;
+        });
+      });
+
+      document
+        .getElementById("profile-save-btn")
+        ?.addEventListener("click", async () => {
+          const user = auth.currentUser;
+          if (!user) return;
+
+          const newFullName = document.getElementById(
+            "profile-detail-fullname",
+          ).value;
+          const newUsername = document
+            .getElementById("profile-detail-username")
+            .value.replace("@", "");
+          const newLocation = document.getElementById(
+            "profile-detail-location",
+          ).value;
+          const selectedFrame = document.getElementById(
+            "edit-selected-frame",
+          ).value;
+          const selectedDefault = document.getElementById(
+            "edit-selected-avatar",
+          ).value;
+
+          try {
+            let finalPhotoURL = user.photoURL;
+            if (selectedDefault) finalPhotoURL = selectedDefault;
+            if (croppedBlobEdit) {
+              const storageRef = ref(storage, `profiles/${user.uid}`);
+              const snapshot = await uploadBytes(storageRef, croppedBlobEdit);
+              finalPhotoURL = await getDownloadURL(snapshot.ref);
+            }
+
+            // 1. Sync Name & Photo with Firebase Auth
+            await updateProfile(user, {
+              displayName: newFullName,
+              photoURL: finalPhotoURL,
+            });
+
+            // 2. Upsert Firestore for persistent data (creates if missing)
+            await setDoc(
+              doc(db, "users", user.uid),
+              {
+                fullName: newFullName,
+                email: user.email,
+                username: newUsername,
+                gender: document.getElementById("profile-detail-gender").value,
+                dob: document.getElementById("profile-detail-dob").value,
+                mobile: document.getElementById("profile-detail-mobile").value,
+                location: newLocation,
+                frame: selectedFrame,
+                photoURL: finalPhotoURL,
+              },
+              { merge: true },
+            );
+
+            // 3. Update UI locally and immediately
+            document.getElementById("profile-hero-name").textContent =
+              `@${newUsername}`;
+            document.getElementById("profile-hero-img").src = finalPhotoURL;
+            document.getElementById("profile-detail-fullname").value =
+              newFullName;
+
+            document
+              .querySelectorAll("input")
+              .forEach((i) => (i.readOnly = true));
+            document
+              .getElementById("profile-picture-controls")
+              .classList.add("hidden");
+            alert("Changes saved and synced successfully!");
+          } catch (error) {
+            alert("Update failed: " + error.message);
+          }
+        });
+
+      const logoutHandler = () => {
+        signOut(auth).then(() => (window.location.href = "login.html"));
+      };
+
+      document
+        .getElementById("profile-signout-btn")
+        ?.addEventListener("click", logoutHandler);
+      document
+        .getElementById("mobile-logout-btn")
+        ?.addEventListener("click", logoutHandler);
+    </script>
+  </body>
+</html>
