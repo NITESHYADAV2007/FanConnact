@@ -55,3 +55,27 @@
 :root:not(.dark) .text-on-surface-variant {
   color: #475569 !important; /* Darker slate for better readability */
 }
+
+/* FanConnect Logo Text */
+:root:not(.dark) .text-fan {
+  color: #374151 !important;
+}
+.dark .text-fan {
+  color: #ffffff !important;
+}
+/* FanConnect Logo Text: Connect = blue in light, green in dark */
+:root:not(.dark) .text-connect {
+  color: #4648d4 !important;
+}
+.dark .text-connect {
+  color: #10b981 !important;
+}
+
+/* Sidebar Collapsed State - fully hide sidebar */
+.sidebar-collapsed {
+  width: 0 !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+  border: 0 !important;
+  padding: 0 !important;
+}

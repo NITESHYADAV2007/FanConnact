@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>
+        Notifications | FanConnect
+    </title>
+
+    <link rel="stylesheet" href="css/notification.css">
+</head>
+
+<body>
+
+    <div class="notification-page">
+
+        <!-- HEADER -->
+        <div class="notification-header">
+
+            <button class="back-btn">
+                ← Back
+            </button>
+
+            <div class="header-center">
+
+                <h1>
+                    Notifications
+                </h1>
+
+                <span class="badge-count">
+                    18
+                </span>
+
+            </div>
+
+            <button class="settings-btn">
+                ⚙
+            </button>
+
+
+        </div>
+
+
+        <!-- QUICK ACTIONS -->
+        <div class="quick-actions">
+
+            <button class="mark-read-btn">
+                ✓ Mark Read
+            </button>
+
+            <button class="pinned-btn">
+                📌 Pinned
+            </button>
+
+            <button class="sound-btn">
+                🔊 Sound ON
+            </button>
+
+            <div class="filter-wrapper">
+
+                <button id="filterBtn">
+                    Filter
+                </button>
+
+                <select id="filterDropdown">
+
+                    <option value="all">
+                        All
+                    </option>
+
+                    <option value="match">
+                        Match
+                    </option>
+
+                    <option value="rewards">
+                        Rewards
+                    </option>
+
+                    <option value="news">
+                        News
+                    </option>
+
+                    <option value="social">
+                        Social
+                    </option>
+
+                    <option value="account">
+                        Account
+                    </option>
+
+                </select>
+
+            </div>
+
+        </div>
+
+
+        <!-- CATEGORY TABS -->
+        <div class="notification-tabs">
+
+            <button class="tab active" data-type="all">
+                All
+            </button>
+
+            <button class="tab" data-type="match">
+                Match
+            </button>
+
+            <button class="tab" data-type="rewards">
+                Rewards
+            </button>
+
+            <button class="tab" data-type="news">
+                News
+            </button>
+
+            <button class="tab" data-type="social">
+                Social
+            </button>
+
+            <button class="tab" data-type="account">
+                Account
+            </button>
+        </div>
+
+
+        <!-- BREAKING NEWS -->
+        <div class="breaking-news">
+
+            <div class="breaking-tag">
+                🚨 Breaking
+            </div>
+
+            <p>
+                Virat Kohli ruled fit
+                for next IPL match
+            </p>
+
+        </div>
+
+
+        <!-- PINNED -->
+        <h2 class="section-title">
+            📌 Pinned
+        </h2>
+
+        <div id="pinnedContainer">
+        </div>
+
+        <!-- NOTIFICATION FEED -->
+
+        <h2 class="section-title">
+            Recent
+        </h2>
+
+        <div class="notification-feed">
+
+           
+
+            </div>
+
+
+            <!-- MATCH -->
+            <div class="notification-card" data-type="match">
+                <button class="pin-btn">
+                    📍
+                </button>
+                <div class="icon">
+                    ❤️
+                </div>
+
+                <div class="card-content">
+
+                    <h3>
+                        Match Alert
+                    </h3>
+
+                    <p>
+                        RCB vs MI starts
+                        in 30 mins.
+                    </p>
+
+                </div>
+
+                <span class="time">
+                    15m
+                </span>
+
+            </div>
+
+
+            <!-- BREAKING -->
+            <div class="notification-card" data-type="news">
+
+                <button class="pin-btn">
+                    📍
+                </button>
+                <div class="icon">
+                    📰
+                </div>
+
+                <div class="card-content">
+
+                    <h3>
+                        Breaking News
+                    </h3>
+
+                    <p>
+                        Bumrah ruled out
+                        of next match.
+                    </p>
+
+                </div>
+
+                <span class="time">
+                    22m
+                </span>
+
+            </div>
+
+
+            <!-- ACCOUNT -->
+            <div class="notification-card" data-type="account">
+                <button class="pin-btn">
+                    📍
+                </button>
+                <div class="icon">
+                    ⚙
+                </div>
+
+                <div class="card-content">
+
+                    <h3>
+                        Username Updated
+                    </h3>
+
+                    <p>
+                        Your username
+                        updated successfully.
+                    </p>
+
+                </div>
+
+                <span class="time">
+                    1h
+                </span>
+
+            </div>
+
+
+            <!-- SOCIAL -->
+            <div class="notification-card" data-type="social">
+                <button class="pin-btn">
+                    📍
+                </button>
+                <div class="icon">
+                    💬
+                </div>
+
+                <div class="card-content">
+
+                    <h3>
+                        Social Activity
+                    </h3>
+
+                    <p>
+                        12 fans liked your
+                        prediction.
+                    </p>
+
+                </div>
+
+                <span class="time">
+                    2h
+                </span>
+
+            </div>
+
+
+            <!-- STREAK -->
+            <div class="notification-card streak-card" data-type="rewards">
+                <button class="pin-btn">
+                    📍
+                </button>
+                <div class="icon">
+                    🔥
+                </div>
+
+                <div class="card-content">
+
+                    <h3>
+                        Prediction Streak
+                    </h3>
+
+                    <p>
+                        5 predictions correct
+                        in a row.
+                    </p>
+
+                    <span class="reward">
+                        +250 Bonus Coins
+                    </span>
+
+                </div>
+
+                <span class="time">
+                    Today
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- WEEKLY SUMMARY -->
+        <div class="weekly-summary">
+
+            <h2>
+                Weekly Summary
+            </h2>
+
+            <div class="summary-grid">
+
+                <div>
+                    <span>
+                        Predictions
+                    </span>
+                    <h3>
+                        18
+                    </h3>
+                </div>
+
+                <div>
+                    <span>
+                        Correct
+                    </span>
+                    <h3>
+                        13
+                    </h3>
+                </div>
+
+                <div>
+                    <span>
+                        Coins
+                    </span>
+                    <h3>
+                        540
+                    </h3>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- SETTINGS MODAL -->
+        <div class="settings-modal">
+
+            <div class="settings-box">
+
+                <button class="close-settings">
+                    ✕
+                </button>
+
+                <h2>
+                    Notification Settings
+                </h2>
+
+                <!-- ONLY MY TEAM -->
+                <div class="setting-box">
+
+                    <h3>
+                        ❤️ Only My Team
+                    </h3>
+
+                    <label>
+                        <input type="radio" name="teamMode" checked>
+                        RCB Only
+                    </label>
+
+                    <label>
+                        <input type="radio" name="teamMode">
+                        All Teams
+                    </label>
+
+                </div>
+
+
+                <!-- QUIET HOURS -->
+                <div class="setting-box">
+
+                    <h3>🌙 Quiet Hours</h3>
+
+                    <div class="quiet-hours">
+
+                        <div>
+                            <label>Start</label>
+                            <input type="time" id="quietStart">
+                        </div>
+
+                        <div>
+                            <label>End</label>
+                            <input type="time" id="quietEnd">
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- PRIORITY -->
+                <div class="setting-box">
+
+                    <h3>
+                        🔥 Priority
+                    </h3>
+
+                    <label>
+                        <input type="radio" name="priority" checked>
+                        High
+                    </label>
+
+                    <label>
+                        <input type="radio" name="priority">
+                        Medium
+                    </label>
+
+                    <label>
+                        <input type="radio" name="priority">
+                        Low
+                    </label>
+
+                </div>
+
+
+                <!-- SPORTS FILTER -->
+               <div class="setting-box">
+
+    <h3>
+        🏆 My Interests
+    </h3>
+
+    <!-- SPORTS -->
+
+    <div class="interest-title">
+        Sports
+    </div>
+
+    <div class="sports-grid">
+
+        <button class="interest-card active"
+        data-sport="cricket">
+            🏏 Cricket
+        </button>
+
+        <button class="interest-card"
+        data-sport="football">
+            ⚽ Football
+        </button>
+
+        <button class="interest-card"
+        data-sport="basketball">
+            🏀 Basketball
+        </button>
+
+        <button class="interest-card"
+        data-sport="tennis">
+            🎾 Tennis
+        </button>
+
+        <button class="interest-card"
+        data-sport="esports">
+            🎮 Esports
+        </button>
+
+    </div>
+
+    <!-- TEAM AREA -->
+
+    <div class="interest-title">
+        Favourite Teams
+    </div>
+
+    <div id="teamsContainer" id="teamsContainer">
+
+       
+</div>
+
+                <!-- SOUND -->
+                <div class="setting-box">
+
+                    <h3>
+                        🔊 Notification Sound
+                    </h3>
+
+                    <label>
+                        <input type="checkbox" checked>
+                        Enable Sound
+                    </label>
+
+                </div>
+
+            </div>
+
+        </div>
+        <script src="js/notification.js"></script>
+</body>
+
+</html>

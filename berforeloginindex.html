@@ -1,0 +1,592 @@
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>FanConnect - Live Sports Updates</title>
+    <!-- Tailwind CSS v3 CDN -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["Inter", "sans-serif"],
+            },
+            colors: {
+              brand: {
+                dark: "#0B0E1E",
+                blue: "#4154F1",
+                card: "#12172D",
+                secondary: "#1A213E",
+              },
+            },
+          },
+        },
+      };
+    </script>
+    <style data-purpose="custom-scrollbar">
+      /* Hide scrollbar for Chrome, Safari and Opera */
+      .no-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      /* Hide scrollbar for IE, Edge and Firefox */
+      .no-scrollbar {
+        -ms-overflow-style: none; /* IE and Edge */
+        scrollbar-width: none; /* Firefox */
+      }
+    </style>
+  </head>
+  <body class="bg-brand-dark text-white font-sans antialiased min-h-screen">
+    <!-- BEGIN: MainHeader -->
+    <header
+      class="bg-brand-dark border-b border-gray-800 h-20 px-4 md:px-8 flex items-center justify-between sticky top-0 z-50 transition-all duration-300"
+    >
+      <div class="flex items-center gap-2">
+        <!-- FanConnect Logo -->
+        <img src="assets/fancoin/fanconnactlogo.png" alt="FanConnect" class="w-10 h-10" />
+        <span class="text-2xl font-bold tracking-tight"><span class="text-fan">Fan</span><span class="text-connect">Connact</span></span>
+      </div>
+      <div data-purpose="user-actions">
+        <button
+          onclick="window.location.href = 'login.html'"
+          class="bg-brand-blue hover:bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold flex items-center gap-2 transition-colors"
+        >
+          <svg
+            class="h-5 w-5"
+            fill="currentColor"
+            viewbox="0 0 20 20"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              clip-rule="evenodd"
+              d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+              fill-rule="evenodd"
+            ></path>
+          </svg>
+          Login / Sign Up
+        </button>
+      </div>
+    </header>
+    <!-- END: MainHeader -->
+    <main class="max-w-[1400px] mx-auto px-8 py-8 space-y-12">
+      <!-- BEGIN: LiveMatchesSection -->
+      <section id="live-matches">
+        <div class="flex items-center gap-3 mb-8">
+          <svg
+            class="h-8 w-8 text-white"
+            fill="none"
+            stroke="currentColor"
+            viewbox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            ></path>
+          </svg>
+          <h2 class="text-2xl font-bold">Live Matches</h2>
+          <span
+            class="inline-flex h-2 w-2 rounded-full bg-red-500 animate-pulse ml-1"
+          ></span>
+          <span class="text-red-500 text-sm font-bold uppercase tracking-wider"
+            >((●))</span
+          >
+        </div>
+        <!-- Match Cards Carousel -->
+        <div class="relative group">
+          <!-- Navigation Buttons -->
+          <button
+            class="absolute -left-5 top-1/2 -translate-y-1/2 w-10 h-10 bg-white text-black rounded-full shadow-xl flex items-center justify-center z-10 transition-transform active:scale-95"
+          >
+            <svg
+              class="h-6 w-6"
+              fill="none"
+              stroke="currentColor"
+              viewbox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M15 19l-7-7 7-7"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              ></path>
+            </svg>
+          </button>
+          <button
+            class="absolute -right-5 top-1/2 -translate-y-1/2 w-10 h-10 bg-white text-black rounded-full shadow-xl flex items-center justify-center z-10 transition-transform active:scale-95"
+          >
+            <svg
+              class="h-6 w-6"
+              fill="none"
+              stroke="currentColor"
+              viewbox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M9 5l7 7-7 7"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              ></path>
+            </svg>
+          </button>
+          <div class="grid grid-cols-5 gap-4">
+            <!-- Cricket Card -->
+            <div
+              class="bg-brand-card rounded-2xl overflow-hidden border border-gray-800 p-5 flex flex-col h-full"
+              data-purpose="match-card"
+            >
+              <div class="flex justify-between items-center mb-4">
+                <span
+                  class="bg-blue-900/50 text-blue-400 text-[10px] font-bold px-2 py-0.5 rounded uppercase"
+                  >Cricket</span
+                >
+                <div class="flex items-center gap-1.5">
+                  <span class="h-1.5 w-1.5 rounded-full bg-red-500"></span>
+                  <span class="text-[10px] font-bold text-gray-300">LIVE</span>
+                </div>
+              </div>
+              <div class="text-center mb-6">
+                <p class="text-xs text-gray-400 font-medium">IPL 2025</p>
+              </div>
+              <div class="flex justify-between items-center px-2 mb-4">
+                <div class="text-center">
+                  <img
+                    alt="MI"
+                    class="w-12 h-12 mb-2 rounded-full border border-gray-700"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuC9FfSICFSU8ydwXSt3cPq-3FY0kytA9W1taWkGkXf2lxwETpedtU2pDBrzvasUFexreBv-irPN-GWJJGZXVDbb10i7xzQbN6E39wE_NMltk7Icn3EZgN2IZDxKXBDtv3bKKspxOpNC1Aqj-eyz6m2Nn_hm-zKGx6sWbb3f1ytJnYtapIIREngiQzpC9H0jmvFZ16aAKIPn6pZiImHEu-RJCL4yC5hlFyKV9-boGUOA1n_X-opGL1tvwelQdHfkk3m1YtXfeRG8pDw"
+                  />
+                  <p class="font-bold text-sm">MI</p>
+                </div>
+                <div class="text-center">
+                  <p class="text-lg font-bold">162/4</p>
+                  <p class="text-[10px] text-gray-400">(18.2 overs)</p>
+                </div>
+                <div class="text-center">
+                  <img
+                    alt="CSK"
+                    class="w-12 h-12 mb-2 rounded-full border border-gray-700"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuCAJQIIFp6mSOWFw2iFoaemZcPMxMeYqsug6iWvqBf_IqGORSyA-OBQHAH6j5Mq-tLK0PvqKv2RzXr12AEaK0HuwQPAjBCQsIyqFClNI4Z8taA6qduuvSJ-U0EXIeckQWxhZKZgmVN4S9UXew4r9JgCPTClH9uoa-uJQCOM_I6s-GwFejetDEQ_clAJmxj4HJzNMTLcUMiHH8uJdd06VwlBYIGduZRXQuA6olMEs_IsPpkNqO641OSj1XqSCc6nREwJMKXfi0i7y1k"
+                  />
+                  <p class="font-bold text-sm">CSK</p>
+                </div>
+              </div>
+              <div class="text-center mt-auto">
+                <p class="text-[11px] text-gray-300 mb-4">
+                  MI need 48 runs in 10 balls
+                </p>
+                <button
+                  class="w-full bg-blue-900/30 hover:bg-blue-800/40 text-blue-400 border border-blue-900/50 py-2 rounded-lg text-xs font-bold transition-colors"
+                >
+                  View Details
+                </button>
+              </div>
+            </div>
+            <!-- Football Card -->
+            <div
+              class="bg-brand-card rounded-2xl overflow-hidden border border-gray-800 p-5 flex flex-col h-full"
+              data-purpose="match-card"
+            >
+              <div class="flex justify-between items-center mb-4">
+                <span
+                  class="bg-green-900/50 text-green-400 text-[10px] font-bold px-2 py-0.5 rounded uppercase"
+                  >Football</span
+                >
+                <div class="flex items-center gap-1.5">
+                  <span class="h-1.5 w-1.5 rounded-full bg-red-500"></span>
+                  <span class="text-[10px] font-bold text-gray-300">LIVE</span>
+                </div>
+              </div>
+              <div class="text-center mb-6">
+                <p class="text-xs text-gray-400 font-medium">
+                  UEFA Champions League
+                </p>
+              </div>
+              <div class="flex justify-between items-center px-2 mb-4">
+                <div class="text-center">
+                  <img
+                    alt="RMA"
+                    class="w-12 h-12 mb-2 rounded-full border border-gray-700"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfdk9yrNHBZsFxrODV_Whb2WrqzK17y1iUMWakDauM-fL7okrdx2S_kVtJX5jhRUqfhm9G8KyNt7nN-xGygs2J8qY7lla8JQVzD_JAl9ooKnf83OXHHIpMo2NHITwyv4k6DUVtluX5HZ40b3mKOxeDCX8OY1fS7wv42bDmiACLDd7wYCwl300zcJpNvBazXQIw4OABRoSX9Zt-srZxEdrZcc4nraelbtl_sWhYtALSFJcZLG9cxlzMTJ3yNRws9cTChU65InXbh7g"
+                  />
+                  <p class="font-bold text-sm">RMA</p>
+                </div>
+                <div class="text-center">
+                  <p class="text-lg font-bold">1 - 1</p>
+                  <p class="text-[10px] text-gray-400">(72')</p>
+                </div>
+                <div class="text-center">
+                  <img
+                    alt="BAY"
+                    class="w-12 h-12 mb-2 rounded-full border border-gray-700"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuCM0Hx84444R2t0dpLxgs_cE164Fva1kaZUXibKKPbGmS9bwJuhvq-DTXhtD6CAOGdmmYI2_qmQkpIIWxClSlIXYfTRcn42ywsNdAX2uGrvImgkouV7BMICGx5ERXFbm6yeLpGyKOT52Sn6fT4ZmtmsbI6ZyBnsT08lWSN8CYLy386rkj3gfVRC6Sci5Uqh8aHexgPlnOG71OCA-iXXQzAAl-xvtRH2pfi0Dq_13dQXZ4tvxqyjX63NH5y_xXO1lAAxqqpGH0Z8knI"
+                  />
+                  <p class="font-bold text-sm">BAY</p>
+                </div>
+              </div>
+              <div class="text-center mt-auto">
+                <p class="text-[11px] text-gray-300 mb-4">
+                  Semi Final - 2nd Leg
+                </p>
+                <button
+                  class="w-full bg-green-900/30 hover:bg-green-800/40 text-green-400 border border-green-900/50 py-2 rounded-lg text-xs font-bold transition-colors"
+                >
+                  View Details
+                </button>
+              </div>
+            </div>
+            <!-- Kabaddi Card -->
+            <div
+              class="bg-brand-card rounded-2xl overflow-hidden border border-gray-800 p-5 flex flex-col h-full"
+              data-purpose="match-card"
+            >
+              <div class="flex justify-between items-center mb-4">
+                <span
+                  class="bg-orange-900/50 text-orange-400 text-[10px] font-bold px-2 py-0.5 rounded uppercase"
+                  >Kabaddi</span
+                >
+                <div class="flex items-center gap-1.5">
+                  <span class="h-1.5 w-1.5 rounded-full bg-red-500"></span>
+                  <span class="text-[10px] font-bold text-gray-300">LIVE</span>
+                </div>
+              </div>
+              <div class="text-center mb-6">
+                <p class="text-xs text-gray-400 font-medium">
+                  Pro Kabaddi League
+                </p>
+              </div>
+              <div class="flex justify-between items-center px-2 mb-4">
+                <div class="text-center">
+                  <img
+                    alt="UP"
+                    class="w-12 h-12 mb-2 rounded-full border border-gray-700"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuAVVUK1KAsFkS5BDQ7nMLUR7rxiRf9B4JxkGkLkihkrgz0xZamolluLDCavP0vUpU8bqOg9CozJL8x90uysqcj-RsCimI87o4o1KToFNP6sh-zxzxJItyloBGgSCun8EIp7sT2UYTeg5u057xl9Wmaqodi9JPxPidtcXxo3Pwd4Uz60JgXRJcL_e_W-IzFZyt1GiAeeBLHuOgKp2GIV2Oxyqp3xc5hIvKRO-SUQNdWKBSx9YDF5jB0X5_TdVomlr17OzL3UJip8Dug"
+                  />
+                  <p class="font-bold text-sm">UP</p>
+                </div>
+                <div class="text-center">
+                  <p class="text-lg font-bold">18 - 20</p>
+                  <p class="text-[10px] text-gray-400">(2nd Half)</p>
+                </div>
+                <div class="text-center">
+                  <img
+                    alt="PAT"
+                    class="w-12 h-12 mb-2 rounded-full border border-gray-700"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuBkYnvdWDF02NCSeG7RAgKJkVEYmJPFBcAAik4_sAKapscfrKiw8IjeEpKRcXBuomMuUHCpqjtZbtTTuELS0EEpmaNGDYwIoLw9ZJyYYSv5XuLnsM-OQFU2TephKgZjZZcpiq4QnLb5fV8HIgC9lqmYNr8PE4_6MOXwhNVfwEgn2Ulu1HYyR945V4gDPhMYG-Ij-3N8MjL3kHdzTHEYEsYhbNNwc_qqZzB7y8R_10rrQlACvdi89ND0Af2ITVuJyvyPSnk9rVTAj0c"
+                  />
+                  <p class="font-bold text-sm">PAT</p>
+                </div>
+              </div>
+              <div class="text-center mt-auto">
+                <p class="text-[11px] text-gray-300 mb-4">Patna Pirates lead</p>
+                <button
+                  class="w-full bg-orange-900/30 hover:bg-orange-800/40 text-orange-400 border border-orange-900/50 py-2 rounded-lg text-xs font-bold transition-colors"
+                >
+                  View Details
+                </button>
+              </div>
+            </div>
+            <!-- Tennis Card -->
+            <div
+              class="bg-brand-card rounded-2xl overflow-hidden border border-gray-800 p-5 flex flex-col h-full"
+              data-purpose="match-card"
+            >
+              <div class="flex justify-between items-center mb-4">
+                <span
+                  class="bg-lime-900/50 text-lime-400 text-[10px] font-bold px-2 py-0.5 rounded uppercase"
+                  >Tennis</span
+                >
+                <div class="flex items-center gap-1.5">
+                  <span class="h-1.5 w-1.5 rounded-full bg-red-500"></span>
+                  <span class="text-[10px] font-bold text-gray-300">LIVE</span>
+                </div>
+              </div>
+              <div class="text-center mb-6">
+                <p class="text-xs text-gray-400 font-medium">
+                  Madrid Open 2025
+                </p>
+              </div>
+              <div class="flex justify-between items-center px-2 mb-4">
+                <div class="text-center">
+                  <img
+                    alt="N. Djokovic"
+                    class="w-12 h-12 mb-2 rounded-full border border-gray-700 object-cover"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7hmk1cXDWY5V0VvEz3s1RW2gaMnuMCAPEtma6H6qR8Bq7DsZxdi1aa8sb0MSUDF8aI9kj_-rWcDHsXdRo0wlvgjin2CbHOmekmmDEzz7YAKM5m1oYntayp3BJLQIU1xXKk-04-Py9tFhhCqEWa5ooZqBNDcW1BtlZv5ka2K6Isiqsd5HQ4ZS3C-LXDtKYsKakUV7JmrSdw9VapGw3hXQycuxIbvdu56Bw6W9d6U7nv-XQ6Ps-_M-Zrfb3inCjvBcm_h03UzhdYNI"
+                  />
+                  <p class="font-bold text-[11px]">N. Djokovic</p>
+                </div>
+                <div class="text-center">
+                  <p class="text-lg font-bold">1 - 1</p>
+                  <p class="text-[10px] text-gray-400">(Set 3)</p>
+                </div>
+                <div class="text-center">
+                  <img
+                    alt="C. Alcaraz"
+                    class="w-12 h-12 mb-2 rounded-full border border-gray-700 object-cover"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuBf2uBc8FzTbmkH0Q8J3ENhfZPWdsaterlLEB7x1f0XWSJ6oaTuXubEqC6s6VojrejJ4HY4hXMpg_COfLltpF_W2F-Kh9sadevJVt2UAFJooQ3bRf3q4EyyyaJ531L-38JSjoOXBV1nXJeSAnqmVED4qiSfjhZyCqtBPpgIxdWDCMyXwEeVxhgQgtDnic_zQO7lnXI7Tyj5ysAx-ZDc-4Bfc19zbnse-B2BjDUe-HKKKFzBrqq-nnjUPigoSeMGypbnSJrAikvRZV0"
+                  />
+                  <p class="font-bold text-[11px]">C. Alcaraz</p>
+                </div>
+              </div>
+              <div class="text-center mt-auto">
+                <p class="text-[11px] text-gray-300 mb-4">Quarter Final</p>
+                <button
+                  class="w-full bg-lime-900/30 hover:bg-lime-800/40 text-lime-400 border border-lime-900/50 py-2 rounded-lg text-xs font-bold transition-colors"
+                >
+                  View Details
+                </button>
+              </div>
+            </div>
+            <!-- Basketball Card -->
+            <div
+              class="bg-brand-card rounded-2xl overflow-hidden border border-gray-800 p-5 flex flex-col h-full"
+              data-purpose="match-card"
+            >
+              <div class="flex justify-between items-center mb-4">
+                <span
+                  class="bg-indigo-900/50 text-indigo-400 text-[10px] font-bold px-2 py-0.5 rounded uppercase"
+                  >Basketball</span
+                >
+                <div class="flex items-center gap-1.5">
+                  <span class="h-1.5 w-1.5 rounded-full bg-red-500"></span>
+                  <span class="text-[10px] font-bold text-gray-300">LIVE</span>
+                </div>
+              </div>
+              <div class="text-center mb-6">
+                <p class="text-xs text-gray-400 font-medium">NBA 2024-25</p>
+              </div>
+              <div class="flex justify-between items-center px-2 mb-4">
+                <div class="text-center">
+                  <img
+                    alt="LAL"
+                    class="w-12 h-12 mb-2 rounded-full border border-gray-700"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuDuKjzooBD8ofv7PIRqSlmxqPcGfYh-O7oy80XWaSWCrOqksw5COcxq0T7RTwYvmvVQWu4_mzl5UBkD5TY8roINj12iL21B6IKizJywiwDDn-j5z0Z5WVrPkr1Z0q_yGOEhVxfhnGFnNj_T7B05ZZbSfc79Ia-n43xIzcBtXtsx4GlupCyFFA8DI-5t40AkIAGvoKKOFLhqJmGJ5Vr8yeQvzM52J0uSUlef75jF9rfQoQ9yAlt2Sfp1_pF7YtQQc8phukiNmhS-Ogc"
+                  />
+                  <p class="font-bold text-sm">LAL</p>
+                </div>
+                <div class="text-center">
+                  <p class="text-lg font-bold">68 - 74</p>
+                  <p class="text-[10px] text-gray-400">(Q3)</p>
+                </div>
+                <div class="text-center">
+                  <img
+                    alt="BOS"
+                    class="w-12 h-12 mb-2 rounded-full border border-gray-700"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuB4krV3B5hgiBUgXwhVMb9hacov-sC-XIchE8SRLFvmmqtX26dJTRm8uhTINK3e4vfnFrGDWWSMAIWBEvkfPLToTFtSi6EX7zFnztbZFaA39bSLL3nEXy0H5aCrbXMcgyx523z6eUVf620SKNwpiT3IleqONX52px0Nc7DXuTdPQQjTYlLLw9nbaNOqB69RzH0HW3-UCDdN0wuf2QnwuTwC3Sy_AgOrg1rspq7kCEjfibxpo16Mtiu993GUDf0aket_1gz3Be0AS18"
+                  />
+                  <p class="font-bold text-sm">BOS</p>
+                </div>
+              </div>
+              <div class="text-center mt-auto">
+                <p class="text-[11px] text-gray-300 mb-4">Celtics lead</p>
+                <button
+                  class="w-full bg-indigo-900/30 hover:bg-indigo-800/40 text-indigo-400 border border-indigo-900/50 py-2 rounded-lg text-xs font-bold transition-colors"
+                >
+                  View Details
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- END: LiveMatchesSection -->
+      <!-- BEGIN: NewsSection -->
+      <section id="latest-news">
+        <div class="flex items-center gap-3 mb-8">
+          <svg
+            class="h-8 w-8 text-white"
+            fill="none"
+            stroke="currentColor"
+            viewbox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            ></path>
+          </svg>
+          <h2 class="text-2xl font-bold">Latest Sports News</h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+          <!-- News Card 1 -->
+          <div
+            class="bg-brand-card rounded-2xl overflow-hidden border border-gray-800 group cursor-pointer hover:border-gray-600 transition-all"
+            data-purpose="news-card"
+          >
+            <div class="relative aspect-video">
+              <img
+                alt="Dhoni"
+                class="w-full h-full object-cover"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuALMkX-MuOBYjbF_ReIDM_JY9aU5SrVSec7mbUl_1NBDUDBf_dWZWJD518nB0uqhBx4KEpV5jiIvOtU8sZCkM07n9n7vykcvdy1eLMPTXicZO313RGXEnEdVw8y1_OmTXC6XlsgmL7sjYgly3OxtoHJkzwHEeJIySsH1O5qHVDIRNSJ5EYFxS0JfFgVSuaYGMQX35aFc6WSNNxAT0esVJ8nUl3p7eawy3X6tib8-UEL7lFPlzNb1PVXUqc0Gh_sTtJwhm0ADn8l37g"
+              />
+              <span
+                class="absolute top-3 left-3 bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase"
+                >Cricket</span
+              >
+            </div>
+            <div class="p-5">
+              <h3
+                class="font-bold text-sm leading-snug mb-4 group-hover:text-brand-blue transition-colors"
+              >
+                CSK eye strong comeback in IPL 2025, says Dhoni
+              </h3>
+              <p class="text-[10px] text-gray-500">1 hour ago</p>
+            </div>
+          </div>
+          <!-- News Card 2 -->
+          <div
+            class="bg-brand-card rounded-2xl overflow-hidden border border-gray-800 group cursor-pointer hover:border-gray-600 transition-all"
+            data-purpose="news-card"
+          >
+            <div class="relative aspect-video">
+              <img
+                alt="Real Madrid"
+                class="w-full h-full object-cover"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBwnjG3xSCbQddLamDwpRCRp8Vgg0V_LO-RcmyNuIx0p5ml3EFcLfC9Q0RAUoKOA6HdS-Qiz-Vqm4wICqnxoRckKvIE1qoqQS6ARu1BDOor44pzPiqz58C6ozK6kObfLgVj4GxwlrO1QB7ZyOktRaefA9HnJVF5DB_eLM13Tbo2-uTn3HRr77SJYsvptDc3LI0Yq5fqzg0trDhXIKd17i-Ho2EIPhn9pDozER89oAWd7_3y3HLnzcb31FR2tQ33Li9sru4PzZYkP18"
+              />
+              <span
+                class="absolute top-3 left-3 bg-green-600 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase"
+                >Football</span
+              >
+            </div>
+            <div class="p-5">
+              <h3
+                class="font-bold text-sm leading-snug mb-4 group-hover:text-green-500 transition-colors"
+              >
+                Real Madrid reach UCL final after thrilling win
+              </h3>
+              <p class="text-[10px] text-gray-500">2 hours ago</p>
+            </div>
+          </div>
+          <!-- News Card 3 -->
+          <div
+            class="bg-brand-card rounded-2xl overflow-hidden border border-gray-800 group cursor-pointer hover:border-gray-600 transition-all"
+            data-purpose="news-card"
+          >
+            <div class="relative aspect-video">
+              <img
+                alt="Kabaddi"
+                class="w-full h-full object-cover"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCwZURY9ii2orX1LuTATeV01pVL2x2oKZBZqqD0ME388FFQP_V6bKVE93qEQa6qOswfQmT_BycTd-oX-RTrzJgYlXGWiAL-JiMEFpE8DHAm0BkubdiNHWnPuUb6xv1oQAv4XmGFp9Ri5mn9ThVEMPGCXqAqRYiiPJWKP4Bld5qViw2CdRH_gNT6zDaSmt8cYeB_tMdGaEnrDjljDM4atqi-7X8R7Xk6lBiAHeyEidWS8GAEMAAxPiJj23B3PI-6pKr--5f8NG4a5ls"
+              />
+              <span
+                class="absolute top-3 left-3 bg-orange-600 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase"
+                >Kabaddi</span
+              >
+            </div>
+            <div class="p-5">
+              <h3
+                class="font-bold text-sm leading-snug mb-4 group-hover:text-orange-500 transition-colors"
+              >
+                Patna Pirates continue their winning streak
+              </h3>
+              <p class="text-[10px] text-gray-500">3 hours ago</p>
+            </div>
+          </div>
+          <!-- News Card 4 -->
+          <div
+            class="bg-brand-card rounded-2xl overflow-hidden border border-gray-800 group cursor-pointer hover:border-gray-600 transition-all"
+            data-purpose="news-card"
+          >
+            <div class="relative aspect-video">
+              <img
+                alt="Djokovic"
+                class="w-full h-full object-cover"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPOXVjDQTvvE08_7wRruNrz68jgv9pvjmHqF8vCZOK2QwkMvcxXop4D4gco-Wwzkhou7Rhs0MXioc3YaDel-tu3a4BmZ5kd6fuH0f76mAYGFGkjXJOGa9IlhQA5M-eUCds7GRxVyGIUdPmEbUfI9nsJdRlQC5Sd0I-FPwEjXMSDSPBmypJwywK1bOBsGV3ArojNNiWwCK7itE3qaXH7m89tdl1RXMXectoKMuWgaopUcDKtQZQgOk-jNo_fhVw--h9_0q82iAbo0Y"
+              />
+              <span
+                class="absolute top-3 left-3 bg-lime-600 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase"
+                >Tennis</span
+              >
+            </div>
+            <div class="p-5">
+              <h3
+                class="font-bold text-sm leading-snug mb-4 group-hover:text-lime-500 transition-colors"
+              >
+                Djokovic fights back to level the match
+              </h3>
+              <p class="text-[10px] text-gray-500">4 hours ago</p>
+            </div>
+          </div>
+          <!-- News Card 5 -->
+          <div
+            class="bg-brand-card rounded-2xl overflow-hidden border border-gray-800 group cursor-pointer hover:border-gray-600 transition-all"
+            data-purpose="news-card"
+          >
+            <div class="relative aspect-video">
+              <img
+                alt="NBA"
+                class="w-full h-full object-cover"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBLfzSalfiLji31RpDr91H4W-2ylH5wJiUJ0C7fAV7E2NSan7g9Vhmvqrzayd70gZ5qac84q1g0wXIiLaJlkRp45ukLSncWsceucldlfYaNSZ32C9h5mh4LfBkdRpUhWV8dxtEFqB3zfigtVrNEViNgr9-rPN8o_m4acV0Y2jeNcgxYzvUBAvuK0BY1lL_NfKPW6UqhMKdOwWopVXRZd3lYaN4jX2sT1ehgCX6QKLr8iSVrk0n1_GDzmKXtRQ1vcUne989X0IkMBJ8"
+              />
+              <span
+                class="absolute top-3 left-3 bg-indigo-600 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase"
+                >Basketball</span
+              >
+            </div>
+            <div class="p-5">
+              <h3
+                class="font-bold text-sm leading-snug mb-4 group-hover:text-indigo-500 transition-colors"
+              >
+                Celtics dominate Lakers in crucial matchup
+              </h3>
+              <p class="text-[10px] text-gray-500">5 hours ago</p>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- END: NewsSection -->
+      <!-- BEGIN: CTAFooter -->
+      <section
+        class="bg-brand-secondary rounded-2xl p-8 flex flex-col md:flex-row items-center justify-between border border-gray-800"
+        id="cta-footer"
+      >
+        <div class="flex items-center gap-6">
+          <div class="bg-brand-blue/20 p-4 rounded-2xl">
+            <svg
+              class="h-10 w-10 text-brand-blue"
+              fill="none"
+              stroke="currentColor"
+              viewbox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              ></path>
+            </svg>
+          </div>
+          <div class="space-y-1">
+            <h2 class="text-2xl font-bold">Join FanConnect</h2>
+            <p class="text-gray-400 text-sm">
+              Connect with fans, get real-time updates and never miss a moment!
+            </p>
+          </div>
+        </div>
+        <button
+          onclick="window.location.href = 'login.html'"
+          class="mt-6 md:mt-0 bg-brand-blue hover:bg-blue-600 text-white px-10 py-3 rounded-xl font-bold shadow-lg shadow-blue-900/20 transition-all"
+        >
+          Login / Sign Up
+        </button>
+      </section>
+      <!-- END: CTAFooter -->
+    </main>
+    <script type="module" src="js/script.js"></script>
+  </body>
+</html>

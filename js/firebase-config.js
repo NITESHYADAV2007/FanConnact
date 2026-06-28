@@ -47,21 +47,6 @@ const googleProvider = new GoogleAuthProvider();
 const facebookProvider = new FacebookAuthProvider();
 const twitterProvider = new TwitterAuthProvider();
 
-// Theme Sync Logic (Moved from login.html for cleanliness)
-const syncTheme = () => {
-  const isDarkMode =
-    localStorage.getItem("color-theme") === "dark" ||
-    (!("color-theme" in localStorage) &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches);
-  document.documentElement.classList.toggle("dark", isDarkMode);
-};
-syncTheme();
-
-document.getElementById("theme-toggle-login")?.addEventListener("click", () => {
-  const isDark = document.documentElement.classList.toggle("dark");
-  localStorage.setItem("color-theme", isDark ? "dark" : "light");
-});
-
 // Social Login Handlers
 const handleSocialLogin = async (provider) => {
   if (window.location.protocol === "file:") {

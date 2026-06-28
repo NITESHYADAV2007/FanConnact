@@ -13,6 +13,10 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&amp;display=swap"
       rel="stylesheet"
     />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
     <script>
       tailwind.config = {
         darkMode: "class",
@@ -98,34 +102,31 @@
         background: #10b981;
         border-radius: 10px;
       }
-    </style>
-  </head>
-  <body class="min-h-screen flex items-center justify-center">
+    
+.sidebar-collapsed #sidebar{width:0!important;min-width:0!important;border:0!important;padding:0!important;overflow:hidden!important;}
+</style>
+  <meta name="description" content="FanConnect sports platform for fans, scores, communities and updates.">
+<meta property="og:title" content="FanConnect">
+<meta name="robots" content="index,follow">
+<meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+</head>
+  <body
+    class="min-h-screen flex items-center justify-center transition-colors duration-300"
+  >
     <!-- BEGIN: Main Layout Wrapper -->
     <main
       class="flex flex-col lg:flex-row w-full min-h-screen lg:h-screen lg:overflow-hidden overflow-y-auto"
     >
       <!-- BEGIN: Left Hero Section -->
       <section
-        class="relative lg:w-1/2 w-full min-h-[500px] lg:h-full bg-hero-section p-6 sm:p-8 lg:p-16 flex flex-col justify-between"
+        class="relative lg:w-1/2 w-full min-h-[450px] lg:h-full bg-hero-section p-6 sm:p-8 lg:p-12 xl:p-16 flex flex-col justify-between"
         data-purpose="hero-content"
       >
         <div class="flex items-center gap-3 mb-12">
-          <div
-            class="w-12 h-12 bg-fan-emerald/20 rounded-xl flex items-center justify-center border border-fan-emerald/30"
-          >
-            <svg
-              class="w-8 h-8 text-fan-emerald"
-              fill="currentColor"
-              viewbox="0 0 24 24"
-            >
-              <path
-                d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 19.92C8.75 19.79 6 15.39 6 11V6.3l6-2.67 6 2.67V11c0 4.39-2.75 8.79-6 9.92z"
-              ></path>
-            </svg>
-          </div>
+          <img src="assets/fancoin/fanconnactlogo.png" alt="FanConnect" class="w-12 h-12" />
           <div>
-            <h1 class="text-2xl font-extrabold tracking-tight">FanConnect</h1>
+            <h1 class="text-2xl font-extrabold tracking-tight"><span class="text-fan">Fan</span><span class="text-connect">Connact</span></h1>
             <p
               class="text-[10px] uppercase tracking-[0.2em] text-fan-emerald font-bold"
             >
@@ -138,13 +139,13 @@
         <div class="mt-auto mb-8 lg:mb-12">
           <div class="space-y-1">
             <h2
-              class="text-3xl sm:text-4xl lg:text-6xl font-black leading-tight text-white"
+              class="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-black leading-tight text-white"
             >
               FOR FANS.<br />
               BY FANS.
             </h2>
             <h2
-              class="text-3xl sm:text-4xl lg:text-6xl font-black leading-tight text-fan-emerald"
+              class="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-black leading-tight text-fan-emerald"
             >
               ALWAYS FOR<br />
               CRICKET.
@@ -160,7 +161,9 @@
           </div>
         </div>
         <!-- Feature Grid -->
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+        <div
+          class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 lg:gap-4 mb-8"
+        >
           <!-- Live Scores -->
           <div class="glass-card p-4 flex flex-col items-center text-center">
             <div class="w-8 h-8 mb-2 text-fan-emerald">
@@ -304,27 +307,47 @@
             </svg>
           </button>
           <button
+            id="lang-menu-btn-login"
             class="px-4 py-2 rounded-xl bg-gray-800/50 flex items-center gap-2 border border-gray-700 hover:bg-gray-700 transition"
           >
-            <span class="text-sm font-medium">English</span>
-            <svg
-              class="w-4 h-4 text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              viewbox="0 0 24 24"
+            <span id="current-lang-login" class="text-sm font-medium"
+              >English</span
             >
-              <path
-                d="M19 9l-7 7-7-7"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              ></path>
-            </svg>
+            <span class="material-symbols-outlined text-sm">expand_more</span>
           </button>
+          <!-- Simple Language Dropdown -->
+          <div
+            id="lang-dropdown-login"
+            class="hidden absolute top-20 right-8 bg-gray-900 border border-gray-700 rounded-xl overflow-hidden shadow-2xl z-50"
+          >
+            <button
+              onclick="changeLanguage('en')"
+              class="block w-full px-6 py-2 text-left hover:bg-gray-800 text-sm"
+            >
+              English
+            </button>
+            <button
+              onclick="changeLanguage('hi')"
+              class="block w-full px-6 py-2 text-left hover:bg-gray-800 text-sm"
+            >
+              Hindi
+            </button>
+          </div>
+          <script>
+            const langBtn = document.getElementById("lang-menu-btn-login");
+            const langDropdown = document.getElementById("lang-dropdown-login");
+            langBtn.onclick = () => langDropdown.classList.toggle("hidden");
+            window.changeLanguage = (lang) => {
+              if (window.applyLanguage) window.applyLanguage(lang);
+              document.getElementById("current-lang-login").textContent =
+                lang === "en" ? "English" : "Hindi";
+              langDropdown.classList.add("hidden");
+            };
+          </script>
         </div>
         <!-- Login Form Card -->
         <div
-          class="w-full max-w-md login-container-glow rounded-[24px] sm:rounded-[32px] p-6 sm:p-8 lg:p-12"
+          class="w-full max-w-md login-container-glow rounded-[24px] sm:rounded-[32px] p-6 sm:p-8 lg:p-8 xl:p-10"
           data-purpose="login-card"
         >
           <div class="flex flex-col items-center mb-10">
@@ -339,7 +362,10 @@
                 ></path>
               </svg>
             </div>
-            <h3 class="text-2xl sm:text-3xl font-bold text-center">
+            <h3
+              data-i18n="login-title"
+              class="text-2xl sm:text-3xl font-bold text-center"
+            >
               Welcome Back! 👋
             </h3>
             <p class="text-gray-400 mt-2 text-center text-sm">
@@ -350,6 +376,7 @@
             <!-- Email Field -->
             <div class="space-y-2">
               <label
+                data-i18n="login-email-label"
                 class="text-sm font-medium text-gray-300 ml-1"
                 for="username"
                 >Email or Username</label
@@ -373,6 +400,7 @@
                   </svg>
                 </div>
                 <input
+                  data-i18n="login-email-placeholder"
                   class="w-full bg-gray-900/40 border-gray-700 rounded-2xl py-4 pl-12 pr-4 text-white placeholder-gray-500 focus:ring-1 focus:ring-fan-emerald focus:border-fan-emerald transition-all duration-300"
                   id="username"
                   name="username"
@@ -384,6 +412,7 @@
             <!-- Password Field -->
             <div class="space-y-2">
               <label
+                data-i18n="login-password-label"
                 class="text-sm font-medium text-gray-300 ml-1"
                 for="password"
                 >Password</label
@@ -407,6 +436,7 @@
                   </svg>
                 </div>
                 <input
+                  data-i18n="login-password-placeholder"
                   class="w-full bg-gray-900/40 border-gray-700 rounded-2xl py-4 pl-12 pr-12 text-white placeholder-gray-500 focus:ring-1 focus:ring-fan-emerald focus:border-fan-emerald transition-all duration-300"
                   id="password"
                   name="password"
@@ -414,6 +444,7 @@
                   type="password"
                 />
                 <button
+                  id="password-toggle"
                   class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-500 hover:text-gray-300"
                   type="button"
                 >
@@ -437,6 +468,17 @@
                     ></path>
                   </svg>
                 </button>
+                <script>
+                  const passToggle = document.getElementById("password-toggle");
+                  const passInput = document.getElementById("password");
+                  passToggle.onclick = () => {
+                    const isPass = passInput.type === "password";
+                    passInput.type = isPass ? "text" : "password";
+                    passToggle.innerHTML = isPass
+                      ? `<span class="material-symbols-outlined">visibility_off</span>`
+                      : `<span class="material-symbols-outlined">visibility</span>`;
+                  };
+                </script>
               </div>
             </div>
             <!-- Helper Links -->
@@ -456,7 +498,7 @@
               </div>
               <a
                 class="text-sm font-medium text-purple-400 hover:text-purple-300 transition"
-                href="#"
+                href="index.html"
                 >Forgot Password?</a
               >
             </div>
@@ -465,7 +507,7 @@
               class="w-full bg-emerald-gradient text-fan-dark font-bold py-4 rounded-2xl flex items-center justify-center gap-2 hover:opacity-90 transition transform active:scale-[0.98]"
               type="submit"
             >
-              <span class="text-lg">Login</span>
+              <span data-i18n="login-submit" class="text-lg">Login</span>
               <div
                 class="w-6 h-6 rounded-full bg-black/20 flex items-center justify-center"
               >
@@ -596,5 +638,76 @@
 
     <!-- Firebase SDK (Modular) -->
     <script type="module" src="js/firebase-config.js"></script>
-  </body>
+    <script type="module" src="js/script.js"></script>
+  <script src="js/theme.js"></script><script src="js/sidebar.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded',()=>{
+const page=location.pathname.split('/').pop();
+document.querySelectorAll('a[href]').forEach(a=>{
+ if(a.getAttribute('href')===page){
+   a.classList.add('bg-emerald-accent/10','text-emerald-accent');
+ }
+});
+});
+</script>
+
+
+<script>
+document.addEventListener('DOMContentLoaded',function(){
+ const page=location.pathname.split('/').pop();
+ document.querySelectorAll('a[href]').forEach(a=>{
+   const h=a.getAttribute('href');
+   if(h===page){a.classList.add('bg-emerald-accent/10','text-emerald-accent');}
+ });
+ const t=document.getElementById('theme-toggle');
+ const light=document.getElementById('theme-toggle-light-icon');
+ const dark=document.getElementById('theme-toggle-dark-icon');
+ function sync(){
+   const isDark=document.documentElement.classList.contains('dark');
+   if(light) light.classList.toggle('hidden',!isDark);
+   if(dark) dark.classList.toggle('hidden',isDark);
+ }
+ sync();
+ t?.addEventListener('click',()=>{
+   document.documentElement.classList.toggle('dark');
+   localStorage.setItem('color-theme',document.documentElement.classList.contains('dark')?'dark':'light');
+   sync();
+ });
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded',()=>{
+ const btn=document.getElementById('mobile-menu-btn');
+ const sidebar=document.getElementById('sidebar');
+ if(btn && sidebar){
+   const apply=()=>{
+     const c=localStorage.getItem('sidebarCollapsed')==='true';
+     if(window.innerWidth>=1024){
+       sidebar.classList.toggle('w-20',c);
+       sidebar.classList.toggle('w-64',!c);
+       sidebar.querySelectorAll('.nav-text,.logo-text').forEach(el=>el.style.display=c?'none':'');
+     }
+   };
+   apply();
+   btn.addEventListener('click',()=>{
+      if(window.innerWidth>=1024){
+        localStorage.setItem('sidebarCollapsed', localStorage.getItem('sidebarCollapsed')==='true'?'false':'true');
+        apply();
+      } else {
+        sidebar.classList.toggle('-translate-x-full');
+      }
+   });
+ }
+ const t=document.getElementById('theme-toggle');
+ if(t){
+   t.addEventListener('click',()=>{
+      const dark=document.documentElement.classList.toggle('dark');
+      localStorage.setItem('color-theme',dark?'dark':'light');
+   });
+ }
+});
+</script>
+
+</body>
 </html>

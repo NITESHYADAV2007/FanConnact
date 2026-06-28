@@ -1,0 +1,678 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Match Center | FanConnect</title>
+
+    <link rel="stylesheet" href="css/match-center.css" />
+  </head>
+
+  <body>
+    <!-- MATCH EVENT BANNER -->
+
+    <div id="matchEventBanner" class="match-event-banner">
+      <!-- LEFT ANIMATION -->
+      <div id="eventAnimation" class="event-animation"></div>
+
+      <!-- TEXT -->
+      <div id="eventText" class="event-text">FOUR!</div>
+    </div>
+    <div class="match-center-container">
+      <!-- LEFT SIDE -->
+      <div class="match-main-content">
+        <!-- TOP LIVE MATCH CARD -->
+        <div class="top-live-card">
+          <div class="match-top-bar">
+            <div>
+              <h2>Live Match Center</h2>
+              <p>IPL 2026 • Match 22 • Wankhede Stadium</p>
+            </div>
+
+            <div class="live-badge">🔴 LIVE</div>
+          </div>
+
+          <div class="match-score-section">
+            <div class="team-card">
+              <img src="assets/images/rcb.png" alt="" />
+
+              <h3>RCB</h3>
+
+              <span>186/4</span>
+            </div>
+
+            <div class="center-section">
+              <h1>VS</h1>
+
+              <p>18.2 Overs</p>
+
+              <div class="match-need">Need 41 Runs in 12 Balls</div>
+            </div>
+
+            <div class="team-card">
+              <img src="assets/images/csk.png" alt="" />
+
+              <h3>CSK</h3>
+
+              <span>226/5</span>
+            </div>
+          </div>
+
+          <div class="match-stats">
+            <div>CRR: 10.09</div>
+
+            <div>Required RR: 20.50</div>
+
+            <div>Target: 227</div>
+          </div>
+        </div>
+
+        <!-- CURRENT OVER -->
+        <div class="current-over-card">
+          <div class="over-left">
+            <span>Current Over 18</span>
+          </div>
+
+          <div class="balls-track">
+            <div class="ball normal">1</div>
+            <div class="ball four">4</div>
+            <div class="ball normal">0</div>
+            <div class="ball wicket">W</div>
+            <div class="ball six">6</div>
+            <div class="ball normal">2</div>
+
+            <div class="ball dot"></div>
+            <div class="ball dot"></div>
+            <div class="ball dot"></div>
+          </div>
+
+          <div class="over-right">CSK 18.2 Overs</div>
+        </div>
+
+        <!-- NAVIGATION -->
+        <div class="match-tabs">
+          <button class="tab active" id="infoTab">Info</button>
+          <button class="tab" id="liveTab">Live</button>
+          <button class="tab" id="scorecardTab">Scorecard</button>
+          <button class="tab" id="commentaryTab">Commentary</button>
+          <button class="tab" id="squadsTab">Squads</button>
+          <button class="tab" id="oversTab">Overs</button>
+          <button class="tab" id="graphsTab">Graphs</button>
+        </div>
+
+        <!-- INFO TAB -->
+        <div id="infoContent" class="tab-content active-content">
+          <h2 class="section-title">Match Info</h2>
+
+          <div class="info-card">
+            <div class="info-row">
+              <span>Series</span>
+              <p>IPL 2026</p>
+            </div>
+
+            <div class="info-row">
+              <span>Match</span>
+              <p>RCB vs CSK, Match 22</p>
+            </div>
+
+            <div class="info-row">
+              <span>Date</span>
+              <p>25 May 2026</p>
+            </div>
+
+            <div class="info-row">
+              <span>Time</span>
+              <p>7:30 PM</p>
+            </div>
+
+            <div class="info-row">
+              <span>Venue</span>
+              <p>Wankhede Stadium</p>
+            </div>
+
+            <div class="info-row">
+              <span>Toss</span>
+              <p>RCB won toss & chose batting</p>
+            </div>
+
+            <div class="info-row">
+              <span>Umpires</span>
+              <p>Nitin Menon, Chris Gaffaney</p>
+            </div>
+
+            <div class="info-row">
+              <span>3rd Umpire</span>
+              <p>Rod Tucker</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- LIVE TAB -->
+        <div id="liveContent" class="tab-content">
+          <h2>Live Match</h2>
+        </div>
+
+        <!-- SCORECARD TAB -->
+        <div id="scorecardContent" class="tab-content">
+          <h2>Scorecard</h2>
+        </div>
+
+        <!-- COMMENTARY TAB -->
+        <div id="commentaryContent" class="tab-content">
+          <h2>Commentary</h2>
+
+          <div id="matchEvent" class="match-event">
+            <span id="eventText"></span>
+          </div>
+
+          <div class="commentary-wrapper">
+            <div class="new-batter-event">
+              <h2 class="new-batter-title">Jacob Bethell is in at 3.</h2>
+
+              <div class="new-batter-card">
+                <div class="new-batter-top">
+                  <div class="crease-text">🏏 New batter on crease</div>
+
+                  <div class="career-text">Career</div>
+                </div>
+
+                <div class="new-batter-body">
+                  <div class="batter-left">
+                    <img src="assets/images/player.png" />
+
+                    <div class="batter-info">
+                      <h2>Jacob Bethell</h2>
+                      <p>22 yrs • #49 (Batter)</p>
+                    </div>
+                  </div>
+
+                  <div class="best-score-box">
+                    <span>Best</span>
+                    <h1>154</h1>
+                  </div>
+                </div>
+
+                <div class="batter-stats">
+                  <div>
+                    <span>INNINGS</span>
+                    <h3>12</h3>
+                  </div>
+
+                  <div>
+                    <span>RUNS</span>
+                    <h3>476</h3>
+                  </div>
+
+                  <div>
+                    <span>SR</span>
+                    <h3>65.21</h3>
+                  </div>
+
+                  <div>
+                    <span>AVG</span>
+                    <h3>43.00</h3>
+                  </div>
+                </div>
+              </div>
+              <div class="wicket-card">
+                <div class="wicket-left">
+                  <img src="assets/images/player2.png" />
+
+                  <div class="out-badge">OUT</div>
+                </div>
+
+                <div class="wicket-center">
+                  <h2>
+                    B Duckett
+                    <span>33(46)</span>
+                  </h2>
+
+                  <p>c G Phillips b W O'Rourke</p>
+                </div>
+
+                <div class="wicket-right">
+                  <div>
+                    <span>4s/6s</span>
+                    <h3>6/0</h3>
+                  </div>
+
+                  <div>
+                    <span>SR</span>
+                    <h3>71.74</h3>
+                  </div>
+                </div>
+              </div>
+
+              <div class="wicket-description">
+                <h3>And gone!</h3>
+
+                <p>
+                  Will O'Rourke provides a much-needed breakthrough for the
+                  Kiwis at the stroke of lunch. Good, low catch from Glenn
+                  Phillips at gully.
+                </p>
+              </div>
+            </div>
+            <!-- BALL 8.6 -->
+            <div class="commentary-item">
+              <div class="commentary-top">
+                <span class="over-no"> 8.6 </span>
+
+                <span class="bowler-text"> Vedant Gore to Chinmay Sutar </span>
+              </div>
+
+              <div class="commentary-body">
+                <div class="ball-result two">2</div>
+
+                <p class="commentary-text">
+                  Full outside off, Sutar lofts it over covers. Long off moves
+                  to his left and stops it with a slide. Keeps it to two.
+                </p>
+              </div>
+            </div>
+
+            <!-- BALL 8.5 -->
+            <div class="commentary-item">
+              <div class="commentary-top">
+                <span class="over-no"> 8.5 </span>
+
+                <span class="bowler-text"> Vedant Gore to Chinmay Sutar </span>
+              </div>
+
+              <div class="commentary-body">
+                <div class="ball-result dot">0</div>
+
+                <p class="commentary-text">
+                  Flighted delivery around off, Sutar looks to flick it but gets
+                  a leading edge to the left of the bowler.
+                </p>
+              </div>
+            </div>
+            <div class="commentary-item">
+              <div class="commentary-top">
+                <span class="over-no">8.4</span>
+
+                <span class="bowler-text"> Vedant Gore to Sahil Jadhav </span>
+              </div>
+
+              <div class="commentary-body">
+                <div class="ball-result four">4</div>
+
+                <p class="commentary-text">
+                  <strong>FOUR!</strong>
+                  Beautiful cover drive.
+                </p>
+              </div>
+            </div>
+
+            <div class="commentary-item">
+              <div class="commentary-top">
+                <span class="over-no">8.3</span>
+
+                <span class="bowler-text"> Vedant Gore to Sahil Jadhav </span>
+              </div>
+
+              <div class="commentary-body">
+                <div class="ball-result six">6</div>
+
+                <p class="commentary-text">
+                  <strong>SIX!</strong>
+                  Beautiful Six.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SQUADS TAB -->
+        <div id="squadsContent" class="tab-content">
+          <h2>Squads</h2>
+        </div>
+
+        <!-- OVERS TAB -->
+        <div id="oversContent" class="tab-content">
+          <h2>Overs</h2>
+        </div>
+
+        <!-- GRAPHS TAB -->
+        <div id="graphsContent" class="tab-content">
+          <h2>Graphs</h2>
+        </div>
+      </div>
+      <!-- LEFT SIDE CLOSED HERE -->
+
+      <!-- RIGHT SIDE -->
+      <div class="right-sidebar">
+        <div class="live-chat-card">
+          <div class="chat-top">
+            <h3>Live Chat</h3>
+
+            <span>👥 8.2K</span>
+          </div>
+
+          <!-- CHAT BODY -->
+          <div class="chat-messages">
+            <div class="download-app-inline">
+              <span> For Better Experience </span>
+
+              <a
+                href="https://play.google.com/store/apps"
+                target="_blank"
+                class="download-btn"
+              >
+                Download App
+              </a>
+            </div>
+
+            <div class="chat-message">
+              <img src="assets/images/user.png" alt="" />
+
+              <div class="message-content">
+                <h4>MI_Army</h4>
+                <p>What a over! Come on MI 💙</p>
+              </div>
+
+              <span class="chat-time">Just now</span>
+            </div>
+
+            <div class="chat-message">
+              <img src="assets/images/user.png" alt="" />
+
+              <div class="message-content">
+                <h4>CSK_Rider</h4>
+                <p>Thala for a reason! 🔥</p>
+              </div>
+
+              <span class="chat-time">Just now</span>
+            </div>
+
+            <div class="chat-message">
+              <img src="assets/images/user.png" alt="" />
+
+              <div class="message-content">
+                <h4>Virat18</h4>
+                <p>Big 12 balls! Let's gooo 🔥</p>
+              </div>
+
+              <span class="chat-time">Just now</span>
+            </div>
+
+            <div class="chat-message">
+              <img src="assets/images/user.png" alt="" />
+
+              <div class="message-content">
+                <h4>CricketKing</h4>
+                <p>Jadeja is here, game changes now!</p>
+              </div>
+
+              <span class="chat-time">Just now</span>
+            </div>
+          </div>
+
+          <!-- INPUT -->
+          <div class="chat-input-box">
+            <input type="text" placeholder="Type a message..." />
+
+            <button class="send-btn">➤</button>
+          </div>
+        </div>
+
+        <div class="small-widget probability-card">
+          <h3>Win Probability</h3>
+
+          <div class="probability-header">
+            <div>
+              <span>RCB</span>
+              <h2>48%</h2>
+            </div>
+
+            <div class="right-team">
+              <span>CSK</span>
+              <h2>52%</h2>
+            </div>
+          </div>
+
+          <div class="graph-box">
+            <div class="y-axis">
+              <span>100%</span>
+              <span>50%</span>
+              <span>0%</span>
+            </div>
+
+            <div class="graph-area">
+              <svg viewBox="0 0 400 180">
+                <!-- Blue line -->
+                <path
+                  d="
+                M10 90
+                C40 60,70 70,90 55
+                C120 45,140 85,170 80
+                C200 60,220 90,250 85
+                C280 70,300 60,330 95
+                C360 120,380 115,395 110"
+                  stroke="#5a7cff"
+                  stroke-width="4"
+                  fill="none"
+                />
+
+                <!-- Yellow line -->
+                <path
+                  d="
+                M10 100
+                C40 80,70 100,90 90
+                C120 110,140 60,170 75
+                C200 95,230 80,260 70
+                C290 40,320 55,350 35
+                C370 25,385 30,395 28"
+                  stroke="#ffc107"
+                  stroke-width="4"
+                  fill="none"
+                />
+              </svg>
+
+              <div class="x-axis">
+                <span>1</span>
+                <span>5</span>
+                <span>10</span>
+                <span>15</span>
+                <span>20</span>
+              </div>
+
+              <p class="overs-text">Overs</p>
+            </div>
+          </div>
+        </div>
+        <div class="small-widget fan-card">
+          <h3>Fan Prediction</h3>
+
+          <p class="prediction-question">Who will win?</p>
+
+          <div class="vote-buttons">
+            <button class="vote-btn rcb-btn">RCB</button>
+
+            <button class="vote-btn csk-btn">CSK</button>
+          </div>
+
+          <div class="prediction-percent">
+            <span>48%</span>
+            <span>52%</span>
+          </div>
+
+          <div class="progress-bar">
+            <div class="progress-left"></div>
+            <div class="progress-right"></div>
+          </div>
+
+          <p class="vote-count">8.1K Votes</p>
+
+          <button class="vote-now-btn">Vote Now →</button>
+        </div>
+
+        <div class="small-widget predictor-card">
+          <h3>Top Predictor</h3>
+
+          <div class="predictor-list">
+            <div class="predictor-item">
+              <div class="predictor-left">
+                <span class="rank">1</span>
+
+                <img src="assets/images/user1.png" alt="" />
+
+                <span class="username"> Virat18 </span>
+              </div>
+
+              <span class="points"> 2,450 </span>
+            </div>
+
+            <div class="predictor-item">
+              <div class="predictor-left">
+                <span class="rank">2</span>
+
+                <img src="assets/images/user2.png" alt="" />
+
+                <span class="username"> CricketKing </span>
+              </div>
+
+              <span class="points"> 2,150 </span>
+            </div>
+
+            <div class="predictor-item">
+              <div class="predictor-left">
+                <span class="rank">3</span>
+
+                <img src="assets/images/user3.png" alt="" />
+
+                <span class="username"> MI_Legend </span>
+              </div>
+
+              <span class="points"> 1,890 </span>
+            </div>
+          </div>
+
+          <button class="view-all-btn">View All →</button>
+        </div>
+      </div>
+      <!-- RIGHT SIDE CLOSED -->
+    </div>
+    <!-- MAIN CONTAINER CLOSED -->
+    <script>
+      const tabs = document.querySelectorAll(".tab");
+      const contents = document.querySelectorAll(".tab-content");
+
+      tabs.forEach((tab) => {
+        tab.addEventListener("click", () => {
+          tabs.forEach((btn) => btn.classList.remove("active"));
+
+          contents.forEach((content) =>
+            content.classList.remove("active-content"),
+          );
+
+          tab.classList.add("active");
+
+          const tabId = tab.id.replace("Tab", "Content");
+
+          document.getElementById(tabId).classList.add("active-content");
+        });
+      });
+    </script>
+
+    <script>
+      function showEvent(type) {
+        const eventBox = document.getElementById("matchEvent");
+
+        const text = document.getElementById("eventText");
+
+        text.className = "";
+
+        if (type === "four") {
+          text.innerHTML = "🔥 SOLID FOUR";
+          text.classList.add("event-four");
+        } else if (type === "six") {
+          text.innerHTML = "🚀 MASSIVE SIX";
+          text.classList.add("event-six");
+        } else if (type === "wicket") {
+          text.innerHTML = "🔴 WICKET! 🏏🙌";
+          text.classList.add("event-wicket");
+        }
+
+        eventBox.classList.add("show");
+
+        setTimeout(() => {
+          eventBox.classList.remove("show");
+        }, 2500);
+      }
+
+      /* TEST */
+
+      setTimeout(() => {
+        showEvent("four");
+      }, 2000);
+
+      setTimeout(() => {
+        showEvent("six");
+      }, 5000);
+
+      setTimeout(() => {
+        showEvent("wicket");
+      }, 8000);
+    </script>
+    <script>
+      let eventTimeout;
+
+      function showEvent(type) {
+        const banner = document.getElementById("matchEventBanner");
+
+        const text = document.getElementById("eventText");
+
+        const animation = document.getElementById("eventAnimation");
+
+        // RESET
+        banner.className = "match-event-banner";
+
+        animation.innerHTML = "";
+
+        // FOUR
+        if (type === "four") {
+          text.innerHTML = "SOLID FOUR!";
+
+          animation.innerHTML = `<div class="batsman">
+            🏏
+        </div>`;
+
+          banner.classList.add("banner-four");
+        }
+
+        // SIX
+        else if (type === "six") {
+          text.innerHTML = "MASSIVE SIX!";
+
+          animation.innerHTML = `<div class="batsman">
+            🏏🔥
+        </div>`;
+
+          banner.classList.add("banner-six");
+        }
+
+        // WICKET
+        else if (type === "wicket") {
+          text.innerHTML = "WICKET!";
+
+          animation.innerHTML = `<div class="wicket-hands">
+            🙌
+        </div>`;
+
+          banner.classList.add("banner-wicket");
+        }
+
+        // SHOW
+        banner.style.display = "flex";
+
+        // AUTO HIDE
+        setTimeout(() => {
+          banner.style.display = "none";
+        }, 2500);
+      }
+    </script>
+  </body>
+</html>

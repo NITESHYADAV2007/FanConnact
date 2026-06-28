@@ -1,0 +1,490 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+    background: #01091f;
+    color: #fff;
+    padding: 20px;
+}
+
+.dashboard {
+    max-width: 1400px;
+    margin: auto;
+}
+
+
+/* ================= NAVBAR ================= */
+
+.top-navbar {
+    height: 90px;
+    background: #061328;
+    border: 1px solid rgba(46, 240, 107, .15);
+    border-radius: 20px;
+    padding: 0 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 0 20px rgba(0, 255, 150, .05);
+    margin-bottom: 20px;
+}
+
+.nav-left,
+.nav-right,
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.menu-btn {
+    width: 45px;
+    height: 45px;
+    border-radius: 12px;
+    background: #091a33;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.menu-btn i {
+    font-size: 20px;
+}
+
+.brand-logo {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.brand h2 {
+    font-size: 24px;
+}
+
+.brand span {
+    color: #2EF06B;
+}
+
+.brand p {
+    color: #bfc8d8;
+    font-size: 14px;
+}
+
+.search-box {
+    width: 520px;
+    background: #081527;
+    border: 1px solid rgba(255, 255, 255, .08);
+    padding: 14px 20px;
+    border-radius: 35px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.search-box input {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    color: white;
+    font-size: 15px;
+}
+
+.search-box i {
+    color: #9ba7bd;
+}
+
+.coin-badge {
+    background: #091a33;
+    padding: 12px 20px;
+    border-radius: 30px;
+    font-size: 22px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.coin-badge i {
+    color: #FFC107;
+}
+
+.notification {
+    position: relative;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    background: #2EF06B;
+    border-radius: 50%;
+    position: absolute;
+    top: 2px;
+    right: -2px;
+}
+
+.user-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid #2EF06B;
+}
+
+.user-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+
+/* ================= MAIN ================= */
+
+.main-container {
+    display: grid;
+    grid-template-columns: 2.2fr 0.8fr;
+    gap: 25px;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+
+/* ================= WALLET ================= */
+
+.wallet-card {
+    background: #071d4a;
+    border: 1px solid #0d5ca6;
+    border-radius: 25px;
+    padding: 35px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 40px;
+    box-shadow: 0 0 30px rgba(0, 100, 255, .08);
+}
+
+.wallet-card>div:first-child {
+    flex: 1;
+}
+
+.wallet-card h1 {
+    font-size: 54px;
+    line-height: 1.1;
+    font-weight: 800;
+    margin-bottom: 15px;
+}
+
+.wallet-card h1 span {
+    color: #2EF06B;
+}
+
+.wallet-card p {
+    font-size: 18px;
+    color: #d0d9e8;
+}
+
+.wallet-image {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.wallet-image img {
+    width: 430px;
+    max-width: 100%;
+}
+
+.coins {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin: 25px 0;
+}
+
+.coin-icon {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: #FFC107;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: black;
+    font-weight: 700;
+    font-size: 22px;
+}
+
+.coins h2 {
+    font-size: 72px;
+    color: #FFC107;
+    font-weight: 700;
+}
+
+.buttons {
+    display: flex;
+    gap: 15px;
+}
+
+.green-btn {
+    background: #2EF06B;
+    color: black;
+    border: none;
+    padding: 14px 25px;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.dark-btn {
+    background: transparent;
+    border: 1px solid #2f4f77;
+    color: white;
+    padding: 14px 25px;
+    border-radius: 12px;
+    cursor: pointer;
+}
+
+
+/* ================= SECTION TITLE ================= */
+
+.section-title {
+    font-size: 20px;
+    margin-top: 5px;
+}
+
+
+/* ================= EARN CARDS ================= */
+
+.earn-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.card {
+    background: #07111f;
+    border: 1px solid rgba(255, 255, 255, .05);
+    border-radius: 18px;
+    padding: 25px;
+    text-align: center;
+    transition: .3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    border-color: #2EF06B;
+}
+
+.card i {
+    font-size: 38px;
+    margin-bottom: 15px;
+}
+
+.card:nth-child(1) i {
+    color: #2EF06B;
+}
+
+.card:nth-child(2) i {
+    color: #d16eff;
+}
+
+.card:nth-child(3) i {
+    color: #45a9ff;
+}
+
+.card:nth-child(4) i {
+    color: #ffb32d;
+}
+
+.card h4 {
+    margin-bottom: 10px;
+}
+
+.card p {
+    margin-bottom: 12px;
+}
+
+.card span {
+    color: #2EF06B;
+    font-weight: 700;
+}
+
+
+/* ================= LEVEL ================= */
+
+.level-card {
+    background: #07111f;
+    border-radius: 20px;
+    padding: 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.progress {
+    width: 350px;
+    height: 12px;
+    background: #20345a;
+    border-radius: 20px;
+    margin: 15px 0;
+}
+
+.progress-fill {
+    width: 75%;
+    height: 100%;
+    background: #2EF06B;
+    border-radius: 20px;
+}
+
+.benefit-list {
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+    margin-top: 15px;
+    flex-wrap: wrap;
+}
+
+
+/* ================= FAN LEVELS ================= */
+
+.fan-levels {
+    display: flex;
+    gap: 15px;
+}
+
+.fan-card {
+    flex: 1;
+    background: #07111f;
+    border-radius: 18px;
+    padding: 20px;
+    text-align: center;
+}
+
+.active {
+    border: 2px solid #FFC107;
+}
+
+.level-icon {
+    font-size: 25px;
+    margin-bottom: 10px;
+}
+
+.bronze {
+    color: #cd7f32;
+}
+
+.silver {
+    color: silver;
+}
+
+.gold {
+    color: #FFC107;
+}
+
+.diamond {
+    color: #55e7ff;
+}
+
+
+/* ================= TRANSACTIONS ================= */
+
+.transactions-panel {
+    background: #051328;
+    border-radius: 20px;
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+}
+
+.transactions-panel h3 {
+    margin-bottom: 15px;
+}
+
+.transaction {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, .08);
+}
+
+.plus {
+    color: #2EF06B;
+    font-weight: 700;
+}
+
+.minus {
+    color: #ff5c5c;
+    font-weight: 700;
+}
+
+.view-btn {
+    margin-top: auto;
+    background: none;
+    border: 1px solid #2EF06B;
+    color: #2EF06B;
+    padding: 15px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:1000px) {
+    .main-container {
+        grid-template-columns: 1fr;
+    }
+    .wallet-card {
+        flex-direction: column;
+        text-align: center;
+    }
+    .search-box {
+        width: 300px;
+    }
+    .earn-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .level-card {
+        flex-direction: column;
+        gap: 20px;
+        align-items: flex-start;
+    }
+    .fan-levels {
+        flex-wrap: wrap;
+    }
+}
+
+@media(max-width:600px) {
+    .top-navbar {
+        flex-direction: column;
+        height: auto;
+        padding: 15px;
+        gap: 15px;
+    }
+    .search-box {
+        width: 100%;
+    }
+    .earn-grid {
+        grid-template-columns: 1fr;
+    }
+    .wallet-card h1 {
+        font-size: 48px;
+    }
+    .coins h2 {
+        font-size: 48px;
+    }
+}

@@ -1,0 +1,850 @@
+<!doctype html>
+
+<html class="h-full" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <script>
+      if (
+        localStorage.getItem("color-theme") === "dark" ||
+        (!("color-theme" in localStorage) &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches)
+      ) {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
+    </script>
+    <title>FanConnect - Football Dashboard</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Google Fonts: Lexend for headlines, Hanken Grotesk for body -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;family=Hanken+Grotesk:wght@300;400;500;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <style data-purpose="custom-theme">
+      .dark body {
+        font-family: "Inter", sans-serif;
+        background-color: #060b13;
+        color: #ffffff;
+      }
+      body {
+        background-color: #f8f9ff;
+        color: #0f172a;
+      }
+      .bg-dark-surface {
+        background-color: #0d141f;
+      }
+      .bg-accent-green {
+        background-color: #00df82;
+      }
+      .text-accent-green {
+        color: #00df82;
+      }
+      .border-accent-green {
+        border-color: #00df82;
+      }
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 4px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #2d3748;
+        border-radius: 10px;
+      }
+      .sidebar-collapsed #sidebar { width: 0 !important; min-width: 0 !important; border: 0 !important; padding: 0 !important; overflow: hidden !important; }
+      .text-fan { color: #ffffff !important; }
+      :root:not(.dark) .text-connect { color: #4648d4 !important; }
+      .dark .text-connect { color: #10b981 !important; }
+      :root:not(.dark) .text-fan { color: #374151 !important; }
+    </style>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              "emerald-accent": "#10b981",
+              brand: {
+                dark: "#0B0E11",
+                surface: "#1A1D23",
+                accent: "#10b981",
+                card: "#16191E",
+                border: "#2A2E35",
+              },
+            },
+          },
+        },
+      };
+    </script>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+    />
+    <meta
+      name="description"
+      content="FanConnect sports platform for fans, scores, communities and updates."
+    />
+    <meta property="og:title" content="FanConnect" />
+    <meta name="robots" content="index,follow" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;"
+    />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+  </head>
+  <body
+    class="h-screen w-full flex flex-row overflow-hidden transition-colors duration-300 bg-[#F8F9FF] dark:bg-brand-dark"
+  >
+    <!-- BEGIN: MainHeader -->
+    <header
+      class="h-20 flex items-center justify-between px-4 md:px-8 border-b transition-colors duration-300 bg-white dark:bg-brand-dark border-gray-200 dark:border-brand-border shrink-0 fixed top-0 left-0 right-0 z-50"
+      data-purpose="top-navigation"
+    >
+      <div class="flex items-center gap-4 flex-1">
+        <button
+          id="mobile-menu-btn"
+          class="p-2 text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 rounded-lg transition-colors shrink-0"
+        >
+          <span class="material-symbols-outlined">menu</span>
+        </button>
+
+          <div id="header-logo" class="lg:hidden flex items-center gap-2 ml-2">
+            <img src="assets/fancoin/fanconnactlogo.png" alt="FanConnect" class="w-7 h-7" />
+            <span class="text-base font-bold whitespace-nowrap"><span class="text-fan">Fan</span><span class="text-connect">Connact</span></span>
+          </div>
+
+        <!-- Top Navigation -->
+        <nav class="hidden xl:flex items-center space-x-6 mx-6 shrink-0">
+          <a
+            class="text-gray-400 hover:text-brand-green transition-colors font-medium text-sm nav-link"
+            href="index.html"
+            >Home</a
+          >
+          <a
+            class="text-gray-400 hover:text-brand-green transition-colors font-medium text-sm nav-link"
+            href="livematches.html"
+            >Matches</a
+          >
+          <a
+            class="text-gray-400 hover:text-brand-green transition-colors font-medium text-sm nav-link"
+            href="index.html"
+            >Predictions</a
+          >
+          <a
+            class="text-gray-400 hover:text-brand-green transition-colors font-medium text-sm nav-link"
+            href="index.html"
+            >Leaderboard</a
+          >
+          <a
+            class="text-gray-400 hover:text-brand-green transition-colors font-medium text-sm nav-link"
+            href="news&update.html"
+            >News</a
+          >
+        </nav>
+      </div>
+      <div class="flex items-center gap-5 md:gap-8">
+        <div class="relative hidden md:block">
+          <input
+            class="w-64 border-none rounded-xl py-2.5 pl-10 text-sm focus:ring-1 focus:ring-accent-green bg-gray-100 text-slate-800 dark:bg-brand-card dark:text-white transition-all"
+            placeholder="Search leagues, teams, players"
+            type="text"
+          />
+          <span
+            class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl"
+            >search</span
+          >
+        </div>
+        <!-- Theme Toggle -->
+        <button
+          id="theme-toggle"
+          class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-white/10 transition-all active:scale-95"
+        >
+          <span
+            id="theme-toggle-light-icon"
+            class="material-symbols-outlined hidden text-yellow-400"
+            >light_mode</span
+          >
+          <span
+            id="theme-toggle-dark-icon"
+            class="material-symbols-outlined text-slate-500 dark:text-slate-400"
+            >dark_mode</span
+          >
+        </button>
+        <div
+          class="flex items-center space-x-4 shrink-0 notification-trigger cursor-pointer"
+        >
+          <div class="relative">
+            <span class="material-symbols-outlined text-gray-400 cursor-pointer"
+              >notifications</span
+            >
+            <span
+              class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-[10px] flex items-center justify-center font-bold text-white shadow-sm"
+              >3</span
+            >
+          </div>
+          <div
+            id="profile-trigger"
+            class="flex items-center space-x-3 cursor-pointer border-l border-gray-200 dark:border-brand-border pl-4 md:pl-6"
+          >
+            <div class="text-right hidden sm:block">
+              <p
+                id="user-name-display"
+                class="text-sm font-bold text-slate-900 dark:text-white"
+              >
+                NiteshY
+              </p>
+              <p
+                id="user-level-display"
+                class="text-[10px] text-brand-green font-bold uppercase tracking-wider"
+              >
+                Level 28
+              </p>
+            </div>
+            <img
+              id="user-profile-img"
+              alt="Profile"
+              class="w-9 h-9 md:w-10 md:h-10 rounded-full border-2 border-accent-green"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBtXrLPIZOC8slEHPNvLp5WVlZUUSydk3DCfdDvikjjSSwYFHbdMVS0wF2vvSNXLCXjPDXHQFoM8QQvfyv4e--hZnRe7uqob8XWxgUPq5lZDJOVWM8V1sXOPXNsAmMAEjTU3k3SXKBuf0-5OIY9rC1-EBu5pmm2laQb-rxuicubBt1zghKAK1V3UrHGRN19zq95HeEX0X76IKh5vtyPiqi2LKuOHlcY4iv3U9SQzKoyRjg-mF06cnCR4AO75TnUzeUvOfEhm9fpkfY"
+            />
+          </div>
+        </div>
+      </div>
+    </header>
+    <!-- END: MainHeader -->
+    <div class="flex flex-1 overflow-hidden pt-20">
+      <!-- BEGIN: LeftSidebar -->
+      <aside
+        id="sidebar"
+        class="w-[240px] shrink-0 border-r border-gray-200 dark:border-brand-border bg-white dark:bg-brand-dark flex flex-col p-4 hidden lg:flex overflow-y-auto custom-scrollbar transition-all duration-300"
+        data-purpose="sports-categories"
+      >
+        <!-- Logo Container -->
+        <div
+          class="p-4 flex items-center space-x-2 logo-container cursor-pointer mb-6"
+          onclick="window.location.href = 'index.html'"
+        >
+          <img src="assets/fancoin/fanconnactlogo.png" alt="FanConnect" class="w-8 h-8 flex-shrink-0" />
+          <span
+            class="text-xl font-bold tracking-tight font-headline logo-text"
+            ><span class="text-fan">Fan</span><span class="text-connect">Connact</span></span
+          >
+        </div>
+
+        <p
+          class="text-xs font-bold text-slate-500 dark:text-gray-400 uppercase tracking-widest mb-6 px-4"
+        >
+          Sports
+        </p>
+        <nav class="space-y-4">
+          <a
+            class="flex items-center space-x-3 text-gray-400 hover:text-white transition p-3"
+            href="index.html"
+            ><span class="">🏆</span><span class="">All Sports</span></a
+          ><a
+            class="flex items-center space-x-3 text-gray-400 hover:text-white transition p-3"
+            href="kabbaddi.html"
+            ><span class="">🤼</span><span class="">Kabaddi</span></a
+          ><a
+            class="flex items-center space-x-3 text-gray-400 hover:text-white transition p-3"
+            href="cricket.html"
+            ><span class="">🏏</span><span class="">Cricket</span></a
+          ><a
+            class="flex items-center space-x-3 p-3 rounded-xl text-accent-green bg-gray-800/40"
+            href="football.html"
+            ><span class="">⚽</span
+            ><span class="font-semibold">Football</span></a
+          ><a
+            class="flex items-center space-x-3 text-gray-400 hover:text-white transition p-3"
+            href="index.html"
+            ><span class="">🏀</span><span class="">Basketball</span></a
+          ><a
+            class="flex items-center space-x-3 text-gray-400 hover:text-white transition p-3"
+            href="index.html"
+            ><span class="">🎾</span><span class="">Tennis</span></a
+          ><a
+            class="flex items-center space-x-3 text-gray-400 hover:text-white transition p-3"
+            href="index.html"
+            ><span class="">🏑</span><span class="">Hockey</span></a
+          ><a
+            class="flex items-center space-x-3 text-gray-400 hover:text-white transition p-3"
+            href="index.html"
+            ><span class="">🎮</span><span class="">E-Sports</span></a
+          ><a
+            class="flex items-center space-x-3 text-gray-400 hover:text-white transition p-3"
+            href="index.html"
+            ><span class="">•••</span><span class="">More</span></a
+          >
+        </nav>
+        <!-- Premium Banner -->
+        <div
+          class="mt-auto bg-brand-surface rounded-2xl p-4 text-center border border-gray-800"
+          data-purpose="premium-cta"
+        >
+          <div
+            class="w-12 h-12 bg-yellow-500 rounded-full flex items-center justify-center mx-auto mb-3"
+          >
+            <svg
+              class="w-6 h-6 text-white"
+              fill="currentColor"
+              viewbox="0 0 20 20"
+            >
+              <path
+                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+              ></path>
+            </svg>
+          </div>
+          <h3 class="font-bold text-sm mb-1">FanConnect Premium</h3>
+          <p class="text-[10px] text-gray-400 mb-4">
+            Ad-free experience, exclusive badges &amp; more!
+          </p>
+          <button
+            class="w-full bg-accent-green text-brand-dark font-bold py-2 rounded-lg text-xs"
+          >
+            Go Premium
+          </button>
+        </div>
+      </aside>
+      <!-- END: LeftSidebar -->
+      <!-- BEGIN: MainContent -->
+      <main class="flex-1 overflow-y-auto p-4 md:p-6 custom-scrollbar min-w-0">
+        <!-- Welcome/Intro -->
+        <div class="mb-8">
+          <h2 class="text-4xl font-bold mb-2">Football Matches</h2>
+          <p class="text-gray-400 text-sm">
+            Follow the Premier League, Champions League, and major international
+            tournaments!
+          </p>
+        </div>
+        <!-- Sport Filter Buttons -->
+        <div class="flex flex-wrap gap-3 mb-8" data-purpose="sport-filters">
+          <button
+            class="flex items-center space-x-2 bg-gray-800/40 text-white px-5 py-2.5 rounded-lg font-medium text-sm border border-gray-700"
+          >
+            <span class="">🏆</span><span class="">All Sports</span></button
+          ><button
+            class="flex items-center space-x-2 bg-accent-green text-brand-dark px-5 py-2.5 rounded-lg font-bold text-sm"
+          >
+            <span class="">⚽</span><span class="">Football</span></button
+          ><button
+            class="flex items-center space-x-2 bg-gray-800/40 text-white px-5 py-2.5 rounded-lg font-medium text-sm border border-gray-700"
+          >
+            <span class="">🏏</span><span class="">Cricket</span></button
+          ><button
+            class="flex items-center space-x-2 bg-gray-800/40 text-white px-5 py-2.5 rounded-lg font-medium text-sm border border-gray-700"
+          >
+            <span class="">🤼</span><span class="">Kabaddi</span></button
+          ><button
+            class="flex items-center space-x-2 bg-gray-800/40 text-white px-5 py-2.5 rounded-lg font-medium text-sm border border-gray-700"
+          >
+            <span class="">🏀</span><span class="">Basketball</span></button
+          ><button
+            class="w-10 h-10 flex items-center justify-center bg-gray-800/40 rounded-lg border border-gray-700"
+          >
+            <svg class="w-4 h-4" fill="currentColor" viewbox="0 0 20 20">
+              <path
+                d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"
+              ></path>
+            </svg>
+          </button>
+        </div>
+        <!-- Category Filter Tabs -->
+        <div
+          class="flex items-center space-x-8 border-b border-gray-200 dark:border-border-subtle mb-8 overflow-x-auto pb-0 whitespace-nowrap"
+          data-purpose="tournament-filters"
+        >
+          <button
+            class="pb-4 border-b-2 border-emerald-accent text-emerald-accent font-bold text-sm px-1 shrink-0"
+          >
+            All
+          </button>
+          <button
+            class="pb-4 text-slate-500 dark:text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm px-1 shrink-0"
+          >
+            Premier League
+          </button>
+          <button
+            class="pb-4 text-slate-500 dark:text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm px-1 shrink-0"
+          >
+            Champions League
+          </button>
+          <button
+            class="pb-4 text-slate-500 dark:text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm px-1 shrink-0"
+          >
+            La Liga
+          </button>
+        </div>
+        <!-- Action Bar -->
+        <div
+          class="flex flex-col md:flex-row justify-between gap-4 mb-6"
+          data-purpose="status-filters"
+        >
+          <div class="flex items-center bg-brand-surface p-1 rounded-xl w-fit">
+            <button
+              class="px-6 py-2 bg-brand-dark border border-accent-green text-accent-green rounded-lg text-sm flex items-center space-x-2"
+            >
+              <span
+                class="w-1.5 h-1.5 bg-accent-green rounded-full animate-pulse"
+              ></span>
+              <span class="">Live (4)</span>
+            </button>
+            <button
+              class="px-6 py-2 text-gray-400 hover:text-white transition text-sm flex items-center space-x-2"
+            >
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewbox="0 0 24 24"
+              >
+                <path
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                ></path>
+              </svg>
+              <span class="">Upcoming (8)</span>
+            </button>
+            <button
+              class="px-6 py-2 text-gray-400 hover:text-white transition text-sm flex items-center space-x-2"
+            >
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewbox="0 0 24 24"
+              >
+                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              <span class="">Finished (15)</span>
+            </button>
+          </div>
+          <div class="flex items-center space-x-3">
+            <button
+              class="flex items-center space-x-2 bg-brand-surface border border-gray-800 px-4 py-2 rounded-xl text-sm text-gray-400"
+            >
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewbox="0 0 24 24"
+              >
+                <path
+                  d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
+                ></path>
+              </svg>
+              <span class="">Filter</span>
+            </button>
+            <button
+              class="flex items-center space-x-2 bg-brand-surface border border-gray-800 px-4 py-2 rounded-xl text-sm text-gray-400"
+            >
+              <span class="">Sort by: Tip-off</span>
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewbox="0 0 24 24"
+              >
+                <path d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <!-- Matches Grid/List -->
+        <div class="space-y-6" data-purpose="matches-list">
+          <!-- Match Card 1 -->
+          <div
+            class="bg-brand-surface rounded-2xl p-4 md:p-5 border border-gray-800/50 hover:border-gray-700 transition relative overflow-hidden group"
+          >
+            <div class="flex justify-between items-start mb-8">
+              <div class="flex items-center space-x-3">
+                <span
+                  class="bg-red-500/20 text-red-500 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-tighter flex items-center"
+                  ><span class="w-1 h-1 bg-red-500 rounded-full mr-1"></span>
+                  LIVE</span
+                >
+                <p class="text-xs text-gray-400">
+                  Champions League • Quarter Final • Etihad Stadium
+                </p>
+              </div>
+              <button class="text-gray-500 hover:text-white">
+                <span class="material-symbols-outlined text-xl"
+                  >notifications</span
+                >
+              </button>
+            </div>
+            <div class="flex items-center justify-center space-x-12 mb-8">
+              <div class="text-center w-40">
+                <div class="relative inline-block">
+                  <div
+                    class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden"
+                  >
+                    <img
+                      alt="Man City"
+                      class="w-14 h-14 object-contain"
+                      src="https://lh3.googleusercontent.com/aida/AP1WRLtrJ8eDN8qD4rFc7FdFrLAL2Fo4FfbPBtNO05p6aq-_pPcqaKjIzGVfv8DNu7bbhiporsvgNB03QYTZ3xcPrw-87_v4JvPHemIurfSlnKlSKlQMAaQQin3sFBLW7P8wxsJ-b55Ujy5uUAnTP_5XP68Sz9b-5yVVKjTX5xbEFjlDMF3hkykn3v-IV6vqFfHotRtpzF0gW2V3gTYbzohzyQ8r1ze_1DioQMZkoayQXYgtrSkNrKNbMmPunxA"
+                    />
+                  </div>
+                </div>
+                <p class="text-sm font-bold mb-1">Man City</p>
+                <div class="flex justify-center space-x-1">
+                  <span class="text-4xl font-black text-white">2</span>
+                </div>
+              </div>
+              <div class="text-center">
+                <div class="text-gray-500 font-bold text-xl mb-1">2nd Half</div>
+                <div class="text-accent-green font-bold text-[10px] uppercase">
+                  78:12
+                </div>
+              </div>
+              <div class="text-center w-40">
+                <div class="relative inline-block">
+                  <div
+                    class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden"
+                  >
+                    <img
+                      alt="Real Madrid"
+                      class="w-14 h-14 object-contain"
+                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuDeQKoNy-C1hV7NDqwTH5VBb1PtKx_gKQfHxXFe6EbW1PB-L79leShBipFPDzajCIsRhYHADnw5hIjUXL5HrqXAMnOe2jOiwJw0-WuA7I2unaqLqCWVC3UZdqBVKnrZl9J6QmkG4hs4_BPrnmufnl8-rVlrYqDxjLdK9Tzuwk-75NnYQOyXwhHmMomDEVmmqrpxWDnHTRJ-7mlQmqlhiwKK2xm1jUPdajRPtv6QzKgnvHX-LWVTsmcYvTRkqC3oJOYkvmPtgVQDEa4"
+                    />
+                  </div>
+                </div>
+                <p class="text-sm font-bold mb-1">Real Madrid</p>
+                <div class="flex justify-center space-x-1">
+                  <span class="text-4xl font-black text-white">1</span>
+                </div>
+              </div>
+            </div>
+            <div
+              class="flex justify-between items-center pt-6 border-t border-gray-800"
+            >
+              <p class="text-xs text-gray-500 font-medium">
+                12.4M Fans Tracking
+              </p>
+              <div class="flex space-x-3">
+                <button
+                  class="px-5 py-2 rounded-lg border border-accent-green text-accent-green text-xs font-bold hover:bg-accent-green/10"
+                >
+                  Match Stats</button
+                ><button
+                  class="px-5 py-2 rounded-lg bg-gray-800 text-white text-xs font-bold hover:bg-gray-700"
+                >
+                  Commentary
+                </button>
+              </div>
+            </div>
+          </div>
+          <!-- Match Card 2 -->
+          <div
+            class="bg-brand-surface rounded-2xl p-4 md:p-5 border border-gray-800/50 hover:border-gray-700 transition relative overflow-hidden group"
+          >
+            <div class="flex justify-between items-start mb-8">
+              <div class="flex items-center space-x-3">
+                <span
+                  class="bg-red-500/20 text-red-500 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-tighter flex items-center"
+                  ><span class="w-1 h-1 bg-red-500 rounded-full mr-1"></span>
+                  LIVE</span
+                >
+                <p class="text-xs text-gray-400">
+                  PKL • Season 10 • Thyagaraj Indoor Stadium
+                </p>
+              </div>
+              <button class="text-gray-500 hover:text-white">
+                <svg
+                  class="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewbox="0 0 24 24"
+                >
+                  <path
+                    d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                  ></path>
+                </svg>
+              </button>
+            </div>
+            <div class="flex items-center justify-center space-x-12 mb-8">
+              <div class="text-center w-40">
+                <div
+                  class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden"
+                >
+                  <img
+                    alt="Bengaluru Bulls"
+                    class="w-14 h-14 object-contain"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuDeYkGPdEXSjmIY75XpTjQom0A11tG0cotHr5kPZTDHMBQBDba_fWBzG7eWCO5NQ0S5a-UAer5FZF3-vFTTcT0q4XcgGHu1P3zCeYUsn8gfe5SrJO6g-C3B5DfTGo0PApEH-2AjRu1lcakvUJ08i81Fa9G4ompQAqi_ROO0YKpetJ_CBDWgMGIDN8kjRvM_eoe5E6k3EsU1hbNPipnlopb5wpunhg379OrtSYRPAcBiHu5McIqsg64NW7tor6E8ODIr3tTXVAYfTEg"
+                  />
+                </div>
+                <p class="text-sm font-bold mb-1">Bengaluru Bulls</p>
+                <div class="flex justify-center space-x-1">
+                  <span class="text-4xl font-black text-white">24</span>
+                </div>
+              </div>
+              <div class="text-center">
+                <div class="text-gray-500 font-bold text-xl mb-1">1st Half</div>
+                <div class="text-accent-green font-bold text-[10px] uppercase">
+                  Intermission
+                </div>
+              </div>
+              <div class="text-center w-40">
+                <div
+                  class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden"
+                >
+                  <img
+                    alt="Dabang Delhi KC"
+                    class="w-14 h-14 object-contain"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbn5Xs2TOS0plgOPSwkLI9ORKDTKWP-vjX9jEsFHynkG-hIzBmcHvhJTwZYmFPXAgFNcDSbrTEkoOa9GFGUVRrEgMvqdFUK0EY4yS63ywAK3RX4I-9AuoweU5X2gv0KqZvI0hzK9xrWUeXoDqOjoc6-UCXNhYj93C3I9zUyYVBOiLgdHZA8QyI6hsCm7zwie8MGNl_mfjwNUaB87Gtn9yq-Kri0S5vaSZ9XlC57XhgOOfwH2RitDZi5JBipXuOpCVkSyvEVjvYd-s"
+                  />
+                </div>
+                <p class="text-sm font-bold mb-1">Dabang Delhi KC</p>
+                <div class="flex justify-center space-x-1">
+                  <span class="text-4xl font-black text-white">30</span>
+                </div>
+              </div>
+            </div>
+            <div
+              class="flex justify-between items-center pt-6 border-t border-gray-800"
+            >
+              <p class="text-xs text-gray-500 font-medium">
+                1.1M Fans Watching
+              </p>
+              <div class="flex space-x-3">
+                <button
+                  class="px-5 py-2 rounded-lg border border-accent-green text-accent-green text-xs font-bold"
+                >
+                  Game Stats</button
+                ><button
+                  class="px-5 py-2 rounded-lg bg-gray-800 text-white text-xs font-bold"
+                >
+                  Play-by-Play
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+      <!-- END: MainContent -->
+      <!-- BEGIN: RightSidebar -->
+      <aside
+        class="w-[300px] shrink-0 border-l border-gray-800 p-4 space-y-6 hidden lg:flex flex-col overflow-y-auto custom-scrollbar"
+        data-purpose="stats-and-calendar"
+      >
+        <!-- Calendar Widget -->
+        <section
+          class="bg-brand-surface rounded-3xl p-5 border border-gray-800/50"
+        >
+          <div class="flex justify-between items-center mb-6">
+            <h3 class="font-bold text-md">Mat Calendar</h3>
+            <a class="text-accent-green text-[10px] font-bold" href="index.html"
+              >Full Schedule</a
+            >
+          </div>
+          <div class="grid grid-cols-7 gap-1 text-center mb-6">
+            <span class="text-[9px] text-gray-500 font-bold uppercase"
+              >Mon</span
+            >
+            <span class="text-[9px] text-gray-500 font-bold uppercase"
+              >Tue</span
+            >
+            <span class="text-[9px] text-gray-500 font-bold uppercase"
+              >Wed</span
+            >
+            <span class="text-[9px] text-gray-500 font-bold uppercase"
+              >Thu</span
+            >
+            <span class="text-[9px] text-gray-500 font-bold uppercase"
+              >Fri</span
+            >
+            <span class="text-[9px] text-gray-500 font-bold uppercase"
+              >Sat</span
+            >
+            <span class="text-[9px] text-gray-500 font-bold uppercase"
+              >Sun</span
+            >
+            <span class="text-xs py-2 text-gray-400">20</span>
+            <span class="text-xs py-2 text-gray-400">21</span>
+            <span
+              class="text-xs py-2 bg-accent-green text-brand-dark font-bold rounded-lg"
+              >22</span
+            >
+            <span class="text-xs py-2 text-gray-400">23</span>
+            <span class="text-xs py-2 text-gray-400">24</span>
+            <span class="text-xs py-2 text-gray-400">25</span>
+            <span class="text-xs py-2 text-gray-400">26</span>
+          </div>
+          <div class="space-y-4">
+            <div class="flex items-center space-x-3 group">
+              <div
+                class="w-10 h-10 rounded-lg bg-gray-800 overflow-hidden flex items-center justify-center text-xs font-bold"
+              >
+                NBA
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-[10px] text-gray-500 truncate">LAL @ GSW</p>
+                <p class="text-xs font-bold text-white">4th Quarter</p>
+              </div>
+              <span class="text-[9px] font-bold text-red-500 flex items-center"
+                ><span class="w-1 h-1 bg-red-500 rounded-full mr-1"></span>
+                LIVE</span
+              >
+            </div>
+            <div class="flex items-center space-x-3">
+              <div
+                class="w-10 h-10 rounded-lg bg-gray-800 overflow-hidden flex items-center justify-center text-xs font-bold"
+              >
+                NBA
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-[10px] text-gray-500 truncate">MIL @ MIA</p>
+                <p class="text-xs font-bold text-white">Bucks vs Heat</p>
+              </div>
+              <span class="text-[9px] text-gray-500 font-bold whitespace-nowrap"
+                >Starts 8:30 PM</span
+              >
+            </div>
+            <div class="flex items-center space-x-3">
+              <div
+                class="w-10 h-10 rounded-lg bg-gray-800 overflow-hidden flex items-center justify-center text-xs font-bold"
+              >
+                NCAA
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-[10px] text-gray-500 truncate">DUKE @ UNC</p>
+                <p class="text-xs font-bold text-white">
+                  Blue Devils vs Tar Heels
+                </p>
+              </div>
+              <span class="text-[9px] text-gray-500 font-bold whitespace-nowrap"
+                >Tomorrow</span
+              >
+            </div>
+          </div>
+          <button
+            class="w-full mt-6 text-accent-green text-[10px] font-bold py-2 border border-accent-green/30 rounded-lg hover:bg-accent-green/5"
+          >
+            Sync to Device
+          </button>
+        </section>
+        <!-- Top Players -->
+        <section
+          class="bg-brand-surface rounded-3xl p-5 border border-gray-800/50 flex-1"
+        >
+          <div class="flex justify-between items-center mb-6">
+            <h3 class="font-bold text-md">Top Scorers</h3>
+            <div class="flex items-center space-x-2">
+              <div class="flex space-x-1">
+                <button
+                  class="w-5 h-5 flex items-center justify-center bg-gray-800 rounded-md text-gray-500"
+                >
+                  <svg
+                    class="w-3 h-3"
+                    fill="none"
+                    stroke="currentColor"
+                    viewbox="0 0 24 24"
+                  >
+                    <path
+                      d="M15 19l-7-7 7-7"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    ></path>
+                  </svg>
+                </button>
+                <button
+                  class="w-5 h-5 flex items-center justify-center bg-gray-800 rounded-md text-gray-500"
+                >
+                  <svg
+                    class="w-3 h-3"
+                    fill="none"
+                    stroke="currentColor"
+                    viewbox="0 0 24 24"
+                  >
+                    <path
+                      d="M9 5l7 7-7 7"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    ></path>
+                  </svg>
+                </button>
+              </div>
+              <a
+                class="text-accent-green text-[10px] font-bold"
+                href="index.html"
+                >All Stats</a
+              >
+            </div>
+          </div>
+          <div
+            class="grid grid-cols-3 bg-brand-dark p-1 rounded-xl mb-6 border border-gray-800"
+          >
+            <button
+              class="text-[9px] py-2 bg-accent-green/10 border border-accent-green text-accent-green font-bold rounded-lg"
+            >
+              Goals</button
+            ><button class="text-[9px] py-2 text-gray-500 font-bold">
+              Assists</button
+            ><button class="text-[9px] py-2 text-gray-500 font-bold">
+              Clean Sheets
+            </button>
+          </div>
+          <div class="space-y-6">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center space-x-3">
+                <span class="text-xs font-bold text-gray-500 w-3">1</span>
+                <div
+                  class="w-9 h-9 rounded-full overflow-hidden border border-gray-700 bg-gray-800"
+                >
+                  <img
+                    alt="Erling Haaland"
+                    class="w-full h-full object-cover"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuBB5J3EXnAN5WN_c20l7NPadMCyLXgqgrR_-PFfejwqPRw9uhbbYfvCnqxdOP0cmFFZz8T0_cDsC43mE2drZjrA0e725nlVwaaruo16L-z-YHXRoLTLshuIApQlx2-3MfmnARGrHrEQXRyAHTpUfBvWZerMfINPtglwqmcPPNXCYTk9PAaZHsnBLhNz30RzAKz2jJGD3oLDCfkGKEt0Tq_LZbcvmvVk6QKWIAYDksZJxZbhWNQwKKAdDHmznx2ttssvU1CSkJrzy9M"
+                  />
+                </div>
+                <div>
+                  <p class="text-xs font-bold text-white">E. Haaland</p>
+                  <p class="text-[10px] text-gray-500 font-medium">MCI</p>
+                </div>
+              </div>
+              <div class="text-right">
+                <p class="text-xs font-black text-white">32</p>
+                <p
+                  class="text-[8px] text-gray-500 uppercase font-bold tracking-tighter"
+                >
+                  Gls
+                </p>
+              </div>
+            </div>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center space-x-3">
+                <span class="text-xs font-bold text-gray-500 w-3">2</span>
+                <div
+                  class="w-9 h-9 rounded-full overflow-hidden border border-gray-700 bg-gray-800"
+                >
+                  <img
+                    alt="Kylian Mbappe"
+                    class="w-full h-full object-cover"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuD3M5i3ZGIUD33e0uWRqRRXdSFjclFCyqvPxHHPwRrciJgst7t31mt0Pr3MdVhyR23oeM6c1w8GTYRnpj64YD4-YyHpm-8Cyx3qRzq8wt1q1OcVVqZ0cirG3usTFd13Vg1cVJmfq_PN2rrGu_hZ0esYRGDPSnjOQwyCN9Q5AAFmCay2uX5Ux-hH5gpY4-H2PyjkCZ2Bvn7o4zatQpGO0N6X6PB86plSoGJk2VirFN_qzykxPCs3l2zV9GmZuOJ8LJ1JUN5EkDrMgTM"
+                  />
+                </div>
+                <div>
+                  <p class="text-xs font-bold text-white">K. Mbappé</p>
+                  <p class="text-[10px] text-gray-500 font-medium">RMA</p>
+                </div>
+              </div>
+              <div class="text-right">
+                <p class="text-xs font-black text-white">28</p>
+                <p
+                  class="text-[8px] text-gray-500 uppercase font-bold tracking-tighter"
+                >
+                  Gls
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </aside>
+      <!-- END: RightSidebar -->
+    </div>
+    <script type="module" src="js/script.js"></script>
+  </body>
+</html>

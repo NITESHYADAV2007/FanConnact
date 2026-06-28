@@ -11,18 +11,94 @@ import { auth, db } from "./firebase-config.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const themeToggleBtn = document.getElementById("theme-toggle");
-  const darkIcon = document.getElementById("theme-toggle-dark-icon");
-  const lightIcon = document.getElementById("theme-toggle-light-icon");
   const mobileMenuBtn = document.getElementById("mobile-menu-btn");
   const closeSidebarBtn = document.getElementById("close-sidebar-btn");
   const sidebar = document.getElementById("sidebar");
+  const headerLogo = document.getElementById("header-logo");
   const profileTrigger = document.getElementById("profile-trigger");
+
+  // --- Hero Carousel Logic ---
+  const carousel = document.getElementById("hero-carousel"); // Ensure this ID exists in HTML
+  const prevBtn = document.getElementById("prev-slide"); // Ensure this ID exists in HTML
+  const nextBtn = document.getElementById("next-slide"); // Ensure this ID exists in HTML
+  const dots = document.querySelectorAll(".hero-dot"); // Ensure this class exists in HTML
+
+  const updateDots = () => {
+    const index = Math.round(carousel.scrollLeft / carousel.offsetWidth);
+    dots.forEach((dot, i) => {
+      if (i === index) {
+        dot.classList.replace("bg-gray-600", "bg-brand-green");
+      } else {
+        dot.classList.replace("bg-brand-green", "bg-gray-600");
+      }
+    });
+  };
+
+  if (carousel) {
+    carousel.addEventListener("scroll", updateDots);
+  }
+
+  if (carousel && prevBtn && nextBtn) {
+    nextBtn.addEventListener("click", () => {
+      if (
+        carousel.scrollLeft + carousel.offsetWidth >=
+        carousel.scrollWidth - 10
+      ) {
+        carousel.scrollTo({ left: 0, behavior: "smooth" });
+      } else {
+        carousel.scrollBy({ left: carousel.offsetWidth, behavior: "smooth" });
+      }
+    });
+
+    prevBtn.addEventListener("click", () => {
+      if (carousel.scrollLeft <= 10) {
+        carousel.scrollTo({ left: carousel.scrollWidth, behavior: "smooth" });
+      } else {
+        carousel.scrollBy({ left: -carousel.offsetWidth, behavior: "smooth" });
+      }
+    });
+  }
 
   let currentUser = null;
 
   // Monitor Real Auth State
   onAuthStateChanged(auth, async (user) => {
     currentUser = user;
+
+    // Redirect guests from protected pages
+    if (!user) {
+      const path = window.location.pathname;
+      const page = path.split("/").pop();
+      // Pages guests are allowed to see
+      const guestAllowedPages = [
+        "berforeloginindex.html",
+        "login.html",
+        "signup.html",
+        "news.html",
+        "news&update.html",
+      ];
+
+      // Default landing page for unauthenticated users visiting root, dashboard or protected pages
+      if (
+        page === "index.html" ||
+        page === "" ||
+        !guestAllowedPages.includes(page)
+      ) {
+        window.location.href = "berforeloginindex.html";
+        return;
+      }
+    } else {
+      // User is logged in. Redirect away from landing and auth pages to dashboard.
+      const page = window.location.pathname.split("/").pop();
+      if (
+        page === "berforeloginindex.html" ||
+        page === "login.html" ||
+        page === "signup.html"
+      ) {
+        window.location.href = "index.html";
+        return;
+      }
+    }
 
     const userNameElem = document.getElementById("user-name-display");
     const userAvatarElem = document.getElementById("user-profile-img");
@@ -82,33 +158,108 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // 1. Initial Theme State Check
-  const isDarkMode =
-    localStorage.getItem("color-theme") === "dark" ||
-    (!("color-theme" in localStorage) &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches);
-
-  if (isDarkMode) {
-    document.documentElement.classList.add("dark");
-    lightIcon?.classList.remove("hidden");
-    darkIcon?.classList.add("hidden");
-  } else {
-    document.documentElement.classList.remove("dark");
-    darkIcon?.classList.remove("hidden");
-    lightIcon?.classList.add("hidden");
+  // Initialize Sidebar State (Desktop)
+  if (window.innerWidth >= 1024) {
+    const isCollapsed = localStorage.getItem("sidebar-collapsed") === "true";
+    if (isCollapsed) {
+      sidebar?.classList.add("sidebar-collapsed");
+      headerLogo?.classList.remove("lg:hidden");
+    } else {
+      headerLogo?.classList.add("lg:hidden");
+    }
   }
+
+  // --- Active Link Highlighting ---
+  const path = window.location.pathname.split("/").pop() || "index.html";
+  document.querySelectorAll("nav a, aside a").forEach((link) => {
+    if (link.getAttribute("href") === path) {
+      link.classList.add("nav-link-active");
+    }
+  });
+
+  // --- Language Selection Logic ---
+  const translations = {
+    en: {
+      "nav-home": "Home",
+      "nav-live": "Live Matches",
+      "welcome-guest": "Welcome, Guest!",
+      "login-title": "Welcome Back! 👋",
+      "login-email-label": "Email or Username",
+      "login-email-placeholder": "Enter your email or username",
+      "login-password-label": "Password",
+      "login-password-placeholder": "Enter your password",
+      "login-submit": "Login",
+    },
+    hi: {
+      "nav-home": "होम",
+      "nav-live": "लाइव मैच",
+      "welcome-guest": "स्वागत है, अतिथि!",
+      "login-title": "वापसी पर स्वागत है! 👋",
+      "login-email-label": "ईमेल या उपयोगकर्ता नाम",
+      "login-email-placeholder": "अपना ईमेल या उपयोगकर्ता नाम दर्ज करें",
+      "login-password-label": "पासवर्ड",
+      "login-password-placeholder": "अपना पासवर्ड दर्ज करें",
+      "login-submit": "लॉगिन करें",
+    },
+  };
+
+  function applyLanguage(lang) {
+    document.querySelectorAll("[data-i18n]").forEach((el) => {
+      const key = el.getAttribute("data-i18n");
+      if (translations[lang] && translations[lang][key]) {
+        if (el.tagName === "INPUT") {
+          el.placeholder = translations[lang][key];
+        } else {
+          el.textContent = translations[lang][key];
+        }
+      }
+    });
+    localStorage.setItem("fanconnect-lang", lang);
+    document.documentElement.lang = lang;
+  }
+
+  // Load saved language
+  const savedLang = localStorage.getItem("fanconnect-lang") || "en";
+  applyLanguage(savedLang);
+  window.applyLanguage = applyLanguage; // Export for login.html
+
+  // 1. Initial Icon Sync
+  const syncIcons = () => {
+    const darkIcon = document.getElementById("theme-toggle-dark-icon");
+    const lightIcon = document.getElementById("theme-toggle-light-icon");
+    const isDark = document.documentElement.classList.contains("dark");
+
+    if (isDark) {
+      document.documentElement.classList.remove("light");
+      darkIcon?.classList.add("hidden");
+      lightIcon?.classList.remove("hidden");
+    } else {
+      document.documentElement.classList.add("light");
+      darkIcon?.classList.remove("hidden");
+      lightIcon?.classList.add("hidden");
+    }
+  };
+  syncIcons();
 
   // 2. Theme Click Handler
   themeToggleBtn?.addEventListener("click", () => {
-    darkIcon.classList.toggle("hidden");
-    lightIcon.classList.toggle("hidden");
+    const isDark = document.documentElement.classList.contains("dark");
+    const newTheme = isDark ? "light" : "dark";
 
-    if (document.documentElement.classList.contains("dark")) {
-      document.documentElement.classList.remove("dark");
-      localStorage.setItem("color-theme", "light");
-    } else {
-      document.documentElement.classList.add("dark");
-      localStorage.setItem("color-theme", "dark");
+    document.documentElement.classList.toggle("dark", !isDark);
+    document.documentElement.classList.toggle("light", isDark);
+    localStorage.setItem("color-theme", newTheme);
+
+    syncIcons();
+  });
+
+  // 2.1 Listen for changes from other tabs
+  window.addEventListener("storage", (e) => {
+    if (e.key === "color-theme") {
+      const isDark = e.newValue === "dark";
+      document.documentElement.classList.toggle("dark", isDark);
+      document.documentElement.classList.toggle("light", !isDark);
+      syncIcons();
     }
   });
 
@@ -116,44 +267,85 @@ document.addEventListener("DOMContentLoaded", () => {
   mobileMenuBtn?.addEventListener("click", () => {
     if (window.innerWidth < 1024) {
       sidebar?.classList.toggle("-translate-x-full");
+      // Hide header logo if sidebar is visible on mobile
+      const isSidebarOpen = !sidebar?.classList.contains("-translate-x-full");
+      headerLogo?.classList.toggle("hidden", isSidebarOpen);
     } else {
-      sidebar?.classList.toggle("sidebar-collapsed");
-      // Toggle header logo visibility on desktop when sidebar is slim
-      const headerLogo = document.getElementById("header-logo");
-      const isCollapsed = sidebar?.classList.contains("sidebar-collapsed");
+      // Desktop: Toggle and persist full sidebar collapse
+      const isCollapsed = sidebar?.classList.toggle("sidebar-collapsed");
+      localStorage.setItem("sidebar-collapsed", isCollapsed);
+      // Toggle whole logo in header on desktop (show when sidebar is collapsed)
       headerLogo?.classList.toggle("lg:hidden", !isCollapsed);
-      headerLogo?.classList.toggle("lg:flex", isCollapsed);
     }
   });
 
   // Sidebar Close Button (Mobile)
   closeSidebarBtn?.addEventListener("click", () => {
     sidebar?.classList.add("-translate-x-full");
+    headerLogo?.classList.remove("hidden");
   });
 
   // 4. Navigation Interceptor & Mobile Sidebar Close
-  const navLinks = sidebar?.querySelectorAll("nav a, .nav-link");
+  const navLinks = document.querySelectorAll(
+    "nav a, .nav-link, aside a, .fixed.bottom-0 a",
+  );
   navLinks?.forEach((link) => {
     link.addEventListener("click", (e) => {
       const navTextElement = link.querySelector(".nav-text");
-      // Fallback to searching all text if .nav-text isn't found
       const linkText = (
         navTextElement ? navTextElement.textContent : link.textContent
       ).trim();
+      const href = link.getAttribute("href");
+
+      if (link.tagName === "BUTTON") return; // Don't intercept button clicks
 
       // Define which tabs are accessible without login
-      const allowedTabs = ["Home", "News & Updates"];
+      const allowedTabs = ["Home", "News", "News & Updates"];
+      const isHomeOrNews =
+        allowedTabs.some((t) => linkText.includes(t)) || href === "index.html";
+
+      // Define sport-related pages that require login.
+      // This array should include all sport-specific pages and general match pages.
+      // The `includes` check is broad, so ensure unique names if needed.
+      // For example, "Matches" could be a general page, while "Cricket" is specific.
+      // The current setup assumes "Matches" in the top nav and sidebar refers to livematches.html
+      // and individual sport names refer to their respective pages.
+      const sportPagesRequiringLogin = [
+        "Live Matches",
+        "Matches", // For the top header "Matches" link
+        "Match Center",
+        "Football",
+        "Basketball",
+        "Tennis",
+        "Baseball",
+        "Cricket", // Assuming cricket.html is also a sport page
+        "Hockey",
+      ];
+
+      // Check if the clicked link is a sport-related page (or general match page)
+      // and requires login. If the user is not logged in, redirect to login.
+      // Otherwise, proceed with navigation.
+      if (sportPagesRequiringLogin.some((sport) => linkText.includes(sport))) {
+        if (!currentUser) {
+          e.preventDefault();
+          window.location.href = "berforeloginindex.html";
+        }
+        return;
+      }
 
       // Check if the clicked tab is restricted AND user is not logged in
       if (
         linkText &&
-        !allowedTabs.some((tab) => linkText.includes(tab)) &&
-        !currentUser
+        !currentUser &&
+        !isHomeOrNews &&
+        href !== "login.html" &&
+        href !== "signup.html"
       ) {
         e.preventDefault();
-        window.location.href = "login.html"; // Points to your new login page
+        window.location.href = "berforeloginindex.html";
       } else if (window.innerWidth < 1024) {
         sidebar?.classList.add("-translate-x-full");
+        headerLogo?.classList.remove("hidden");
       }
     });
   });
@@ -161,6 +353,13 @@ document.addEventListener("DOMContentLoaded", () => {
   // 6. Profile Page Redirect
   profileTrigger?.addEventListener("click", () => {
     window.location.href = "profile.html";
+  });
+
+  // 7. Notification Page Redirect
+  document.querySelectorAll(".notification-trigger").forEach((trigger) => {
+    trigger.addEventListener("click", () => {
+      window.location.href = "notification.html";
+    });
   });
 
   // Close sidebar when clicking outside on mobile
@@ -173,6 +372,7 @@ document.addEventListener("DOMContentLoaded", () => {
       !mobileMenuBtn.contains(e.target)
     ) {
       sidebar.classList.add("-translate-x-full");
+      headerLogo?.classList.remove("hidden");
     }
   });
 });

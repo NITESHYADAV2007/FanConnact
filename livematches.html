@@ -1,0 +1,1532 @@
+<!doctype html>
+
+<html class="dark" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <script>
+      if (
+        localStorage.getItem("color-theme") === "dark" ||
+        (!("color-theme" in localStorage) &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches)
+      ) {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
+    </script>
+    <title>FanConnect - Matches</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Google Fonts: Lexend -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            fontFamily: {
+              lexend: ["Lexend", "sans-serif"],
+            },
+            colors: {
+              "emerald-accent": "#10b981",
+              "dark-bg": "#0a0e14",
+              "sidebar-bg": "#0f172a",
+              "card-bg": "#161d2b",
+              "border-subtle": "#1e293b",
+            },
+          },
+        },
+      };
+    </script>
+    <style data-purpose="custom-scrollbar">
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #0a0e14;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #1e293b;
+        border-radius: 10px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #10b981;
+      }
+      .sidebar-collapsed #sidebar { width: 0 !important; min-width: 0 !important; border: 0 !important; padding: 0 !important; overflow: hidden !important; }
+    </style>
+    <meta
+      name="description"
+      content="FanConnect sports platform for fans, scores, communities and updates."
+    />
+    <meta property="og:title" content="FanConnect" />
+    <meta name="robots" content="index,follow" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;"
+    />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+  </head>
+  <body
+    class="h-screen w-full flex flex-col overflow-hidden transition-colors duration-300 bg-[#F8F9FF] dark:bg-[#0F172A] text-slate-900 dark:text-slate-100"
+  >
+    <!-- BEGIN: MainHeader -->
+    <header
+      class="sticky top-0 z-50 transition-colors duration-300 bg-white dark:bg-dark-bg border-b border-gray-200 dark:border-border-subtle px-4 md:px-8 py-4 flex items-center justify-between"
+    >
+      <div class="flex items-center space-x-4 md:space-x-12">
+        <button
+          class="text-gray-400 hover:text-emerald-accent"
+          id="mobile-menu-btn"
+        >
+          <span class="material-symbols-outlined">menu</span>
+        </button>
+
+          <div id="header-logo" class="lg:hidden flex items-center gap-2 ml-2">
+            <img src="assets/fancoin/fanconnactlogo.png" alt="FanConnect" class="w-7 h-7" />
+            <span class="text-base font-bold whitespace-nowrap"><span class="text-fan">Fan</span><span class="text-connect">Connact</span></span>
+          </div>
+
+        <!-- Top Navigation -->
+        <nav class="hidden xl:flex items-center space-x-6 mx-6 shrink-0">
+          <a
+            class="text-emerald-accent font-bold border-b-2 border-emerald-accent pb-1 text-sm nav-link"
+            href="index.html"
+            >Home</a
+          >
+          <a
+            class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link"
+            href="livematches.html"
+            >Matches</a
+          >
+          <a
+            class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link"
+            href="index.html"
+            >Predictions</a
+          >
+          <a
+            class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link"
+            href="index.html"
+            >Leaderboard</a
+          >
+          <a
+            class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link"
+            href="news&update.html"
+            >News</a
+          >
+        </nav>
+      </div>
+      <!-- Header Actions -->
+      <div class="flex items-center gap-5 md:gap-8">
+        <div class="relative hidden lg:block">
+          <input
+            class="bg-gray-100 dark:bg-[#161d2b] text-slate-900 dark:text-white border-none rounded-xl py-2.5 pl-10 pr-4 text-sm w-64 focus:ring-1 focus:ring-emerald-accent"
+            placeholder="Search teams, matches, players..."
+            type="text"
+          />
+          <span
+            class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl"
+            >search</span
+          >
+        </div>
+        <!-- Theme Toggle -->
+        <button
+          id="theme-toggle"
+          class="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-all active:scale-95"
+        >
+          <span
+            id="theme-toggle-light-icon"
+            class="material-symbols-outlined hidden text-yellow-400"
+            >light_mode</span
+          >
+          <span
+            id="theme-toggle-dark-icon"
+            class="material-symbols-outlined text-slate-500 dark:text-slate-400"
+            >dark_mode</span
+          >
+        </button>
+        <div class="relative notification-trigger cursor-pointer">
+          <span
+            class="material-symbols-outlined text-slate-500 dark:text-gray-400 cursor-pointer"
+            >notifications</span
+          >
+          <span
+            class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-[10px] flex items-center justify-center font-bold text-white shadow-sm"
+            >3</span
+          >
+        </div>
+        <div
+          id="profile-trigger"
+          class="flex items-center space-x-3 cursor-pointer border-l border-gray-200 dark:border-gray-800 pl-4 md:pl-6"
+        >
+          <img
+            id="user-profile-img"
+            alt="User Profile"
+            class="w-9 h-9 md:w-10 md:h-10 rounded-full border-2 border-emerald-accent"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDOdWz0yXTAfug92jAlZ-XZtnL5urTJNu8npwz7RIfeTacw2m4yeAoKNMAkf3MLOCIk0iI35_ID8tSabIp6I7MF2N_gez6RO01_i0q1DX3bj656URDlnI8A34wDvyRB5WoPOVTN1qvuyGRfskySDI-pCWAnw3raxBsKX2G6sEhrFHiweAO4TxLdxuB-4_oHoAPBbm9bwmrKrqSGKFEtAeXpM76OE_C1cQQSNmRYmIRT01ZVb4lT2k1tR1xDw6ujXtxiain2IWfiKxim"
+          />
+          <div class="hidden sm:block">
+            <p
+              id="user-name-display"
+              class="text-sm font-bold text-slate-900 dark:text-white"
+            >
+              NiteshY
+            </p>
+            <p
+              id="user-level-display"
+              class="text-[10px] text-emerald-accent font-bold uppercase tracking-wider"
+            >
+              Level 28
+            </p>
+          </div>
+        </div>
+      </div>
+    </header>
+    <!-- END: MainHeader -->
+    <div class="flex flex-1 overflow-hidden">
+      <!-- BEGIN: SidebarNav -->
+      <aside
+        id="sidebar"
+        class="w-64 fixed inset-y-0 left-0 z-[60] transition-all duration-300 bg-white dark:bg-dark-bg border-r border-gray-200 dark:border-border-subtle p-6 overflow-y-auto -translate-x-full lg:translate-x-0 lg:static h-full"
+      >
+        <!-- Mobile Close Button -->
+        <button
+          id="close-sidebar-btn"
+          class="lg:hidden p-2 absolute top-4 right-4 text-gray-400"
+        >
+          <span class="material-symbols-outlined">close</span>
+        </button>
+        <!-- Logo Container for collapsed state -->
+        <div
+          class="p-6 flex items-center space-x-2 logo-container cursor-pointer"
+          onclick="window.location.href = 'index.html'"
+        >
+          <img src="assets/fancoin/fanconnactlogo.png" alt="FanConnect" class="w-8 h-8 flex-shrink-0" />
+          <span
+            class="text-xl font-bold tracking-tight font-headline logo-text"
+            ><span class="text-fan">Fan</span><span class="text-connect">Connact</span></span
+          >
+        </div>
+
+        <!-- Deduped Navigation -->
+        <div class="mb-8 mt-4">
+          <h3
+            class="text-xs font-bold text-slate-500 dark:text-gray-400 uppercase tracking-wider mb-4 px-6"
+          >
+            NAVIGATION
+          </h3>
+          <nav class="px-4 space-y-1">
+            <a
+              class="flex items-center space-x-3 px-3 py-3 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group"
+              href="index.html"
+            >
+              <span class="material-symbols-outlined text-xl">home</span>
+              <span class="text-sm nav-text">Home</span>
+            </a>
+            <a
+              class="flex items-center space-x-3 px-3 py-3 rounded-lg bg-emerald-accent/10 text-emerald-accent font-bold"
+              href="livematches.html"
+            >
+              <span class="material-symbols-outlined text-xl">live_tv</span>
+              <span class="text-sm nav-text">Live Matches</span>
+            </a>
+            <a
+              class="flex items-center space-x-3 px-3 py-3 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group"
+              href="news&update.html"
+            >
+              <span class="material-symbols-outlined text-xl">newspaper</span>
+              <span class="text-sm nav-text">News & Updates</span>
+            </a>
+          </nav>
+        </div>
+
+        <div class="mb-8">
+          <h3
+            class="text-xs font-bold text-slate-500 dark:text-gray-400 uppercase tracking-wider mb-4"
+          >
+            SPORTS
+          </h3>
+          <ul class="space-y-1">
+            <li>
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg bg-emerald-accent/10 text-emerald-accent font-medium"
+                href="livematches.html"
+              >
+                <span class="material-symbols-outlined text-xl">grid_view</span>
+                <span class="nav-text">All Sports</span>
+              </a>
+            </li>
+            <li class="">
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group"
+                href="cricket.html"
+              >
+                <span class="material-symbols-outlined text-xl"
+                  >sports_cricket</span
+                >
+                <span class="nav-text">Cricket</span>
+              </a>
+            </li>
+            <li class="">
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group"
+                href="football.html"
+              >
+                <span class="material-symbols-outlined text-xl"
+                  >sports_soccer</span
+                >
+                <span class="nav-text">Football</span>
+              </a>
+            </li>
+            <li class="">
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group"
+                href="basketball.html"
+              >
+                <span class="material-symbols-outlined text-xl"
+                  >sports_basketball</span
+                >
+                <span class="nav-text">Basketball</span>
+              </a>
+            </li>
+            <li class="">
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group"
+                href="tennis.html"
+              >
+                <span class="material-symbols-outlined text-xl"
+                  >sports_tennis</span
+                >
+                <span class="nav-text">Tennis</span>
+              </a>
+            </li>
+            <li class="">
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group"
+                href="hockey.html"
+              >
+                <span class="material-symbols-outlined text-xl"
+                  >sports_hockey</span
+                >
+                <span class="nav-text">Hockey</span>
+              </a>
+            </li>
+            <li class="">
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group"
+                href="kabbaddi.html"
+              >
+                <span class="material-symbols-outlined text-xl"
+                  >sports_kabaddi</span
+                >
+                <span class="nav-text">Kabaddi</span>
+              </a>
+            </li>
+            <li class="">
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group"
+                href="e-sports.html"
+              >
+                <span class="material-symbols-outlined text-xl"
+                  >sports_esports</span
+                >
+                <span class="nav-text">E-Sports</span>
+              </a>
+            </li>
+            <li class="">
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group"
+                href="baseball.html"
+              >
+                <span class="material-symbols-outlined text-xl"
+                  >sports_baseball</span
+                >
+                <span class="nav-text">Baseball</span>
+              </a>
+            </li>
+            <li class="">
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group"
+                href="vollyeball.html"
+              >
+                <span class="material-symbols-outlined text-xl"
+                  >sports_volleyball</span
+                >
+                <span class="nav-text">Volleyball</span>
+              </a>
+            </li>
+            <li class="">
+              <button
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors w-full group"
+              >
+                <span class="material-symbols-outlined text-xl"
+                  >more_horiz</span
+                >
+                <span class="nav-text">More</span>
+              </button>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Premium Promo -->
+        <!-- More Games Section -->
+        <div class="mb-8">
+          <h3
+            class="text-xs font-bold text-slate-500 dark:text-gray-400 uppercase tracking-wider mb-4"
+          >
+            MORE GAMES
+          </h3>
+          <ul class="space-y-1">
+            <li>
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group"
+                href="index.html"
+              >
+                <span
+                  class="material-symbols-outlined text-xl group-hover:text-emerald-accent"
+                  >casino</span
+                >
+                <span class="nav-text">Predictions</span>
+              </a>
+            </li>
+            <li>
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group"
+                href="index.html"
+              >
+                <span
+                  class="material-symbols-outlined text-xl group-hover:text-emerald-accent"
+                  >quiz</span
+                >
+                <span class="nav-text">Daily Quiz</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Premium Promo -->
+        <div
+          class="mt-auto bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-5 border border-gray-700 text-center"
+        >
+          <div class="flex justify-center mb-3">
+            <div
+              class="w-10 h-10 bg-yellow-500 rounded-full flex items-center justify-center shadow-lg shadow-yellow-500/20"
+            >
+              <svg
+                class="w-6 h-6 text-black"
+                fill="currentColor"
+                viewbox="0 0 20 20"
+              >
+                <path
+                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                ></path>
+              </svg>
+            </div>
+          </div>
+          <h4 class="font-bold text-sm mb-1">FanConnect Premium</h4>
+          <p class="text-[11px] text-gray-400 mb-4 leading-tight">
+            Ad-free experience, exclusive badges &amp; more!
+          </p>
+          <button
+            class="w-full bg-emerald-accent text-black font-bold py-2 rounded-lg text-xs hover:bg-emerald-400 transition-colors"
+          >
+            Go Premium
+          </button>
+        </div>
+      </aside>
+      <!-- END: SidebarNav -->
+      <!-- Main Content Area: Use internal scroll to avoid disturbing top bar -->
+      <main
+        class="flex-1 flex flex-col overflow-hidden transition-colors duration-300"
+      >
+        <div class="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-6">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <!-- Center Content Section -->
+            <div class="lg:col-span-9">
+              <div class="mb-6">
+                <h1
+                  class="text-3xl font-bold mb-2 text-slate-900 dark:text-white"
+                >
+                  Matches
+                </h1>
+                <p class="text-slate-500 dark:text-gray-400 text-sm">
+                  Follow your favorite sports and never miss a moment!
+                </p>
+              </div>
+
+              <!-- Tournament Tabs -->
+              <div
+                class="border-b border-gray-200 dark:border-border-subtle mb-8 flex space-x-8 overflow-x-auto pb-0"
+              >
+                <button
+                  class="pb-4 border-b-2 border-emerald-accent text-emerald-accent font-bold text-sm px-1 shrink-0"
+                >
+                  All
+                </button>
+                <button
+                  class="pb-4 text-slate-500 dark:text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm px-1 shrink-0"
+                >
+                  IPL
+                </button>
+                <button
+                  class="pb-4 text-slate-500 dark:text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm px-1 shrink-0"
+                >
+                  T20 World Cup
+                </button>
+                <button
+                  class="pb-4 text-slate-500 dark:text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm px-1 shrink-0"
+                >
+                  Champions League
+                </button>
+                <button
+                  class="pb-4 text-slate-500 dark:text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm px-1 shrink-0"
+                >
+                  NBA
+                </button>
+              </div>
+              <!-- Filter & Sort Bar -->
+              <div class="flex items-center justify-between mb-6">
+                <div class="flex space-x-3">
+                  <button
+                    class="bg-[#161d2b] border border-emerald-accent text-emerald-accent px-4 py-1.5 rounded-lg text-sm flex items-center space-x-2"
+                  >
+                    <span
+                      class="w-2 h-2 bg-red-500 rounded-full animate-pulse"
+                    ></span>
+                    <span class="">Live (6)</span>
+                  </button>
+                  <button
+                    class="bg-[#161d2b] border border-gray-700 text-gray-400 px-4 py-1.5 rounded-lg text-sm flex items-center space-x-2 hover:text-white"
+                  >
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewbox="0 0 24 24"
+                    >
+                      <path
+                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                      ></path>
+                    </svg>
+                    <span class="">Upcoming (12)</span>
+                  </button>
+                  <button
+                    class="bg-[#161d2b] border border-gray-700 text-gray-400 px-4 py-1.5 rounded-lg text-sm flex items-center space-x-2 hover:text-white"
+                  >
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewbox="0 0 24 24"
+                    >
+                      <path
+                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                      ></path>
+                    </svg>
+                    <span class="">Finished (24)</span>
+                  </button>
+                </div>
+                <div class="flex space-x-3">
+                  <button
+                    class="bg-[#161d2b] border border-gray-700 text-gray-400 px-3 py-1.5 rounded-lg text-sm flex items-center space-x-2"
+                  >
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewbox="0 0 24 24"
+                    >
+                      <path
+                        d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                      ></path>
+                    </svg>
+                    <span class="">Filter</span>
+                  </button>
+                  <button
+                    class="bg-[#161d2b] border border-gray-700 text-gray-400 px-3 py-1.5 rounded-lg text-sm flex items-center space-x-2"
+                  >
+                    <span class="">Sort by: Latest</span>
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewbox="0 0 24 24"
+                    >
+                      <path
+                        d="M19 9l-7 7-7-7"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                      ></path>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <!-- BEGIN: LiveMatchCards -->
+              <div class="space-y-6">
+                <div
+                  class="bg-white dark:bg-card-bg rounded-2xl p-6 border border-gray-200 dark:border-border-subtle hover:border-gray-600 transition-all cursor-pointer group shadow-soft"
+                >
+                  <div class="flex items-center justify-between mb-8">
+                    <div class="flex items-center space-x-3">
+                      <span
+                        class="bg-red-500/20 text-red-500 text-[10px] font-bold px-2 py-0.5 rounded flex items-center"
+                        ><span
+                          class="w-1.5 h-1.5 bg-red-500 rounded-full mr-1.5"
+                        ></span>
+                        LIVE</span
+                      ><span class="text-xs font-semibold text-gray-400"
+                        >Premier League • Matchday 37 • Anfield</span
+                      >
+                    </div>
+                    <button class="text-gray-500 hover:text-white">
+                      <svg
+                        class="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewbox="0 0 24 24"
+                      >
+                        <path
+                          d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                        ></path>
+                      </svg>
+                    </button>
+                  </div>
+                  <div
+                    class="flex items-center justify-between px-4 lg:px-12 mb-8"
+                  >
+                    <div class="flex items-center space-x-6">
+                      <img
+                        alt="LIV"
+                        class="w-16 h-16 lg:w-20 lg:h-20 object-contain"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuD5F4IAkw1Tcq3s82q-6HXUUCMtiuOErKPjyhaUcdL-37MM8XeziLK_571FCMPnzLlHNvGzsWYgaXyVqH4L9Q5lxN_naZ3vna4ipayFNEW1kfZ0uL5mn9XUSTWC5_EfV_RiBYched_rJOEcjRPpiAm_HTCu44QjjNt7WNRiuCq1L8EyYcGkt-UxwWBAUNWxKedZJ4jqpvxGILKeuu2QtBpWiUnmzufAFGe3ThGPCmL09CdD_vq_A5oBbFaOVv5vsKVsdUgu18eRoTAD"
+                      />
+                      <div><h2 class="text-2xl font-bold">2</h2></div>
+                    </div>
+                    <div class="text-center">
+                      <span class="text-gray-600 font-bold text-xl">VS</span>
+                      <p
+                        class="text-emerald-accent text-[11px] font-semibold mt-2 uppercase tracking-wide"
+                      >
+                        85' Minutes Played
+                      </p>
+                    </div>
+                    <div class="flex items-center space-x-6 flex-row-reverse">
+                      <img
+                        alt="MCI"
+                        class="w-16 h-16 lg:w-20 lg:h-20 object-contain ml-6"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuDG3xugBAZbkS4xTfCf_BSLMQCIvdK4dOPZSP0vG79Luxedhru9u1NGAK-rNJuaVbiJiA6xU_5dym83gRVQaJFUKxPK8afSkszZ3xBu6L3XGZz620OtKlqVDvtM4kTt9s7psaTc9y557vWS8ewNWd5aL8ASFgIV_lSTUHrdtTLogSOFQjPzXiFuvEggCu9vru28wunCU_cTLHtixOgKBqRjJpT72hw3yxIDfjWQVDtrE35zlkSUbG4W40zzz1Mc5wds0kmf0p2tHmGy"
+                      />
+                      <div class="text-right">
+                        <h2 class="text-2xl font-bold">1</h2>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="flex items-center justify-between pt-6 border-t border-gray-800/50"
+                  >
+                    <div class="flex items-center space-x-3">
+                      <span
+                        class="text-[11px] text-slate-500 dark:text-gray-400 font-medium"
+                        >1.2M Fans Watching</span
+                      >
+                    </div>
+                    <div class="flex space-x-3">
+                      <button
+                        class="bg-[#161d2b] border border-emerald-accent/50 text-emerald-accent px-4 py-1.5 rounded-lg text-xs font-bold flex items-center space-x-2 hover:bg-emerald-accent hover:text-black transition-all"
+                      >
+                        <span class="">Live Chat</span></button
+                      ><button
+                        class="bg-gray-800/50 text-white px-4 py-1.5 rounded-lg text-xs font-bold flex items-center space-x-2 hover:bg-gray-700 transition-all"
+                      >
+                        <span class="">Stats</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="bg-white dark:bg-card-bg rounded-2xl p-6 border border-gray-200 dark:border-border-subtle hover:border-gray-600 transition-all cursor-pointer group shadow-soft"
+                >
+                  <div class="flex items-center justify-between mb-8">
+                    <div class="flex items-center space-x-3">
+                      <span
+                        class="bg-red-500/20 text-red-500 text-[10px] font-bold px-2 py-0.5 rounded flex items-center"
+                        ><span
+                          class="w-1.5 h-1.5 bg-red-500 rounded-full mr-1.5"
+                        ></span>
+                        LIVE</span
+                      ><span class="text-xs font-semibold text-gray-400"
+                        >NBA Regular Season • Crypto.com Arena</span
+                      >
+                    </div>
+                    <button class="text-gray-500 hover:text-white">
+                      <svg
+                        class="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewbox="0 0 24 24"
+                      >
+                        <path
+                          d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                        ></path>
+                      </svg>
+                    </button>
+                  </div>
+                  <div
+                    class="flex items-center justify-between px-4 lg:px-12 mb-8"
+                  >
+                    <div class="flex items-center space-x-6">
+                      <img
+                        alt="LAL"
+                        class="w-16 h-16 lg:w-20 lg:h-20 object-contain"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuBnpPa9a6kcrxOjVSgDsTPLC1b-wy4tkJjWnMRynflIOyEw7kx-W7VkMQm0T8Gl7rss2Wj3bd8-H3tozCn5tQWjFbcjVu8NF0hjq0tTCx0ryM48kEQ7xH8JPwMKsXupzxEUAUqd9BZTCkMfDshAX3Lv6vCuSEz9qPrhhvBcav2nfeNnZXD_9q7pmrQenrOnj8kTbt93qVvbsonRNP53lhS56I_qgtNijlwmfyLkLtCPuxOBuQVtZqICSGkzRhk0DTIEuptMtiJLUbsZ"
+                      />
+                      <div><h2 class="text-2xl font-bold">102</h2></div>
+                    </div>
+                    <div class="text-center">
+                      <span class="text-gray-600 font-bold text-xl">VS</span>
+                      <p
+                        class="text-emerald-accent text-[11px] font-semibold mt-2 uppercase tracking-wide"
+                      >
+                        Q4 - 2:45 Remaining
+                      </p>
+                    </div>
+                    <div class="flex items-center space-x-6 flex-row-reverse">
+                      <img
+                        alt="GSW"
+                        class="w-16 h-16 lg:w-20 lg:h-20 object-contain ml-6"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuAYnt5XJGsKZ7yYaZMonR1NBZLAW7Xisxphie8zyO6oc-VQD4mPMbNcKdOR9cTtN7Yk90_KcYUUFe1vwhn7zAJHzllXv3OEAO-CQIIYfh0hT_GcMsZCEza-kUbR90z_0lZ9TzFmSLzymS4-bFySo5iNlIpJ3owQCB6fWTbG28RzBlOLnQ271DU7kbVbS7-zcHB0_TS3412h77N58knfrJfV3RDu_gDPonL-56OGerXLlwpMxlA8l3SB8T7g_s9uY_XdTtgritIRG1xd"
+                      />
+                      <div class="text-right">
+                        <h2 class="text-2xl font-bold">98</h2>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="flex items-center justify-between pt-6 border-t border-gray-800/50"
+                  >
+                    <div class="flex items-center space-x-3">
+                      <span
+                        class="text-[11px] text-slate-500 dark:text-gray-400 font-medium"
+                        >850K Fans Watching</span
+                      >
+                    </div>
+                    <div class="flex space-x-3">
+                      <button
+                        class="bg-[#161d2b] border border-emerald-accent/50 text-emerald-accent px-4 py-1.5 rounded-lg text-xs font-bold flex items-center space-x-2 hover:bg-emerald-accent hover:text-black transition-all"
+                      >
+                        <span class="">Live Chat</span></button
+                      ><button
+                        class="bg-gray-800/50 text-white px-4 py-1.5 rounded-lg text-xs font-bold flex items-center space-x-2 hover:bg-gray-700 transition-all"
+                      >
+                        <span class="">Box Score</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Match Card 3 (Cricket) -->
+                <div
+                  class="bg-white dark:bg-card-bg rounded-2xl p-6 border border-gray-200 dark:border-border-subtle hover:border-emerald-accent/50 transition-all cursor-pointer group shadow-soft"
+                >
+                  <div class="flex items-center justify-between mb-8">
+                    <div class="flex items-center space-x-3">
+                      <span
+                        class="bg-red-500/20 text-red-500 text-[10px] font-bold px-2 py-0.5 rounded flex items-center"
+                      >
+                        <span
+                          class="w-1.5 h-1.5 bg-red-500 rounded-full mr-1.5"
+                        ></span>
+                        LIVE
+                      </span>
+                      <span class="text-xs font-semibold text-gray-400"
+                        >IPL 2024 • MI vs CSK • Wankhede</span
+                      >
+                    </div>
+                  </div>
+                  <div
+                    class="flex items-center justify-between px-4 lg:px-12 mb-8"
+                  >
+                    <div class="flex items-center space-x-6">
+                      <img
+                        class="w-16 h-16 lg:w-20 lg:h-20 object-contain"
+                        src="https://upload.wikimedia.org/wikipedia/en/thumb/c/cd/Mumbai_Indians_Logo.svg/512px-Mumbai_Indians_Logo.svg.png"
+                      />
+                      <div>
+                        <h2
+                          class="text-2xl font-bold text-slate-900 dark:text-white"
+                        >
+                          185/4
+                        </h2>
+                        <p class="text-xs text-gray-400">(18.2 ov)</p>
+                      </div>
+                    </div>
+                    <div class="text-center">
+                      <span class="text-gray-600 font-bold text-xl">VS</span>
+                      <p
+                        class="text-emerald-accent text-[10px] font-semibold mt-2 uppercase"
+                      >
+                        Need 42 runs in 10 balls
+                      </p>
+                    </div>
+                    <div class="flex items-center space-x-6 flex-row-reverse">
+                      <img
+                        class="w-16 h-16 lg:w-20 lg:h-20 object-contain ml-6"
+                        src="https://upload.wikimedia.org/wikipedia/en/thumb/2/2b/Chennai_Super_Kings_Logo.svg/512px-Chennai_Super_Kings_Logo.svg.png"
+                      />
+                      <div class="text-right">
+                        <h2
+                          class="text-2xl font-bold text-slate-900 dark:text-white"
+                        >
+                          165/7
+                        </h2>
+                        <p class="text-xs text-gray-400">(20 ov)</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="flex justify-end pt-6 border-t border-gray-800/50"
+                  >
+                    <button
+                      class="bg-[#161d2b] border border-emerald-accent/50 text-emerald-accent px-4 py-1.5 rounded-lg text-xs font-bold hover:bg-emerald-accent hover:text-black"
+                    >
+                      Match Center
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Match Card 4 (Tennis) -->
+                <div
+                  class="bg-white dark:bg-card-bg rounded-2xl p-6 border border-gray-200 dark:border-border-subtle hover:border-emerald-accent/50 transition-all cursor-pointer group shadow-soft"
+                >
+                  <div class="flex items-center justify-between mb-8">
+                    <div class="flex items-center space-x-3">
+                      <span
+                        class="bg-red-500/20 text-red-500 text-[10px] font-bold px-2 py-0.5 rounded flex items-center"
+                      >
+                        <span
+                          class="w-1.5 h-1.5 bg-red-500 rounded-full mr-1.5"
+                        ></span>
+                        LIVE
+                      </span>
+                      <span class="text-xs font-semibold text-gray-400"
+                        >Madrid Open • Men's Singles • Quarter Final</span
+                      >
+                    </div>
+                  </div>
+                  <div
+                    class="flex items-center justify-between px-4 lg:px-12 mb-8"
+                  >
+                    <div class="flex items-center space-x-6">
+                      <img
+                        class="w-16 h-16 lg:w-20 lg:h-20 object-cover rounded-full border-2 border-emerald-accent"
+                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Carlos_Alcaraz_2023_US_Open.jpg/512px-Carlos_Alcaraz_2023_US_Open.jpg"
+                      />
+                      <div>
+                        <h2
+                          class="text-2xl font-bold text-slate-900 dark:text-white"
+                        >
+                          1
+                        </h2>
+                        <p class="text-xs text-gray-400">Set</p>
+                      </div>
+                    </div>
+                    <div class="text-center">
+                      <span class="text-gray-600 font-bold text-xl">VS</span>
+                      <p
+                        class="text-emerald-accent text-[10px] font-semibold mt-2 uppercase"
+                      >
+                        Set 2: 4-2
+                      </p>
+                    </div>
+                    <div class="flex items-center space-x-6 flex-row-reverse">
+                      <img
+                        class="w-16 h-16 lg:w-20 lg:h-20 object-cover rounded-full border-2 border-white/10 ml-6"
+                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Novak_Djokovic_2023_US_Open.jpg/512px-Novak_Djokovic_2023_US_Open.jpg"
+                      />
+                      <div class="text-right">
+                        <h2
+                          class="text-2xl font-bold text-slate-900 dark:text-white"
+                        >
+                          0
+                        </h2>
+                        <p class="text-xs text-gray-400">Set</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="flex justify-end pt-6 border-t border-gray-800/50"
+                  >
+                    <button
+                      class="bg-[#161d2b] border border-emerald-accent/50 text-emerald-accent px-4 py-1.5 rounded-lg text-xs font-bold hover:bg-emerald-accent hover:text-black"
+                    >
+                      View Stats
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Match Card 5 (Baseball) -->
+                <div
+                  class="bg-white dark:bg-card-bg rounded-2xl p-6 border border-gray-200 dark:border-border-subtle hover:border-emerald-accent/50 transition-all cursor-pointer group shadow-soft"
+                >
+                  <div class="flex items-center justify-between mb-8">
+                    <div class="flex items-center space-x-3">
+                      <span
+                        class="bg-red-500/20 text-red-500 text-[10px] font-bold px-2 py-0.5 rounded flex items-center"
+                      >
+                        <span
+                          class="w-1.5 h-1.5 bg-red-500 rounded-full mr-1.5"
+                        ></span>
+                        LIVE
+                      </span>
+                      <span class="text-xs font-semibold text-gray-400"
+                        >MLB Regular Season • Dodger Stadium</span
+                      >
+                    </div>
+                  </div>
+                  <div
+                    class="flex items-center justify-between px-4 lg:px-12 mb-8"
+                  >
+                    <div class="flex items-center space-x-6">
+                      <img
+                        class="w-16 h-16 lg:w-20 lg:h-20 object-contain"
+                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Los_Angeles_Dodgers_Logo.svg/512px-Los_Angeles_Dodgers_Logo.svg.png"
+                      />
+                      <div>
+                        <h2
+                          class="text-2xl font-bold text-slate-900 dark:text-white"
+                        >
+                          4
+                        </h2>
+                        <p class="text-xs text-gray-400">Runs</p>
+                      </div>
+                    </div>
+                    <div class="text-center">
+                      <span class="text-gray-600 font-bold text-xl">VS</span>
+                      <p
+                        class="text-emerald-accent text-[10px] font-semibold mt-2 uppercase"
+                      >
+                        Top 5th • 2 Outs
+                      </p>
+                    </div>
+                    <div class="flex items-center space-x-6 flex-row-reverse">
+                      <img
+                        class="w-16 h-16 lg:w-20 lg:h-20 object-contain ml-6"
+                        src="https://upload.wikimedia.org/wikipedia/en/thumb/a/ad/New_York_Yankees_logo.svg/512px-New_York_Yankees_logo.svg.png"
+                      />
+                      <div class="text-right">
+                        <h2
+                          class="text-2xl font-bold text-slate-900 dark:text-white"
+                        >
+                          2
+                        </h2>
+                        <p class="text-xs text-gray-400">Runs</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="flex justify-end pt-6 border-t border-gray-800/50"
+                  >
+                    <button
+                      class="bg-[#161d2b] border border-emerald-accent/50 text-emerald-accent px-4 py-1.5 rounded-lg text-xs font-bold hover:bg-emerald-accent hover:text-black"
+                    >
+                      Watch Live
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Match Card 6 (Hockey) -->
+                <div
+                  class="bg-white dark:bg-card-bg rounded-2xl p-6 border border-gray-200 dark:border-border-subtle hover:border-emerald-accent/50 transition-all cursor-pointer group shadow-soft"
+                >
+                  <div class="flex items-center justify-between mb-8">
+                    <div class="flex items-center space-x-3">
+                      <span
+                        class="bg-red-500/20 text-red-500 text-[10px] font-bold px-2 py-0.5 rounded flex items-center"
+                      >
+                        <span
+                          class="w-1.5 h-1.5 bg-red-500 rounded-full mr-1.5"
+                        ></span>
+                        LIVE
+                      </span>
+                      <span class="text-xs font-semibold text-gray-400"
+                        >NHL Stanley Cup • Period 3</span
+                      >
+                    </div>
+                  </div>
+                  <div
+                    class="flex items-center justify-between px-4 lg:px-12 mb-8"
+                  >
+                    <div class="flex items-center space-x-6">
+                      <img
+                        class="w-16 h-16 lg:w-20 lg:h-20 object-contain"
+                        src="https://upload.wikimedia.org/wikipedia/en/thumb/2/2d/Washington_Capitals.svg/512px-Washington_Capitals.svg.png"
+                      />
+                      <div>
+                        <h2
+                          class="text-2xl font-bold text-slate-900 dark:text-white"
+                        >
+                          3
+                        </h2>
+                        <p class="text-xs text-gray-400">Goals</p>
+                      </div>
+                    </div>
+                    <div class="text-center">
+                      <span class="text-gray-600 font-bold text-xl">VS</span>
+                      <p
+                        class="text-emerald-accent text-[10px] font-semibold mt-2 uppercase"
+                      >
+                        04:12 Left
+                      </p>
+                    </div>
+                    <div class="flex items-center space-x-6 flex-row-reverse">
+                      <img
+                        class="w-16 h-16 lg:w-20 lg:h-20 object-contain ml-6"
+                        src="https://upload.wikimedia.org/wikipedia/en/thumb/a/ac/Vegas_Golden_Knights_logo.svg/512px-Vegas_Golden_Knights_logo.svg.png"
+                      />
+                      <div class="text-right">
+                        <h2
+                          class="text-2xl font-bold text-slate-900 dark:text-white"
+                        >
+                          3
+                        </h2>
+                        <p class="text-xs text-gray-400">Goals</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="flex justify-end pt-6 border-t border-gray-800/50"
+                  >
+                    <button
+                      class="bg-[#161d2b] border border-emerald-accent/50 text-emerald-accent px-4 py-1.5 rounded-lg text-xs font-bold hover:bg-emerald-accent hover:text-black"
+                    >
+                      Full Stats
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <!-- END: LiveMatchCards -->
+            </div>
+            <!-- Right Sidebar Section -->
+            <div class="lg:col-span-3 space-y-8">
+              <!-- BEGIN: CalendarWidget -->
+              <div
+                class="bg-card-bg rounded-2xl p-6 border border-border-subtle"
+              >
+                <div class="flex items-center justify-between mb-6">
+                  <h3 class="font-bold">Calendar</h3>
+                  <a
+                    class="text-emerald-accent text-xs font-semibold hover:underline"
+                    href="index.html"
+                    >View Full Calendar</a
+                  >
+                </div>
+                <div class="grid grid-cols-7 gap-2 text-center">
+                  <div class="space-y-2">
+                    <p class="text-[10px] text-gray-500 uppercase font-bold">
+                      Mon
+                    </p>
+                    <div
+                      class="h-10 w-10 flex items-center justify-center rounded-lg hover:bg-gray-800 cursor-pointer text-sm"
+                    >
+                      13
+                    </div>
+                  </div>
+                  <div class="space-y-2">
+                    <p class="text-[10px] text-gray-500 uppercase font-bold">
+                      Tue
+                    </p>
+                    <div
+                      class="h-10 w-10 flex items-center justify-center rounded-lg hover:bg-gray-800 cursor-pointer text-sm"
+                    >
+                      14
+                    </div>
+                  </div>
+                  <div class="space-y-2">
+                    <p class="text-[10px] text-gray-500 uppercase font-bold">
+                      Wed
+                    </p>
+                    <div
+                      class="h-10 w-10 flex items-center justify-center rounded-lg bg-emerald-accent text-black font-bold text-sm"
+                    >
+                      15
+                    </div>
+                  </div>
+                  <div class="space-y-2">
+                    <p class="text-[10px] text-gray-500 uppercase font-bold">
+                      Thu
+                    </p>
+                    <div
+                      class="h-10 w-10 flex items-center justify-center rounded-lg hover:bg-gray-800 cursor-pointer text-sm"
+                    >
+                      16
+                    </div>
+                  </div>
+                  <div class="space-y-2">
+                    <p class="text-[10px] text-gray-500 uppercase font-bold">
+                      Fri
+                    </p>
+                    <div
+                      class="h-10 w-10 flex items-center justify-center rounded-lg hover:bg-gray-800 cursor-pointer text-sm"
+                    >
+                      17
+                    </div>
+                  </div>
+                  <div class="space-y-2">
+                    <p class="text-[10px] text-gray-500 uppercase font-bold">
+                      Sat
+                    </p>
+                    <div
+                      class="h-10 w-10 flex items-center justify-center rounded-lg hover:bg-gray-800 cursor-pointer text-sm"
+                    >
+                      18
+                    </div>
+                  </div>
+                  <div class="space-y-2">
+                    <p class="text-[10px] text-gray-500 uppercase font-bold">
+                      Sun
+                    </p>
+                    <div
+                      class="h-10 w-10 flex items-center justify-center rounded-lg hover:bg-gray-800 cursor-pointer text-sm"
+                    >
+                      19
+                    </div>
+                  </div>
+                </div>
+                <!-- Mini Match List in Calendar -->
+                <div class="mt-8 space-y-4">
+                  <div
+                    class="flex items-center justify-between group cursor-pointer"
+                  >
+                    <div class="flex items-center space-x-3">
+                      <img
+                        class="w-8 h-8 rounded object-contain dark:bg-gray-800 light:bg-gray-100 p-1"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuD5F4IAkw1Tcq3s82q-6HXUUCMtiuOErKPjyhaUcdL-37MM8XeziLK_571FCMPnzLlHNvGzsWYgaXyVqH4L9Q5lxN_naZ3vna4ipayFNEW1kfZ0uL5mn9XUSTWC5_EfV_RiBYched_rJOEcjRPpiAm_HTCu44QjjNt7WNRiuCq1L8EyYcGkt-UxwWBAUNWxKedZJ4jqpvxGILKeuu2QtBpWiUnmzufAFGe3ThGPCmL09CdD_vq_A5oBbFaOVv5vsKVsdUgu18eRoTAD"
+                      />
+                      <div>
+                        <p
+                          class="text-[10px] text-gray-500 font-bold leading-none mb-1"
+                        >
+                          IPL 2024 • Match 56
+                        </p>
+                        <p
+                          class="text-xs font-bold dark:text-white light:text-slate-800"
+                        >
+                          MI vs CSK
+                        </p>
+                      </div>
+                    </div>
+                    <span
+                      class="text-[10px] bg-red-500/10 text-red-500 px-1.5 py-0.5 rounded font-bold uppercase flex items-center"
+                    >
+                      <span class="w-1 h-1 bg-red-500 rounded-full mr-1"></span>
+                      LIVE
+                    </span>
+                  </div>
+                  <div
+                    class="flex items-center justify-between group cursor-pointer"
+                  >
+                    <div class="flex items-center space-x-3">
+                      <img
+                        class="w-8 h-8 rounded object-contain dark:bg-gray-800 light:bg-gray-100 p-1"
+                        src="https://upload.wikimedia.org/wikipedia/en/thumb/e/eb/Manchester_City_FC_badge.svg/512px-Manchester_City_FC_badge.svg.png"
+                      />
+                      <div>
+                        <p
+                          class="text-[10px] text-gray-500 font-bold leading-none mb-1"
+                        >
+                          Champions League • Quarter Final
+                        </p>
+                        <p
+                          class="text-xs font-bold dark:text-white light:text-slate-800"
+                        >
+                          MCI vs RMA
+                        </p>
+                      </div>
+                    </div>
+                    <span
+                      class="text-[10px] bg-red-500/10 text-red-500 px-1.5 py-0.5 rounded font-bold uppercase flex items-center"
+                    >
+                      <span class="w-1 h-1 bg-red-500 rounded-full mr-1"></span>
+                      LIVE
+                    </span>
+                  </div>
+                  <div
+                    class="flex items-center justify-between group cursor-pointer"
+                  >
+                    <div class="flex items-center space-x-3">
+                      <img
+                        class="w-8 h-8 rounded object-contain dark:bg-gray-800 light:bg-gray-100 p-1"
+                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Los_Angeles_Lakers_logo.svg/512px-Los_Angeles_Lakers_logo.svg.png"
+                      />
+                      <div>
+                        <p
+                          class="text-[10px] text-gray-500 font-bold leading-none mb-1"
+                        >
+                          NBA • Regular Season
+                        </p>
+                        <p
+                          class="text-xs font-bold dark:text-white light:text-slate-800"
+                        >
+                          LAL vs GSW
+                        </p>
+                      </div>
+                    </div>
+                    <span class="text-[10px] text-gray-500 font-bold"
+                      >7:30 PM</span
+                    >
+                  </div>
+                  <div
+                    class="flex items-center justify-between group cursor-pointer"
+                  >
+                    <div class="flex items-center space-x-3">
+                      <img
+                        class="w-8 h-8 rounded object-contain dark:bg-gray-800 light:bg-gray-100 p-1"
+                        src="https://upload.wikimedia.org/wikipedia/en/thumb/2/2d/Washington_Capitals.svg/512px-Washington_Capitals.svg.png"
+                      />
+                      <div>
+                        <p
+                          class="text-[10px] text-gray-500 font-bold leading-none mb-1"
+                        >
+                          NHL • Regular Season
+                        </p>
+                        <p
+                          class="text-xs font-bold dark:text-white light:text-slate-800"
+                        >
+                          WSH vs VGK
+                        </p>
+                      </div>
+                    </div>
+                    <span class="text-[10px] text-gray-500 font-bold"
+                      >7:30 PM</span
+                    >
+                  </div>
+                </div>
+                <button
+                  class="w-full mt-6 text-emerald-accent text-[11px] font-bold text-center hover:underline"
+                >
+                  View All Matches
+                </button>
+              </div>
+              <!-- END: CalendarWidget -->
+              <!-- BEGIN: TopPlayersWidget -->
+              <div
+                class="bg-card-bg rounded-2xl p-6 border border-border-subtle"
+              >
+                <div class="flex items-center justify-between mb-6">
+                  <div class="flex items-center space-x-2">
+                    <h3 class="font-bold">Top Players</h3>
+                    <div class="flex items-center space-x-1 ml-2">
+                      <button
+                        class="p-1 rounded hover:bg-gray-800 text-gray-400 hover:text-white"
+                      >
+                        <svg
+                          class="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewbox="0 0 24 24"
+                        >
+                          <path
+                            d="M15 19l-7-7 7-7"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                          ></path>
+                        </svg></button
+                      ><button
+                        class="p-1 rounded hover:bg-gray-800 text-gray-400 hover:text-white"
+                      >
+                        <svg
+                          class="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewbox="0 0 24 24"
+                        >
+                          <path
+                            d="M9 5l7 7-7 7"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                          ></path>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                  <a
+                    class="text-emerald-accent text-xs font-semibold hover:underline"
+                    href="index.html"
+                    >View All</a
+                  >
+                </div>
+                <div class="flex space-x-2 mb-6 bg-dark-bg p-1 rounded-lg">
+                  <button
+                    class="flex-1 py-1.5 text-[10px] font-bold rounded-md bg-emerald-accent/10 border border-emerald-accent text-emerald-accent"
+                  >
+                    Run Scorers
+                  </button>
+                  <button
+                    class="flex-1 py-1.5 text-[10px] font-bold rounded-md text-gray-500 hover:text-white"
+                  >
+                    Wicket Takers
+                  </button>
+                  <button
+                    class="flex-1 py-1.5 text-[10px] font-bold rounded-md text-gray-500 hover:text-white"
+                  >
+                    Most Sixes
+                  </button>
+                </div>
+                <div class="space-y-4">
+                  <!-- Player 1 -->
+                  <div class="flex items-center justify-between group">
+                    <div class="flex items-center space-x-3">
+                      <span class="text-xs font-bold text-gray-500 w-3">1</span>
+                      <img
+                        alt="Player"
+                        class="w-10 h-10 rounded-full border border-gray-700"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuDLDPrPcqWJxv2qo9yWmwWC-ty1lnU3gcywyMoVfGrbX5Qe0_nxYx8tLFLrPWo5E70dAb7i_5lRIE2nCiBAMkEbUBH9_TniUU6nX4php6ExpRClnGnztsgdpkKLrZ81jtQoYnGo0Z526JYwmDZzfdsvkkx3hzA6FzHu2cOP5V--DcxY6ewXS4DNc9sHVlRAfLTXb74nJbEVTSX5cPtRND4iS2SKRn2KQ8oyPMhyGL8v2lepI4p9ogmBASf1tfBke4is3CTn21ru-66x"
+                      />
+                      <div>
+                        <p class="text-sm font-bold">
+                          Virat Kohli
+                          <span class="text-[10px] text-gray-500 font-normal"
+                            >(RCB)</span
+                          >
+                        </p>
+                      </div>
+                    </div>
+                    <span class="text-sm font-bold"
+                      >687
+                      <span class="text-[10px] text-gray-500 font-normal"
+                        >Runs</span
+                      ></span
+                    >
+                  </div>
+                  <!-- Player 2 -->
+                  <div class="flex items-center justify-between group">
+                    <div class="flex items-center space-x-3">
+                      <span class="text-xs font-bold text-gray-500 w-3">2</span>
+                      <img
+                        alt="Player"
+                        class="w-10 h-10 rounded-full border border-gray-700"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuARoeVfdmCB0gmB_7GZiGJEHq7GWlZhNqExPDSBPKGIh_MhSiQ58Iv9x5syL2EGN05s-_FRnyasjTjuSmu7SCi9rb7UxDprcxw9-n87GpCqDDNQ7tsoo3pEfre-F3V14PLbn8c3l3PZarZy8uq-vcFyKeddhqff00ltBhZra007NodLBwe1daNCicoSZZ1gZW19PoIdXNeIO5t95OYrQ8-ZUnIrsRWATC1R-qbofVug36c_aig3hTHIfNrf-4kFTgpVXg-oH8z9HNJI"
+                      />
+                      <div>
+                        <p class="text-sm font-bold">
+                          Ruturaj Gaikwad
+                          <span class="text-[10px] text-gray-500 font-normal"
+                            >(CSK)</span
+                          >
+                        </p>
+                      </div>
+                    </div>
+                    <span class="text-sm font-bold"
+                      >583
+                      <span class="text-[10px] text-gray-500 font-normal"
+                        >Runs</span
+                      ></span
+                    >
+                  </div>
+                  <!-- Player 3 -->
+                  <div class="flex items-center justify-between group">
+                    <div class="flex items-center space-x-3">
+                      <span class="text-xs font-bold text-gray-500 w-3">3</span>
+                      <img
+                        alt="Player"
+                        class="w-10 h-10 rounded-full border border-gray-700"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuAfg2qyUACeD4MlfftLeMU8ztnPquy1ELU9zVM2SIZitnTbqPI8ixKG73GIzciPbIdyLQ8O0oTkBMn_UA2oSHMe2GKhdqEC2GinFn9Cj-CbyLEoyuXNnOCeuI3GUst_dzGoGceNytjJWxJXiy-RdODDmeG-Ax2cCYOWfzNmrjDbjjBPX6ZhQy097T3YaG4y1mQ9U5OBEosTC3tQTgs6IONjfy_djp9lR_IE0xLRDUIJvi4dWOwvR98uCmjHMVNVBzqWZkONB7EvL8qJ"
+                      />
+                      <div>
+                        <p class="text-sm font-bold">
+                          Rohit Sharma
+                          <span class="text-[10px] text-gray-500 font-normal"
+                            >(MI)</span
+                          >
+                        </p>
+                      </div>
+                    </div>
+                    <span class="text-sm font-bold"
+                      >535
+                      <span class="text-[10px] text-gray-500 font-normal"
+                        >Runs</span
+                      ></span
+                    >
+                  </div>
+                  <!-- Player 4 -->
+                  <div class="flex items-center justify-between group">
+                    <div class="flex items-center space-x-3">
+                      <span class="text-xs font-bold text-gray-500 w-3">4</span>
+                      <img
+                        alt="Player"
+                        class="w-10 h-10 rounded-full border border-gray-700"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuCzN12hLyukBpAhgiTDVCYyC3JOohsyEsDmKKpiBasPkvLfXYhltpiVi-8Y7YOkRc7txBeEdhWWRiFkiFpqG12UdFGIDjy2Js447FWl8t4CCcd7uHBSMMw2ewq6Qyw6dgCX3gvMqmsi4Lf3sINgVbp5_Syf15qnaK-Bu8-Kq2czUIKboXuHpCGsmXZhzR-A3KaPypso6uerUOca6OJt29ypfGrvx8iPmVr3SJ961sGXAubFJmz73kP1R6Nmfsbygn4n3yb8p9Bif0nW"
+                      />
+                      <div>
+                        <p class="text-sm font-bold">
+                          Shubman Gill
+                          <span class="text-[10px] text-gray-500 font-normal"
+                            >(GT)</span
+                          >
+                        </p>
+                      </div>
+                    </div>
+                    <span class="text-sm font-bold"
+                      >508
+                      <span class="text-[10px] text-gray-500 font-normal"
+                        >Runs</span
+                      ></span
+                    >
+                  </div>
+                  <!-- Player 5 -->
+                  <div class="flex items-center justify-between group">
+                    <div class="flex items-center space-x-3">
+                      <span class="text-xs font-bold text-gray-500 w-3">5</span>
+                      <img
+                        alt="Player"
+                        class="w-10 h-10 rounded-full border border-gray-700"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuDIbZAWgJFUi3axi4bstHaedS2KOC-Pp79ULxYAL6s3thZIfNYVZxG2wNk9QMAqSbuTAGG68vDkOEAtOCHNXJaHLNqWXqdyAaXr9digtML9E6nt2GyXylG1kJT7jX4ddl0eTWCFCjT9xrsBS4IuqIyVTOdGvixL53HGY0D84qG5KbbCdsyOnMwkBAILU7V6r5AKGY49sq_pxGMOMlB8c0VqEvNPAS6aItcXVqHxRJ6saRJF2WgpDr-Rvh-Kp1huUvCi5AqdeBg3VhCy"
+                      />
+                      <div>
+                        <p class="text-sm font-bold">
+                          KL Rahul
+                          <span class="text-[10px] text-gray-500 font-normal"
+                            >(LSG)</span
+                          >
+                        </p>
+                      </div>
+                    </div>
+                    <span class="text-sm font-bold"
+                      >496
+                      <span class="text-[10px] text-gray-500 font-normal"
+                        >Runs</span
+                      ></span
+                    >
+                  </div>
+                </div>
+              </div>
+              <!-- END: TopPlayersWidget -->
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+    <script type="module" src="js/script.js"></script>
+    <!-- BEGIN: BottomNavigation (Mobile/Tablet) -->
+    <div
+      class="fixed bottom-0 left-0 right-0 bg-dark-bg border-t border-border-subtle flex justify-around py-3 lg:hidden z-50"
+    >
+      <a
+        class="flex flex-col items-center space-y-1 text-gray-500"
+        href="index.html"
+      >
+        <svg
+          class="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          viewbox="0 0 24 24"
+        >
+          <path
+            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+          ></path>
+        </svg>
+        <span class="text-[10px] font-medium">Home</span>
+      </a>
+      <a
+        class="flex flex-col items-center space-y-1 text-emerald-accent"
+        href="index.html"
+      >
+        <svg class="w-6 h-6" fill="currentColor" viewbox="0 0 20 20">
+          <path
+            clip-rule="evenodd"
+            d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 000 2h6a1 1 0 100-2H7z"
+            fill-rule="evenodd"
+          ></path>
+        </svg>
+        <span class="text-[10px] font-bold">Matches</span>
+      </a>
+      <a
+        class="flex flex-col items-center space-y-1 text-gray-500"
+        href="index.html"
+      >
+        <svg
+          class="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          viewbox="0 0 24 24"
+        >
+          <path
+            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+          ></path>
+        </svg>
+        <span class="text-[10px] font-medium">Communities</span>
+      </a>
+      <a
+        class="flex flex-col items-center space-y-1 text-gray-500"
+        href="index.html"
+      >
+        <svg
+          class="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          viewbox="0 0 24 24"
+        >
+          <path
+            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+          ></path>
+        </svg>
+        <span class="text-[10px] font-medium">Leaderboard</span>
+      </a>
+      <a
+        class="flex flex-col items-center space-y-1 text-gray-500"
+        href="index.html"
+      >
+        <svg
+          class="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          viewbox="0 0 24 24"
+        >
+          <path
+            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+          ></path>
+        </svg>
+        <span class="text-[10px] font-medium">Profile</span>
+      </a>
+    </div>
+    <!-- END: BottomNavigation -->
+  </body>
+</html>

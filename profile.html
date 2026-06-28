@@ -4,6 +4,13 @@
   <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <script>
+      if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    </script>
     <link rel="stylesheet" href="css/style.css" />
     <link
       href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800&amp;family=Hanken+Grotesk:wght@300;400;500;600;700&amp;display=swap"
@@ -72,6 +79,12 @@
               "error-container": "#ffdad6",
               "tertiary-container": "#98a3ba",
               "on-secondary": "#ffffff",
+              brand: {
+                green: "#10b981",
+                dark: "#0B0E11",
+                card: "#16191E",
+                border: "#2A2E35",
+              },
             },
             borderRadius: {
               DEFAULT: "0.25rem",
@@ -152,8 +165,9 @@
     <style>
       body {
         font-family: "Hanken Grotesk", sans-serif;
-        background-color: #0b1c30;
       }
+      .dark body { background-color: #0b1c30; }
+      html:not(.dark) body { background-color: #f8f9ff; }
       /* Profile Frames */
       .frame-gold {
         border: 4px solid #eab308 !important;
@@ -194,74 +208,48 @@
         background: rgba(111, 251, 190, 0.2);
         border-radius: 10px;
       }
-    </style>
-  </head>
-  <body class="overflow-x-hidden bg-inverse-surface">
-    <!-- Top AppBar -->
-    <header
-      class="bg-inverse-surface/90 backdrop-blur-md text-primary-fixed-dim docked full-width top-0 sticky z-50 border-b border-outline-variant/20 shadow-md transition-all duration-300 ease-in-out"
-    >
-      <div
-        class="flex justify-between items-center px-margin-desktop h-16 max-w-max-width mx-auto"
-      >
-        <div class="flex items-center gap-xl">
-          <span
-            class="text-headline-md font-headline-md font-bold text-primary-fixed tracking-tight"
-            >FanConnect</span
-          >
-          <nav class="hidden lg:flex items-center gap-md">
-            <a
-              class="text-primary-fixed-dim hover:text-white transition-colors text-label-md font-label-md"
-              href="index.html"
-              >Home</a
-            >
-            <a
-              class="text-surface-dim hover:text-primary-fixed-dim transition-colors text-label-md font-label-md"
-              href="#"
-              >Matches</a
-            >
-            <a
-              class="text-surface-dim hover:text-primary-fixed-dim transition-colors text-label-md font-label-md"
-              href="#"
-              >Fan War</a
-            >
-            <a
-              class="text-surface-dim hover:text-primary-fixed-dim transition-colors text-label-md font-label-md"
-              href="#"
-              >Quizzes</a
-            >
-            <a
-              class="text-surface-dim hover:text-primary-fixed-dim transition-colors text-label-md font-label-md"
-              href="#"
-              >Community</a
-            >
-          </nav>
-        </div>
-        <div class="flex items-center gap-base">
-          <button
-            class="p-2 hover:bg-surface-variant/10 rounded-full transition-all"
-          >
-            <span class="material-symbols-outlined" data-icon="notifications"
-              >notifications</span
-            >
+    
+.sidebar-collapsed #sidebar{width:0!important;min-width:0!important;border:0!important;padding:0!important;overflow:hidden!important;}
+</style>
+  <meta name="description" content="FanConnect sports platform for fans, scores, communities and updates.">
+<meta property="og:title" content="FanConnect">
+<meta name="robots" content="index,follow">
+<meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+</head>
+  <body class="h-screen w-full flex flex-col overflow-hidden transition-colors duration-300 bg-[#F8F9FF] dark:bg-[#0F172A]">
+
+    <main class="flex-1 flex flex-col h-screen overflow-hidden transition-colors duration-300 bg-[#F8F9FF] dark:bg-brand-dark">
+      <!-- Top AppBar Header -->
+      <header class="bg-white dark:bg-brand-dark border-b border-gray-200 dark:border-brand-border text-slate-900 dark:text-white docked full-width top-0 sticky z-50 transition-all duration-300 ease-in-out h-20 shrink-0">
+        <div class="flex justify-between items-center px-4 md:px-8 h-full max-w-[1440px] mx-auto">
+          <div class="flex items-center flex-1">
+            <div id="header-logo" class="lg:hidden flex items-center space-x-2">
+                <img src="assets/fancoin/fanconnactlogo.png" alt="FanConnect" class="w-8 h-8" />
+                <span class="text-xl font-bold font-headline tracking-tight"><span class="text-fan">Fan</span><span class="text-connect">Connact</span></span>
+            </div>
+
+            <!-- Top Navigation -->
+            <nav class="hidden md:flex items-center space-x-6 mx-6 shrink-0">
+              <a class="text-gray-400 hover:text-brand-green transition-colors font-medium text-sm" href="index.html">Home</a>
+              <a class="text-gray-400 hover:text-brand-green transition-colors font-medium text-sm" href="news&update.html">News</a>
+              <a class="text-gray-400 hover:text-brand-green transition-colors font-medium text-sm" href="livematches.html">Matches</a>
+            </nav>
+          </div>
+          <div class="flex items-center space-x-4">
+          <button class="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10" id="theme-toggle">
+            <span id="theme-toggle-light-icon" class="material-symbols-outlined hidden text-yellow-400">light_mode</span>
+            <span id="theme-toggle-dark-icon" class="material-symbols-outlined text-slate-600">dark_mode</span>
           </button>
-          <button
-            id="mobile-logout-btn"
-            class="lg:hidden p-2 hover:bg-error/10 text-error rounded-full transition-all"
-          >
+          <button id="mobile-logout-btn" class="p-2 hover:bg-error/10 text-error rounded-full transition-all">
             <span class="material-symbols-outlined">logout</span>
-          </button>
-          <button
-            class="text-primary-fixed border-b-2 border-primary-fixed pb-2 flex items-center gap-2 p-2 transition-all"
-          >
-            <span class="material-symbols-outlined" data-icon="account_circle"
-              >account_circle</span
-            >
           </button>
         </div>
       </div>
-    </header>
-    <main class="min-h-[calc(100vh-64px)] p-md md:p-xl lg:px-lg xl:px-xl">
+      </header>
+
+      <!-- Scrollable Content -->
+      <div class="flex-1 overflow-y-auto custom-scrollbar p-md md:p-xl lg:px-lg xl:px-xl">
       <div class="dashboard-container space-y-lg">
         <!-- Profile Hero Section -->
         <div
@@ -755,6 +743,7 @@
         </div>
       </div>
     </main>
+    <script type="module" src="js/script.js"></script>
     <!-- Crop Modal Profile -->
     <div
       id="crop-modal-profile"
@@ -886,6 +875,10 @@
             `LVL ${data.level || 1}`;
           document.getElementById("profile-hero-coins").textContent =
             `${data.coins || 0} Coins`;
+
+          if (data.photoURL) {
+            document.getElementById("profile-hero-img").src = data.photoURL;
+          }
 
           const username = data.username || user.email.split("@")[0];
           document.getElementById("profile-hero-name").textContent =
@@ -1044,7 +1037,7 @@
         });
 
       const logoutHandler = () => {
-        signOut(auth).then(() => (window.location.href = "login.html"));
+        signOut(auth).then(() => (window.location.href = "berforeloginindex.html"));
       };
 
       document
@@ -1054,5 +1047,6 @@
         .getElementById("mobile-logout-btn")
         ?.addEventListener("click", logoutHandler);
     </script>
-  </body>
+    <script type="module" src="js/script.js"></script>
+</body>
 </html>

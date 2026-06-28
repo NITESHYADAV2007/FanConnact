@@ -175,8 +175,15 @@
       .nav-suppressed {
         display: none !important;
       }
-    </style>
-  </head>
+    
+.sidebar-collapsed #sidebar{width:0!important;min-width:0!important;border:0!important;padding:0!important;overflow:hidden!important;}
+</style>
+  <meta name="description" content="FanConnect sports platform for fans, scores, communities and updates.">
+<meta property="og:title" content="FanConnect">
+<meta name="robots" content="index,follow">
+<meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+</head>
   <body
     class="bg-inverse-surface font-body-md text-on-surface h-screen overflow-hidden flex flex-col md:flex-row"
   >
@@ -195,20 +202,12 @@
       <div class="relative z-10 p-xl flex flex-col h-full justify-between">
         <!-- Brand Logo -->
         <div class="flex items-center gap-base">
-          <div
-            class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center glow-emerald"
-          >
-            <span
-              class="material-symbols-outlined text-primary-fixed"
-              style="font-variation-settings: &quot;FILL&quot; 1"
-              >shield</span
-            >
-          </div>
+          <img src="assets/fancoin/fanconnactlogo.png" alt="FanConnect" class="w-12 h-12" />
           <div>
             <h1
               class="font-headline-md text-headline-md text-primary-fixed tracking-tight leading-none"
             >
-              FanConnect
+              <span class="text-fan">Fan</span><span class="text-connect">Connact</span>
             </h1>
             <p
               class="text-label-sm font-label-sm text-surface-dim uppercase tracking-widest mt-1"
@@ -578,7 +577,6 @@
                   id="dob"
                   class="w-full bg-surface-variant/5 border border-outline-variant/20 rounded-xl py-3 pl-12 pr-4 text-on-tertiary placeholder:text-surface-dim/30 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
                   type="date"
-                  required
                 />
               </div>
             </div>
@@ -653,11 +651,11 @@
               for="terms"
             >
               I agree to the
-              <a class="text-primary-fixed-dim underline" href="#"
+              <a class="text-primary-fixed-dim underline" href="index.html"
                 >Terms of Service</a
               >
               and
-              <a class="text-primary-fixed-dim underline" href="#"
+              <a class="text-primary-fixed-dim underline" href="index.html"
                 >Privacy Policy</a
               >.
             </label>
@@ -802,5 +800,75 @@
       });
     </script>
     <script type="module" src="js/firebase-config.js"></script>
-  </body>
+  <script src="js/theme.js"></script><script src="js/sidebar.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded',()=>{
+const page=location.pathname.split('/').pop();
+document.querySelectorAll('a[href]').forEach(a=>{
+ if(a.getAttribute('href')===page){
+   a.classList.add('bg-emerald-accent/10','text-emerald-accent');
+ }
+});
+});
+</script>
+
+
+<script>
+document.addEventListener('DOMContentLoaded',function(){
+ const page=location.pathname.split('/').pop();
+ document.querySelectorAll('a[href]').forEach(a=>{
+   const h=a.getAttribute('href');
+   if(h===page){a.classList.add('bg-emerald-accent/10','text-emerald-accent');}
+ });
+ const t=document.getElementById('theme-toggle');
+ const light=document.getElementById('theme-toggle-light-icon');
+ const dark=document.getElementById('theme-toggle-dark-icon');
+ function sync(){
+   const isDark=document.documentElement.classList.contains('dark');
+   if(light) light.classList.toggle('hidden',!isDark);
+   if(dark) dark.classList.toggle('hidden',isDark);
+ }
+ sync();
+ t?.addEventListener('click',()=>{
+   document.documentElement.classList.toggle('dark');
+   localStorage.setItem('color-theme',document.documentElement.classList.contains('dark')?'dark':'light');
+   sync();
+ });
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded',()=>{
+ const btn=document.getElementById('mobile-menu-btn');
+ const sidebar=document.getElementById('sidebar');
+ if(btn && sidebar){
+   const apply=()=>{
+     const c=localStorage.getItem('sidebarCollapsed')==='true';
+     if(window.innerWidth>=1024){
+       sidebar.classList.toggle('w-20',c);
+       sidebar.classList.toggle('w-64',!c);
+       sidebar.querySelectorAll('.nav-text,.logo-text').forEach(el=>el.style.display=c?'none':'');
+     }
+   };
+   apply();
+   btn.addEventListener('click',()=>{
+      if(window.innerWidth>=1024){
+        localStorage.setItem('sidebarCollapsed', localStorage.getItem('sidebarCollapsed')==='true'?'false':'true');
+        apply();
+      } else {
+        sidebar.classList.toggle('-translate-x-full');
+      }
+   });
+ }
+ const t=document.getElementById('theme-toggle');
+ if(t){
+   t.addEventListener('click',()=>{
+      const dark=document.documentElement.classList.toggle('dark');
+      localStorage.setItem('color-theme',dark?'dark':'light');
+   });
+ }
+});
+</script>
+
+</body>
 </html>

@@ -1,0 +1,21 @@
+
+document.addEventListener('DOMContentLoaded',()=>{
+const btn=document.getElementById('theme-toggle');
+const light=document.getElementById('theme-toggle-light-icon');
+const dark=document.getElementById('theme-toggle-dark-icon');
+
+function render(){
+ const isDark=localStorage.getItem('color-theme')==='dark';
+ document.documentElement.classList.toggle('dark',isDark);
+ if(light) light.classList.toggle('hidden',!isDark);
+ if(dark) dark.classList.toggle('hidden',isDark);
+}
+if(!localStorage.getItem('color-theme')) localStorage.setItem('color-theme','dark');
+render();
+
+btn?.addEventListener('click',()=>{
+ const next=document.documentElement.classList.contains('dark')?'light':'dark';
+ localStorage.setItem('color-theme',next);
+ render();
+});
+});

@@ -1,7 +1,15 @@
-<html class="dark" lang="en">
+<!DOCTYPE html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <script>
+      if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    </script>
     <title>FanConnect Dashboard</title>
     <!-- Tailwind CSS v3 with plugins -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
@@ -14,6 +22,7 @@
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
       rel="stylesheet"
     />
+    <link rel="stylesheet" href="css/style.css" />
     <script id="tailwind-config">
       tailwind.config = {
         darkMode: "class",
@@ -118,16 +127,11 @@
         box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
       }
       .hero-gradient {
-        background:
-          linear-gradient(rgba(11, 14, 17, 0.85), rgba(11, 14, 17, 0.95)),
-          url("https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&q=80&w=1536");
+        background-image: linear-gradient(rgba(11, 14, 17, 0.3), rgba(11, 14, 17, 0.6));
         background-size: cover;
         background-position: center;
       }
       :root:not(.dark) .hero-gradient {
-        background-image:
-          linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.7)),
-          url("https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&q=80&w=1536");
         border-color: #e2e8f0;
         background-size: cover;
         background-position: center;
@@ -165,125 +169,54 @@
       .frame-gold { border: 3px solid #eab308 !important; box-shadow: 0 0 10px rgba(234, 179, 8, 0.5); }
       .frame-emerald { border: 3px solid #10b981 !important; box-shadow: 0 0 10px rgba(16, 185, 129, 0.5); }
       .frame-diamond { border: 3px solid #22d3ee !important; box-shadow: 0 0 10px rgba(34, 211, 238, 0.5); }
-      .sidebar-collapsed {
-        width: 80px !important;
-      }
-      /* Instead of hiding the promo card, we'll scale it or hide just the text */
-      .sidebar-collapsed .promo-card .relative.z-10,
-      .sidebar-collapsed .promo-card img {
-        display: none !important;
-      }
-      .sidebar-collapsed .promo-card {
-        padding: 1rem !important;
-      }
-      .sidebar-collapsed .logo-text,
-      .sidebar-collapsed .nav-text,
-      .sidebar-collapsed .promo-card,
-      .sidebar-collapsed #close-sidebar-btn {
-        display: none !important;
-      }
-      .sidebar-collapsed .nav-link,
-      .sidebar-collapsed .logo-container {
-        justify-content: center;
-        padding-left: 0;
-        padding-right: 0;
-      }
-      .sidebar-collapsed .nav-link span:first-child {
-        margin-right: 0 !important;
-      }
-    </style>
-  <body class="h-screen w-full flex flex-row overflow-hidden transition-colors duration-300">
+    
+.sidebar-collapsed #sidebar { width: 0 !important; min-width: 0 !important; border: 0 !important; padding: 0 !important; overflow: hidden !important; }
+</style>
+  <body class="h-screen w-full flex flex-row overflow-hidden transition-colors duration-300 bg-[#F8F9FF] dark:bg-[#0B0E11]">
     <!-- BEGIN: Sidebar -->
-    <aside
-      class="fixed inset-y-0 left-0 z-50 w-64 flex-shrink-0 flex flex-col h-screen transition-all duration-300 border-r dark:bg-brand-dark dark:border-brand-border bg-white border-gray-200 shadow-xl lg:shadow-none -translate-x-full lg:translate-x-0 lg:static overflow-y-auto custom-scrollbar"
+    <aside id="sidebar"
+      class="fixed inset-y-0 left-0 z-[60] w-64 flex-shrink-0 flex flex-col h-screen transition-all duration-300 bg-white dark:bg-brand-dark border-r border-gray-200 dark:border-brand-border shadow-xl lg:shadow-none -translate-x-full lg:translate-x-0 lg:static overflow-y-auto custom-scrollbar"
       data-purpose="sidebar-navigation"
-      id="sidebar"
     >
       <!-- Mobile Close Button -->
-      <button id="close-sidebar-btn" class="lg:hidden p-2 absolute top-4 right-4 dark:text-gray-400 light:text-slate-500">
+      <button id="close-sidebar-btn" class="lg:hidden p-2 absolute top-4 right-4 text-slate-500 dark:text-gray-400">
         <span class="material-symbols-outlined">close</span>
       </button>
 
       <div class="p-6 flex items-center space-x-2 logo-container">
-        <div
-          class="w-8 h-8 bg-brand-green rounded-lg flex-shrink-0 flex items-center justify-center shadow-lg shadow-emerald-500/20"
-        >
-          <span class="material-symbols-outlined text-black text-xl"
-            >sports_cricket</span
-          >
-        </div>
-        <span
-          class="text-xl font-bold tracking-tight font-headline dark:text-white light:text-slate-900 logo-text"
-          >FanConnect</span
-        >
+        <img src="assets/fancoin/fanconnactlogo.png" alt="FanConnect" class="w-8 h-8 flex-shrink-0" />
+        <span class="text-xl font-bold tracking-tight font-headline logo-text"><span class="text-fan">Fan</span><span class="text-connect">Connact</span></span>
       </div>
       <nav class="flex-1 px-4 space-y-1 mt-2 transition-all">
-        <a
-          class="flex items-center space-x-3 px-3 py-3 rounded-lg nav-link nav-link-active"
-          href="#"
-        >
+        <h3 class="text-xs font-bold text-slate-500 dark:text-gray-400 uppercase tracking-widest mb-4 px-3 opacity-60">Global</h3>
+        <a class="flex items-center space-x-3 px-3 py-3 rounded-lg nav-link nav-link-active" href="index.html">
           <span class="material-symbols-outlined text-xl">home</span>
           <span class="text-sm nav-text">Home</span>
         </a>
-        <a
-          class="flex items-center space-x-3 px-3 py-3 rounded-lg nav-link transition-colors dark:text-gray-400 dark:hover:text-white text-slate-500 hover:text-slate-900 hover:bg-gray-100"
-          href="#"
-        >
+        <a class="flex items-center space-x-3 px-3 py-3 rounded-lg nav-link transition-colors text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:bg-gray-100" href="livematches.html">
           <span class="material-symbols-outlined text-xl">live_tv</span>
           <span class="text-sm nav-text">Live Matches</span>
         </a>
-        <a
-          class="flex items-center space-x-3 px-3 py-3 rounded-lg nav-link transition-colors dark:text-gray-400 dark:hover:text-white light:text-slate-500 light:hover:text-slate-900 light:hover:bg-gray-100"
-          href="#"
-        >
-          <span class="material-symbols-outlined text-xl">groups</span>
-          <span class="text-sm nav-text">Communities</span>
+        <a class="flex items-center space-x-3 px-3 py-3 rounded-lg nav-link transition-colors text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:bg-gray-100" href="news&update.html">
+          <span class="material-symbols-outlined text-xl">newspaper</span>
+          <span class="text-sm nav-text">News & Updates</span>
         </a>
-        <a
-          class="flex items-center space-x-3 px-3 py-3 rounded-lg nav-link transition-colors dark:text-gray-400 dark:hover:text-white light:text-slate-500 light:hover:text-slate-900 light:hover:bg-gray-100"
-          href="#"
-        >
-          <span class="material-symbols-outlined text-xl">verified</span>
-          <span class="text-sm nav-text">Predictions</span>
-        </a>
-        <a
-          class="flex items-center space-x-3 px-3 py-3 rounded-lg nav-link transition-colors dark:text-gray-400 dark:hover:text-white light:text-slate-500 light:hover:text-slate-900 light:hover:bg-gray-100"
-          href="#"
-        >
-          <span class="material-symbols-outlined text-xl">quiz</span>
-          <span class="text-sm nav-text">Quiz Arena</span>
-        </a>
-        <a
-          class="flex items-center space-x-3 px-3 py-3 rounded-lg nav-link transition-colors dark:text-gray-400 dark:hover:text-white light:text-slate-500 light:hover:text-slate-900 light:hover:bg-gray-100"
-          href="#"
-        >
-          <span class="material-symbols-outlined text-xl">leaderboard</span>
-          <span class="text-sm nav-text">Leaderboard</span>
-        </a>
-        <a
-          class="flex items-center space-x-3 px-3 py-3 rounded-lg nav-link transition-colors dark:text-gray-400 dark:hover:text-white light:text-slate-500 light:hover:text-slate-900 light:hover:bg-gray-100"
-          href="#"
-        >
+        <div class="h-px bg-gray-200 dark:bg-brand-border my-4 mx-2"></div>
+
+        <a class="flex items-center space-x-3 px-3 py-3 rounded-lg nav-link transition-colors text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:bg-gray-100" href="profile.html">
           <span class="material-symbols-outlined text-xl">person_pin</span>
           <span class="text-sm nav-text">Player Zone</span>
         </a>
         <a
-          class="flex items-center space-x-3 px-3 py-3 rounded-lg nav-link transition-colors dark:text-gray-400 dark:hover:text-white light:text-slate-500 light:hover:text-slate-900 light:hover:bg-gray-100"
-          href="#"
-        >
-          <span class="material-symbols-outlined text-xl">newspaper</span>
-          <span class="text-sm nav-text">News &amp; Updates</span>
-        </a>
-        <a
-          class="flex items-center space-x-3 px-3 py-3 rounded-lg nav-link transition-colors dark:text-gray-400 dark:hover:text-white light:text-slate-500 light:hover:text-slate-900 light:hover:bg-gray-100"
-          href="#"
+          class="flex items-center space-x-3 px-3 py-3 rounded-lg nav-link transition-colors text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:bg-gray-100"
+          href="index.html"
         >
           <span class="material-symbols-outlined text-xl">notifications</span>
           <span class="text-sm nav-text">Notifications</span>
         </a>
         <a
-          class="flex items-center space-x-3 px-3 py-3 rounded-lg nav-link transition-colors dark:text-gray-400 dark:hover:text-white light:text-slate-500 light:hover:text-slate-900 light:hover:bg-gray-100"
-          href="#"
+          class="flex items-center space-x-3 px-3 py-3 rounded-lg nav-link transition-colors text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:bg-gray-100"
+          href="index.html"
         >
           <span class="material-symbols-outlined text-xl">settings</span>
           <span class="text-sm nav-text">Settings</span>
@@ -296,22 +229,20 @@
         >
           <div class="relative z-10">
             <p
-              class="text-[10px] font-black uppercase tracking-widest mb-1 drop-shadow-md dark:text-brand-green light:text-emerald-600"
+              class="text-[10px] font-black uppercase tracking-widest mb-1 drop-shadow-md text-emerald-600 dark:text-brand-green"
             >
               Fan War
             </p>
-            <h4
-              class="text-xl font-bold font-headline leading-tight mb-1 drop-shadow-lg dark:text-white text-slate-900"
-            >
+            <h4 class="text-xl font-bold font-headline leading-tight mb-1 drop-shadow-lg text-slate-900 dark:text-white">
               RCB vs CSK
             </h4>
             <p
-              class="text-[11px] font-medium max-w-[120px] mb-4 drop-shadow-sm dark:text-white/90 text-slate-600"
+              class="text-[11px] font-medium max-w-[120px] mb-4 drop-shadow-sm text-slate-600 dark:text-white/90"
             >
               Join the ultimate fan battle
             </p>
             <button
-              class="w-full bg-brand-green text-black font-bold py-2.5 rounded-lg text-sm transition-all active:scale-95 hover:bg-emerald-400 shadow-lg dark:shadow-emerald-500/40 light:shadow-emerald-500/20"
+              class="w-full bg-brand-green text-black font-bold py-2.5 rounded-lg text-sm transition-all active:scale-95 hover:bg-emerald-400 shadow-lg shadow-emerald-500/20 dark:shadow-emerald-500/40"
             >
               Join Now
             </button>
@@ -330,89 +261,66 @@
     </aside>
     <!-- END: Sidebar -->
     <!-- Main Content Area -->
-    <main
-      class="flex-1 flex flex-col h-screen overflow-hidden transition-colors duration-300 dark:bg-[#0B0E11] light:bg-[#F8F9FF]"
-    >
+    <main class="flex-1 flex flex-col h-screen overflow-hidden transition-colors duration-300 bg-[#F8F9FF] dark:bg-[#0B0E11]">
       <!-- BEGIN: Header -->
       <header
-        class="h-16 flex items-center justify-between px-4 md:px-8 border-b transition-colors duration-300 dark:bg-brand-dark dark:border-brand-border light:bg-white light:border-gray-200 shrink-0"
+        class="h-20 flex items-center justify-between px-4 md:px-8 border-b transition-colors duration-300 bg-white dark:bg-brand-dark border-gray-200 dark:border-brand-border shrink-0 z-50 sticky top-0"
         data-purpose="top-navigation"
       >
-        <div class="flex items-center flex-1 max-w-xl">
-          <button
-            class="mr-4 dark:text-gray-400 light:text-slate-500 hover:text-brand-green transition-colors"
-            id="mobile-menu-btn"
-          >
+        <div class="flex items-center gap-4 flex-1">
+          <button id="mobile-menu-btn" class="p-2 text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 rounded-lg transition-colors shrink-0">
             <span class="material-symbols-outlined">menu</span>
           </button>
-          
-          <!-- Mobile Logo (Visible only on small screens) -->
-          <div id="header-logo" class="flex items-center lg:hidden mr-4">
-            <div class="w-8 h-8 bg-brand-green rounded-lg flex items-center justify-center shadow-lg shadow-emerald-500/20 mr-2">
-              <span class="material-symbols-outlined text-black text-xl">sports_cricket</span>
-            </div>
-            <span class="text-base sm:text-lg font-bold tracking-tight font-headline dark:text-white light:text-slate-900 hidden min-[450px]:block">FanConnect</span>
+
+          <div id="header-logo" class="lg:hidden flex items-center gap-2 ml-2">
+            <img src="assets/fancoin/fanconnactlogo.png" alt="FanConnect" class="w-7 h-7" />
+            <span class="text-base font-bold whitespace-nowrap"><span class="text-fan">Fan</span><span class="text-connect">Connact</span></span>
           </div>
 
-          <div class="relative w-full hidden sm:block">
-            <input
-              class="w-full border-none rounded-xl py-2.5 pl-10 text-sm focus:ring-1 focus:ring-brand-green dark:bg-[#1A1D23] dark:text-white light:bg-gray-100 light:text-slate-800"
-              placeholder="Search matches, teams..."
-              type="text"
-            />
-            <span
-              class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl"
-              >search</span
-            >
+          <!-- Desktop Search -->
+          <div class="relative max-w-md w-full hidden md:block mx-4">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-gray-500">search</span>
+            <input type="text" placeholder="Search matches, players..." class="w-full bg-gray-100 dark:bg-[#1A1D23] border-none rounded-xl py-2.5 pl-10 pr-4 text-sm focus:ring-2 focus:ring-brand-green/50 text-slate-800 dark:text-white transition-all">
           </div>
-          <button class="sm:hidden dark:text-gray-400 light:text-slate-500">
+        </div>
+
+        <div class="flex items-center gap-3 sm:gap-6 shrink-0">
+          <!-- Mobile Search Trigger -->
+          <button class="md:hidden p-2 text-slate-500 dark:text-gray-400"> 
             <span class="material-symbols-outlined">search</span>
           </button>
-        </div>
-        <div class="flex items-center space-x-2 sm:space-x-4 ml-auto shrink-0">
-          <!-- Theme Toggle -->
-          <button
-            class="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-all active:scale-95"
-            id="theme-toggle"
-          >
-            <span
-              id="theme-toggle-light-icon"
-              class="material-symbols-outlined hidden dark:block text-yellow-400"
-              >light_mode</span
-            >
-            <span
-              id="theme-toggle-dark-icon"
-              class="material-symbols-outlined block dark:hidden text-slate-600"
-              >dark_mode</span
-            >
+
+          <!-- Theme Toggle Button -->
+          <button id="theme-toggle" class="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-all active:scale-95">
+            <span id="theme-toggle-light-icon" class="material-symbols-outlined hidden text-yellow-400">light_mode</span>
+            <span id="theme-toggle-dark-icon" class="material-symbols-outlined text-slate-600 dark:text-slate-400">dark_mode</span>
           </button>
-          <div
-            class="flex items-center rounded-full px-2 sm:px-4 py-1.5 space-x-1 sm:space-x-2 dark:bg-[#1A1D23] light:bg-gray-100 border dark:border-white/5 light:border-gray-200"
-          >
+
+          <!-- Wallet / FanCoins -->
+          <div class="flex items-center gap-2 bg-gray-100 dark:bg-[#1A1D23] px-3 py-1.5 rounded-full border border-gray-200 dark:border-white/5"> 
             <div
               class="w-5 h-5 bg-yellow-500 rounded-full flex items-center justify-center text-[10px] text-black font-bold"
             >
               F
             </div>
-            <span class="text-xs sm:text-sm font-bold dark:text-white light:text-slate-900">4,250</span>
+            <span class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">4,250</span>
           </div>
-          <div class="relative shrink-0">
-            <span class="material-symbols-outlined dark:text-gray-400 light:text-slate-500">notifications</span>
-            <span
-              class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-[10px] flex items-center justify-center font-bold text-white shadow-sm"
-              >3</span
-            >
+
+          <div class="relative shrink-0 notification-trigger cursor-pointer"> 
+            <span class="material-symbols-outlined text-slate-500 dark:text-gray-400">notifications</span>
+            <span class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-[10px] flex items-center justify-center font-bold text-white shadow-sm">3</span>
           </div>
+
           <div 
             id="profile-trigger"
-            class="flex items-center space-x-3 md:border-l md:pl-6 dark:border-brand-border light:border-gray-200 group relative cursor-pointer shrink-0"
+            class="flex items-center space-x-3 md:border-l md:pl-6 border-gray-200 dark:border-brand-border group relative cursor-pointer shrink-0"
           >
             <div class="text-right hidden md:block">
               <p
                 id="user-name-display"
-                class="text-sm font-bold font-headline dark:text-white light:text-slate-900"
+                class="text-sm font-bold font-headline text-slate-900 dark:text-white"
               ></p>
-              <p id="user-level-display" class="text-[10px] text-gray-500 uppercase tracking-wider"></p>
+              <p id="user-level-display" class="text-[10px] text-slate-500 uppercase tracking-wider"></p>
             </div>
             <img
               id="user-profile-img"
@@ -440,133 +348,604 @@
                 Stay connected with the game. Predict. Chat. Win!
               </p>
             </div>
-            <!-- BEGIN: Match Center Hero -->
-            <div
-              class="hero-gradient rounded-3xl p-6 md:p-8 relative overflow-hidden border dark:border-white/5 light:border-gray-200 light:shadow-soft transition-all duration-300"
-              data-purpose="hero-match-center"
-            >
-              <div class="flex justify-between items-start mb-8 md:mb-10">
-                <div class="flex items-center space-x-3">
-                  <span
-                    class="bg-red-600 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider flex items-center text-white"
-                  >
-                    <span
-                      class="w-1.5 h-1.5 bg-white rounded-full mr-1.5 animate-pulse"
-                    ></span>
-                    LIVE NOW
-                  </span>
-                  <span
-                    class="text-xs font-medium dark:text-gray-300 light:text-slate-500"
-                    >IPL 2024</span
-                  >
-                </div>
+            <!-- BEGIN: Hero Carousel -->
+            <div class="relative">
+              <div 
+                id="hero-carousel"
+                class="flex overflow-x-scroll snap-x snap-mandatory scroll-smooth hide-scrollbar rounded-3xl bg-white dark:bg-brand-card shadow-soft"
+              >
+                <!-- Slide 1: Cricket -->
                 <div
-                  class="flex items-center space-x-2 backdrop-blur-md px-3 py-1.5 rounded-full border dark:bg-black/40 dark:border-white/10 light:bg-white/40 light:border-slate-200"
+                  class="hero-gradient min-w-full rounded-3xl p-6 md:p-8 relative overflow-hidden border border-gray-200 dark:border-white/5 shadow-soft transition-all duration-300 snap-center"
+                  style="background-image: linear-gradient(rgba(11, 14, 17, 0.3), rgba(11, 14, 17, 0.6)), url('https://images.unsplash.com/photo-1531415074968-036ba1b575da?auto=format&fit=crop&q=80&w=1536');"
+                  data-purpose="hero-match-center"
                 >
-                  <span
-                    class="material-symbols-outlined text-brand-green text-sm"
-                    >visibility</span
+                  <div class="flex justify-between items-start mb-8 md:mb-10">
+                    <div class="flex items-center space-x-3">
+                      <span
+                        class="bg-red-600 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider flex items-center text-white"
+                      >
+                        <span
+                          class="w-1.5 h-1.5 bg-white rounded-full mr-1.5 animate-pulse"
+                        ></span>
+                        LIVE NOW
+                      </span>
+                      <span
+                        class="text-xs font-medium dark:text-gray-300 light:text-slate-500"
+                        >IPL 2024</span
+                      >
+                    </div>
+                    <div
+                      class="flex items-center space-x-2 backdrop-blur-md px-3 py-1.5 rounded-full border dark:bg-black/40 dark:border-white/10 light:bg-white/40 light:border-slate-200"
+                    >
+                      <span
+                        class="material-symbols-outlined text-brand-green text-sm"
+                        >visibility</span
+                      >
+                      <span
+                        class="text-xs font-bold dark:text-white light:text-slate-700"
+                        >8.4K Watching</span
+                      >
+                    </div>
+                  </div>
+                  <div
+                    class="flex items-center justify-between px-2 md:px-8 relative"
                   >
-                  <span
-                    class="text-xs font-bold dark:text-white light:text-slate-700"
-                    >8.4K Watching</span
+                    <!-- Team 1 -->
+                    <div class="text-center">
+                      <img
+                        alt="MI"
+                        class="w-16 h-16 md:w-24 md:h-24 mx-auto drop-shadow-2xl"
+                        src="https://upload.wikimedia.org/wikipedia/en/thumb/c/cd/Mumbai_Indians_Logo.svg/512px-Mumbai_Indians_Logo.svg.png"
+                      />
+                      <div class="mt-4">
+                        <p
+                          class="text-[10px] md:text-sm font-bold text-slate-500 dark:text-gray-300"
+                        >
+                          MI
+                        </p>
+                        <h3
+                          class="text-2xl md:text-4xl font-black font-headline text-slate-900 dark:text-white"
+                        >
+                          185/4
+                        </h3>
+                        <p
+                          class="text-[10px] md:text-xs font-medium text-slate-400 dark:text-gray-400"
+                        >
+                          18.2 Overs
+                        </p>
+                      </div>
+                    </div>
+                    <div
+                      class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-black text-xl md:text-2xl font-headline text-slate-300 dark:text-gray-600/50"
+                    >
+                      VS
+                    </div>
+                    <!-- Team 2 -->
+                    <div class="text-center">
+                      <img
+                        alt="CSK"
+                        class="w-16 h-16 md:w-24 md:h-24 mx-auto drop-shadow-2xl"
+                    src="https://upload.wikimedia.org/wikipedia/en/thumb/2/2b/Chennai_Super_Kings_Logo.svg/512px-Chennai_Super_Kings_Logo.svg.png"
+                      />
+                      <div class="mt-4">
+                        <p
+                          class="text-[10px] md:text-sm font-bold text-slate-500 dark:text-gray-300"
+                        >
+                          CSK
+                        </p>
+                        <h3
+                          class="text-2xl md:text-4xl font-black font-headline text-slate-900 dark:text-white"
+                        >
+                          165/7
+                        </h3>
+                        <p
+                          class="text-[10px] md:text-xs font-medium text-slate-400 dark:text-gray-400"
+                        >
+                          20 Overs
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="mt-8 md:mt-10 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0"
                   >
+                    <div class="space-y-3 text-center sm:text-left">
+                      <p
+                        class="font-bold text-sm text-emerald-600 dark:text-brand-green"
+                      >
+                        MI need
+                        <span class="text-slate-900 dark:text-white"
+                          >20 runs in 10 balls</span
+                        >
+                      </p>
+                      <div class="flex justify-center sm:justify-start space-x-1.5">
+                        <div class="w-2.5 h-2.5 rounded-full bg-brand-green"></div>
+                        <div
+                          class="w-2.5 h-2.5 rounded-full bg-slate-200 dark:bg-white/20"
+                        ></div>
+                        <div
+                          class="w-2.5 h-2.5 rounded-full bg-slate-200 dark:bg-white/20"
+                        ></div>
+                        <div
+                          class="w-2.5 h-2.5 rounded-full bg-slate-200 dark:bg-white/20"
+                        ></div>
+                      </div>
+                    </div>
+                    <a
+                      href="match-center.html"
+                      class="w-full sm:w-auto bg-brand-green text-black font-bold px-6 py-3 rounded-xl flex items-center justify-center space-x-3 glow-green hover:scale-105 transition-transform shadow-lg shadow-emerald-500/20"
+                    >
+                      <span class="font-headline text-sm uppercase tracking-wider"
+                        >View Match Center</span
+                      >
+                      <span class="material-symbols-outlined text-lg"
+                        >arrow_forward</span
+                      >
+                    </a>
+                  </div>
+                </div>
+
+                <!-- Slide 2: Football -->
+                <div
+                  class="hero-gradient min-w-full rounded-3xl p-6 md:p-8 relative overflow-hidden border dark:border-white/5 light:border-gray-200 light:shadow-soft transition-all duration-300 snap-center"
+                  style="background-image: linear-gradient(rgba(11, 14, 17, 0.3), rgba(11, 14, 17, 0.6)), url('https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&q=80&w=1536');"
+                >
+                  <div class="flex justify-between items-start mb-8 md:mb-10">
+                    <div class="flex items-center space-x-3">
+                      <span
+                        class="bg-red-600 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider flex items-center text-white"
+                      >
+                        <span
+                          class="w-1.5 h-1.5 bg-white rounded-full mr-1.5 animate-pulse"
+                        ></span>
+                        LIVE NOW
+                      </span>
+                      <span
+                        class="text-xs font-medium dark:text-gray-300 light:text-slate-500"
+                        >Premier League</span
+                      >
+                    </div>
+                    <div
+                      class="flex items-center space-x-2 backdrop-blur-md px-3 py-1.5 rounded-full border dark:bg-black/40 dark:border-white/10 light:bg-white/40 light:border-slate-200"
+                    >
+                      <span
+                        class="material-symbols-outlined text-brand-green text-sm"
+                        >visibility</span
+                      >
+                      <span
+                        class="text-xs font-bold dark:text-white light:text-slate-700"
+                        >12.1K Watching</span
+                      >
+                    </div>
+                  </div>
+                  <div
+                    class="flex items-center justify-between px-2 md:px-8 relative"
+                  >
+                    <!-- Team 1 -->
+                    <div class="text-center">
+                      <img
+                        alt="Man City"
+                        class="w-16 h-16 md:w-24 md:h-24 mx-auto drop-shadow-2xl"
+                        src="https://upload.wikimedia.org/wikipedia/en/thumb/e/eb/Manchester_City_FC_badge.svg/512px-Manchester_City_FC_badge.svg.png"
+                      />
+                      <div class="mt-4">
+                        <p
+                          class="text-[10px] md:text-sm font-bold dark:text-gray-300 light:text-slate-500"
+                        >
+                          MCI
+                        </p>
+                        <h3
+                          class="text-2xl md:text-4xl font-black font-headline dark:text-white light:text-slate-900"
+                        >
+                          2
+                        </h3>
+                        <p
+                          class="text-[10px] md:text-xs font-medium dark:text-gray-400 light:text-slate-400"
+                        >
+                          75'
+                        </p>
+                      </div>
+                    </div>
+                    <div
+                      class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-black text-xl md:text-2xl font-headline dark:text-gray-600/50 light:text-slate-300"
+                    >
+                      VS
+                    </div>
+                    <!-- Team 2 -->
+                    <div class="text-center">
+                      <img
+                        alt="Liverpool"
+                        class="w-16 h-16 md:w-24 md:h-24 mx-auto drop-shadow-2xl"
+                    src="https://upload.wikimedia.org/wikipedia/en/thumb/0/0c/Liverpool_FC.svg/512px-Liverpool_FC.svg.png"
+                      />
+                      <div class="mt-4">
+                        <p
+                          class="text-[10px] md:text-sm font-bold dark:text-gray-300 light:text-slate-500"
+                        >
+                          LIV
+                        </p>
+                        <h3
+                          class="text-2xl md:text-4xl font-black font-headline dark:text-white light:text-slate-900"
+                        >
+                          1
+                        </h3>
+                        <p
+                          class="text-[10px] md:text-xs font-medium dark:text-gray-400 light:text-slate-400"
+                        >
+                          Full Time
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="mt-8 md:mt-10 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0"
+                  >
+                    <div class="space-y-3 text-center sm:text-left">
+                      <p
+                        class="font-bold text-sm dark:text-brand-green light:text-emerald-600"
+                      >
+                        Man City
+                        <span class="dark:text-white light:text-slate-900"
+                          >leading by 1 goal</span
+                        >
+                      </p>
+                      <div class="flex justify-center sm:justify-start space-x-1.5">
+                        <div class="w-2.5 h-2.5 rounded-full bg-brand-green"></div>
+                        <div
+                          class="w-2.5 h-2.5 rounded-full dark:bg-white/20 light:bg-slate-200"
+                        ></div>
+                        <div
+                          class="w-2.5 h-2.5 rounded-full dark:bg-white/20 light:bg-slate-200"
+                        ></div>
+                        <div
+                          class="w-2.5 h-2.5 rounded-full dark:bg-white/20 light:bg-slate-200"
+                        ></div>
+                      </div>
+                    </div>
+                    <a
+                      href="football.html"
+                      class="w-full sm:w-auto bg-brand-green text-black font-bold px-6 py-3 rounded-xl flex items-center justify-center space-x-3 glow-green hover:scale-105 transition-transform shadow-lg shadow-emerald-500/20"
+                    >
+                      <span class="font-headline text-sm uppercase tracking-wider"
+                        >View Match Center</span
+                      >
+                      <span class="material-symbols-outlined text-lg"
+                        >arrow_forward</span
+                      >
+                    </a>
+                  </div>
+                </div>
+
+                <!-- Slide 3: Basketball -->
+                <div
+                  class="hero-gradient min-w-full rounded-3xl p-6 md:p-8 relative overflow-hidden border dark:border-white/5 light:border-gray-200 light:shadow-soft transition-all duration-300 snap-center"
+                  style="background-image: linear-gradient(rgba(11, 14, 17, 0.3), rgba(11, 14, 17, 0.6)), url('https://images.unsplash.com/photo-1504450758481-7338eba7524a?auto=format&fit=crop&q=80&w=1536');"
+                >
+                  <div class="flex justify-between items-start mb-8 md:mb-10">
+                    <div class="flex items-center space-x-3">
+                      <span
+                        class="bg-red-600 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider flex items-center text-white"
+                      >
+                        <span
+                          class="w-1.5 h-1.5 bg-white rounded-full mr-1.5 animate-pulse"
+                        ></span>
+                        LIVE NOW
+                      </span>
+                      <span
+                        class="text-xs font-medium dark:text-gray-300 light:text-slate-500"
+                        >NBA Playoffs</span
+                      >
+                    </div>
+                    <div
+                      class="flex items-center space-x-2 backdrop-blur-md px-3 py-1.5 rounded-full border dark:bg-black/40 dark:border-white/10 light:bg-white/40 light:border-slate-200"
+                    >
+                      <span
+                        class="material-symbols-outlined text-brand-green text-sm"
+                        >visibility</span
+                      >
+                      <span
+                        class="text-xs font-bold dark:text-white light:text-slate-700"
+                        >6.8K Watching</span
+                      >
+                    </div>
+                  </div>
+                  <div
+                    class="flex items-center justify-between px-2 md:px-8 relative"
+                  >
+                    <!-- Team 1 -->
+                    <div class="text-center">
+                      <img
+                        alt="Lakers"
+                        class="w-16 h-16 md:w-24 md:h-24 mx-auto drop-shadow-2xl"
+                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Los_Angeles_Lakers_logo.svg/512px-Los_Angeles_Lakers_logo.svg.png"
+                      />
+                      <div class="mt-4">
+                        <p
+                          class="text-[10px] md:text-sm font-bold dark:text-gray-300 light:text-slate-500"
+                        >
+                          LAL
+                        </p>
+                        <h3
+                          class="text-2xl md:text-4xl font-black font-headline dark:text-white light:text-slate-900"
+                        >
+                          98
+                        </h3>
+                        <p
+                          class="text-[10px] md:text-xs font-medium dark:text-gray-400 light:text-slate-400"
+                        >
+                          Q3 04:30
+                        </p>
+                      </div>
+                    </div>
+                    <div
+                      class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-black text-xl md:text-2xl font-headline dark:text-gray-600/50 light:text-slate-300"
+                    >
+                      VS
+                    </div>
+                    <!-- Team 2 -->
+                    <div class="text-center">
+                      <img
+                        alt="Warriors"
+                        class="w-16 h-16 md:w-24 md:h-24 mx-auto drop-shadow-2xl"
+                    src="https://upload.wikimedia.org/wikipedia/en/thumb/0/01/Golden_State_Warriors_logo.svg/512px-Golden_State_Warriors_logo.svg.png"
+                      />
+                      <div class="mt-4">
+                        <p
+                          class="text-[10px] md:text-sm font-bold dark:text-gray-300 light:text-slate-500"
+                        >
+                          GSW
+                        </p>
+                        <h3
+                          class="text-2xl md:text-4xl font-black font-headline dark:text-white light:text-slate-900"
+                        >
+                          95
+                        </h3>
+                        <p
+                          class="text-[10px] md:text-xs font-medium dark:text-gray-400 light:text-slate-400"
+                        >
+                          Q3 04:30
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="mt-8 md:mt-10 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0"
+                  >
+                    <div class="space-y-3 text-center sm:text-left">
+                      <p
+                        class="font-bold text-sm dark:text-brand-green light:text-emerald-600"
+                      >
+                        Lakers
+                        <span class="dark:text-white light:text-slate-900"
+                          >leading by 3 points</span
+                        >
+                      </p>
+                      <div class="flex justify-center sm:justify-start space-x-1.5">
+                        <div class="w-2.5 h-2.5 rounded-full bg-brand-green"></div>
+                        <div
+                          class="w-2.5 h-2.5 rounded-full dark:bg-white/20 light:bg-slate-200"
+                        ></div>
+                        <div
+                          class="w-2.5 h-2.5 rounded-full dark:bg-white/20 light:bg-slate-200"
+                        ></div>
+                        <div
+                          class="w-2.5 h-2.5 rounded-full dark:bg-white/20 light:bg-slate-200"
+                        ></div>
+                      </div>
+                    </div>
+                    <a
+                      href="basketball.html"
+                      class="w-full sm:w-auto bg-brand-green text-black font-bold px-6 py-3 rounded-xl flex items-center justify-center space-x-3 glow-green hover:scale-105 transition-transform shadow-lg shadow-emerald-500/20"
+                    >
+                      <span class="font-headline text-sm uppercase tracking-wider"
+                        >View Match Center</span
+                      >
+                      <span class="material-symbols-outlined text-lg"
+                        >arrow_forward</span
+                      >
+                    </a>
+                  </div>
+                </div>
+
+                <!-- Slide 4: Tennis -->
+                <div
+                  class="hero-gradient min-w-full rounded-3xl p-6 md:p-8 relative overflow-hidden border dark:border-white/5 light:border-gray-200 light:shadow-soft transition-all duration-300 snap-center"
+                  style="background-image: linear-gradient(rgba(11, 14, 17, 0.3), rgba(11, 14, 17, 0.6)), url('https://images.unsplash.com/photo-1554702583-ad812576523d?q=80&w=1536&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');"
+                >
+                  <div class="flex justify-between items-start mb-8 md:mb-10">
+                    <div class="flex items-center space-x-3">
+                      <span class="bg-red-600 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider flex items-center text-white">
+                        <span class="w-1.5 h-1.5 bg-white rounded-full mr-1.5 animate-pulse"></span>
+                        LIVE NOW
+                      </span>
+                      <span class="text-xs font-medium dark:text-gray-300 light:text-slate-500">Madrid Open</span>
+                    </div>
+                    <div class="flex items-center space-x-2 backdrop-blur-md px-3 py-1.5 rounded-full border dark:bg-black/40 dark:border-white/10 light:bg-white/40 light:border-slate-200">
+                      <span class="material-symbols-outlined text-brand-green text-sm">visibility</span>
+                      <span class="text-xs font-bold dark:text-white light:text-slate-700">5.2K Watching</span>
+                    </div>
+                  </div>
+                  <div class="flex items-center justify-between px-2 md:px-8 relative">
+                    <div class="text-center">
+                      <img 
+                        alt="Alcaraz" 
+                        class="w-16 h-16 md:w-24 md:h-24 mx-auto rounded-full border-2 border-brand-green shadow-2xl object-cover"
+                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Carlos_Alcaraz_2023_US_Open.jpg/512px-Carlos_Alcaraz_2023_US_Open.jpg"
+                      />
+                      <div class="mt-4">
+                        <p class="text-[10px] md:text-sm font-bold dark:text-gray-300 light:text-slate-500">ALC</p>
+                        <h3 class="text-2xl md:text-4xl font-black font-headline dark:text-white light:text-slate-900">1</h3>
+                        <p class="text-[10px] md:text-xs font-medium dark:text-gray-400 light:text-slate-400">Sets</p>
+                      </div>
+                    </div>
+                    <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-black text-xl md:text-2xl font-headline dark:text-gray-600/50 light:text-slate-300">VS</div>
+                    <div class="text-center">
+                      <img 
+                        alt="Djokovic" 
+                        class="w-16 h-16 md:w-24 md:h-24 mx-auto rounded-full border-2 border-white/20 shadow-2xl object-cover"
+                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Novak_Djokovic_2023_US_Open.jpg/512px-Novak_Djokovic_2023_US_Open.jpg"
+                      />
+                      <div class="mt-4">
+                        <p class="text-[10px] md:text-sm font-bold dark:text-gray-300 light:text-slate-500">DJO</p>
+                        <h3 class="text-2xl md:text-4xl font-black font-headline dark:text-white light:text-slate-900">0</h3>
+                        <p class="text-[10px] md:text-xs font-medium dark:text-gray-400 light:text-slate-400">Sets</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mt-8 md:mt-10 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
+                    <div class="space-y-3 text-center sm:text-left">
+                      <p class="font-bold text-sm dark:text-brand-green light:text-emerald-600">Alcaraz leads <span class="dark:text-white light:text-slate-900">Set 2: 4-2</span></p>
+                      <div class="flex justify-center sm:justify-start space-x-1.5">
+                        <div class="w-2.5 h-2.5 rounded-full bg-brand-green"></div>
+                        <div class="w-2.5 h-2.5 rounded-full bg-brand-green"></div>
+                        <div class="w-2.5 h-2.5 rounded-full dark:bg-white/20 light:bg-slate-200"></div>
+                        <div class="w-2.5 h-2.5 rounded-full dark:bg-white/20 light:bg-slate-200"></div>
+                      </div>
+                    </div>
+                    <a href="tennis.html" class="w-full sm:w-auto bg-brand-green text-black font-bold px-6 py-3 rounded-xl flex items-center justify-center space-x-3 glow-green hover:scale-105 transition-transform shadow-lg shadow-emerald-500/20">
+                      <span class="font-headline text-sm uppercase tracking-wider">View Match Center</span>
+                      <span class="material-symbols-outlined text-lg">arrow_forward</span>
+                    </a>
+                  </div>
+                </div>
+
+                <!-- Slide 5: Baseball -->
+                <div
+                  class="hero-gradient min-w-full rounded-3xl p-6 md:p-8 relative overflow-hidden border dark:border-white/5 light:border-gray-200 light:shadow-soft transition-all duration-300 snap-center"
+                  style="background-image: linear-gradient(rgba(11, 14, 17, 0.3), rgba(11, 14, 17, 0.6)), url('https://images.unsplash.com/photo-1508344922928-596d11082d16?auto=format&fit=crop&q=80&w=1536');"
+                >
+                  <div class="flex justify-between items-start mb-8 md:mb-10">
+                    <div class="flex items-center space-x-3">
+                      <span class="bg-red-600 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider flex items-center text-white">
+                        <span class="w-1.5 h-1.5 bg-white rounded-full mr-1.5 animate-pulse"></span>
+                        LIVE NOW
+                      </span>
+                      <span class="text-xs font-medium dark:text-gray-300 light:text-slate-500">MLB Regular Season</span>
+                    </div>
+                    <div class="flex items-center space-x-2 backdrop-blur-md px-3 py-1.5 rounded-full border dark:bg-black/40 dark:border-white/10 light:bg-white/40 light:border-slate-200">
+                      <span class="material-symbols-outlined text-brand-green text-sm">visibility</span>
+                      <span class="text-xs font-bold dark:text-white light:text-slate-700">15.4K Watching</span>
+                    </div>
+                  </div>
+                  <div class="flex items-center justify-between px-2 md:px-8 relative">
+                    <div class="text-center">
+                      <img alt="Dodgers" class="w-16 h-16 md:w-24 md:h-24 mx-auto drop-shadow-2xl" src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Los_Angeles_Dodgers_Logo.svg/512px-Los_Angeles_Dodgers_Logo.svg.png" />
+                      <div class="mt-4">
+                        <p class="text-[10px] md:text-sm font-bold dark:text-gray-300 light:text-slate-500">LAD</p>
+                        <h3 class="text-2xl md:text-4xl font-black font-headline dark:text-white light:text-slate-900">4</h3>
+                        <p class="text-[10px] md:text-xs font-medium dark:text-gray-400 light:text-slate-400">Runs</p>
+                      </div>
+                    </div>
+                    <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-black text-xl md:text-2xl font-headline dark:text-gray-600/50 light:text-slate-300">VS</div>
+                    <div class="text-center">
+                      <img alt="Yankees" class="w-16 h-16 md:w-24 md:h-24 mx-auto drop-shadow-2xl" src="https://upload.wikimedia.org/wikipedia/en/thumb/a/ad/New_York_Yankees_logo.svg/512px-New_York_Yankees_logo.svg.png" />
+                      <div class="mt-4">
+                        <p class="text-[10px] md:text-sm font-bold dark:text-gray-300 light:text-slate-500">NYY</p>
+                        <h3 class="text-2xl md:text-4xl font-black font-headline dark:text-white light:text-slate-900">2</h3>
+                        <p class="text-[10px] md:text-xs font-medium dark:text-gray-400 light:text-slate-400">Runs</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mt-8 md:mt-10 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
+                    <div class="space-y-3 text-center sm:text-left">
+                      <p class="font-bold text-sm dark:text-brand-green light:text-emerald-600">Top 5th <span class="dark:text-white light:text-slate-900">• 2 Outs</span></p>
+                      <div class="flex justify-center sm:justify-start space-x-1.5">
+                        <div class="w-2.5 h-2.5 rounded-full bg-brand-green"></div>
+                        <div class="w-2.5 h-2.5 rounded-full bg-brand-green"></div>
+                        <div class="w-2.5 h-2.5 rounded-full dark:bg-white/20 light:bg-slate-200"></div>
+                      </div>
+                    </div>
+                    <a href="baseball.html" class="w-full sm:w-auto bg-brand-green text-black font-bold px-6 py-3 rounded-xl flex items-center justify-center space-x-3 glow-green hover:scale-105 transition-transform shadow-lg shadow-emerald-500/20">
+                      <span class="font-headline text-sm uppercase tracking-wider">View Match Center</span>
+                      <span class="material-symbols-outlined text-lg">arrow_forward</span>
+                    </a>
+                  </div>
+                </div>
+
+                <!-- Slide 6: Hockey -->
+                <div
+                  class="hero-gradient min-w-full rounded-3xl p-6 md:p-8 relative overflow-hidden border dark:border-white/5 light:border-gray-200 light:shadow-soft transition-all duration-300 snap-center"
+                  style="background-image: linear-gradient(rgba(11, 14, 17, 0.3), rgba(11, 14, 17, 0.6)), url('https://images.unsplash.com/photo-1515703407324-5f753eed23eda?auto=format&fit=crop&q=80&w=1536');"
+                >
+                  <div class="flex justify-between items-start mb-8 md:mb-10">
+                    <div class="flex items-center space-x-3">
+                      <span class="bg-red-600 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider flex items-center text-white">
+                        <span class="w-1.5 h-1.5 bg-white rounded-full mr-1.5 animate-pulse"></span>
+                        LIVE NOW
+                      </span>
+                      <span class="text-xs font-medium dark:text-gray-300 light:text-slate-500">NHL Stanley Cup</span>
+                    </div>
+                    <div class="flex items-center space-x-2 backdrop-blur-md px-3 py-1.5 rounded-full border dark:bg-black/40 dark:border-white/10 light:bg-white/40 light:border-slate-200">
+                      <span class="material-symbols-outlined text-brand-green text-sm">visibility</span>
+                      <span class="text-xs font-bold dark:text-white light:text-slate-700">9.1K Watching</span>
+                    </div>
+                  </div>
+                  <div class="flex items-center justify-between px-2 md:px-8 relative">
+                    <div class="text-center">
+                      <img
+                        alt="Capitals"
+                        class="w-16 h-16 md:w-24 md:h-24 mx-auto drop-shadow-2xl"
+                        src="https://upload.wikimedia.org/wikipedia/en/thumb/2/2d/Washington_Capitals.svg/512px-Washington_Capitals.svg.png"
+                      />
+                      <div class="mt-4">
+                        <p class="text-[10px] md:text-sm font-bold dark:text-gray-300 light:text-slate-500">WSH</p>
+                        <h3 class="text-2xl md:text-4xl font-black font-headline dark:text-white light:text-slate-900">3</h3>
+                        <p class="text-[10px] md:text-xs font-medium dark:text-gray-400 light:text-slate-400">Goals</p>
+                      </div>
+                    </div>
+                    <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-black text-xl md:text-2xl font-headline dark:text-gray-600/50 light:text-slate-300">VS</div>
+                    <div class="text-center">
+                      <img
+                        alt="Golden Knights"
+                        class="w-16 h-16 md:w-24 md:h-24 mx-auto drop-shadow-2xl"
+                        src="https://upload.wikimedia.org/wikipedia/en/thumb/a/ac/Vegas_Golden_Knights_logo.svg/512px-Vegas_Golden_Knights_logo.svg.png"
+                      />
+                      <div class="mt-4">
+                        <p class="text-[10px] md:text-sm font-bold dark:text-gray-300 light:text-slate-500">VGK</p>
+                        <h3 class="text-2xl md:text-4xl font-black font-headline dark:text-white light:text-slate-900">3</h3>
+                        <p class="text-[10px] md:text-xs font-medium dark:text-gray-400 light:text-slate-400">Goals</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mt-8 md:mt-10 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
+                    <div class="space-y-3 text-center sm:text-left">
+                      <p class="font-bold text-sm dark:text-brand-green light:text-emerald-600">Period 3 <span class="dark:text-white light:text-slate-900">• 04:12 Left</span></p>
+                      <div class="flex justify-center sm:justify-start space-x-1.5">
+                        <div class="w-2.5 h-2.5 rounded-full bg-brand-green"></div>
+                        <div class="w-2.5 h-2.5 rounded-full bg-brand-green"></div>
+                        <div class="w-2.5 h-2.5 rounded-full bg-brand-green"></div>
+                        <div class="w-2.5 h-2.5 rounded-full dark:bg-white/20 light:bg-slate-200"></div>
+                      </div>
+                    </div>
+                    <button class="w-full sm:w-auto bg-brand-green text-black font-bold px-6 py-3 rounded-xl flex items-center justify-center space-x-3 glow-green hover:scale-105 transition-transform shadow-lg shadow-emerald-500/20">
+                      <span class="font-headline text-sm uppercase tracking-wider">View Match Center</span>
+                      <span class="material-symbols-outlined text-lg">arrow_forward</span>
+                    </button>
+                  </div>
                 </div>
               </div>
-              <div
-                class="flex items-center justify-between px-2 md:px-8 relative"
+              <!-- Carousel Navigation -->
+              <button
+                id="prev-slide"
+                class="absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-full dark:bg-black/50 light:bg-white/70 shadow-lg dark:text-white light:text-slate-800 hover:scale-110 transition-transform z-20"
               >
-                <!-- Team 1 -->
-                <div class="text-center">
-                  <img
-                    alt="MI"
-                    class="w-16 h-16 md:w-24 md:h-24 mx-auto drop-shadow-2xl"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuC1k40I_WbL0oor4AHCknVe0d33ysHNXH70cz6a2f9vsbTcJx0mJLoX8ZB19ucS60xTzrVraao_lW0dO4MqQ6BPRWVAuhcJAAMOoGlAFeCnwP4cc7NhqhXBGyjVtTWY5XSoA7OlM7wNZGf7Owv3AKM_WuEYmHGDCTLy55lyTMsmMmGLynOby57xnGzRHxTMhbdLyghIP7aDGt9R-9TrxIhHlZplyvBN6sFLbIEmlQlraXPv9x-M5LdWM-a3_Uo6A5WD-OkWRcQN9UOj"
-                  />
-                  <div class="mt-4">
-                    <p
-                      class="text-[10px] md:text-sm font-bold dark:text-gray-300 light:text-slate-500"
-                    >
-                      MI
-                    </p>
-                    <h3
-                      class="text-2xl md:text-4xl font-black font-headline dark:text-white light:text-slate-900"
-                    >
-                      185/4
-                    </h3>
-                    <p
-                      class="text-[10px] md:text-xs font-medium dark:text-gray-400 light:text-slate-400"
-                    >
-                      18.2 Overs
-                    </p>
-                  </div>
-                </div>
-                <div
-                  class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-black text-xl md:text-2xl font-headline dark:text-gray-600/50 light:text-slate-300"
-                >
-                  VS
-                </div>
-                <!-- Team 2 -->
-                <div class="text-center">
-                  <img
-                    alt="CSK"
-                    class="w-16 h-16 md:w-24 md:h-24 mx-auto drop-shadow-2xl"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2817RzXj8amw81FinbRxFiPKNDXdnOrgDd7IjkhlyA-kyKv6tPusYxjOgAmYa_ucfpjIm-kLm0ulk6fXy0bosTaEhlfGQD7Nj_ySh9Ak_8WkVhBQROe0a74UhGtQiLNMszy-6_V1_8BZwSqqEDEMR55fcFtqqxUEtLZmrwi8vG2YDl2soFHJDYFvVJSc0YsUq4IRUW5CBmaoLZ7mNXkmhc0TGjLUJILGRnQ8WE8H3dILnIMr94aYG3wE9xsGkVjJNERTgJhQ9CyRD"
-                  />
-                  <div class="mt-4">
-                    <p
-                      class="text-[10px] md:text-sm font-bold dark:text-gray-300 light:text-slate-500"
-                    >
-                      CSK
-                    </p>
-                    <h3
-                      class="text-2xl md:text-4xl font-black font-headline dark:text-white light:text-slate-900"
-                    >
-                      165/7
-                    </h3>
-                    <p
-                      class="text-[10px] md:text-xs font-medium dark:text-gray-400 light:text-slate-400"
-                    >
-                      20 Overs
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div
-                class="mt-8 md:mt-10 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0"
+                <span class="material-symbols-outlined">chevron_left</span>
+              </button>
+              <button
+                id="next-slide"
+                class="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-full dark:bg-black/50 light:bg-white/70 shadow-lg dark:text-white light:text-slate-800 hover:scale-110 transition-transform z-20"
               >
-                <div class="space-y-3 text-center sm:text-left">
-                  <p
-                    class="font-bold text-sm dark:text-brand-green light:text-emerald-600"
-                  >
-                    MI need
-                    <span class="dark:text-white light:text-slate-900"
-                      >20 runs in 10 balls</span
-                    >
-                  </p>
-                  <div class="flex justify-center sm:justify-start space-x-1.5">
-                    <div class="w-2.5 h-2.5 rounded-full bg-brand-green"></div>
-                    <div
-                      class="w-2.5 h-2.5 rounded-full dark:bg-white/20 light:bg-slate-200"
-                    ></div>
-                    <div
-                      class="w-2.5 h-2.5 rounded-full dark:bg-white/20 light:bg-slate-200"
-                    ></div>
-                    <div
-                      class="w-2.5 h-2.5 rounded-full dark:bg-white/20 light:bg-slate-200"
-                    ></div>
-                  </div>
-                </div>
-                <button
-                  class="w-full sm:w-auto bg-brand-green text-black font-bold px-6 py-3 rounded-xl flex items-center justify-center space-x-3 glow-green hover:scale-105 transition-transform shadow-lg shadow-emerald-500/20"
-                >
-                  <span class="font-headline text-sm uppercase tracking-wider"
-                    >View Match Center</span
-                  >
-                  <span class="material-symbols-outlined text-lg"
-                    >arrow_forward</span
-                  >
-                </button>
+                <span class="material-symbols-outlined">chevron_right</span>
+              </button>
+              <!-- Carousel Dots -->
+              <div class="flex justify-center space-x-2 mt-4">
+                <div class="hero-dot w-2 h-2 rounded-full bg-brand-green cursor-pointer"></div>
+                <div class="hero-dot w-2 h-2 rounded-full bg-gray-600 cursor-pointer"></div>
+                <div class="hero-dot w-2 h-2 rounded-full bg-gray-600 cursor-pointer"></div>
+                <div class="hero-dot w-2 h-2 rounded-full bg-gray-600 cursor-pointer"></div>
+                <div class="hero-dot w-2 h-2 rounded-full bg-gray-600 cursor-pointer"></div>
+                <div class="hero-dot w-2 h-2 rounded-full bg-gray-600 cursor-pointer"></div>
               </div>
             </div>
             <!-- BEGIN: Upcoming Matches -->
@@ -579,7 +958,7 @@
                 </h3>
                 <a
                   class="dark:text-brand-green light:text-emerald-600 text-xs font-bold uppercase hover:underline"
-                  href="#"
+                  href="index.html"
                   >View All</a
                 >
               </div>
@@ -680,7 +1059,7 @@
                   </h3>
                   <a
                     class="dark:text-brand-green light:text-emerald-600 text-xs font-bold uppercase hover:underline"
-                    href="#"
+                    href="index.html"
                     >View All</a
                   >
                 </div>
@@ -753,7 +1132,7 @@
                   </h3>
                   <a
                     class="dark:text-brand-green light:text-emerald-600 text-xs font-bold uppercase hover:underline"
-                    href="#"
+                    href="index.html"
                     >View All</a
                   >
                 </div>
@@ -955,7 +1334,7 @@
                 </h3>
                 <a
                   class="dark:text-brand-green light:text-emerald-600 text-xs font-bold uppercase hover:underline"
-                  href="#"
+                  href="index.html"
                   >View All</a
                 >
               </div>
@@ -1117,5 +1496,5 @@
       </div>
     </main>
     <script type="module" src="js/script.js"></script>
-  </body>
+</body>
 </html>
