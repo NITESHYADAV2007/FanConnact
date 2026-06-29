@@ -1,20 +1,32 @@
-// GNews API — free tier: 100 req/day, CORS-friendly, browser-ready
-// Register: https://gnews.io/ → get a token, paste it below
-const GNEWS_TOKEN = "1b6db021d63052ce08db0b2a7e79e525";
+const RSS_BASE = "https://api.rss2json.com/v1/api.json?rss_url=";
 
-const SPORTS_MAP = {
-  all: "",
-  cricket: "cricket",
-  football: "football",
-  basketball: "basketball",
-  tennis: "tennis",
-  hockey: "hockey",
-  kabaddi: "kabaddi",
-  "e-sports": "esports",
-  baseball: "baseball",
-  volleyball: "volleyball",
-  "table-tennis": "table tennis",
+const BBC_FEEDS = {
+  all: "https://feeds.bbci.co.uk/sport/rss.xml",
+  cricket: "https://feeds.bbci.co.uk/sport/cricket/rss.xml",
+  football: "https://feeds.bbci.co.uk/sport/football/rss.xml",
+  tennis: "https://feeds.bbci.co.uk/sport/tennis/rss.xml",
+  formula1: "https://feeds.bbci.co.uk/sport/formula1/rss.xml",
+  golf: "https://feeds.bbci.co.uk/sport/golf/rss.xml",
+  athletics: "https://feeds.bbci.co.uk/sport/athletics/rss.xml",
+  cycling: "https://feeds.bbci.co.uk/sport/cycling/rss.xml",
+  boxing: "https://feeds.bbci.co.uk/sport/boxing/rss.xml",
 };
+
+function getRssUrl(sportKey) {
+  return BBC_FEEDS[sportKey] || BBC_FEEDS.all;
+}
+
+function rssItemToArticle(item) {
+  return {
+    title: item.title || "",
+    description: item.description || "",
+    url: item.link || "#",
+    image: item.enclosure?.link || item.thumbnail || FALLBACK_IMAGE,
+    publishedAt: item.pubDate || "",
+    source: { name: item.author || "BBC Sport" },
+    category: item.categories || ["Sports"],
+  };
+}
 
 const SPORTS_ORDER = [
   "all",
@@ -62,45 +74,37 @@ const YOUTUBE_VIDEOS = {
   "table-tennis": ["VTCDQYYKA9o", "ajR7s1Qc668", "m1UScAi8Kvs"],
 };
 
-function getSportCategory(sportKey) {
-  return SPORTS_MAP[sportKey] || "sports";
-}
-
 async function fetchNews({
   category = "",
   language = "en",
   keywords = "",
 } = {}) {
-  const token = GNEWS_TOKEN;
-  if (token === "YOUR_GNEWS_API_TOKEN_HERE") {
-    console.warn(
-      "GNews token not set. Get a free key at https://gnews.io/ and paste it into js/news.js",
-    );
-    return [];
-  }
-  // GNews free tier: max 10 articles per call
-  const params = new URLSearchParams({ lang: language, max: "10", token });
-  let endpoint;
-
-  if (keywords) {
-    params.set("q", keywords);
-    endpoint = "search";
-  } else if (category && category !== "all") {
-    params.set("q", getSportCategory(category));
-    endpoint = "search";
-  } else {
-    params.set("category", "sports");
-    endpoint = "top-headlines";
-  }
-
-  const url = `https://gnews.io/api/v4/${endpoint}?${params}`;
+  const rssUrl = getRssUrl(category);
+  const url = RSS_BASE + encodeURIComponent(rssUrl);
 
   try {
     const res = await fetch(url);
-    if (!res.ok) return [];
+    if (!res.ok) {
+      console.error("RSS fetch error:", res.status, res.statusText);
+      return [];
+    }
     const data = await res.json();
-    return data.articles || [];
+    if (data.status !== "ok" || !data.items) return [];
+
+    let articles = data.items.map(rssItemToArticle);
+
+    if (keywords) {
+      const kw = keywords.toLowerCase();
+      articles = articles.filter(
+        (a) =>
+          a.title.toLowerCase().includes(kw) ||
+          a.description.toLowerCase().includes(kw),
+      );
+    }
+
+    return articles;
   } catch (e) {
+    console.error("RSS fetch failed:", e);
     return [];
   }
 }

@@ -1,45 +1,65 @@
 <!doctype html>
 
-<html class="h-full" lang="en">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>FanConnect - Basketball Dashboard</title>
+    <script>
+      if (
+        localStorage.getItem("color-theme") === "dark" ||
+        (!("color-theme" in localStorage) &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches)
+      ) {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
+    </script>
+    <title>FanConnect - Basketball Matches</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <!-- Google Fonts: Inter for clean UI -->
+    <!-- Google Fonts: Lexend -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap"
+      href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap"
       rel="stylesheet"
     />
-    <style data-purpose="custom-theme">
-      .dark body {
-        font-family: "Inter", sans-serif;
-        background-color: #060b13;
-        color: #ffffff;
+    <link rel="stylesheet" href="css/style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            fontFamily: {
+              lexend: ["Lexend", "sans-serif"],
+            },
+            colors: {
+              "emerald-accent": "#10b981",
+              "dark-bg": "#0a0e14",
+              "sidebar-bg": "#0f172a",
+              "card-bg": "#161d2b",
+              "border-subtle": "#1e293b",
+            },
+          },
+        },
+      };
+    </script>
+    <style data-purpose="custom-scrollbar">
+      ::-webkit-scrollbar {
+        width: 6px;
       }
-      body {
-        background-color: #f8f9ff;
-        color: #0f172a;
+      ::-webkit-scrollbar-track {
+        background: #0a0e14;
       }
-      .bg-dark-surface {
-        background-color: #0d141f;
-      }
-      .bg-accent-green {
-        background-color: #00df82;
-      }
-      .text-accent-green {
-        color: #00df82;
-      }
-      .border-accent-green {
-        border-color: #00df82;
-      }
-      .custom-scrollbar::-webkit-scrollbar {
-        width: 4px;
-      }
-      .custom-scrollbar::-webkit-scrollbar-thumb {
-        background: #2d3748;
+      ::-webkit-scrollbar-thumb {
+        background: #1e293b;
         border-radius: 10px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #10b981;
       }
       .sidebar-collapsed #sidebar { width: 0 !important; min-width: 0 !important; border: 0 !important; padding: 0 !important; overflow: hidden !important; }
       .text-fan { color: #ffffff !important; }
@@ -54,26 +74,6 @@
       :root:not(.dark) #sidebar a:not(.nav-link-active) { color: #475569 !important; }
       :root:not(.dark) #sidebar a:not(.nav-link-active):hover { color: #2563eb !important; }
     </style>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              brand: {
-                dark: "#060b13",
-                surface: "#0d141f",
-                accent: "#00df82",
-                card: "#131c2a",
-              },
-            },
-          },
-        },
-      };
-    </script>
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
-    />
     <meta
       name="description"
       content="FanConnect sports platform for fans, scores, communities and updates."
@@ -86,16 +86,17 @@
     />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
   </head>
-  <body class="h-full overflow-hidden flex flex-col">
+  <body
+    class="h-screen w-full flex flex-col overflow-hidden transition-colors duration-300 bg-[#F8F9FF] dark:bg-[#0F172A] text-slate-900 dark:text-slate-100"
+  >
     <!-- BEGIN: MainHeader -->
     <header
-      class="h-20 border-b border-gray-800 bg-brand-dark flex items-center justify-between px-4 md:px-8 shrink-0 z-50"
-      data-purpose="top-navigation"
+      class="sticky top-0 z-50 transition-colors duration-300 bg-white dark:bg-dark-bg border-b border-gray-200 dark:border-border-subtle px-4 md:px-8 py-4 flex items-center justify-between"
     >
-      <div class="flex items-center space-x-8">
+      <div class="flex items-center space-x-4 md:space-x-12">
         <button
+          class="text-gray-400 hover:text-emerald-accent"
           id="mobile-menu-btn"
-          class="p-2 text-gray-400 hover:text-accent-green"
         >
           <span class="material-symbols-outlined">menu</span>
         </button>
@@ -108,57 +109,49 @@
         <!-- Top Navigation -->
         <nav class="hidden xl:flex items-center space-x-6 mx-6 shrink-0">
           <a
-            class="text-gray-400 hover:text-brand-green transition-colors font-medium text-sm nav-link"
+            class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link"
             href="index.html"
             >Home</a
           >
           <a
-            class="text-gray-400 hover:text-brand-green transition-colors font-medium text-sm nav-link"
+            class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link"
             href="livematches.html"
             >Matches</a
           >
           <a
-            class="text-gray-400 hover:text-brand-green transition-colors font-medium text-sm nav-link"
+            class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link"
             href="index.html"
             >Predictions</a
           >
           <a
-            class="text-gray-400 hover:text-brand-green transition-colors font-medium text-sm nav-link"
+            class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link"
             href="index.html"
             >Leaderboard</a
           >
           <a
-            class="text-gray-400 hover:text-brand-green transition-colors font-medium text-sm nav-link"
+            class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link"
             href="news&update.html"
             >News</a
           >
         </nav>
       </div>
+      <!-- Header Actions -->
       <div class="flex items-center gap-5 md:gap-8">
-        <div class="relative hidden md:block">
+        <div class="relative hidden lg:block">
           <input
-            class="w-64 bg-gray-800/50 border-none rounded-full py-2 px-4 text-xs focus:ring-1 focus:ring-accent-green text-gray-300"
-            placeholder="Search leagues, teams, players"
+            class="bg-gray-100 dark:bg-[#161d2b] text-slate-900 dark:text-white border-none rounded-xl py-2.5 pl-10 pr-4 text-sm w-64 focus:ring-1 focus:ring-emerald-accent"
+            placeholder="Search teams, matches, players..."
             type="text"
           />
-          <svg
-            class="w-4 h-4 absolute right-3 top-2.5 text-gray-500"
-            fill="none"
-            stroke="currentColor"
-            viewbox="0 0 24 24"
+          <span
+            class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl"
+            >search</span
           >
-            <path
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-            ></path>
-          </svg>
         </div>
         <!-- Theme Toggle -->
         <button
           id="theme-toggle"
-          class="p-2 rounded-full hover:bg-white/10 transition-all active:scale-95"
+          class="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-all active:scale-95"
         >
           <span
             id="theme-toggle-light-icon"
@@ -167,64 +160,74 @@
           >
           <span
             id="theme-toggle-dark-icon"
-            class="material-symbols-outlined text-slate-600 dark:text-slate-400"
+            class="material-symbols-outlined text-slate-500 dark:text-slate-400"
             >dark_mode</span
           >
         </button>
-        <div class="flex items-center space-x-4">
-          <div class="relative">
-            <span class="material-symbols-outlined text-gray-400 cursor-pointer"
-              >notifications</span
-            >
-            <span
-              id="user-level-display"
-              class="absolute -top-1 -right-1 bg-accent-green text-brand-dark text-[10px] font-bold px-1 rounded-full border-2 border-brand-dark"
-              >3</span
-            >
-          </div>
-          <div
-            id="profile-trigger"
-            class="flex items-center space-x-3 cursor-pointer border-l border-gray-200 dark:border-brand-border pl-4 md:pl-6"
+        <div class="relative notification-trigger cursor-pointer">
+          <span
+            class="material-symbols-outlined text-slate-500 dark:text-gray-400 cursor-pointer"
+            >notifications</span
           >
-            <div class="text-right hidden sm:block">
-              <p
-                id="user-name-display"
-                class="text-sm font-bold text-slate-900 dark:text-white"
-              >
-                NiteshY
-              </p>
-              <p
-                id="user-level-display"
-                class="text-[10px] text-brand-green font-bold uppercase tracking-wider"
-              >
-                Level 28
-              </p>
-            </div>
-            <img
-              id="user-profile-img"
-              alt="Profile"
-              class="w-9 h-9 md:w-10 md:h-10 rounded-full border-2 border-accent-green"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBtXrLPIZOC8slEHPNvLp5WVlZUUSydk3DCfdDvikjjSSwYFHbdMVS0wF2vvSNXLCXjPDXHQFoM8QQvfyv4e--hZnRe7uqob8XWxgUPq5lZDJOVWM8V1sXOPXNsAmMAEjTU3k3SXKBuf0-5OIY9rC1-EBu5pmm2laQb-rxuicubBt1zghKAK1V3UrHGRN19zq95HeEX0X76IKh5vtyPiqi2LKuOHlcY4iv3U9SQzKoyRjg-mF06cnCR4AO75TnUzeUvOfEhm9fpkfY"
-            />
+          <span
+            class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-[10px] flex items-center justify-center font-bold text-white shadow-sm"
+            >3</span
+          >
+        </div>
+        <div
+          id="profile-trigger"
+          class="flex items-center space-x-3 cursor-pointer border-l border-gray-200 dark:border-gray-800 pl-4 md:pl-6"
+        >
+          <img
+            id="user-profile-img"
+            alt="User Profile"
+            class="w-9 h-9 md:w-10 md:h-10 rounded-full border-2 border-emerald-accent"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDOdWz0yXTAfug92jAlZ-XZtnL5urTJNu8npwz7RIfeTacw2m4yeAoKNMAkf3MLOCIk0iI35_ID8tSabIp6I7MF2N_gez6RO01_i0q1DX3bj656URDlnI8A34wDvyRB5WoPOVTN1qvuyGRfskySDI-pCWAnw3raxBsKX2G6sEhrFHiweAO4TxLdxuB-4_oHoAPBbm9bwmrKrqSGKFEtAeXpM76OE_C1cQQSNmRYmIRT01ZVb4lT2k1tR1xDw6ujXtxiain2IWfiKxim"
+          />
+          <div class="hidden sm:block">
+            <p
+              id="user-name-display"
+              class="text-sm font-bold text-slate-900 dark:text-white"
+            >
+              NiteshY
+            </p>
+            <p
+              id="user-level-display"
+              class="text-[10px] text-emerald-accent font-bold uppercase tracking-wider"
+            >
+              Level 28
+            </p>
           </div>
         </div>
       </div>
     </header>
+
+    <!-- Mobile Sub-Nav -->
+    <nav class="xl:hidden flex overflow-x-auto gap-1 sm:gap-2 px-2 py-1.5 sm:px-4 sm:py-2.5 bg-white dark:bg-dark-bg border-b border-gray-200 dark:border-border-subtle scrollbar-none whitespace-nowrap" style="-webkit-overflow-scrolling:touch;scrollbar-width:none;">
+      <a href="index.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Home</a>
+      <a href="livematches.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Matches</a>
+      <a href="index.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Predictions</a>
+      <a href="index.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Leaderboard</a>
+      <a href="news&update.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">News</a>
+    </nav>
+
     <!-- END: MainHeader -->
     <div class="flex flex-1 overflow-hidden">
-      <!-- BEGIN: LeftSidebar -->
+      <!-- BEGIN: SidebarNav -->
       <aside
         id="sidebar"
-        class="fixed inset-y-0 left-0 z-[60] transition-all duration-300 bg-white dark:bg-dark-bg border-r border-gray-200 dark:border-border-subtle p-6 overflow-y-auto -translate-x-full lg:translate-x-0 lg:static h-full flex flex-col custom-scrollbar"
-        data-purpose="sports-categories"
+        class="w-64 fixed inset-y-0 left-0 z-[60] transition-all duration-300 bg-white dark:bg-dark-bg border-r border-gray-200 dark:border-border-subtle p-6 overflow-y-auto -translate-x-full lg:translate-x-0 lg:static h-full"
       >
         <!-- Mobile Close Button -->
-        <button id="close-sidebar-btn" class="lg:hidden p-2 absolute top-4 right-4 text-gray-400">
+        <button
+          id="close-sidebar-btn"
+          class="lg:hidden p-2 absolute top-4 right-4 text-gray-400"
+        >
           <span class="material-symbols-outlined">close</span>
         </button>
-        <!-- Logo Container -->
+        <!-- Logo Container for collapsed state -->
         <div
-          class="p-4 flex items-center space-x-2 logo-container cursor-pointer mb-6"
+          class="p-6 flex items-center space-x-2 logo-container cursor-pointer"
           onclick="window.location.href = 'index.html'"
         >
           <img src="assets/fancoin/fanconnactlogo.png" alt="FanConnect" class="w-8 h-8 flex-shrink-0" />
@@ -234,89 +237,170 @@
           >
         </div>
 
-        <p
-          class="text-xs font-bold text-slate-500 dark:text-gray-400 uppercase tracking-widest mb-6 px-6"
-        >
-          Sports
-        </p>
-        <nav class="space-y-1">
-          <a class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link" href="livematches.html">
-            <span class="material-symbols-outlined text-xl">grid_view</span>
-            <span class="nav-text">All Sports</span>
-          </a>
-          <a class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link" href="cricket.html">
-            <span class="material-symbols-outlined text-xl">sports_cricket</span>
-            <span class="nav-text">Cricket</span>
-          </a>
-          <a class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link" href="football.html">
-            <span class="material-symbols-outlined text-xl">sports_soccer</span>
-            <span class="nav-text">Football</span>
-          </a>
-          <a class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link" href="basketball.html">
-            <span class="material-symbols-outlined text-xl">sports_basketball</span>
-            <span class="nav-text">Basketball</span>
-          </a>
-          <a class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link" href="tennis.html">
-            <span class="material-symbols-outlined text-xl">sports_tennis</span>
-            <span class="nav-text">Tennis</span>
-          </a>
-          <a class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link" href="hockey.html">
-            <span class="material-symbols-outlined text-xl">sports_hockey</span>
-            <span class="nav-text">Hockey</span>
-          </a>
-          <a class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link" href="kabbaddi.html">
-            <span class="material-symbols-outlined text-xl">sports_kabaddi</span>
-            <span class="nav-text">Kabaddi</span>
-          </a>
-          <a class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link" href="e-sports.html">
-            <span class="material-symbols-outlined text-xl">sports_esports</span>
-            <span class="nav-text">E-Sports</span>
-          </a>
-          <a class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link" href="baseball.html">
-            <span class="material-symbols-outlined text-xl">sports_baseball</span>
-            <span class="nav-text">Baseball</span>
-          </a>
-          <a class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link" href="vollyeball.html">
-            <span class="material-symbols-outlined text-xl">sports_volleyball</span>
-            <span class="nav-text">Volleyball</span>
-          </a>
-          <a class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link" href="tabletennis.html">
-            <span class="material-symbols-outlined text-xl">sports_tennis</span>
-            <span class="nav-text">Table Tennis</span>
-          </a>
-        </nav>
-        <!-- Premium Banner -->
-        <div
-          class="mt-auto bg-brand-surface rounded-2xl p-4 text-center border border-gray-800"
-          data-purpose="premium-cta"
-        >
-          <div
-            class="w-12 h-12 bg-yellow-500 rounded-full flex items-center justify-center mx-auto mb-3"
+
+        <div class="mb-8">
+          <h3
+            class="text-xs font-bold text-slate-500 dark:text-gray-400 uppercase tracking-wider mb-4"
           >
-            <svg
-              class="w-6 h-6 text-white"
-              fill="currentColor"
-              viewbox="0 0 20 20"
+            SPORTS
+          </h3>
+          <ul class="space-y-1">
+            <li>
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                href="livematches.html"
+              >
+                <span class="material-symbols-outlined text-xl">grid_view</span>
+                <span class="nav-text">All Sports</span>
+              </a>
+            </li>
+            <li class="">
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                href="cricket.html"
+              >
+                <span class="material-symbols-outlined text-xl"
+                  >sports_cricket</span
+                >
+                <span class="nav-text">Cricket</span>
+              </a>
+            </li>
+            <li class="">
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                href="football.html"
+              >
+                <span class="material-symbols-outlined text-xl"
+                  >sports_soccer</span
+                >
+                <span class="nav-text">Football</span>
+              </a>
+            </li>
+            <li class="">
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link nav-link-active"
+                href="basketball.html"
+              >
+                <span class="material-symbols-outlined text-xl"
+                  >sports_basketball</span
+                >
+                <span class="nav-text">Basketball</span>
+              </a>
+            </li>
+            <li class="">
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                href="tennis.html"
+              >
+                <span class="material-symbols-outlined text-xl"
+                  >sports_tennis</span
+                >
+                <span class="nav-text">Tennis</span>
+              </a>
+            </li>
+            <li class="">
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                href="hockey.html"
+              >
+                <span class="material-symbols-outlined text-xl"
+                  >sports_hockey</span
+                >
+                <span class="nav-text">Hockey</span>
+              </a>
+            </li>
+            <li class="">
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                href="kabbaddi.html"
+              >
+                <span class="material-symbols-outlined text-xl"
+                  >sports_kabaddi</span
+                >
+                <span class="nav-text">Kabaddi</span>
+              </a>
+            </li>
+            <li class="">
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                href="e-sports.html"
+              >
+                <span class="material-symbols-outlined text-xl"
+                  >sports_esports</span
+                >
+                <span class="nav-text">E-Sports</span>
+              </a>
+            </li>
+            <li class="">
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                href="baseball.html"
+              >
+                <span class="material-symbols-outlined text-xl"
+                  >sports_baseball</span
+                >
+                <span class="nav-text">Baseball</span>
+              </a>
+            </li>
+            <li class="">
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                href="vollyeball.html"
+              >
+                <span class="material-symbols-outlined text-xl"
+                  >sports_volleyball</span
+                >
+                <span class="nav-text">Volleyball</span>
+              </a>
+            </li>
+            <li class="">
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                href="tabletennis.html"
+              >
+                <span class="material-symbols-outlined text-xl">sports_tennis</span>
+                <span class="nav-text">Table Tennis</span>
+              </a>
+            </li>
+
+          </ul>
+        </div>
+
+
+
+        <!-- Premium Promo -->
+        <div
+          class="mt-auto bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-5 border border-gray-700 text-center"
+        >
+          <div class="flex justify-center mb-3">
+            <div
+              class="w-10 h-10 bg-yellow-500 rounded-full flex items-center justify-center shadow-lg shadow-yellow-500/20"
             >
-              <path
-                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-              ></path>
-            </svg>
+              <svg
+                class="w-6 h-6 text-black"
+                fill="currentColor"
+                viewbox="0 0 20 20"
+              >
+                <path
+                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                ></path>
+              </svg>
+            </div>
           </div>
-          <h3 class="font-bold text-sm mb-1">FanConnect Premium</h3>
-          <p class="text-[10px] text-gray-400 mb-4">
+          <h4 class="font-bold text-sm mb-1">FanConnect Premium</h4>
+          <p class="text-[11px] text-gray-400 mb-4 leading-tight">
             Ad-free experience, exclusive badges &amp; more!
           </p>
           <button
             onclick="window.location.href='https://play.google.com/store/apps'"
-            class="w-full bg-accent-green text-brand-dark font-bold py-2 rounded-lg text-xs"
+            class="w-full bg-emerald-accent text-black font-bold py-2 rounded-lg text-xs hover:bg-emerald-400 transition-colors"
           >
             Go Premium
           </button>
         </div>
       </aside>
-      <!-- END: LeftSidebar -->
-      <!-- BEGIN: MainContent -->
+      <!-- END: SidebarNav -->
+      <!-- Main Content Area: Use internal scroll to avoid disturbing top bar -->
       <main
         class="flex-1 overflow-y-auto p-4 md:p-6 custom-scrollbar min-w-0 mx-auto"
         style="max-width: 1000px"
@@ -639,228 +723,6 @@
           </div>
         </div>
       </main>
-      <!-- END: MainContent -->
-      <!-- BEGIN: RightSidebar -->
-      <aside
-        class="w-[300px] shrink-0 border-l border-gray-800 p-4 space-y-6 hidden lg:flex flex-col overflow-y-auto custom-scrollbar"
-        data-purpose="stats-and-calendar"
-      >
-        <!-- Calendar Widget -->
-        <section
-          class="bg-brand-surface rounded-3xl p-5 border border-gray-800/50"
-        >
-          <div class="flex justify-between items-center mb-6">
-            <h3 class="font-bold text-md">Mat Calendar</h3>
-            <a class="text-accent-green text-[10px] font-bold" href="index.html"
-              >Full Schedule</a
-            >
-          </div>
-          <div class="grid grid-cols-7 gap-1 text-center mb-6">
-            <span class="text-[9px] text-gray-500 font-bold uppercase"
-              >Mon</span
-            >
-            <span class="text-[9px] text-gray-500 font-bold uppercase"
-              >Tue</span
-            >
-            <span class="text-[9px] text-gray-500 font-bold uppercase"
-              >Wed</span
-            >
-            <span class="text-[9px] text-gray-500 font-bold uppercase"
-              >Thu</span
-            >
-            <span class="text-[9px] text-gray-500 font-bold uppercase"
-              >Fri</span
-            >
-            <span class="text-[9px] text-gray-500 font-bold uppercase"
-              >Sat</span
-            >
-            <span class="text-[9px] text-gray-500 font-bold uppercase"
-              >Sun</span
-            >
-            <span class="text-xs py-2 text-gray-400">20</span>
-            <span class="text-xs py-2 text-gray-400">21</span>
-            <span
-              class="text-xs py-2 bg-accent-green text-brand-dark font-bold rounded-lg"
-              >22</span
-            >
-            <span class="text-xs py-2 text-gray-400">23</span>
-            <span class="text-xs py-2 text-gray-400">24</span>
-            <span class="text-xs py-2 text-gray-400">25</span>
-            <span class="text-xs py-2 text-gray-400">26</span>
-          </div>
-          <div class="space-y-4">
-            <div class="flex items-center space-x-3 group">
-              <div
-                class="w-10 h-10 rounded-lg bg-gray-800 overflow-hidden flex items-center justify-center text-xs font-bold"
-              >
-                NBA
-              </div>
-              <div class="flex-1 min-w-0">
-                <p class="text-[10px] text-gray-500 truncate">LAL @ GSW</p>
-                <p class="text-xs font-bold text-white">4th Quarter</p>
-              </div>
-              <span class="text-[9px] font-bold text-red-500 flex items-center"
-                ><span class="w-1 h-1 bg-red-500 rounded-full mr-1"></span>
-                LIVE</span
-              >
-            </div>
-            <div class="flex items-center space-x-3">
-              <div
-                class="w-10 h-10 rounded-lg bg-gray-800 overflow-hidden flex items-center justify-center text-xs font-bold"
-              >
-                NBA
-              </div>
-              <div class="flex-1 min-w-0">
-                <p class="text-[10px] text-gray-500 truncate">MIL @ MIA</p>
-                <p class="text-xs font-bold text-white">Bucks vs Heat</p>
-              </div>
-              <span class="text-[9px] text-gray-500 font-bold whitespace-nowrap"
-                >Starts 8:30 PM</span
-              >
-            </div>
-            <div class="flex items-center space-x-3">
-              <div
-                class="w-10 h-10 rounded-lg bg-gray-800 overflow-hidden flex items-center justify-center text-xs font-bold"
-              >
-                NCAA
-              </div>
-              <div class="flex-1 min-w-0">
-                <p class="text-[10px] text-gray-500 truncate">DUKE @ UNC</p>
-                <p class="text-xs font-bold text-white">
-                  Blue Devils vs Tar Heels
-                </p>
-              </div>
-              <span class="text-[9px] text-gray-500 font-bold whitespace-nowrap"
-                >Tomorrow</span
-              >
-            </div>
-          </div>
-          <button
-            class="w-full mt-6 text-accent-green text-[10px] font-bold py-2 border border-accent-green/30 rounded-lg hover:bg-accent-green/5"
-          >
-            Sync to Device
-          </button>
-        </section>
-        <!-- Top Players -->
-        <section
-          class="bg-brand-surface rounded-3xl p-5 border border-gray-800/50 flex-1"
-        >
-          <div class="flex justify-between items-center mb-6">
-            <h3 class="font-bold text-md">NBA Leaderboard</h3>
-            <div class="flex items-center space-x-2">
-              <div class="flex space-x-1">
-                <button
-                  class="w-5 h-5 flex items-center justify-center bg-gray-800 rounded-md text-gray-500"
-                >
-                  <svg
-                    class="w-3 h-3"
-                    fill="none"
-                    stroke="currentColor"
-                    viewbox="0 0 24 24"
-                  >
-                    <path
-                      d="M15 19l-7-7 7-7"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                    ></path>
-                  </svg>
-                </button>
-                <button
-                  class="w-5 h-5 flex items-center justify-center bg-gray-800 rounded-md text-gray-500"
-                >
-                  <svg
-                    class="w-3 h-3"
-                    fill="none"
-                    stroke="currentColor"
-                    viewbox="0 0 24 24"
-                  >
-                    <path
-                      d="M9 5l7 7-7 7"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                    ></path>
-                  </svg>
-                </button>
-              </div>
-              <a
-                class="text-accent-green text-[10px] font-bold"
-                href="index.html"
-                >All Stats</a
-              >
-            </div>
-          </div>
-          <div
-            class="grid grid-cols-3 bg-brand-dark p-1 rounded-xl mb-6 border border-gray-800"
-          >
-            <button
-              class="text-[9px] py-2 bg-accent-green/10 border border-accent-green text-accent-green font-bold rounded-lg"
-            >
-              Points</button
-            ><button class="text-[9px] py-2 text-gray-500 font-bold">
-              Assists</button
-            ><button class="text-[9px] py-2 text-gray-500 font-bold">
-              Rebounds
-            </button>
-          </div>
-          <div class="space-y-6">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center space-x-3">
-                <span class="text-xs font-bold text-gray-500 w-3">1</span>
-                <div
-                  class="w-9 h-9 rounded-full overflow-hidden border border-gray-700 bg-gray-800"
-                >
-                  <img
-                    alt="Nikola Jokic"
-                    class="w-full h-full object-cover"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-Nikola-Jokic-Placeholder"
-                  />
-                </div>
-                <div>
-                  <p class="text-xs font-bold text-white">Nikola Jokić</p>
-                  <p class="text-[10px] text-gray-500 font-medium">DEN</p>
-                </div>
-              </div>
-              <div class="text-right">
-                <p class="text-xs font-black text-white">29.7</p>
-                <p
-                  class="text-[8px] text-gray-500 uppercase font-bold tracking-tighter"
-                >
-                  PPG
-                </p>
-              </div>
-            </div>
-            <div class="flex items-center justify-between">
-              <div class="flex items-center space-x-3">
-                <span class="text-xs font-bold text-gray-500 w-3">2</span>
-                <div
-                  class="w-9 h-9 rounded-full overflow-hidden border border-gray-700 bg-gray-800"
-                >
-                  <img
-                    alt="LeBron James"
-                    class="w-full h-full object-cover"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-LeBron-James-Placeholder"
-                  />
-                </div>
-                <div>
-                  <p class="text-xs font-bold text-white">LeBron James</p>
-                  <p class="text-[10px] text-gray-500 font-medium">LAL</p>
-                </div>
-              </div>
-              <div class="text-right">
-                <p class="text-xs font-black text-white">25.2</p>
-                <p
-                  class="text-[8px] text-gray-500 uppercase font-bold tracking-tighter"
-                >
-                  PPG
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-      </aside>
-      <!-- END: RightSidebar -->
     </div>
     <script type="module" src="js/script.js"></script>
     <script src="js/theme.js"></script>

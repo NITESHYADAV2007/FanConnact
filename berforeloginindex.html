@@ -60,13 +60,13 @@
       <div class="flex items-center gap-2">
         <!-- FanConnect Logo -->
         <img src="assets/fancoin/fanconnactlogo.png" alt="FanConnect" class="w-8 h-8 md:w-10 md:h-10" />
-        <span class="text-lg md:text-2xl font-bold tracking-tight"><span class="text-fan">Fan</span><span class="text-connect hidden sm:inline">Connact</span></span>
+        <span class="text-lg md:text-2xl font-bold tracking-tight"><span class="text-fan">Fan</span><span class="text-connect">Connact</span></span>
       </div>
       <!-- Language Selector -->
-      <div class="relative shrink-0 ml-auto mr-2 md:mr-4" id="lang-selector-wrapper">
-        <button id="lang-selector-btn" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold border border-gray-700 text-gray-300 hover:bg-gray-800 transition-all">
+      <div class="relative shrink-0 ml-auto mr-1 sm:mr-4" id="lang-selector-wrapper">
+        <button id="lang-selector-btn" class="flex items-center gap-1 px-1.5 sm:px-2.5 py-1.5 rounded-lg text-xs font-bold border border-gray-700 text-gray-300 hover:bg-gray-800 transition-all">
           <span class="material-symbols-outlined text-sm">translate</span>
-          <span id="current-lang-label">EN</span>
+          <span id="current-lang-label" class="hidden sm:inline">EN</span>
         </button>
         <div id="lang-dropdown" class="absolute top-full right-0 mt-1 bg-brand-card border border-gray-700 rounded-xl shadow-xl py-2 z-50 hidden max-h-60 overflow-y-auto custom-scrollbar min-w-[140px]">
         </div>
@@ -74,7 +74,7 @@
       <div data-purpose="user-actions">
         <button
           onclick="window.location.href = 'login.html'"
-          class="bg-brand-blue hover:bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold flex items-center gap-2 transition-colors"
+          class="bg-brand-blue hover:bg-blue-600 text-white px-3 sm:px-6 py-1.5 sm:py-2 rounded-lg font-semibold flex items-center gap-1 sm:gap-2 transition-colors text-sm sm:text-base"
         >
           <svg
             class="h-5 w-5"

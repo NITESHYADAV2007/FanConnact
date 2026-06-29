@@ -1,194 +1,66 @@
 <!doctype html>
 
-<html class="dark" lang="en">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>FanConnect | Table Tennis Dashboard</title>
+    <script>
+      if (
+        localStorage.getItem("color-theme") === "dark" ||
+        (!("color-theme" in localStorage) &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches)
+      ) {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
+    </script>
+    <title>FanConnect - Table Tennis Matches</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Google Fonts: Lexend -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;display=swap"
+      href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap"
       rel="stylesheet"
     />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
-      rel="stylesheet"
-    />
+    <link rel="stylesheet" href="css/style.css" />
     <link
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
       rel="stylesheet"
     />
-    <script id="tailwind-config">
+    <script>
       tailwind.config = {
         darkMode: "class",
         theme: {
           extend: {
-            colors: {
-              "on-primary-fixed-variant": "#005226",
-              "surface-bright": "#343941",
-              "on-tertiary-fixed": "#3c0700",
-              "surface-container-low": "#171c23",
-              "error-container": "#93000a",
-              "primary-container": "#00e676",
-              "primary-fixed-dim": "#00e475",
-              "surface-dim": "#0f141b",
-              "on-secondary-container": "#f2f3ff",
-              "on-surface-variant": "#bacbb9",
-              "on-error": "#690005",
-              "surface-container": "#1b2027",
-              primary: "#75ff9e",
-              "secondary-container": "#0068ed",
-              "tertiary-fixed": "#ffdad2",
-              "surface-variant": "#30353d",
-              "surface-tint": "#00e475",
-              secondary: "#b0c6ff",
-              surface: "#0f141b",
-              "on-secondary-fixed-variant": "#00429b",
-              "on-tertiary-container": "#a12300",
-              "surface-container-highest": "#30353d",
-              "inverse-primary": "#006d35",
-              "tertiary-container": "#ffb7a5",
-              outline: "#859585",
-              "on-secondary-fixed": "#001945",
-              "on-surface": "#dee2ec",
-              "outline-variant": "#3b4a3d",
-              "secondary-fixed-dim": "#b0c6ff",
-              "on-background": "#dee2ec",
-              "surface-container-high": "#252a32",
-              "on-tertiary": "#621100",
-              "inverse-on-surface": "#2c3138",
-              background: "#0f141b",
-              "on-secondary": "#002d6e",
-              error: "#ffb4ab",
-              "on-primary-fixed": "#00210b",
-              "secondary-fixed": "#d9e2ff",
-              "on-primary-container": "#00612e",
-              "on-primary": "#003918",
-              "surface-container-lowest": "#090f15",
-              "on-error-container": "#ffdad6",
-              tertiary: "#ffddd5",
-              "primary-fixed": "#62ff96",
-              "tertiary-fixed-dim": "#ffb4a2",
-              "inverse-surface": "#dee2ec",
-              "on-tertiary-fixed-variant": "#8a1d00",
-            },
-            borderRadius: {
-              DEFAULT: "0.125rem",
-              lg: "0.25rem",
-              xl: "0.5rem",
-              full: "0.75rem",
-            },
-            spacing: {
-              gutter: "20px",
-              xs: "4px",
-              "sidebar-left": "240px",
-              base: "8px",
-              sm: "8px",
-              md: "16px",
-              xl: "32px",
-              lg: "24px",
-              "sidebar-right": "320px",
-            },
             fontFamily: {
-              "body-lg": ["Inter"],
-              "numeric-data": ["Inter"],
-              "label-caps": ["Inter"],
-              "body-sm": ["Inter"],
-              "display-lg": ["Inter"],
-              "headline-md": ["Inter"],
-              "headline-lg-mobile": ["Inter"],
-              "headline-lg": ["Inter"],
+              lexend: ["Lexend", "sans-serif"],
             },
-            fontSize: {
-              "body-lg": ["16px", { lineHeight: "24px", fontWeight: "400" }],
-              "numeric-data": [
-                "18px",
-                { lineHeight: "24px", fontWeight: "700" },
-              ],
-              "label-caps": [
-                "12px",
-                {
-                  lineHeight: "16px",
-                  letterSpacing: "0.05em",
-                  fontWeight: "700",
-                },
-              ],
-              "body-sm": ["14px", { lineHeight: "20px", fontWeight: "400" }],
-              "display-lg": [
-                "48px",
-                {
-                  lineHeight: "56px",
-                  letterSpacing: "-0.02em",
-                  fontWeight: "800",
-                },
-              ],
-              "headline-md": [
-                "20px",
-                { lineHeight: "28px", fontWeight: "600" },
-              ],
-              "headline-lg-mobile": [
-                "24px",
-                { lineHeight: "32px", fontWeight: "700" },
-              ],
-              "headline-lg": [
-                "32px",
-                {
-                  lineHeight: "40px",
-                  letterSpacing: "-0.01em",
-                  fontWeight: "700",
-                },
-              ],
+            colors: {
+              "emerald-accent": "#10b981",
+              "dark-bg": "#0a0e14",
+              "sidebar-bg": "#0f172a",
+              "card-bg": "#161d2b",
+              "border-subtle": "#1e293b",
             },
           },
         },
       };
     </script>
-    <style>
-      body {
-        background-color: #090b0e;
-        color: #dee2ec;
-        overflow-x: hidden;
+    <style data-purpose="custom-scrollbar">
+      ::-webkit-scrollbar {
+        width: 6px;
       }
-      .material-symbols-outlined {
-        font-variation-settings:
-          "FILL" 0,
-          "wght" 400,
-          "GRAD" 0,
-          "opsz" 24;
+      ::-webkit-scrollbar-track {
+        background: #0a0e14;
       }
-      .live-pulse {
-        animation: pulse 1.5s infinite;
-      }
-      @keyframes pulse {
-        0% {
-          opacity: 1;
-          transform: scale(1);
-        }
-        50% {
-          opacity: 0.5;
-          transform: scale(1.2);
-        }
-        100% {
-          opacity: 1;
-          transform: scale(1);
-        }
-      }
-      .custom-scrollbar::-webkit-scrollbar {
-        width: 4px;
-      }
-      .custom-scrollbar::-webkit-scrollbar-track {
-        background: #0f141b;
-      }
-      .custom-scrollbar::-webkit-scrollbar-thumb {
-        background: #3b4a3d;
+      ::-webkit-scrollbar-thumb {
+        background: #1e293b;
         border-radius: 10px;
       }
-      .match-card:hover {
-        border-color: #ffffff30;
-        transform: translateY(-2px);
-        transition: all 0.3s ease;
+      ::-webkit-scrollbar-thumb:hover {
+        background: #10b981;
       }
-
       .sidebar-collapsed #sidebar { width: 0 !important; min-width: 0 !important; border: 0 !important; padding: 0 !important; overflow: hidden !important; }
       .text-fan { color: #ffffff !important; }
       :root:not(.dark) .text-connect { color: #2563eb !important; }
@@ -214,16 +86,17 @@
     />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
   </head>
-  <body class="font-body-lg text-on-surface bg-surface">
+  <body
+    class="h-screen w-full flex flex-col overflow-hidden transition-colors duration-300 bg-[#F8F9FF] dark:bg-[#0F172A] text-slate-900 dark:text-slate-100"
+  >
     <!-- BEGIN: MainHeader -->
     <header
-      class="h-20 flex items-center justify-between px-4 md:px-8 border-b transition-colors duration-300 bg-white dark:bg-brand-dark border-gray-200 dark:border-brand-border shrink-0 fixed top-0 left-0 right-0 z-50"
-      data-purpose="top-navigation"
+      class="sticky top-0 z-50 transition-colors duration-300 bg-white dark:bg-dark-bg border-b border-gray-200 dark:border-border-subtle px-4 md:px-8 py-4 flex items-center justify-between"
     >
-      <div class="flex items-center gap-4 flex-1">
+      <div class="flex items-center space-x-4 md:space-x-12">
         <button
+          class="text-gray-400 hover:text-emerald-accent"
           id="mobile-menu-btn"
-          class="p-2 text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 rounded-lg transition-colors shrink-0"
         >
           <span class="material-symbols-outlined">menu</span>
         </button>
@@ -236,76 +109,82 @@
         <!-- Top Navigation -->
         <nav class="hidden xl:flex items-center space-x-6 mx-6 shrink-0">
           <a
-            class="text-gray-400 hover:text-brand-green transition-colors font-medium text-sm nav-link"
+            class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link"
             href="index.html"
             >Home</a
           >
           <a
-            class="text-gray-400 hover:text-brand-green transition-colors font-medium text-sm nav-link"
+            class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link"
             href="livematches.html"
             >Matches</a
           >
           <a
-            class="text-gray-400 hover:text-brand-green transition-colors font-medium text-sm nav-link"
+            class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link"
             href="index.html"
             >Predictions</a
           >
           <a
-            class="text-gray-400 hover:text-brand-green transition-colors font-medium text-sm nav-link"
+            class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link"
             href="index.html"
             >Leaderboard</a
           >
           <a
-            class="text-gray-400 hover:text-brand-green transition-colors font-medium text-sm nav-link"
+            class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link"
             href="news&update.html"
             >News</a
           >
         </nav>
       </div>
+      <!-- Header Actions -->
       <div class="flex items-center gap-5 md:gap-8">
-        <div
-          class="hidden lg:flex items-center bg-gray-100 dark:bg-brand-card px-md py-xs rounded-xl border border-transparent focus-within:border-emerald-accent transition-all"
-        >
-          <span class="material-symbols-outlined text-gray-500 text-sm"
-            >search</span
-          >
+        <div class="relative hidden lg:block">
           <input
-            class="bg-transparent border-none focus:ring-0 text-sm placeholder:text-gray-500 w-64 dark:text-white text-slate-900"
-            placeholder="Search matches, players..."
+            class="bg-gray-100 dark:bg-[#161d2b] text-slate-900 dark:text-white border-none rounded-xl py-2.5 pl-10 pr-4 text-sm w-64 focus:ring-1 focus:ring-emerald-accent"
+            placeholder="Search teams, matches, players..."
             type="text"
           />
+          <span
+            class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl"
+            >search</span
+          >
         </div>
+        <!-- Theme Toggle -->
         <button
           id="theme-toggle"
-          class="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10"
+          class="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-all active:scale-95"
         >
           <span
             id="theme-toggle-light-icon"
-            class="material-symbols-outlined text-yellow-500 hidden"
+            class="material-symbols-outlined hidden text-yellow-400"
             >light_mode</span
           >
           <span
             id="theme-toggle-dark-icon"
-            class="material-symbols-outlined text-slate-600 dark:text-slate-400"
+            class="material-symbols-outlined text-slate-500 dark:text-slate-400"
             >dark_mode</span
           >
         </button>
-        <button
-          class="relative p-2 rounded-full hover:bg-gray-100 dark:hover:bg-white/10"
-        >
-          <span class="material-symbols-outlined text-gray-400"
+        <div class="relative notification-trigger cursor-pointer">
+          <span
+            class="material-symbols-outlined text-slate-500 dark:text-gray-400 cursor-pointer"
             >notifications</span
           >
           <span
-            class="absolute top-1.5 right-1.5 w-4 h-4 bg-red-500 rounded-full text-[10px] flex items-center justify-center font-bold text-white shadow-sm"
+            class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-[10px] flex items-center justify-center font-bold text-white shadow-sm"
             >3</span
           >
-        </button>
+        </div>
         <div
           id="profile-trigger"
-          class="flex items-center space-x-3 cursor-pointer border-l border-gray-200 dark:border-brand-border pl-4 md:pl-6"
+          class="flex items-center space-x-3 cursor-pointer border-l border-gray-200 dark:border-gray-800 pl-4 md:pl-6"
         >
-          <div class="hidden sm:block text-right">
+          <img
+            id="user-profile-img"
+            alt="User Profile"
+            class="w-9 h-9 md:w-10 md:h-10 rounded-full border-2 border-emerald-accent"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDOdWz0yXTAfug92jAlZ-XZtnL5urTJNu8npwz7RIfeTacw2m4yeAoKNMAkf3MLOCIk0iI35_ID8tSabIp6I7MF2N_gez6RO01_i0q1DX3bj656URDlnI8A34wDvyRB5WoPOVTN1qvuyGRfskySDI-pCWAnw3raxBsKX2G6sEhrFHiweAO4TxLdxuB-4_oHoAPBbm9bwmrKrqSGKFEtAeXpM76OE_C1cQQSNmRYmIRT01ZVb4lT2k1tR1xDw6ujXtxiain2IWfiKxim"
+          />
+          <div class="hidden sm:block">
             <p
               id="user-name-display"
               class="text-sm font-bold text-slate-900 dark:text-white"
@@ -319,28 +198,36 @@
               Level 28
             </p>
           </div>
-          <img
-            id="user-profile-img"
-            alt="User Profile"
-            class="w-9 h-9 md:w-10 md:h-10 rounded-full border-2 border-emerald-accent"
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDtvk-QCgSniwXRflWYIMKqji4dtzlgHLRq9MYl7vdmd57lVL8wCfv9VovGuRS9YlIgfXr-qMsg57iDtKfAcbfF1yhnjhq7v4fF6aLJ6pnQDXwg94JHxnNFKsdmeNMbc-mH7NpjvJVYUGiyTwbxBwyGpMDmzIDn0OS3VHi8ciPJZNO9P3pzsCzQ-WwH5M1v_O-V1QKKCJE36l_N5xfr8FJjhR8E81DvPirMJ9CVJzidpK4fQTOCF9wldgmfBNPdJD7uz46woP-zs7Y"
-          />
         </div>
       </div>
     </header>
-    <div class="flex pt-20 h-screen overflow-hidden">
-      <!-- Left Sidebar: Sports Navigation -->
+
+    <!-- Mobile Sub-Nav -->
+    <nav class="xl:hidden flex overflow-x-auto gap-1 sm:gap-2 px-2 py-1.5 sm:px-4 sm:py-2.5 bg-white dark:bg-dark-bg border-b border-gray-200 dark:border-border-subtle scrollbar-none whitespace-nowrap" style="-webkit-overflow-scrolling:touch;scrollbar-width:none;">
+      <a href="index.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Home</a>
+      <a href="livematches.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Matches</a>
+      <a href="index.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Predictions</a>
+      <a href="index.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Leaderboard</a>
+      <a href="news&update.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">News</a>
+    </nav>
+
+    <!-- END: MainHeader -->
+    <div class="flex flex-1 overflow-hidden">
+      <!-- BEGIN: SidebarNav -->
       <aside
         id="sidebar"
-        class="fixed inset-y-0 left-0 z-[60] transition-all duration-300 bg-white dark:bg-dark-bg border-r border-gray-200 dark:border-border-subtle p-6 overflow-y-auto -translate-x-full lg:translate-x-0 lg:static h-full flex flex-col custom-scrollbar"
+        class="w-64 fixed inset-y-0 left-0 z-[60] transition-all duration-300 bg-white dark:bg-dark-bg border-r border-gray-200 dark:border-border-subtle p-6 overflow-y-auto -translate-x-full lg:translate-x-0 lg:static h-full"
       >
         <!-- Mobile Close Button -->
-        <button id="close-sidebar-btn" class="lg:hidden p-2 absolute top-4 right-4 text-gray-400">
+        <button
+          id="close-sidebar-btn"
+          class="lg:hidden p-2 absolute top-4 right-4 text-gray-400"
+        >
           <span class="material-symbols-outlined">close</span>
         </button>
-        <!-- Logo Container -->
+        <!-- Logo Container for collapsed state -->
         <div
-          class="p-4 flex items-center space-x-2 logo-container cursor-pointer mb-6"
+          class="p-6 flex items-center space-x-2 logo-container cursor-pointer"
           onclick="window.location.href = 'index.html'"
         >
           <img src="assets/fancoin/fanconnactlogo.png" alt="FanConnect" class="w-8 h-8 flex-shrink-0" />
@@ -349,87 +236,171 @@
             ><span class="text-fan">Fan</span><span class="text-connect">Connact</span></span
           >
         </div>
-        <h3
-          class="text-xs font-bold text-slate-500 dark:text-gray-400 uppercase tracking-wider mb-4 px-6"
-        >
-          SPORTS
-        </h3>
-        <nav class="space-y-1">
-          <a class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link" href="livematches.html">
-            <span class="material-symbols-outlined text-xl">grid_view</span>
-            <span class="nav-text">All Sports</span>
-          </a>
-          <a class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link" href="cricket.html">
-            <span class="material-symbols-outlined text-xl">sports_cricket</span>
-            <span class="nav-text">Cricket</span>
-          </a>
-          <a class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link" href="football.html">
-            <span class="material-symbols-outlined text-xl">sports_soccer</span>
-            <span class="nav-text">Football</span>
-          </a>
-          <a class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link" href="basketball.html">
-            <span class="material-symbols-outlined text-xl">sports_basketball</span>
-            <span class="nav-text">Basketball</span>
-          </a>
-          <a class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link" href="tennis.html">
-            <span class="material-symbols-outlined text-xl">sports_tennis</span>
-            <span class="nav-text">Tennis</span>
-          </a>
-          <a class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link" href="hockey.html">
-            <span class="material-symbols-outlined text-xl">sports_hockey</span>
-            <span class="nav-text">Hockey</span>
-          </a>
-          <a class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link" href="kabbaddi.html">
-            <span class="material-symbols-outlined text-xl">sports_kabaddi</span>
-            <span class="nav-text">Kabaddi</span>
-          </a>
-          <a class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link" href="e-sports.html">
-            <span class="material-symbols-outlined text-xl">sports_esports</span>
-            <span class="nav-text">E-Sports</span>
-          </a>
-          <a class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link" href="baseball.html">
-            <span class="material-symbols-outlined text-xl">sports_baseball</span>
-            <span class="nav-text">Baseball</span>
-          </a>
-          <a class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link" href="volleyball.html">
-            <span class="material-symbols-outlined text-xl">sports_volleyball</span>
-            <span class="nav-text">Volleyball</span>
-          </a>
-          <a class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link" href="tabletennis.html">
-            <span class="material-symbols-outlined text-xl">sports_tennis</span>
-            <span class="nav-text">Table Tennis</span>
-          </a>
-        </nav>
-        <div class="mt-auto px-md py-xl">
-          <div
-            class="bg-surface-container-high rounded-xl p-md border border-primary/20 relative overflow-hidden group"
+
+
+        <div class="mb-8">
+          <h3
+            class="text-xs font-bold text-slate-500 dark:text-gray-400 uppercase tracking-wider mb-4"
           >
+            SPORTS
+          </h3>
+          <ul class="space-y-1">
+            <li>
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                href="livematches.html"
+              >
+                <span class="material-symbols-outlined text-xl">grid_view</span>
+                <span class="nav-text">All Sports</span>
+              </a>
+            </li>
+            <li class="">
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                href="cricket.html"
+              >
+                <span class="material-symbols-outlined text-xl"
+                  >sports_cricket</span
+                >
+                <span class="nav-text">Cricket</span>
+              </a>
+            </li>
+            <li class="">
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                href="football.html"
+              >
+                <span class="material-symbols-outlined text-xl"
+                  >sports_soccer</span
+                >
+                <span class="nav-text">Football</span>
+              </a>
+            </li>
+            <li class="">
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                href="basketball.html"
+              >
+                <span class="material-symbols-outlined text-xl"
+                  >sports_basketball</span
+                >
+                <span class="nav-text">Basketball</span>
+              </a>
+            </li>
+            <li class="">
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                href="tennis.html"
+              >
+                <span class="material-symbols-outlined text-xl"
+                  >sports_tennis</span
+                >
+                <span class="nav-text">Tennis</span>
+              </a>
+            </li>
+            <li class="">
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                href="hockey.html"
+              >
+                <span class="material-symbols-outlined text-xl"
+                  >sports_hockey</span
+                >
+                <span class="nav-text">Hockey</span>
+              </a>
+            </li>
+            <li class="">
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                href="kabbaddi.html"
+              >
+                <span class="material-symbols-outlined text-xl"
+                  >sports_kabaddi</span
+                >
+                <span class="nav-text">Kabaddi</span>
+              </a>
+            </li>
+            <li class="">
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                href="e-sports.html"
+              >
+                <span class="material-symbols-outlined text-xl"
+                  >sports_esports</span
+                >
+                <span class="nav-text">E-Sports</span>
+              </a>
+            </li>
+            <li class="">
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                href="baseball.html"
+              >
+                <span class="material-symbols-outlined text-xl"
+                  >sports_baseball</span
+                >
+                <span class="nav-text">Baseball</span>
+              </a>
+            </li>
+            <li class="">
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                href="vollyeball.html"
+              >
+                <span class="material-symbols-outlined text-xl"
+                  >sports_volleyball</span
+                >
+                <span class="nav-text">Volleyball</span>
+              </a>
+            </li>
+            <li class="">
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link nav-link-active"
+                href="tabletennis.html"
+              >
+                <span class="material-symbols-outlined text-xl">sports_tennis</span>
+                <span class="nav-text">Table Tennis</span>
+              </a>
+            </li>
+
+          </ul>
+        </div>
+
+
+
+        <!-- Premium Promo -->
+        <div
+          class="mt-auto bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-5 border border-gray-700 text-center"
+        >
+          <div class="flex justify-center mb-3">
             <div
-              class="absolute -top-4 -right-4 w-16 h-16 bg-primary/10 rounded-full blur-xl group-hover:bg-primary/20 transition-all"
-            ></div>
-            <span
-              class="material-symbols-outlined text-primary mb-xs"
-              style="font-variation-settings: &quot;FILL&quot; 1"
-              >workspace_premium</span
+              class="w-10 h-10 bg-yellow-500 rounded-full flex items-center justify-center shadow-lg shadow-yellow-500/20"
             >
-            <h3
-              class="font-headline-md text-headline-md text-on-surface mb-xs leading-tight"
-            >
-              FanConnect Premium
-            </h3>
-            <p class="font-body-sm text-on-surface-variant text-xs mb-md">
-              Ad-free experience, exclusive badges &amp; more!
-            </p>
-            <button
-              onclick="window.location.href='https://play.google.com/store/apps'"
-              class="w-full py-sm bg-primary text-on-primary font-bold text-xs rounded-lg hover:scale-105 active:scale-95 transition-all"
-            >
-              Go Premium
-            </button>
+              <svg
+                class="w-6 h-6 text-black"
+                fill="currentColor"
+                viewbox="0 0 20 20"
+              >
+                <path
+                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                ></path>
+              </svg>
+            </div>
           </div>
+          <h4 class="font-bold text-sm mb-1">FanConnect Premium</h4>
+          <p class="text-[11px] text-gray-400 mb-4 leading-tight">
+            Ad-free experience, exclusive badges &amp; more!
+          </p>
+          <button
+            onclick="window.location.href='https://play.google.com/store/apps'"
+            class="w-full bg-emerald-accent text-black font-bold py-2 rounded-lg text-xs hover:bg-emerald-400 transition-colors"
+          >
+            Go Premium
+          </button>
         </div>
       </aside>
-      <!-- Main Feed -->
+      <!-- END: SidebarNav -->
+      <!-- Main Content Area: Use internal scroll to avoid disturbing top bar -->
       <main
         class="flex-1 overflow-y-auto bg-surface-dim custom-scrollbar px-md lg:px-xl py-lg"
       >
@@ -755,419 +726,8 @@
           </div>
         </div>
       </main>
-      <!-- Right Sidebar: Widgets -->
-      <aside
-        class="hidden xl:flex flex-col w-[320px] bg-surface-container-low border-l border-outline-variant/30 overflow-y-auto custom-scrollbar p-md"
-      >
-        <!-- Calendar Widget -->
-        <div
-          class="bg-surface-container rounded-xl p-md border border-outline-variant/20 mb-lg"
-        >
-          <div class="flex items-center justify-between mb-md">
-            <h3 class="font-headline-md text-on-surface text-base">Calendar</h3>
-            <a
-              class="text-[10px] font-bold text-primary uppercase hover:underline"
-              href="index.html"
-              >View Full Calendar</a
-            >
-          </div>
-          <div class="flex justify-between text-center mb-sm">
-            <div
-              class="flex-1 text-[10px] text-on-surface-variant font-bold opacity-50"
-            >
-              MON
-            </div>
-            <div
-              class="flex-1 text-[10px] text-on-surface-variant font-bold opacity-50"
-            >
-              TUE
-            </div>
-            <div
-              class="flex-1 text-[10px] text-on-surface-variant font-bold opacity-50"
-            >
-              WED
-            </div>
-            <div
-              class="flex-1 text-[10px] text-on-surface-variant font-bold opacity-50"
-            >
-              THU
-            </div>
-            <div
-              class="flex-1 text-[10px] text-on-surface-variant font-bold opacity-50"
-            >
-              FRI
-            </div>
-            <div
-              class="flex-1 text-[10px] text-on-surface-variant font-bold opacity-50"
-            >
-              SAT
-            </div>
-            <div
-              class="flex-1 text-[10px] text-on-surface-variant font-bold opacity-50"
-            >
-              SUN
-            </div>
-          </div>
-          <div class="flex justify-between text-center mb-md">
-            <div class="flex-1 text-sm font-bold p-1">13</div>
-            <div class="flex-1 text-sm font-bold p-1">14</div>
-            <div
-              class="flex-1 text-sm font-bold p-1 bg-primary text-on-primary rounded-lg"
-            >
-              15
-            </div>
-            <div class="flex-1 text-sm font-bold p-1">16</div>
-            <div class="flex-1 text-sm font-bold p-1">17</div>
-            <div class="flex-1 text-sm font-bold p-1">18</div>
-            <div class="flex-1 text-sm font-bold p-1">19</div>
-          </div>
-          <div class="flex flex-col gap-sm">
-            <div
-              class="p-sm bg-surface-container-high rounded border-l-2 border-primary flex gap-sm items-center"
-            >
-              <div
-                class="w-8 h-8 rounded bg-surface-variant flex items-center justify-center overflow-hidden"
-              >
-                <img
-                  alt="Logo"
-                  class="w-6 h-6 object-contain"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7rNzq34GsNy1VaXJZR1s2C7Ee1s8YpLvq7TIo_AJmJJGoYk0Nz6WUqWcvT7NxSjnO6f_dAchw2YbD_E_TJE4020JAyN-il-8iDjtGR6mkfhtNgN4tRhhNXV9HnmuCvYNHz6By2XOZB94olvCObF9O1sjgBLLG_GEvFHg_b_hzFLyM7tMwSe__a9XAMRlURU9_nzd2lN7cl2zfXHWNPcj5uXilIZQy85YSOZ6m_DLmyQPUjbeh91c1Wv8vMEox7U1jDlhYTsHHINI"
-                />
-              </div>
-              <div class="flex-1 min-w-0">
-                <p
-                  class="text-[10px] text-on-surface-variant font-bold uppercase truncate"
-                >
-                  WTT Champions
-                </p>
-                <p class="text-xs font-bold text-on-surface truncate">
-                  Fan Z vs Ma L
-                </p>
-              </div>
-              <span
-                class="text-[10px] font-bold text-error bg-error/10 px-1 rounded"
-                >LIVE</span
-              >
-            </div>
-            <div
-              class="p-sm bg-surface-container-high/40 rounded border-l-2 border-outline-variant flex gap-sm items-center"
-            >
-              <div
-                class="w-8 h-8 rounded bg-surface-variant flex items-center justify-center overflow-hidden"
-              >
-                <img
-                  alt="Logo"
-                  class="w-6 h-6 object-contain"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7rNzq34GsNy1VaXJZR1s2C7Ee1s8YpLvq7TIo_AJmJJGoYk0Nz6WUqWcvT7NxSjnO6f_dAchw2YbD_E_TJE4020JAyN-il-8iDjtGR6mkfhtNgN4tRhhNXV9HnmuCvYNHz6By2XOZB94olvCObF9O1sjgBLLG_GEvFHg_b_hzFLyM7tMwSe__a9XAMRlURU9_nzd2lN7cl2zfXHWNPcj5uXilIZQy85YSOZ6m_DLmyQPUjbeh91c1Wv8vMEox7U1jDlhYTsHHINI"
-                />
-              </div>
-              <div class="flex-1 min-w-0">
-                <p
-                  class="text-[10px] text-on-surface-variant font-bold uppercase truncate"
-                >
-                  World Cup 2024
-                </p>
-                <p class="text-xs font-bold text-on-surface truncate">
-                  Upcoming matches
-                </p>
-              </div>
-              <span class="text-[10px] font-bold text-on-surface-variant"
-                >20:30</span
-              >
-            </div>
-          </div>
-        </div>
-        <!-- Rankings Leaderboard Widget -->
-        <div
-          class="bg-surface-container rounded-xl p-md border border-outline-variant/20"
-        >
-          <div class="flex items-center justify-between mb-md">
-            <h3 class="font-headline-md text-on-surface text-base">
-              ITTF Rankings
-            </h3>
-            <div class="flex gap-xs">
-              <button class="p-xs bg-surface-container-high rounded">
-                <span class="material-symbols-outlined text-xs"
-                  >chevron_left</span
-                >
-              </button>
-              <button class="p-xs bg-surface-container-high rounded">
-                <span class="material-symbols-outlined text-xs"
-                  >chevron_right</span
-                >
-              </button>
-            </div>
-          </div>
-          <div class="flex gap-sm mb-md">
-            <button
-              class="flex-1 py-1 px-xs bg-primary text-on-primary font-bold text-[10px] rounded uppercase"
-            >
-              Men's
-            </button>
-            <button
-              class="flex-1 py-1 px-xs bg-surface-container-high text-on-surface-variant font-bold text-[10px] rounded uppercase"
-            >
-              Women's
-            </button>
-          </div>
-          <div class="flex flex-col">
-            <!-- Rank Item 1 -->
-            <div
-              class="flex items-center gap-md py-sm border-b border-outline-variant/10 group"
-            >
-              <span
-                class="font-numeric-data text-primary italic font-bold w-4 text-center"
-                >1</span
-              >
-              <div
-                class="w-10 h-10 rounded-full bg-surface-variant border border-outline-variant overflow-hidden"
-              >
-                <img
-                  alt="Fan Zhendong"
-                  class="w-full h-full object-cover"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvwPqctXOHVslGftmGZ4xd3ngftFcydIZ8Cudj9zaWozQV4yuYqU6fXFaXFHgL6MQgODRPHNFR5lZft6uE1hrNxYYWCnaTEct-wzK2JMiFtXvCxTJhGV67E8-DnGGap40PRMFvkjh7ZTFW_J4-D5bKUa68Chv1tpWc5DrpA_zAk3DfhtGlFD-xIjwRq4gYF4k7u7VWDBXkB6Xb-LuEIhxmUigasDMsGUCz3Oj3lyNp517a_2vxFH4vmM0ubyu90GBOg9QqSD-BirE"
-                />
-              </div>
-              <div class="flex-1">
-                <p class="text-xs font-bold text-on-surface">Fan Zhendong</p>
-                <p class="text-[10px] text-on-surface-variant">China (CHN)</p>
-              </div>
-              <div class="text-right">
-                <p class="text-xs font-bold text-on-surface">6,410</p>
-                <p class="text-[9px] text-on-surface-variant uppercase">
-                  Points
-                </p>
-              </div>
-            </div>
-            <!-- Rank Item 2 -->
-            <div
-              class="flex items-center gap-md py-sm border-b border-outline-variant/10 group"
-            >
-              <span
-                class="font-numeric-data text-on-surface-variant italic font-bold w-4 text-center"
-                >2</span
-              >
-              <div
-                class="w-10 h-10 rounded-full bg-surface-variant border border-outline-variant overflow-hidden"
-              >
-                <img
-                  alt="Wang Chuqin"
-                  class="w-full h-full object-cover"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuBG2JGtacahIUKNSlQnVB34HUnc-COaj7xzhhQv_6lJxAiaPstKxVOYfHes7_oZnAZ6C2hTq7YGztWPTb8lCAD2E4pB1byF7rJyJ_3T5d5fQqgOGcoa6tkSf1hhWGN0wc2NRbcrZ7YptyOe71BOAjk9IkFx4g2zlCHuqbX_Nxc6ReN34hBS98Ds3CUWjSAlSzNhn-tinKdNR6K9tQhRIEPV7_5g4UxlDiJKEC4hH7lZMp1lw5crxCrN0RPvWEmHOhdkPHMK1sYlORY"
-                />
-              </div>
-              <div class="flex-1">
-                <p class="text-xs font-bold text-on-surface">Wang Chuqin</p>
-                <p class="text-[10px] text-on-surface-variant">China (CHN)</p>
-              </div>
-              <div class="text-right">
-                <p class="text-xs font-bold text-on-surface">5,820</p>
-                <p class="text-[9px] text-on-surface-variant uppercase">
-                  Points
-                </p>
-              </div>
-            </div>
-            <!-- Rank Item 3 -->
-            <div
-              class="flex items-center gap-md py-sm border-b border-outline-variant/10 group"
-            >
-              <span
-                class="font-numeric-data text-on-surface-variant italic font-bold w-4 text-center"
-                >3</span
-              >
-              <div
-                class="w-10 h-10 rounded-full bg-surface-variant border border-outline-variant overflow-hidden"
-              >
-                <img
-                  alt="Ma Long"
-                  class="w-full h-full object-cover"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuAtlJB3lWnPq1WMUjSrSHFLEIm5gqdT14k-Ghdg_6mssqs5SdaRIHzPAOPBn4U9G7l-VKtBF7vuguw70yO_idSbqdLvrDWClMTlcPta3I4-nN7FpzVmQ9SyhdqZ1B_u_zmMOluJsnAYM6I3pX6tM2-5-iteR7YIjg31oe4lBdQkZ_qYGm48tmXsWvhiBZ3GHjupgKtuQuaGzYaUj4aJ_E4Rw3wd9hTWq1rcHkoD-miF4_De-Pz6Tfl4dN849BTE4Pnqajk8wE0a9T8"
-                />
-              </div>
-              <div class="flex-1">
-                <p class="text-xs font-bold text-on-surface">Ma Long</p>
-                <p class="text-[10px] text-on-surface-variant">China (CHN)</p>
-              </div>
-              <div class="text-right">
-                <p class="text-xs font-bold text-on-surface">4,950</p>
-                <p class="text-[9px] text-on-surface-variant uppercase">
-                  Points
-                </p>
-              </div>
-            </div>
-            <!-- Rank Item 4 -->
-            <div
-              class="flex items-center gap-md py-sm border-b border-outline-variant/10 group"
-            >
-              <span
-                class="font-numeric-data text-on-surface-variant italic font-bold w-4 text-center"
-                >4</span
-              >
-              <div
-                class="w-10 h-10 rounded-full bg-surface-variant border border-outline-variant overflow-hidden"
-              >
-                <img
-                  alt="Harimoto"
-                  class="w-full h-full object-cover"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuAYkvFIsFwKtHWEqNMdZ6BGPvB4mXo_6TszDQvmIbLVpEGsXyc_4NQ4BIO-wZHtaGwUekZZcSdC0JySi-esN2yhqBpPQzon_tmqx-kRao4MRBv4lvokcKRZuZH66GDhJOHCuOkTvJ7BuUNsS-eywZYGFp8Flf7ZL2jw7U3CxyYCIK6ErX6rw3RX_jRPdsuJm0KBjnUO1yKnH3g7oImyBbm70erCWPhh1n1UODqTtazbsdlewkrNpIv_Wr20atTyc_brF-AYYDVZfqk"
-                />
-              </div>
-              <div class="flex-1">
-                <p class="text-xs font-bold text-on-surface">T. Harimoto</p>
-                <p class="text-[10px] text-on-surface-variant">Japan (JPN)</p>
-              </div>
-              <div class="text-right">
-                <p class="text-xs font-bold text-on-surface">3,210</p>
-                <p class="text-[9px] text-on-surface-variant uppercase">
-                  Points
-                </p>
-              </div>
-            </div>
-          </div>
-          <button
-            class="w-full mt-md py-sm text-xs font-bold text-on-surface-variant hover:text-on-surface transition-all border border-outline-variant/30 rounded-lg"
-          >
-            View Full Rankings
-          </button>
-        </div>
-        <div
-          class="mt-lg p-md bg-gradient-to-br from-primary-container/20 to-transparent rounded-xl border border-primary/20"
-        >
-          <p class="font-label-caps text-label-caps text-primary mb-xs">
-            Upcoming Event
-          </p>
-          <h4 class="font-headline-md text-on-surface text-sm mb-md">
-            World Team Championships 2024
-          </h4>
-          <div class="flex items-center justify-between">
-            <div class="flex -space-x-3">
-              <div
-                class="w-8 h-8 rounded-full border-2 border-surface bg-surface-variant"
-              ></div>
-              <div
-                class="w-8 h-8 rounded-full border-2 border-surface bg-surface-variant"
-              ></div>
-              <div
-                class="w-8 h-8 rounded-full border-2 border-surface bg-surface-variant"
-              ></div>
-              <div
-                class="w-8 h-8 rounded-full border-2 border-surface bg-surface-container flex items-center justify-center text-[10px] font-bold"
-              >
-                +12
-              </div>
-            </div>
-            <button
-              class="px-sm py-1 bg-on-surface text-surface text-[10px] font-bold rounded"
-            >
-              Remind Me
-            </button>
-          </div>
-        </div>
-      </aside>
     </div>
-
-    <script>
-      // Simple interactive effects
-      document.querySelectorAll(".match-card").forEach((card) => {
-        card.addEventListener("mouseenter", () => {
-          card.classList.add("shadow-primary/5");
-        });
-        card.addEventListener("mouseleave", () => {
-          card.classList.remove("shadow-primary/5");
-        });
-      });
-
-      // Search bar interaction
-      const searchInput = document.querySelector('input[type="text"]');
-      searchInput.addEventListener("focus", () => {
-        searchInput.parentElement.classList.add("w-80");
-      });
-      searchInput.addEventListener("blur", () => {
-        searchInput.parentElement.classList.remove("w-80");
-      });
-    </script>
+    <script type="module" src="js/script.js"></script>
     <script src="js/theme.js"></script>
-    <script src="js/sidebar.js"></script>
-    <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        const page = location.pathname.split("/").pop();
-        document.querySelectorAll("a[href]").forEach((a) => {
-          if (a.getAttribute("href") === page) {
-            a.classList.add("bg-emerald-accent/10", "text-emerald-accent");
-          }
-        });
-      });
-    </script>
-
-    <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        const page = location.pathname.split("/").pop();
-        document.querySelectorAll("a[href]").forEach((a) => {
-          const h = a.getAttribute("href");
-          if (h === page) {
-            a.classList.add("bg-emerald-accent/10", "text-emerald-accent");
-          }
-        });
-        const t = document.getElementById("theme-toggle");
-        const light = document.getElementById("theme-toggle-light-icon");
-        const dark = document.getElementById("theme-toggle-dark-icon");
-        function sync() {
-          const isDark = document.documentElement.classList.contains("dark");
-          if (light) light.classList.toggle("hidden", !isDark);
-          if (dark) dark.classList.toggle("hidden", isDark);
-        }
-        sync();
-        t?.addEventListener("click", () => {
-          document.documentElement.classList.toggle("dark");
-          localStorage.setItem(
-            "color-theme",
-            document.documentElement.classList.contains("dark")
-              ? "dark"
-              : "light",
-          );
-          sync();
-        });
-      });
-    </script>
-
-    <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        const btn = document.getElementById("mobile-menu-btn");
-        const sidebar = document.getElementById("sidebar");
-        if (btn && sidebar) {
-          const apply = () => {
-            const c = localStorage.getItem("sidebarCollapsed") === "true";
-            if (window.innerWidth >= 1024) {
-              sidebar.classList.toggle("w-20", c);
-              sidebar.classList.toggle("w-64", !c);
-              sidebar
-                .querySelectorAll(".nav-text,.logo-text")
-                .forEach((el) => (el.style.display = c ? "none" : ""));
-            }
-          };
-          apply();
-          btn.addEventListener("click", () => {
-            if (window.innerWidth >= 1024) {
-              localStorage.setItem(
-                "sidebarCollapsed",
-                localStorage.getItem("sidebarCollapsed") === "true"
-                  ? "false"
-                  : "true",
-              );
-              apply();
-            } else {
-              sidebar.classList.toggle("-translate-x-full");
-            }
-          });
-        }
-        const t = document.getElementById("theme-toggle");
-        if (t) {
-          t.addEventListener("click", () => {
-            const dark = document.documentElement.classList.toggle("dark");
-            localStorage.setItem("color-theme", dark ? "dark" : "light");
-          });
-        }
-      });
-    </script>
   </body>
 </html>
