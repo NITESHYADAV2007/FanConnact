@@ -773,43 +773,7 @@
       </div>
     </div>
 
-    <!-- BottomNavBar (Mobile Only) -->
-    <nav
-      class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-3 md:hidden bg-inverse-surface/95 backdrop-blur-lg border-t border-outline-variant/20 shadow-lg rounded-t-3xl"
-    >
-      <a
-        href="index.html"
-        class="flex flex-col items-center justify-center text-surface-dim p-2"
-      >
-        <span class="material-symbols-outlined">home</span>
-        <span class="text-[10px] font-label-sm mt-1">Home</span>
-      </a>
-      <div
-        class="flex flex-col items-center justify-center text-surface-dim p-2"
-      >
-        <span class="material-symbols-outlined" data-icon="sports_cricket"
-          >sports_cricket</span
-        >
-        <span class="text-[10px] font-label-sm mt-1">Predict</span>
-      </div>
-      <div
-        class="flex flex-col items-center justify-center text-surface-dim p-2"
-      >
-        <span class="material-symbols-outlined" data-icon="groups">groups</span>
-        <span class="text-[10px] font-label-sm mt-1">Wars</span>
-      </div>
-      <div
-        class="flex flex-col items-center justify-center text-primary-fixed bg-primary/10 rounded-2xl px-5 py-2"
-      >
-        <span
-          class="material-symbols-outlined"
-          data-icon="person"
-          style="font-variation-settings: &quot;FILL&quot; 1"
-          >person</span
-        >
-        <span class="text-[10px] font-label-sm mt-1">Profile</span>
-      </div>
-    </nav>
+
     <script>
       // Tooltip logic
       document.querySelectorAll(".group").forEach((item) => {
@@ -1048,5 +1012,6 @@
         ?.addEventListener("click", logoutHandler);
     </script>
     <script type="module" src="js/script.js"></script>
+    <script src="js/theme.js"></script>
 </body>
 </html>

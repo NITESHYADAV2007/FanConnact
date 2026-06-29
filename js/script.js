@@ -241,17 +241,7 @@ document.addEventListener("DOMContentLoaded", () => {
   };
   syncIcons();
 
-  // 2. Theme Click Handler
-  themeToggleBtn?.addEventListener("click", () => {
-    const isDark = document.documentElement.classList.contains("dark");
-    const newTheme = isDark ? "light" : "dark";
-
-    document.documentElement.classList.toggle("dark", !isDark);
-    document.documentElement.classList.toggle("light", isDark);
-    localStorage.setItem("color-theme", newTheme);
-
-    syncIcons();
-  });
+  // 2. Theme handled by theme.js — only sync icons on load
 
   // 2.1 Listen for changes from other tabs
   window.addEventListener("storage", (e) => {
@@ -333,6 +323,17 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
+      // If guest clicks a link to index.html, redirect to guest landing page instead
+      if (!currentUser && href === "index.html") {
+        e.preventDefault();
+        if (window.innerWidth < 1024) {
+          sidebar?.classList.add("-translate-x-full");
+          headerLogo?.classList.remove("hidden");
+        }
+        window.location.href = "berforeloginindex.html";
+        return;
+      }
+
       // Check if the clicked tab is restricted AND user is not logged in
       if (
         linkText &&
@@ -343,7 +344,10 @@ document.addEventListener("DOMContentLoaded", () => {
       ) {
         e.preventDefault();
         window.location.href = "berforeloginindex.html";
-      } else if (window.innerWidth < 1024) {
+        return;
+      }
+
+      if (window.innerWidth < 1024) {
         sidebar?.classList.add("-translate-x-full");
         headerLogo?.classList.remove("hidden");
       }

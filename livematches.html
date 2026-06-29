@@ -1,6 +1,6 @@
 <!doctype html>
 
-<html class="dark" lang="en">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
@@ -62,6 +62,17 @@
         background: #10b981;
       }
       .sidebar-collapsed #sidebar { width: 0 !important; min-width: 0 !important; border: 0 !important; padding: 0 !important; overflow: hidden !important; }
+      .text-fan { color: #ffffff !important; }
+      :root:not(.dark) .text-connect { color: #2563eb !important; }
+      .dark .text-connect { color: #10b981 !important; }
+      :root:not(.dark) .text-fan { color: #374151 !important; }
+      .nav-link-active { font-weight: 500 !important; }
+      .dark .nav-link-active { background-color: rgba(16, 185, 129, 0.2) !important; color: #10b981 !important; border-right: 4px solid #10b981 !important; }
+      .dark .nav-link-active span, .dark .nav-link-active .nav-text { color: #10b981 !important; }
+      :root:not(.dark) .nav-link-active { background-color: #eff6ff !important; color: #1d4ed8 !important; border-right: 4px solid #3b82f6 !important; }
+      :root:not(.dark) #sidebar { background-color: #ffffff !important; }
+      :root:not(.dark) #sidebar a:not(.nav-link-active) { color: #475569 !important; }
+      :root:not(.dark) #sidebar a:not(.nav-link-active):hover { color: #2563eb !important; }
     </style>
     <meta
       name="description"
@@ -98,7 +109,7 @@
         <!-- Top Navigation -->
         <nav class="hidden xl:flex items-center space-x-6 mx-6 shrink-0">
           <a
-            class="text-emerald-accent font-bold border-b-2 border-emerald-accent pb-1 text-sm nav-link"
+            class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link"
             href="index.html"
             >Home</a
           >
@@ -216,37 +227,6 @@
           >
         </div>
 
-        <!-- Deduped Navigation -->
-        <div class="mb-8 mt-4">
-          <h3
-            class="text-xs font-bold text-slate-500 dark:text-gray-400 uppercase tracking-wider mb-4 px-6"
-          >
-            NAVIGATION
-          </h3>
-          <nav class="px-4 space-y-1">
-            <a
-              class="flex items-center space-x-3 px-3 py-3 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group"
-              href="index.html"
-            >
-              <span class="material-symbols-outlined text-xl">home</span>
-              <span class="text-sm nav-text">Home</span>
-            </a>
-            <a
-              class="flex items-center space-x-3 px-3 py-3 rounded-lg bg-emerald-accent/10 text-emerald-accent font-bold"
-              href="livematches.html"
-            >
-              <span class="material-symbols-outlined text-xl">live_tv</span>
-              <span class="text-sm nav-text">Live Matches</span>
-            </a>
-            <a
-              class="flex items-center space-x-3 px-3 py-3 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group"
-              href="news&update.html"
-            >
-              <span class="material-symbols-outlined text-xl">newspaper</span>
-              <span class="text-sm nav-text">News & Updates</span>
-            </a>
-          </nav>
-        </div>
 
         <div class="mb-8">
           <h3
@@ -257,7 +237,7 @@
           <ul class="space-y-1">
             <li>
               <a
-                class="flex items-center space-x-3 px-3 py-2 rounded-lg bg-emerald-accent/10 text-emerald-accent font-medium"
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
                 href="livematches.html"
               >
                 <span class="material-symbols-outlined text-xl">grid_view</span>
@@ -266,7 +246,7 @@
             </li>
             <li class="">
               <a
-                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group"
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
                 href="cricket.html"
               >
                 <span class="material-symbols-outlined text-xl"
@@ -277,7 +257,7 @@
             </li>
             <li class="">
               <a
-                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group"
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
                 href="football.html"
               >
                 <span class="material-symbols-outlined text-xl"
@@ -288,7 +268,7 @@
             </li>
             <li class="">
               <a
-                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group"
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
                 href="basketball.html"
               >
                 <span class="material-symbols-outlined text-xl"
@@ -299,7 +279,7 @@
             </li>
             <li class="">
               <a
-                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group"
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
                 href="tennis.html"
               >
                 <span class="material-symbols-outlined text-xl"
@@ -310,7 +290,7 @@
             </li>
             <li class="">
               <a
-                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group"
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
                 href="hockey.html"
               >
                 <span class="material-symbols-outlined text-xl"
@@ -321,7 +301,7 @@
             </li>
             <li class="">
               <a
-                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group"
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
                 href="kabbaddi.html"
               >
                 <span class="material-symbols-outlined text-xl"
@@ -332,7 +312,7 @@
             </li>
             <li class="">
               <a
-                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group"
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
                 href="e-sports.html"
               >
                 <span class="material-symbols-outlined text-xl"
@@ -343,7 +323,7 @@
             </li>
             <li class="">
               <a
-                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group"
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
                 href="baseball.html"
               >
                 <span class="material-symbols-outlined text-xl"
@@ -354,7 +334,7 @@
             </li>
             <li class="">
               <a
-                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group"
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
                 href="vollyeball.html"
               >
                 <span class="material-symbols-outlined text-xl"
@@ -364,53 +344,19 @@
               </a>
             </li>
             <li class="">
-              <button
-                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors w-full group"
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                href="tabletennis.html"
               >
-                <span class="material-symbols-outlined text-xl"
-                  >more_horiz</span
-                >
-                <span class="nav-text">More</span>
-              </button>
+                <span class="material-symbols-outlined text-xl">sports_tennis</span>
+                <span class="nav-text">Table Tennis</span>
+              </a>
             </li>
+
           </ul>
         </div>
 
-        <!-- Premium Promo -->
-        <!-- More Games Section -->
-        <div class="mb-8">
-          <h3
-            class="text-xs font-bold text-slate-500 dark:text-gray-400 uppercase tracking-wider mb-4"
-          >
-            MORE GAMES
-          </h3>
-          <ul class="space-y-1">
-            <li>
-              <a
-                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group"
-                href="index.html"
-              >
-                <span
-                  class="material-symbols-outlined text-xl group-hover:text-emerald-accent"
-                  >casino</span
-                >
-                <span class="nav-text">Predictions</span>
-              </a>
-            </li>
-            <li>
-              <a
-                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group"
-                href="index.html"
-              >
-                <span
-                  class="material-symbols-outlined text-xl group-hover:text-emerald-accent"
-                  >quiz</span
-                >
-                <span class="nav-text">Daily Quiz</span>
-              </a>
-            </li>
-          </ul>
-        </div>
+
 
         <!-- Premium Promo -->
         <div
@@ -436,6 +382,7 @@
             Ad-free experience, exclusive badges &amp; more!
           </p>
           <button
+            onclick="window.location.href='https://play.google.com/store/apps'"
             class="w-full bg-emerald-accent text-black font-bold py-2 rounded-lg text-xs hover:bg-emerald-400 transition-colors"
           >
             Go Premium
@@ -1433,100 +1380,6 @@
       </main>
     </div>
     <script type="module" src="js/script.js"></script>
-    <!-- BEGIN: BottomNavigation (Mobile/Tablet) -->
-    <div
-      class="fixed bottom-0 left-0 right-0 bg-dark-bg border-t border-border-subtle flex justify-around py-3 lg:hidden z-50"
-    >
-      <a
-        class="flex flex-col items-center space-y-1 text-gray-500"
-        href="index.html"
-      >
-        <svg
-          class="w-6 h-6"
-          fill="none"
-          stroke="currentColor"
-          viewbox="0 0 24 24"
-        >
-          <path
-            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          ></path>
-        </svg>
-        <span class="text-[10px] font-medium">Home</span>
-      </a>
-      <a
-        class="flex flex-col items-center space-y-1 text-emerald-accent"
-        href="index.html"
-      >
-        <svg class="w-6 h-6" fill="currentColor" viewbox="0 0 20 20">
-          <path
-            clip-rule="evenodd"
-            d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 000 2h6a1 1 0 100-2H7z"
-            fill-rule="evenodd"
-          ></path>
-        </svg>
-        <span class="text-[10px] font-bold">Matches</span>
-      </a>
-      <a
-        class="flex flex-col items-center space-y-1 text-gray-500"
-        href="index.html"
-      >
-        <svg
-          class="w-6 h-6"
-          fill="none"
-          stroke="currentColor"
-          viewbox="0 0 24 24"
-        >
-          <path
-            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          ></path>
-        </svg>
-        <span class="text-[10px] font-medium">Communities</span>
-      </a>
-      <a
-        class="flex flex-col items-center space-y-1 text-gray-500"
-        href="index.html"
-      >
-        <svg
-          class="w-6 h-6"
-          fill="none"
-          stroke="currentColor"
-          viewbox="0 0 24 24"
-        >
-          <path
-            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          ></path>
-        </svg>
-        <span class="text-[10px] font-medium">Leaderboard</span>
-      </a>
-      <a
-        class="flex flex-col items-center space-y-1 text-gray-500"
-        href="index.html"
-      >
-        <svg
-          class="w-6 h-6"
-          fill="none"
-          stroke="currentColor"
-          viewbox="0 0 24 24"
-        >
-          <path
-            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          ></path>
-        </svg>
-        <span class="text-[10px] font-medium">Profile</span>
-      </a>
-    </div>
-    <!-- END: BottomNavigation -->
+    <script src="js/theme.js"></script>
   </body>
 </html>

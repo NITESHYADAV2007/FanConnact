@@ -1,244 +1,234 @@
 <!doctype html>
 
 <html class="h-full" lang="en">
-  <head>
+
+<head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Sign Up | FanConnect</title>
+    <script>
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link rel="stylesheet" href="css/style.css" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700;800&amp;family=Hanken+Grotesk:wght@400;600;700&amp;display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700;800&amp;family=Hanken+Grotesk:wght@400;600;700&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     <script id="tailwind-config">
-      tailwind.config = {
-        darkMode: "class",
-        theme: {
-          extend: {
-            colors: {
-              "on-secondary-fixed-variant": "#2f2ebe",
-              "surface-dim": "#cbdbf5",
-              "surface-container-high": "#dce9ff",
-              secondary: "#4648d4",
-              "surface-tint": "#006c49",
-              "surface-container-low": "#eff4ff",
-              "inverse-primary": "#4edea3",
-              "surface-container": "#e5eeff",
-              "on-tertiary": "#ffffff",
-              "inverse-surface": "#213145",
-              "on-secondary-fixed": "#07006c",
-              "on-error-container": "#93000a",
-              "error-container": "#ffdad6",
-              "tertiary-fixed-dim": "#bcc7de",
-              "tertiary-container": "#98a3ba",
-              "on-surface": "#0b1c30",
-              "inverse-on-surface": "#eaf1ff",
-              "on-secondary": "#ffffff",
-              "on-error": "#ffffff",
-              "primary-fixed": "#6ffbbe",
-              error: "#ba1a1a",
-              "surface-container-lowest": "#ffffff",
-              surface: "#f8f9ff",
-              "on-tertiary-fixed-variant": "#3c475a",
-              "tertiary-fixed": "#d8e3fb",
-              "outline-variant": "#bbcabf",
-              "on-background": "#0b1c30",
-              "primary-fixed-dim": "#4edea3",
-              "on-surface-variant": "#3c4a42",
-              "surface-container-highest": "#d3e4fe",
-              "on-primary-fixed": "#002113",
-              background: "#f8f9ff",
-              "secondary-fixed-dim": "#c0c1ff",
-              "on-primary-fixed-variant": "#005236",
-              "surface-bright": "#f8f9ff",
-              primary: "#006c49",
-              "on-secondary-container": "#fffbff",
-              "primary-container": "#10b981",
-              outline: "#6c7a71",
-              "on-primary": "#ffffff",
-              "on-primary-container": "#00422b",
-              "on-tertiary-container": "#2e394c",
-              "secondary-fixed": "#e1e0ff",
-              "secondary-container": "#6063ee",
-              tertiary: "#545f73",
-              "surface-variant": "#d3e4fe",
-              "on-tertiary-fixed": "#111c2d",
-            },
-            borderRadius: {
-              DEFAULT: "0.25rem",
-              lg: "0.5rem",
-              xl: "0.75rem",
-              full: "9999px",
-            },
-            spacing: {
-              lg: "40px",
-              "max-width": "1440px",
-              xs: "4px",
-              sm: "12px",
-              "margin-mobile": "16px",
-              "margin-desktop": "32px",
-              gutter: "24px",
-              base: "8px",
-              xl: "64px",
-              md: "24px",
-            },
-            fontFamily: {
-              "headline-lg-mobile": ["Lexend"],
-              "label-md": ["Hanken Grotesk"],
-              "headline-lg": ["Lexend"],
-              "body-lg": ["Hanken Grotesk"],
-              "headline-sm": ["Lexend"],
-              "headline-md": ["Lexend"],
-              "body-md": ["Hanken Grotesk"],
-              "headline-xl": ["Lexend"],
-              "body-sm": ["Hanken Grotesk"],
-              "label-sm": ["Hanken Grotesk"],
-            },
-            fontSize: {
-              "headline-lg-mobile": [
-                "24px",
-                { lineHeight: "32px", fontWeight: "700" },
-              ],
-              "label-md": [
-                "14px",
-                {
-                  lineHeight: "16px",
-                  letterSpacing: "0.05em",
-                  fontWeight: "600",
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-secondary-fixed-variant": "#2f2ebe",
+                        "surface-dim": "#cbdbf5",
+                        "surface-container-high": "#dce9ff",
+                        secondary: "#4648d4",
+                        "surface-tint": "#006c49",
+                        "surface-container-low": "#eff4ff",
+                        "inverse-primary": "#4edea3",
+                        "surface-container": "#e5eeff",
+                        "on-tertiary": "#ffffff",
+                        "inverse-surface": "#213145",
+                        "on-secondary-fixed": "#07006c",
+                        "on-error-container": "#93000a",
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed-dim": "#bcc7de",
+                        "tertiary-container": "#98a3ba",
+                        "on-surface": "#0b1c30",
+                        "inverse-on-surface": "#eaf1ff",
+                        "on-secondary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "primary-fixed": "#6ffbbe",
+                        error: "#ba1a1a",
+                        "surface-container-lowest": "#ffffff",
+                        surface: "#f8f9ff",
+                        "on-tertiary-fixed-variant": "#3c475a",
+                        "tertiary-fixed": "#d8e3fb",
+                        "outline-variant": "#bbcabf",
+                        "on-background": "#0b1c30",
+                        "primary-fixed-dim": "#4edea3",
+                        "on-surface-variant": "#3c4a42",
+                        "surface-container-highest": "#d3e4fe",
+                        "on-primary-fixed": "#002113",
+                        background: "#f8f9ff",
+                        "secondary-fixed-dim": "#c0c1ff",
+                        "on-primary-fixed-variant": "#005236",
+                        "surface-bright": "#f8f9ff",
+                        primary: "#006c49",
+                        "on-secondary-container": "#fffbff",
+                        "primary-container": "#10b981",
+                        outline: "#6c7a71",
+                        "on-primary": "#ffffff",
+                        "on-primary-container": "#00422b",
+                        "on-tertiary-container": "#2e394c",
+                        "secondary-fixed": "#e1e0ff",
+                        "secondary-container": "#6063ee",
+                        tertiary: "#545f73",
+                        "surface-variant": "#d3e4fe",
+                        "on-tertiary-fixed": "#111c2d",
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.25rem",
+                        lg: "0.5rem",
+                        xl: "0.75rem",
+                        full: "9999px",
+                    },
+                    spacing: {
+                        lg: "40px",
+                        "max-width": "1440px",
+                        xs: "4px",
+                        sm: "12px",
+                        "margin-mobile": "16px",
+                        "margin-desktop": "32px",
+                        gutter: "24px",
+                        base: "8px",
+                        xl: "64px",
+                        md: "24px",
+                    },
+                    fontFamily: {
+                        "headline-lg-mobile": ["Lexend"],
+                        "label-md": ["Hanken Grotesk"],
+                        "headline-lg": ["Lexend"],
+                        "body-lg": ["Hanken Grotesk"],
+                        "headline-sm": ["Lexend"],
+                        "headline-md": ["Lexend"],
+                        "body-md": ["Hanken Grotesk"],
+                        "headline-xl": ["Lexend"],
+                        "body-sm": ["Hanken Grotesk"],
+                        "label-sm": ["Hanken Grotesk"],
+                    },
+                    fontSize: {
+                        "headline-lg-mobile": [
+                            "24px", {
+                                lineHeight: "32px",
+                                fontWeight: "700"
+                            },
+                        ],
+                        "label-md": [
+                            "14px", {
+                                lineHeight: "16px",
+                                letterSpacing: "0.05em",
+                                fontWeight: "600",
+                            },
+                        ],
+                        "headline-lg": [
+                            "32px", {
+                                lineHeight: "40px",
+                                letterSpacing: "-0.01em",
+                                fontWeight: "700",
+                            },
+                        ],
+                        "body-lg": ["18px", {
+                            lineHeight: "28px",
+                            fontWeight: "400"
+                        }],
+                        "headline-sm": [
+                            "20px", {
+                                lineHeight: "28px",
+                                fontWeight: "600"
+                            },
+                        ],
+                        "headline-md": [
+                            "24px", {
+                                lineHeight: "32px",
+                                fontWeight: "600"
+                            },
+                        ],
+                        "body-md": ["16px", {
+                            lineHeight: "24px",
+                            fontWeight: "400"
+                        }],
+                        "headline-xl": [
+                            "40px", {
+                                lineHeight: "48px",
+                                letterSpacing: "-0.02em",
+                                fontWeight: "700",
+                            },
+                        ],
+                        "body-sm": ["14px", {
+                            lineHeight: "20px",
+                            fontWeight: "400"
+                        }],
+                        "label-sm": ["12px", {
+                            lineHeight: "14px",
+                            fontWeight: "700"
+                        }],
+                    },
                 },
-              ],
-              "headline-lg": [
-                "32px",
-                {
-                  lineHeight: "40px",
-                  letterSpacing: "-0.01em",
-                  fontWeight: "700",
-                },
-              ],
-              "body-lg": ["18px", { lineHeight: "28px", fontWeight: "400" }],
-              "headline-sm": [
-                "20px",
-                { lineHeight: "28px", fontWeight: "600" },
-              ],
-              "headline-md": [
-                "24px",
-                { lineHeight: "32px", fontWeight: "600" },
-              ],
-              "body-md": ["16px", { lineHeight: "24px", fontWeight: "400" }],
-              "headline-xl": [
-                "40px",
-                {
-                  lineHeight: "48px",
-                  letterSpacing: "-0.02em",
-                  fontWeight: "700",
-                },
-              ],
-              "body-sm": ["14px", { lineHeight: "20px", fontWeight: "400" }],
-              "label-sm": ["12px", { lineHeight: "14px", fontWeight: "700" }],
             },
-          },
-        },
-      };
+        };
     </script>
     <style>
-      .material-symbols-outlined {
-        font-variation-settings:
-          "FILL" 0,
-          "wght" 400,
-          "GRAD" 0,
-          "opsz" 24;
-      }
-      .glow-emerald {
-        box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
-      }
-      .bg-split-gradient {
-        background: linear-gradient(
-          135deg,
-          rgba(33, 49, 69, 1) 0%,
-          rgba(11, 28, 48, 1) 100%
-        );
-      }
-      .nav-suppressed {
-        display: none !important;
-      }
-    
-.sidebar-collapsed #sidebar{width:0!important;min-width:0!important;border:0!important;padding:0!important;overflow:hidden!important;}
-</style>
-  <meta name="description" content="FanConnect sports platform for fans, scores, communities and updates.">
-<meta property="og:title" content="FanConnect">
-<meta name="robots" content="index,follow">
-<meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;">
-<meta name="referrer" content="strict-origin-when-cross-origin">
+        .material-symbols-outlined {
+            font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+        }
+        
+        .glow-emerald {
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+        }
+        
+        .bg-split-gradient {
+            background: linear-gradient( 135deg, rgba(33, 49, 69, 1) 0%, rgba(11, 28, 48, 1) 100%);
+        }
+        
+        .nav-suppressed {
+            display: none !important;
+        }
+        
+        .sidebar-collapsed #sidebar {
+            width: 0!important;
+            min-width: 0!important;
+            border: 0!important;
+            padding: 0!important;
+            overflow: hidden!important;
+        }
+    </style>
+    <meta name="description" content="FanConnect sports platform for fans, scores, communities and updates.">
+    <meta property="og:title" content="FanConnect">
+    <meta name="robots" content="index,follow">
+    <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
 </head>
-  <body
-    class="bg-inverse-surface font-body-md text-on-surface h-screen overflow-hidden flex flex-col md:flex-row"
-  >
+
+<body class="bg-inverse-surface font-body-md text-on-surface h-screen overflow-hidden flex flex-col md:flex-row">
     <!-- Left Side: Hero Brand Area -->
-    <div
-      class="relative hidden md:flex md:w-5/12 h-full overflow-hidden bg-on-surface"
-    >
-      <img
-        alt="FanConnect Stadium background"
-        class="absolute inset-0 w-full h-full object-cover opacity-60"
-        src="https://lh3.googleusercontent.com/aida/AP1WRLupTjWOj2B_dRWskPsoHE2MWMEzLVtA-riZtBGSaCzlkrJIjBHIuDEBdn6xShMLJbqYw2Qk8Q255j_tFwM0Or6HFRSZQBB2olu8zXC883shGO3wqklBSyaqND4em-UnhpJFd0eOMNUEtuy-fLt4HW9SZwcMIVLk8SlLKgTbZxK4AH7P6SJbZxMR2hpTsa8cC96XazBZhSx8c97XepAaqkaweLUWTZmc0b95AbeSQsmrumcylZ3KleUhxQU"
-      />
-      <div
-        class="absolute inset-0 bg-gradient-to-t from-inverse-surface via-transparent to-transparent"
-      ></div>
-      <div class="relative z-10 p-xl flex flex-col h-full justify-between">
-        <!-- Brand Logo -->
-        <div class="flex items-center gap-base">
-          <img src="assets/fancoin/fanconnactlogo.png" alt="FanConnect" class="w-12 h-12" />
-          <div>
-            <h1
-              class="font-headline-md text-headline-md text-primary-fixed tracking-tight leading-none"
-            >
-              <span class="text-fan">Fan</span><span class="text-connect">Connact</span>
-            </h1>
-            <p
-              class="text-label-sm font-label-sm text-surface-dim uppercase tracking-widest mt-1"
-            >
-              Connect. Predict. Win.
-            </p>
-          </div>
-        </div>
-        <!-- Main Value Proposition -->
-        <div class="space-y-md">
-          <div class="space-y-xs">
-            <h2
-              class="font-headline-xl text-headline-xl text-on-tertiary uppercase leading-tight"
-            >
-              FOR FANS. <br />
-              BY FANS. <br />
-              <span class="text-primary-fixed-dim">ALWAYS FOR CRICKET.</span>
-            </h2>
-            <p class="font-body-lg text-body-lg text-surface-dim max-w-md">
-              Join 100K+ cricket fans. <br />
-              Predict. Compete. Connect. Win!
-            </p>
-          </div>
-          <!-- Feature Bento Grid -->
-          <div class="grid grid-cols-2 gap-base mt-lg">
-            <div
-              class="bg-on-surface/40 backdrop-blur-md p-md rounded-xl border border-outline-variant/10 group hover:border-primary-fixed/30 transition-all duration-300"
-            >
-              <span
-                class="material-symbols-outlined text-primary-fixed-dim mb-xs"
-                >sensors</span
+    <div class="relative hidden md:flex md:w-5/12 h-full overflow-hidden bg-on-surface">
+        <div class="absolute inset-0 bg-gradient-to-t from-inverse-surface via-transparent to-transparent"></div>
+        <div class="relative z-10 p-xl flex flex-col h-full justify-between">
+            <!-- Brand Logo -->
+            <div class="flex items-center gap-base">
+                <img src="assets/fancoin/fanconnactlogo.png" alt="FanConnect" class="w-12 h-12" />
+                <div>
+                    <h1 class="font-headline-md text-headline-md text-primary-fixed tracking-tight leading-none">
+                        <span class="text-fan">Fan</span><span class="text-connect">Connact</span>
+                    </h1>
+                    <p class="text-label-sm font-label-sm text-surface-dim uppercase tracking-widest mt-1">
+                        Connect. Predict. Win.
+                    </p>
+                </div>
+            </div>
+            <!-- Main Value Proposition -->
+            <div class="space-y-md">
+                <div class="space-y-xs">
+                    <h2 class="font-headline-xl text-headline-xl text-on-tertiary uppercase leading-tight">
+                        FOR FANS. <br /> BY FANS. <br />
+                        <span class="text-primary-fixed-dim">ALWAYS FOR CRICKET.</span>
+                    </h2>
+                    <p class="font-body-lg text-body-lg text-surface-dim max-w-md">
+                        Join 100K+ cricket fans. <br /> Predict. Compete. Connect. Win!
+                    </p>
+                </div>
+                <!-- Feature Bento Grid -->
+                <div class="grid grid-cols-2 gap-base mt-lg">
+                    <div class="bg-on-surface/40 backdrop-blur-md p-md rounded-xl border border-outline-variant/10 group hover:border-primary-fixed/30 transition-all duration-300">
+                        <span class="material-symbols-outlined text-primary-fixed-dim mb-xs">sensors</span
               >
               <h3 class="font-label-md text-label-md text-on-tertiary">
                 Live Scores
@@ -319,27 +309,31 @@
             </div>
           </div>
           <div class="text-body-sm text-surface-dim/80">
-            <span class="block font-bold">Trusted by 100K+</span>
-            Cricket Fans globally
-          </div>
+            <span class="block font-bold">Trusted by 100K+</span> Cricket Fans globally
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-    <!-- Right Side: Sign-Up Form -->
-    <div
-      class="flex-1 h-full bg-inverse-surface overflow-y-auto px-margin-mobile py-lg md:px-xl md:py-xl flex flex-col items-center justify-center"
-    >
-      <div class="w-full max-w-md space-y-lg">
-        <!-- Header -->
-        <div class="text-center md:text-left space-y-xs">
-          <div class="md:hidden flex justify-center mb-md">
-            <div
-              class="w-12 h-12 bg-primary rounded-lg flex items-center justify-center glow-emerald"
-            >
-              <span
-                class="material-symbols-outlined text-primary-fixed"
-                style="font-variation-settings: &quot;FILL&quot; 1"
-                >shield</span
+        <!-- Right Side: Sign-Up Form -->
+        <div class="flex-1 h-full bg-inverse-surface overflow-y-auto px-margin-mobile py-lg md:px-xl md:py-xl flex flex-col items-center justify-center relative">
+            <button id="theme-toggle" class="absolute top-4 right-4 z-10 p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-all active:scale-95">
+        <span
+          id="theme-toggle-light-icon"
+          class="material-symbols-outlined hidden text-yellow-400"
+          >light_mode</span
+        >
+        <span
+          id="theme-toggle-dark-icon"
+          class="material-symbols-outlined text-slate-500 dark:text-slate-400"
+          >dark_mode</span
+        >
+      </button>
+            <div class="w-full max-w-md space-y-lg">
+                <!-- Header -->
+                <div class="text-center md:text-left space-y-xs">
+                    <div class="md:hidden flex justify-center mb-md">
+                        <div class="w-12 h-12 bg-primary rounded-lg flex items-center justify-center glow-emerald">
+                            <span class="material-symbols-outlined text-primary-fixed" style="font-variation-settings: &quot;FILL&quot; 1">shield</span
               >
             </div>
           </div>
@@ -382,10 +376,9 @@
                 class="absolute bottom-0 right-0 w-8 h-8 bg-primary-container rounded-full flex items-center justify-center text-on-primary-container shadow-lg"
               >
                 <span class="material-symbols-outlined text-sm">add</span>
-              </div>
-            </div>
-            <span class="text-label-sm font-label-sm text-surface-dim/60"
-              >Upload Profile Picture</span
+                        </div>
+                    </div>
+                    <span class="text-label-sm font-label-sm text-surface-dim/60">Upload Profile Picture</span
             >
           </div>
 
@@ -637,6 +630,78 @@
               </label>
             </div>
           </div>
+          <div class="space-y-sm">
+            <label class="text-label-md font-label-md text-surface-dim block"
+              >Favorite Sports</label
+            >
+            <div
+              class="flex flex-wrap gap-2"
+              id="sports-container"
+            >
+              <label
+                class="sport-checkbox cursor-pointer px-4 py-2 rounded-xl border border-outline-variant/30 text-body-sm text-surface-dim/70 transition-all has-[:checked]:bg-primary-container has-[:checked]:text-on-primary-container has-[:checked]:border-primary"
+              >
+                <input type="checkbox" name="sports" value="cricket" class="hidden" />
+                🏏 Cricket
+              </label>
+              <label
+                class="sport-checkbox cursor-pointer px-4 py-2 rounded-xl border border-outline-variant/30 text-body-sm text-surface-dim/70 transition-all has-[:checked]:bg-primary-container has-[:checked]:text-on-primary-container has-[:checked]:border-primary"
+              >
+                <input type="checkbox" name="sports" value="football" class="hidden" />
+                ⚽ Football
+              </label>
+              <label
+                class="sport-checkbox cursor-pointer px-4 py-2 rounded-xl border border-outline-variant/30 text-body-sm text-surface-dim/70 transition-all has-[:checked]:bg-primary-container has-[:checked]:text-on-primary-container has-[:checked]:border-primary"
+              >
+                <input type="checkbox" name="sports" value="basketball" class="hidden" />
+                🏀 Basketball
+              </label>
+              <label
+                class="sport-checkbox cursor-pointer px-4 py-2 rounded-xl border border-outline-variant/30 text-body-sm text-surface-dim/70 transition-all has-[:checked]:bg-primary-container has-[:checked]:text-on-primary-container has-[:checked]:border-primary"
+              >
+                <input type="checkbox" name="sports" value="tennis" class="hidden" />
+                🎾 Tennis
+              </label>
+              <label
+                class="sport-checkbox cursor-pointer px-4 py-2 rounded-xl border border-outline-variant/30 text-body-sm text-surface-dim/70 transition-all has-[:checked]:bg-primary-container has-[:checked]:text-on-primary-container has-[:checked]:border-primary"
+              >
+                <input type="checkbox" name="sports" value="baseball" class="hidden" />
+                ⚾ Baseball
+              </label>
+              <label
+                class="sport-checkbox cursor-pointer px-4 py-2 rounded-xl border border-outline-variant/30 text-body-sm text-surface-dim/70 transition-all has-[:checked]:bg-primary-container has-[:checked]:text-on-primary-container has-[:checked]:border-primary"
+              >
+                <input type="checkbox" name="sports" value="hockey" class="hidden" />
+                🏑 Hockey
+              </label>
+              <label
+                class="sport-checkbox cursor-pointer px-4 py-2 rounded-xl border border-outline-variant/30 text-body-sm text-surface-dim/70 transition-all has-[:checked]:bg-primary-container has-[:checked]:text-on-primary-container has-[:checked]:border-primary"
+              >
+                <input type="checkbox" name="sports" value="esports" class="hidden" />
+                🎮 E-Sports
+              </label>
+              <label
+                class="sport-checkbox cursor-pointer px-4 py-2 rounded-xl border border-outline-variant/30 text-body-sm text-surface-dim/70 transition-all has-[:checked]:bg-primary-container has-[:checked]:text-on-primary-container has-[:checked]:border-primary"
+              >
+                <input type="checkbox" name="sports" value="kabaddi" class="hidden" />
+                🤼 Kabaddi
+              </label>
+              <label
+                class="sport-checkbox cursor-pointer px-4 py-2 rounded-xl border border-outline-variant/30 text-body-sm text-surface-dim/70 transition-all has-[:checked]:bg-primary-container has-[:checked]:text-on-primary-container has-[:checked]:border-primary"
+              >
+                <input type="checkbox" name="sports" value="tabletennis" class="hidden" />
+                🏓 Table Tennis
+              </label>
+              <label
+                class="sport-checkbox cursor-pointer px-4 py-2 rounded-xl border border-outline-variant/30 text-body-sm text-surface-dim/70 transition-all has-[:checked]:bg-primary-container has-[:checked]:text-on-primary-container has-[:checked]:border-primary"
+              >
+                <input type="checkbox" name="sports" value="volleyball" class="hidden" />
+                🏐 Volleyball
+              </label>
+            </div>
+            <input type="hidden" id="selected-sports" value="" />
+          </div>
+
           <!-- Terms -->
           <div class="flex items-start gap-sm py-xs">
             <div class="mt-1">
@@ -687,188 +752,192 @@
       <!-- Language and Utilities (Floating Footer) -->
       <div class="mt-xl flex items-center justify-center gap-lg opacity-40">
         <button class="flex items-center gap-xs text-label-sm text-surface-dim">
-          <span class="material-symbols-outlined text-sm">language</span>
-          English
-        </button>
-        <button class="flex items-center gap-xs text-label-sm text-surface-dim">
+          <span class="material-symbols-outlined text-sm">language</span> English
+                    </button>
+                    <button class="flex items-center gap-xs text-label-sm text-surface-dim">
           <span class="material-symbols-outlined text-sm">help</span>
           Support
         </button>
-      </div>
-    </div>
-    <!-- Background Decoration for Right Side -->
-    <div
-      class="absolute right-0 top-0 pointer-events-none overflow-hidden h-full w-full hidden md:block"
-    >
-      <div
-        class="absolute -top-1/4 -right-1/4 w-[500px] h-[500px] bg-primary/10 blur-[120px] rounded-full"
-      ></div>
-      <div
-        class="absolute -bottom-1/4 -right-1/4 w-[400px] h-[400px] bg-secondary/5 blur-[100px] rounded-full"
-      ></div>
-    </div>
-    <script>
-      // Simple interactivity for gender selection (visual only since we use peer classes)
-      console.log("FanConnect Sign Up initialized.");
+                </div>
+            </div>
+            <!-- Background Decoration for Right Side -->
+            <div class="absolute right-0 top-0 pointer-events-none overflow-hidden h-full w-full hidden md:block">
+                <div class="absolute -top-1/4 -right-1/4 w-[500px] h-[500px] bg-primary/10 blur-[120px] rounded-full"></div>
+                <div class="absolute -bottom-1/4 -right-1/4 w-[400px] h-[400px] bg-secondary/5 blur-[100px] rounded-full"></div>
+            </div>
+            <script>
+                // Simple interactivity for gender selection (visual only since we use peer classes)
+                console.log("FanConnect Sign Up initialized.");
 
-      // Micro-interaction for inputs
-      document.querySelectorAll("input").forEach((input) => {
-        input.addEventListener("focus", () => {
-          input.parentElement
-            .querySelector(".material-symbols-outlined")
-            ?.classList.add("text-primary-fixed-dim");
-        });
-        input.addEventListener("blur", () => {
-          input.parentElement
-            .querySelector(".material-symbols-outlined")
-            ?.classList.remove("text-primary-fixed-dim");
-        });
-      });
+                // Micro-interaction for inputs
+                document.querySelectorAll("input").forEach((input) => {
+                    input.addEventListener("focus", () => {
+                        input.parentElement
+                            .querySelector(".material-symbols-outlined") ?
+                            .classList.add("text-primary-fixed-dim");
+                    });
+                    input.addEventListener("blur", () => {
+                        input.parentElement
+                            .querySelector(".material-symbols-outlined") ?
+                            .classList.remove("text-primary-fixed-dim");
+                    });
+                });
 
-      // Profile Image Preview & Crop Logic
-      let cropper = null;
-      window.croppedProfileBlob = null;
+                // Profile Image Preview & Crop Logic
+                let cropper = null;
+                window.croppedProfileBlob = null;
 
-      document
-        .getElementById("profile-upload")
-        .addEventListener("change", function (e) {
-          const file = e.target.files[0];
-          if (file) {
-            const reader = new FileReader();
-            reader.onload = function (event) {
-              const cropModal = document.getElementById("crop-modal");
-              const cropImage = document.getElementById("crop-image");
-              cropImage.src = event.target.result;
-              cropModal.classList.remove("hidden");
-              if (cropper) cropper.destroy();
-              cropper = new Cropper(cropImage, { aspectRatio: 1, viewMode: 1 });
-            };
-            reader.readAsDataURL(file);
-          }
-        });
+                document
+                    .getElementById("profile-upload")
+                    .addEventListener("change", function(e) {
+                        const file = e.target.files[0];
+                        if (file) {
+                            const reader = new FileReader();
+                            reader.onload = function(event) {
+                                const cropModal = document.getElementById("crop-modal");
+                                const cropImage = document.getElementById("crop-image");
+                                cropImage.src = event.target.result;
+                                cropModal.classList.remove("hidden");
+                                if (cropper) cropper.destroy();
+                                cropper = new Cropper(cropImage, {
+                                    aspectRatio: 1,
+                                    viewMode: 1
+                                });
+                            };
+                            reader.readAsDataURL(file);
+                        }
+                    });
 
-      document.getElementById("cancel-crop").addEventListener("click", () => {
-        document.getElementById("crop-modal").classList.add("hidden");
-        document.getElementById("profile-upload").value = "";
-      });
+                document.getElementById("cancel-crop").addEventListener("click", () => {
+                    document.getElementById("crop-modal").classList.add("hidden");
+                    document.getElementById("profile-upload").value = "";
+                });
 
-      document.getElementById("confirm-crop").addEventListener("click", () => {
-        const canvas = cropper.getCroppedCanvas({ width: 400, height: 400 });
-        canvas.toBlob((blob) => {
-          window.croppedProfileBlob = blob;
-          const preview = document.getElementById("profile-preview");
-          preview.src = canvas.toDataURL();
-          preview.classList.remove("hidden");
-          document.getElementById("upload-icon").classList.add("hidden");
-          document.getElementById("crop-modal").classList.add("hidden");
-          document
-            .querySelectorAll(".default-avatar-item")
-            .forEach((i) => i.classList.remove("border-primary-fixed-dim"));
-          document.getElementById("selected-default-avatar").value = "";
-        });
-      });
+                document.getElementById("confirm-crop").addEventListener("click", () => {
+                    const canvas = cropper.getCroppedCanvas({
+                        width: 400,
+                        height: 400
+                    });
+                    canvas.toBlob((blob) => {
+                        window.croppedProfileBlob = blob;
+                        const preview = document.getElementById("profile-preview");
+                        preview.src = canvas.toDataURL();
+                        preview.classList.remove("hidden");
+                        document.getElementById("upload-icon").classList.add("hidden");
+                        document.getElementById("crop-modal").classList.add("hidden");
+                        document
+                            .querySelectorAll(".default-avatar-item")
+                            .forEach((i) => i.classList.remove("border-primary-fixed-dim"));
+                        document.getElementById("selected-default-avatar").value = "";
+                    });
+                });
 
-      // Default Avatar Selection
-      document.querySelectorAll(".default-avatar-item").forEach((img) => {
-        img.addEventListener("click", () => {
-          document
-            .querySelectorAll(".default-avatar-item")
-            .forEach((i) => i.classList.remove("border-primary-fixed-dim"));
-          img.classList.add("border-primary-fixed-dim");
-          document.getElementById("selected-default-avatar").value =
-            img.dataset.url;
-          const preview = document.getElementById("profile-preview");
-          preview.src = img.dataset.url;
-          preview.classList.remove("hidden");
-          document.getElementById("upload-icon").classList.add("hidden");
-          document.getElementById("profile-upload").value = "";
-          window.croppedProfileBlob = null;
-        });
-      });
+                // Default Avatar Selection
+                document.querySelectorAll(".default-avatar-item").forEach((img) => {
+                    img.addEventListener("click", () => {
+                        document
+                            .querySelectorAll(".default-avatar-item")
+                            .forEach((i) => i.classList.remove("border-primary-fixed-dim"));
+                        img.classList.add("border-primary-fixed-dim");
+                        document.getElementById("selected-default-avatar").value =
+                            img.dataset.url;
+                        const preview = document.getElementById("profile-preview");
+                        preview.src = img.dataset.url;
+                        preview.classList.remove("hidden");
+                        document.getElementById("upload-icon").classList.add("hidden");
+                        document.getElementById("profile-upload").value = "";
+                        window.croppedProfileBlob = null;
+                    });
+                });
 
-      // Frame Selection
-      document.querySelectorAll(".frame-item").forEach((item) => {
-        item.addEventListener("click", () => {
-          document
-            .querySelectorAll(".frame-item")
-            .forEach((i) =>
-              i.classList.remove("ring-2", "ring-primary-fixed-dim"),
-            );
-          item.classList.add("ring-2", "ring-primary-fixed-dim");
-          document.getElementById("selected-frame").value = item.dataset.frame;
-        });
-      });
-    </script>
-    <script type="module" src="js/firebase-config.js"></script>
-  <script src="js/theme.js"></script><script src="js/sidebar.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded',()=>{
-const page=location.pathname.split('/').pop();
-document.querySelectorAll('a[href]').forEach(a=>{
- if(a.getAttribute('href')===page){
-   a.classList.add('bg-emerald-accent/10','text-emerald-accent');
- }
-});
-});
-</script>
+                // Frame Selection
+                document.querySelectorAll(".frame-item").forEach((item) => {
+                    item.addEventListener("click", () => {
+                        document
+                            .querySelectorAll(".frame-item")
+                            .forEach((i) =>
+                                i.classList.remove("ring-2", "ring-primary-fixed-dim"),
+                            );
+                        item.classList.add("ring-2", "ring-primary-fixed-dim");
+                        document.getElementById("selected-frame").value = item.dataset.frame;
+                    });
+                });
+            </script>
+            <script type="module" src="js/firebase-config.js"></script>
+            <script src="js/theme.js"></script>
+            <script src="js/sidebar.js"></script>
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    const page = location.pathname.split('/').pop();
+                    document.querySelectorAll('a[href]').forEach(a => {
+                        if (a.getAttribute('href') === page) {
+                            a.classList.add('bg-emerald-accent/10', 'text-emerald-accent');
+                        }
+                    });
+                });
+            </script>
 
 
-<script>
-document.addEventListener('DOMContentLoaded',function(){
- const page=location.pathname.split('/').pop();
- document.querySelectorAll('a[href]').forEach(a=>{
-   const h=a.getAttribute('href');
-   if(h===page){a.classList.add('bg-emerald-accent/10','text-emerald-accent');}
- });
- const t=document.getElementById('theme-toggle');
- const light=document.getElementById('theme-toggle-light-icon');
- const dark=document.getElementById('theme-toggle-dark-icon');
- function sync(){
-   const isDark=document.documentElement.classList.contains('dark');
-   if(light) light.classList.toggle('hidden',!isDark);
-   if(dark) dark.classList.toggle('hidden',isDark);
- }
- sync();
- t?.addEventListener('click',()=>{
-   document.documentElement.classList.toggle('dark');
-   localStorage.setItem('color-theme',document.documentElement.classList.contains('dark')?'dark':'light');
-   sync();
- });
-});
-</script>
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const page = location.pathname.split('/').pop();
+                    document.querySelectorAll('a[href]').forEach(a => {
+                        const h = a.getAttribute('href');
+                        if (h === page) {
+                            a.classList.add('bg-emerald-accent/10', 'text-emerald-accent');
+                        }
+                    });
+                    const t = document.getElementById('theme-toggle');
+                    const light = document.getElementById('theme-toggle-light-icon');
+                    const dark = document.getElementById('theme-toggle-dark-icon');
 
-<script>
-document.addEventListener('DOMContentLoaded',()=>{
- const btn=document.getElementById('mobile-menu-btn');
- const sidebar=document.getElementById('sidebar');
- if(btn && sidebar){
-   const apply=()=>{
-     const c=localStorage.getItem('sidebarCollapsed')==='true';
-     if(window.innerWidth>=1024){
-       sidebar.classList.toggle('w-20',c);
-       sidebar.classList.toggle('w-64',!c);
-       sidebar.querySelectorAll('.nav-text,.logo-text').forEach(el=>el.style.display=c?'none':'');
-     }
-   };
-   apply();
-   btn.addEventListener('click',()=>{
-      if(window.innerWidth>=1024){
-        localStorage.setItem('sidebarCollapsed', localStorage.getItem('sidebarCollapsed')==='true'?'false':'true');
-        apply();
-      } else {
-        sidebar.classList.toggle('-translate-x-full');
-      }
-   });
- }
- const t=document.getElementById('theme-toggle');
- if(t){
-   t.addEventListener('click',()=>{
-      const dark=document.documentElement.classList.toggle('dark');
-      localStorage.setItem('color-theme',dark?'dark':'light');
-   });
- }
-});
-</script>
+                    function sync() {
+                        const isDark = document.documentElement.classList.contains('dark');
+                        if (light) light.classList.toggle('hidden', !isDark);
+                        if (dark) dark.classList.toggle('hidden', isDark);
+                    }
+                    sync();
+                    t?.addEventListener('click', () => {
+                        document.documentElement.classList.toggle('dark');
+                        localStorage.setItem('color-theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+                        sync();
+                    });
+                });
+            </script>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    const btn = document.getElementById('mobile-menu-btn');
+                    const sidebar = document.getElementById('sidebar');
+                    if (btn && sidebar) {
+                        const apply = () => {
+                            const c = localStorage.getItem('sidebarCollapsed') === 'true';
+                            if (window.innerWidth >= 1024) {
+                                sidebar.classList.toggle('w-20', c);
+                                sidebar.classList.toggle('w-64', !c);
+                                sidebar.querySelectorAll('.nav-text,.logo-text').forEach(el => el.style.display = c ? 'none' : '');
+                            }
+                        };
+                        apply();
+                        btn.addEventListener('click', () => {
+                            if (window.innerWidth >= 1024) {
+                                localStorage.setItem('sidebarCollapsed', localStorage.getItem('sidebarCollapsed') === 'true' ? 'false' : 'true');
+                                apply();
+                            } else {
+                                sidebar.classList.toggle('-translate-x-full');
+                            }
+                        });
+                    }
+                    const t = document.getElementById('theme-toggle');
+                    if (t) {
+                        t.addEventListener('click', () => {
+                            const dark = document.documentElement.classList.toggle('dark');
+                            localStorage.setItem('color-theme', dark ? 'dark' : 'light');
+                        });
+                    }
+                });
+            </script>
 
 </body>
+
 </html>

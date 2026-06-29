@@ -1,7 +1,8 @@
 <!doctype html>
 
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>FanConnect - Login</title>
@@ -9,170 +10,201 @@
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link rel="stylesheet" href="css/style.css" />
     <!-- Google Fonts: Inter or similar for a clean look -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&amp;display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
     <script>
-      tailwind.config = {
-        darkMode: "class",
-        theme: {
-          extend: {
-            colors: {
-              "fan-dark": "#060b13",
-              "fan-card-bg": "rgba(16, 24, 39, 0.6)",
-              "fan-emerald": "#10b981",
-              "fan-emerald-dark": "#059669",
-              "fan-border": "rgba(255, 255, 255, 0.1)",
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "fan-dark": "#060b13",
+                        "fan-card-bg": "rgba(16, 24, 39, 0.6)",
+                        "fan-emerald": "#10b981",
+                        "fan-emerald-dark": "#059669",
+                        "fan-border": "rgba(255, 255, 255, 0.1)",
+                    },
+                    fontFamily: {
+                        sans: ["Inter", "sans-serif"],
+                    },
+                    backgroundImage: {
+                        "emerald-gradient": "linear-gradient(90deg, #10b981 0%, #059669 100%)",
+                    },
+                },
             },
-            fontFamily: {
-              sans: ["Inter", "sans-serif"],
-            },
-            backgroundImage: {
-              "emerald-gradient":
-                "linear-gradient(90deg, #10b981 0%, #059669 100%)",
-            },
-          },
-        },
-      };
+        };
     </script>
     <style data-purpose="custom-layout">
-      body {
-        @apply transition-colors duration-300;
-        background-color: #02060c;
-        color: #ffffff;
-        font-family: "Inter", sans-serif;
-        overflow-x: hidden;
-      }
+        body {
+            transition: color 0.3s, background-color 0.3s, border-color 0.3s;
+            background-color: #02060c;
+            color: #ffffff;
+            font-family: "Inter", sans-serif;
+            overflow-x: hidden;
+        }
+        /* Light Mode Overrides */
+        
+        html:not(.dark) body {
+            background-color: #f8f9ff;
+            color: #0f172a;
+        }
+        
+        html:not(.dark) .login-container-glow {
+            background: #ffffff;
+            border-color: #e2e8f0;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+        }
 
-      /* Light Mode Overrides */
-      html:not(.dark) body {
-        background-color: #f8f9ff;
-        color: #0f172a;
-      }
+        html:not(.dark) [data-purpose="login-form-container"] {
+            background: #f8f9ff;
+        }
 
-      html:not(.dark) .login-container-glow {
-        background: #ffffff;
-        border-color: #e2e8f0;
-        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
-      }
+        html:not(.dark) [data-purpose="login-form-container"] input {
+            background: #ffffff;
+            border-color: #e2e8f0;
+            color: #0f172a;
+        }
 
-      /* Background image section with overlay */
-      .bg-hero-section {
-        background-image:
-          linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.7)),
-          url("https://lh3.googleusercontent.com/aida-public/AB6AXuDcxbaOsjFf304BRkKQRst9a1dLnhZRapxS0I9TcWra9fIe8q_2zZnHFojLV30gNRWTlSJi9zwHdW3I4hyfv8R_4LiBO2ejdbnpYOonntRQirbyf-TH3PUHsgliODvybhOgpxdD6N9X4PEqMpygvkIGDhqpwsvsh8qxqEJUDPx7SZJ9cTIKlq88qZ3TIggeM9pGPgTJhQxwnTYNDj-edPqixyodq-Fhtt3SCA2pg89a9KP90gpt1MhN9TtTcuUh7Iw0XKJpZ3-RsfQP");
-        background-size: cover;
-        background-position: center;
-      }
+        html:not(.dark) [data-purpose="login-form-container"] input::placeholder {
+            color: #94a3b8;
+        }
 
-      /* Glassmorphism for cards */
-      .glass-card {
-        background: rgba(255, 255, 255, 0.05);
-        backdrop-filter: blur(8px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 12px;
-      }
+        html:not(.dark) .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            border-color: rgba(0, 0, 0, 0.1);
+        }
 
-      /* Glow effect for login container border */
-      .login-container-glow {
-        box-shadow: 0 0 40px rgba(16, 185, 129, 0.1);
-        border: 1px solid rgba(16, 185, 129, 0.2);
-      }
+        html:not(.dark) [data-purpose="login-card"] .text-gray-400 {
+            color: #64748b;
+        }
 
-      /* Custom input focus states */
-      .fan-input:focus {
-        border-color: #10b981;
-        ring-color: #10b981;
-        outline: none;
-      }
+        html:not(.dark) [data-purpose="login-card"] .text-gray-300 {
+            color: #334155;
+        }
 
-      /* Custom scrollbar if needed */
-      ::-webkit-scrollbar {
-        width: 6px;
-      }
-      ::-webkit-scrollbar-track {
-        background: #060b13;
-      }
-      ::-webkit-scrollbar-thumb {
-        background: #10b981;
-        border-radius: 10px;
-      }
-    
-.sidebar-collapsed #sidebar{width:0!important;min-width:0!important;border:0!important;padding:0!important;overflow:hidden!important;}
-</style>
-  <meta name="description" content="FanConnect sports platform for fans, scores, communities and updates.">
-<meta property="og:title" content="FanConnect">
-<meta name="robots" content="index,follow">
-<meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;">
-<meta name="referrer" content="strict-origin-when-cross-origin">
+        html:not(.dark) [data-purpose="login-card"] [class*="bg-gray-900"] {
+            background: #ffffff;
+            border-color: #e2e8f0;
+        }
+
+        html:not(.dark) [data-purpose="login-card"] [class*="bg-gray-900"]:hover {
+            background: #f1f5f9;
+        }
+
+        html:not(.dark) [data-purpose="login-card"] .border-gray-800 {
+            border-color: #e2e8f0;
+        }
+
+        html:not(.dark) #lang-dropdown-login {
+            background: #ffffff;
+            border-color: #e2e8f0;
+        }
+
+        html:not(.dark) #lang-dropdown-login button {
+            color: #0f172a;
+        }
+
+        html:not(.dark) #lang-dropdown-login button:hover {
+            background: #f1f5f9;
+        }
+        /* Background image section with overlay */
+        
+        .bg-hero-section {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.7)), url("https://lh3.googleusercontent.com/aida-public/AB6AXuDcxbaOsjFf304BRkKQRst9a1dLnhZRapxS0I9TcWra9fIe8q_2zZnHFojLV30gNRWTlSJi9zwHdW3I4hyfv8R_4LiBO2ejdbnpYOonntRQirbyf-TH3PUHsgliODvybhOgpxdD6N9X4PEqMpygvkIGDhqpwsvsh8qxqEJUDPx7SZJ9cTIKlq88qZ3TIggeM9pGPgTJhQxwnTYNDj-edPqixyodq-Fhtt3SCA2pg89a9KP90gpt1MhN9TtTcuUh7Iw0XKJpZ3-RsfQP");
+            background-size: cover;
+            background-position: center;
+        }
+        /* Glassmorphism for cards */
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+        }
+        /* Glow effect for login container border */
+        
+        .login-container-glow {
+            box-shadow: 0 0 40px rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+        /* Custom input focus states */
+        
+        .fan-input:focus {
+            border-color: #10b981;
+            ring-color: #10b981;
+            outline: none;
+        }
+        /* Custom scrollbar if needed */
+        
+         ::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+         ::-webkit-scrollbar-track {
+            background: #060b13;
+        }
+        
+         ::-webkit-scrollbar-thumb {
+            background: #10b981;
+            border-radius: 10px;
+        }
+        
+        .sidebar-collapsed #sidebar {
+            width: 0!important;
+            min-width: 0!important;
+            border: 0!important;
+            padding: 0!important;
+            overflow: hidden!important;
+        }
+    </style>
+    <meta name="description" content="FanConnect sports platform for fans, scores, communities and updates.">
+    <meta property="og:title" content="FanConnect">
+    <meta name="robots" content="index,follow">
+    <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
 </head>
-  <body
-    class="min-h-screen flex items-center justify-center transition-colors duration-300"
-  >
+
+<body class="min-h-screen flex items-center justify-center transition-colors duration-300">
     <!-- BEGIN: Main Layout Wrapper -->
-    <main
-      class="flex flex-col lg:flex-row w-full min-h-screen lg:h-screen lg:overflow-hidden overflow-y-auto"
-    >
-      <!-- BEGIN: Left Hero Section -->
-      <section
-        class="relative lg:w-1/2 w-full min-h-[450px] lg:h-full bg-hero-section p-6 sm:p-8 lg:p-12 xl:p-16 flex flex-col justify-between"
-        data-purpose="hero-content"
-      >
-        <div class="flex items-center gap-3 mb-12">
-          <img src="assets/fancoin/fanconnactlogo.png" alt="FanConnect" class="w-12 h-12" />
-          <div>
-            <h1 class="text-2xl font-extrabold tracking-tight"><span class="text-fan">Fan</span><span class="text-connect">Connact</span></h1>
-            <p
-              class="text-[10px] uppercase tracking-[0.2em] text-fan-emerald font-bold"
-            >
-              Connect. Predict. Win.
-            </p>
-          </div>
-        </div>
-        <!-- Brand Logo -->
-        <!-- Main Headline Content -->
-        <div class="mt-auto mb-8 lg:mb-12">
-          <div class="space-y-1">
-            <h2
-              class="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-black leading-tight text-white"
-            >
-              FOR FANS.<br />
-              BY FANS.
-            </h2>
-            <h2
-              class="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-black leading-tight text-fan-emerald"
-            >
-              ALWAYS FOR<br />
-              CRICKET.
-            </h2>
-          </div>
-          <div class="mt-6">
-            <p class="text-lg font-medium opacity-90">
-              Join 100K+ cricket fans.
-            </p>
-            <p class="text-xl font-bold text-white">
-              Predict. Compete. Connect. Win!
-            </p>
-          </div>
-        </div>
-        <!-- Feature Grid -->
-        <div
-          class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 lg:gap-4 mb-8"
-        >
-          <!-- Live Scores -->
-          <div class="glass-card p-4 flex flex-col items-center text-center">
-            <div class="w-8 h-8 mb-2 text-fan-emerald">
-              <svg
-                fill="none"
-                stroke="currentColor"
-                viewbox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
+    <main class="flex flex-col lg:flex-row w-full min-h-screen lg:h-screen lg:overflow-hidden overflow-y-auto">
+        <!-- BEGIN: Left Hero Section -->
+        <section class="relative lg:w-1/2 w-full min-h-[450px] lg:h-full bg-hero-section p-6 sm:p-8 lg:p-12 xl:p-16 flex flex-col justify-between" data-purpose="hero-content">
+            <div class="flex items-center gap-3 mb-12">
+                <img src="assets/fancoin/fanconnactlogo.png" alt="FanConnect" class="w-12 h-12" />
+                <div>
+                    <h1 class="text-2xl font-extrabold tracking-tight"><span class="text-fan">Fan</span><span class="text-connect">Connact</span></h1>
+                    <p class="text-[10px] uppercase tracking-[0.2em] text-fan-emerald font-bold">
+                        Connect. Predict. Win.
+                    </p>
+                </div>
+            </div>
+            <!-- Brand Logo -->
+            <!-- Main Headline Content -->
+            <div class="mt-auto mb-8 lg:mb-12">
+                <div class="space-y-1">
+                    <h2 class="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-black leading-tight text-white">
+                        FOR FANS.<br /> BY FANS.
+                    </h2>
+                    <h2 class="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-black leading-tight text-fan-emerald">
+                        ALWAYS FOR<br /> CRICKET.
+                    </h2>
+                </div>
+                <div class="mt-6">
+                    <p class="text-lg font-medium opacity-90">
+                        Join 100K+ cricket fans.
+                    </p>
+                    <p class="text-xl font-bold text-white">
+                        Predict. Compete. Connect. Win!
+                    </p>
+                </div>
+            </div>
+            <!-- Feature Grid -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 lg:gap-4 mb-8">
+                <!-- Live Scores -->
+                <div class="glass-card p-4 flex flex-col items-center text-center">
+                    <div class="w-8 h-8 mb-2 text-fan-emerald">
+                        <svg fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path
                   d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
                   stroke-linecap="round"
@@ -180,19 +212,14 @@
                   stroke-width="2"
                 ></path>
               </svg>
-            </div>
-            <p class="text-xs font-bold">Live Scores</p>
-            <p class="text-[10px] text-gray-400">Real-time Updates</p>
-          </div>
-          <!-- Predict & Win -->
-          <div class="glass-card p-4 flex flex-col items-center text-center">
-            <div class="w-8 h-8 mb-2 text-fan-emerald">
-              <svg
-                fill="none"
-                stroke="currentColor"
-                viewbox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
+                    </div>
+                    <p class="text-xs font-bold">Live Scores</p>
+                    <p class="text-[10px] text-gray-400">Real-time Updates</p>
+                </div>
+                <!-- Predict & Win -->
+                <div class="glass-card p-4 flex flex-col items-center text-center">
+                    <div class="w-8 h-8 mb-2 text-fan-emerald">
+                        <svg fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path
                   d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"
                   stroke-linecap="round"
@@ -200,19 +227,14 @@
                   stroke-width="2"
                 ></path>
               </svg>
-            </div>
-            <p class="text-xs font-bold">Predict &amp; Win</p>
-            <p class="text-[10px] text-gray-400">Use your skills to win</p>
-          </div>
-          <!-- Communities -->
-          <div class="glass-card p-4 flex flex-col items-center text-center">
-            <div class="w-8 h-8 mb-2 text-fan-emerald">
-              <svg
-                fill="none"
-                stroke="currentColor"
-                viewbox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
+                    </div>
+                    <p class="text-xs font-bold">Predict &amp; Win</p>
+                    <p class="text-[10px] text-gray-400">Use your skills to win</p>
+                </div>
+                <!-- Communities -->
+                <div class="glass-card p-4 flex flex-col items-center text-center">
+                    <div class="w-8 h-8 mb-2 text-fan-emerald">
+                        <svg fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path
                   d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
                   stroke-linecap="round"
@@ -220,19 +242,14 @@
                   stroke-width="2"
                 ></path>
               </svg>
-            </div>
-            <p class="text-xs font-bold">Communities</p>
-            <p class="text-[10px] text-gray-400">Connect &amp; Chat</p>
-          </div>
-          <!-- Leaderboards -->
-          <div class="glass-card p-4 flex flex-col items-center text-center">
-            <div class="w-8 h-8 mb-2 text-fan-emerald">
-              <svg
-                fill="none"
-                stroke="currentColor"
-                viewbox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
+                    </div>
+                    <p class="text-xs font-bold">Communities</p>
+                    <p class="text-[10px] text-gray-400">Connect &amp; Chat</p>
+                </div>
+                <!-- Leaderboards -->
+                <div class="glass-card p-4 flex flex-col items-center text-center">
+                    <div class="w-8 h-8 mb-2 text-fan-emerald">
+                        <svg fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path
                   d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
                   stroke-linecap="round"
@@ -240,62 +257,40 @@
                   stroke-width="2"
                 ></path>
               </svg>
+                    </div>
+                    <p class="text-xs font-bold">Leaderboards</p>
+                    <p class="text-[10px] text-gray-400">Compete &amp; Climb</p>
+                </div>
             </div>
-            <p class="text-xs font-bold">Leaderboards</p>
-            <p class="text-[10px] text-gray-400">Compete &amp; Climb</p>
-          </div>
-        </div>
-        <!-- Trust Badge -->
-        <div class="flex items-center gap-4">
-          <div class="flex -space-x-3">
-            <img
-              alt="Fan"
-              class="w-10 h-10 rounded-full border-2 border-fan-dark"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuDyKGW1q6zIn2-ZgtEuqOc7WqrponYobZDmnf_YAsG3rSB0dwhXuOTQzZPsb_UDXnBFmMzPsC6n2XWQaU99Vxzr5UZZqHMFULDIp_nZ1hYGwvKLkFTvsDFYJvJlZmJO9TCkbdr-9cMehk0_UXGSgRCJj3JTw1lToobToFtmINbV-kIKkbC2dHlep_zqsMPSS9wPKpLe3n7edI2NXSeJo_qJuAFwomdQK6X15tH9gSUyupA9W_UQi385eVmd-RFaP0mq8xRSnH-WBASD"
-            />
-            <img
-              alt="Fan"
-              class="w-10 h-10 rounded-full border-2 border-fan-dark"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuCacLugs4APsy1TpNm-x9sms42s7KwBqsvxmuqGdwYXbfYWpKxLeVOMWa2ZDL7E0ceVmxYkMh8UVZmqNR0YWCreV0odg06tPBDxbfzkVq21MW9T2wvpsbgSp12XTKSzbwii3MDvUOTKNmFUM1ITOpNkkhtDkKtHhPXXGFx_ZUUP_L3XfpYXEXSO5ekGdgQNowaHTtcRTIQFh19yQA5675bolnWocyYCJwdLJJ1hAZCgOZzSxGu2txGgiU18247HUGCuoH-36LBe2i17"
-            />
-            <img
-              alt="Fan"
-              class="w-10 h-10 rounded-full border-2 border-fan-dark"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-9f87YIr_3QyFdtl42e-TT0PHHvJzoIMDRjVb3pgNNAKGY48P5WOnQXr_zLlhGmgEj1NE6sBT-KCZFXz3uool4MsFPpJ4dHykK6U4Sn7pAMHDtUPYsSZUnLDnLEHTb1nWSO_HmzuuKtS62FKXsVZMaoRn7Eu6hUu0EelUC4t9NBMSwH8yL2NVK88vDAGmnhFPBOQ86VWnO267OZxwYHcAaBYuyoZf2dgLwF938wANHCifbeZYj8KD__G6IKbX7Sd28NLMy_usY388"
-            />
-            <img
-              alt="Fan"
-              class="w-10 h-10 rounded-full border-2 border-fan-dark"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBAks1O2OP8HunbKqKX1NqJpshmGmrvqutVjLuzaGQOaO3kVxlSQQtK7XzWU9Jq0aaCsLvdtRnmiaiNzJeX7xA4ewRfCw8s2hDZiWO2vlZ8FWj7JJVEJrfYKA0fOpGKODbxA2k-sod3-tkLnS3iMgtAVCsMlxQDgjwYU2dA0n7b2STyWbbJIdrUacMxdiTqXVmIUJTZiASwb3ask-KINfKS4a6wvXZjpdn0eeTu5vc2lIZHiuUmoCFn7tBRIULWqRh3j_R2I-yGXOpK"
-            />
-            <div
-              class="w-10 h-10 rounded-full border-2 border-fan-dark bg-fan-emerald flex items-center justify-center text-[10px] font-bold"
-            >
-              100K+
+            <!-- Trust Badge -->
+            <div class="flex items-center gap-4">
+                <div class="flex -space-x-3">
+                    <img alt="Fan" class="w-10 h-10 rounded-full border-2 border-fan-dark" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDyKGW1q6zIn2-ZgtEuqOc7WqrponYobZDmnf_YAsG3rSB0dwhXuOTQzZPsb_UDXnBFmMzPsC6n2XWQaU99Vxzr5UZZqHMFULDIp_nZ1hYGwvKLkFTvsDFYJvJlZmJO9TCkbdr-9cMehk0_UXGSgRCJj3JTw1lToobToFtmINbV-kIKkbC2dHlep_zqsMPSS9wPKpLe3n7edI2NXSeJo_qJuAFwomdQK6X15tH9gSUyupA9W_UQi385eVmd-RFaP0mq8xRSnH-WBASD"
+                    />
+                    <img alt="Fan" class="w-10 h-10 rounded-full border-2 border-fan-dark" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCacLugs4APsy1TpNm-x9sms42s7KwBqsvxmuqGdwYXbfYWpKxLeVOMWa2ZDL7E0ceVmxYkMh8UVZmqNR0YWCreV0odg06tPBDxbfzkVq21MW9T2wvpsbgSp12XTKSzbwii3MDvUOTKNmFUM1ITOpNkkhtDkKtHhPXXGFx_ZUUP_L3XfpYXEXSO5ekGdgQNowaHTtcRTIQFh19yQA5675bolnWocyYCJwdLJJ1hAZCgOZzSxGu2txGgiU18247HUGCuoH-36LBe2i17"
+                    />
+                    <img alt="Fan" class="w-10 h-10 rounded-full border-2 border-fan-dark" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-9f87YIr_3QyFdtl42e-TT0PHHvJzoIMDRjVb3pgNNAKGY48P5WOnQXr_zLlhGmgEj1NE6sBT-KCZFXz3uool4MsFPpJ4dHykK6U4Sn7pAMHDtUPYsSZUnLDnLEHTb1nWSO_HmzuuKtS62FKXsVZMaoRn7Eu6hUu0EelUC4t9NBMSwH8yL2NVK88vDAGmnhFPBOQ86VWnO267OZxwYHcAaBYuyoZf2dgLwF938wANHCifbeZYj8KD__G6IKbX7Sd28NLMy_usY388"
+                    />
+                    <img alt="Fan" class="w-10 h-10 rounded-full border-2 border-fan-dark" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBAks1O2OP8HunbKqKX1NqJpshmGmrvqutVjLuzaGQOaO3kVxlSQQtK7XzWU9Jq0aaCsLvdtRnmiaiNzJeX7xA4ewRfCw8s2hDZiWO2vlZ8FWj7JJVEJrfYKA0fOpGKODbxA2k-sod3-tkLnS3iMgtAVCsMlxQDgjwYU2dA0n7b2STyWbbJIdrUacMxdiTqXVmIUJTZiASwb3ask-KINfKS4a6wvXZjpdn0eeTu5vc2lIZHiuUmoCFn7tBRIULWqRh3j_R2I-yGXOpK"
+                    />
+                    <div class="w-10 h-10 rounded-full border-2 border-fan-dark bg-fan-emerald flex items-center justify-center text-[10px] font-bold">
+                        100K+
+                    </div>
+                </div>
+                <div class="text-xs">
+                    <p class="text-gray-400">
+                        Trusted by <span class="text-white font-bold">100K+</span>
+                    </p>
+                    <p class="text-gray-400">Cricket Fans</p>
+                </div>
             </div>
-          </div>
-          <div class="text-xs">
-            <p class="text-gray-400">
-              Trusted by <span class="text-white font-bold">100K+</span>
-            </p>
-            <p class="text-gray-400">Cricket Fans</p>
-          </div>
-        </div>
-      </section>
-      <!-- END: Left Hero Section -->
-      <!-- BEGIN: Right Login Section -->
-      <section
-        class="lg:w-1/2 w-full bg-fan-dark flex items-center justify-center p-4 sm:p-6 lg:p-12 relative lg:overflow-y-auto"
-        data-purpose="login-form-container"
-      >
-        <!-- Top Actions: Theme/Language -->
-        <div
-          class="absolute top-4 right-4 sm:top-8 sm:right-8 flex items-center gap-2 sm:gap-4"
-        >
-          <button
-            id="theme-toggle-login"
-            class="w-10 h-10 rounded-xl bg-gray-800/50 flex items-center justify-center border border-gray-700 hover:bg-gray-700 transition dark:bg-gray-800/50 dark:border-gray-700 light:bg-gray-100 light:border-gray-300"
-          >
+        </section>
+        <!-- END: Left Hero Section -->
+        <!-- BEGIN: Right Login Section -->
+        <section class="lg:w-1/2 w-full bg-fan-dark flex items-center justify-center p-4 sm:p-6 lg:p-12 relative lg:overflow-y-auto" data-purpose="login-form-container">
+            <!-- Top Actions: Theme/Language -->
+            <div class="absolute top-4 right-4 sm:top-8 sm:right-8 flex items-center gap-2 sm:gap-4">
+                <button id="theme-toggle" class="w-10 h-10 rounded-xl bg-gray-800/50 flex items-center justify-center border border-gray-700 hover:bg-gray-700 transition dark:bg-gray-800/50 dark:border-gray-700 light:bg-gray-100 light:border-gray-300">
             <svg
               class="w-5 h-5 text-gray-300"
               fill="currentColor"
@@ -306,80 +301,54 @@
               ></path>
             </svg>
           </button>
-          <button
-            id="lang-menu-btn-login"
-            class="px-4 py-2 rounded-xl bg-gray-800/50 flex items-center gap-2 border border-gray-700 hover:bg-gray-700 transition"
-          >
+                <button id="lang-menu-btn-login" class="px-4 py-2 rounded-xl bg-gray-800/50 flex items-center gap-2 border border-gray-700 hover:bg-gray-700 transition">
             <span id="current-lang-login" class="text-sm font-medium"
               >English</span
             >
             <span class="material-symbols-outlined text-sm">expand_more</span>
           </button>
-          <!-- Simple Language Dropdown -->
-          <div
-            id="lang-dropdown-login"
-            class="hidden absolute top-20 right-8 bg-gray-900 border border-gray-700 rounded-xl overflow-hidden shadow-2xl z-50"
-          >
-            <button
-              onclick="changeLanguage('en')"
-              class="block w-full px-6 py-2 text-left hover:bg-gray-800 text-sm"
-            >
+                <!-- Simple Language Dropdown -->
+                <div id="lang-dropdown-login" class="hidden absolute top-20 right-8 bg-gray-900 border border-gray-700 rounded-xl overflow-hidden shadow-2xl z-50">
+                    <button onclick="changeLanguage('en')" class="block w-full px-6 py-2 text-left hover:bg-gray-800 text-sm">
               English
             </button>
-            <button
-              onclick="changeLanguage('hi')"
-              class="block w-full px-6 py-2 text-left hover:bg-gray-800 text-sm"
-            >
+                    <button onclick="changeLanguage('hi')" class="block w-full px-6 py-2 text-left hover:bg-gray-800 text-sm">
               Hindi
             </button>
-          </div>
-          <script>
-            const langBtn = document.getElementById("lang-menu-btn-login");
-            const langDropdown = document.getElementById("lang-dropdown-login");
-            langBtn.onclick = () => langDropdown.classList.toggle("hidden");
-            window.changeLanguage = (lang) => {
-              if (window.applyLanguage) window.applyLanguage(lang);
-              document.getElementById("current-lang-login").textContent =
-                lang === "en" ? "English" : "Hindi";
-              langDropdown.classList.add("hidden");
-            };
-          </script>
-        </div>
-        <!-- Login Form Card -->
-        <div
-          class="w-full max-w-md login-container-glow rounded-[24px] sm:rounded-[32px] p-6 sm:p-8 lg:p-8 xl:p-10"
-          data-purpose="login-card"
-        >
-          <div class="flex flex-col items-center mb-10">
-            <div class="w-10 h-10 sm:w-12 sm:h-12 text-fan-emerald mb-6">
-              <svg
-                class="w-full h-full"
-                fill="currentColor"
-                viewbox="0 0 24 24"
-              >
+                </div>
+                <script>
+                    const langBtn = document.getElementById("lang-menu-btn-login");
+                    const langDropdown = document.getElementById("lang-dropdown-login");
+                    langBtn.onclick = () => langDropdown.classList.toggle("hidden");
+                    window.changeLanguage = (lang) => {
+                        if (window.applyLanguage) window.applyLanguage(lang);
+                        document.getElementById("current-lang-login").textContent =
+                            lang === "en" ? "English" : "Hindi";
+                        langDropdown.classList.add("hidden");
+                    };
+                </script>
+            </div>
+            <!-- Login Form Card -->
+            <div class="w-full max-w-md login-container-glow rounded-[24px] sm:rounded-[32px] p-6 sm:p-8 lg:p-8 xl:p-10" data-purpose="login-card">
+                <div class="flex flex-col items-center mb-10">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 text-fan-emerald mb-6">
+                        <svg class="w-full h-full" fill="currentColor" viewbox="0 0 24 24">
                 <path
                   d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 11h2v3h2v-3h2v2h2v-5h-8v3z"
                 ></path>
               </svg>
-            </div>
-            <h3
-              data-i18n="login-title"
-              class="text-2xl sm:text-3xl font-bold text-center"
-            >
-              Welcome Back! 👋
-            </h3>
-            <p class="text-gray-400 mt-2 text-center text-sm">
-              Login to continue your FanConnect journey
-            </p>
-          </div>
-          <form action="#" class="space-y-6" method="POST">
-            <!-- Email Field -->
-            <div class="space-y-2">
-              <label
-                data-i18n="login-email-label"
-                class="text-sm font-medium text-gray-300 ml-1"
-                for="username"
-                >Email or Username</label
+                    </div>
+                    <h3 data-i18n="login-title" class="text-2xl sm:text-3xl font-bold text-center">
+                        Welcome Back! 👋
+                    </h3>
+                    <p class="text-gray-400 mt-2 text-center text-sm">
+                        Login to continue your FanConnect journey
+                    </p>
+                </div>
+                <form action="#" class="space-y-6" method="POST">
+                    <!-- Email Field -->
+                    <div class="space-y-2">
+                        <label data-i18n="login-email-label" class="text-sm font-medium text-gray-300 ml-1" for="username">Email or Username</label
               >
               <div class="relative group">
                 <div
@@ -498,7 +467,7 @@
               </div>
               <a
                 class="text-sm font-medium text-purple-400 hover:text-purple-300 transition"
-                href="index.html"
+                href="forget-password.html"
                 >Forgot Password?</a
               >
             </div>
@@ -659,20 +628,6 @@ document.addEventListener('DOMContentLoaded',function(){
    const h=a.getAttribute('href');
    if(h===page){a.classList.add('bg-emerald-accent/10','text-emerald-accent');}
  });
- const t=document.getElementById('theme-toggle');
- const light=document.getElementById('theme-toggle-light-icon');
- const dark=document.getElementById('theme-toggle-dark-icon');
- function sync(){
-   const isDark=document.documentElement.classList.contains('dark');
-   if(light) light.classList.toggle('hidden',!isDark);
-   if(dark) dark.classList.toggle('hidden',isDark);
- }
- sync();
- t?.addEventListener('click',()=>{
-   document.documentElement.classList.toggle('dark');
-   localStorage.setItem('color-theme',document.documentElement.classList.contains('dark')?'dark':'light');
-   sync();
- });
 });
 </script>
 
@@ -697,13 +652,6 @@ document.addEventListener('DOMContentLoaded',()=>{
       } else {
         sidebar.classList.toggle('-translate-x-full');
       }
-   });
- }
- const t=document.getElementById('theme-toggle');
- if(t){
-   t.addEventListener('click',()=>{
-      const dark=document.documentElement.classList.toggle('dark');
-      localStorage.setItem('color-theme',dark?'dark':'light');
    });
  }
 });

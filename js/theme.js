@@ -7,6 +7,7 @@ const dark=document.getElementById('theme-toggle-dark-icon');
 function render(){
  const isDark=localStorage.getItem('color-theme')==='dark';
  document.documentElement.classList.toggle('dark',isDark);
+ document.documentElement.classList.toggle('light',!isDark);
  if(light) light.classList.toggle('hidden',!isDark);
  if(dark) dark.classList.toggle('hidden',isDark);
 }

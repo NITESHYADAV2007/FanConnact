@@ -38,9 +38,16 @@
       }
       .sidebar-collapsed #sidebar { width: 0 !important; min-width: 0 !important; border: 0 !important; padding: 0 !important; overflow: hidden !important; }
       .text-fan { color: #ffffff !important; }
-      :root:not(.dark) .text-connect { color: #4648d4 !important; }
+      :root:not(.dark) .text-connect { color: #2563eb !important; }
       .dark .text-connect { color: #10b981 !important; }
       :root:not(.dark) .text-fan { color: #374151 !important; }
+      .nav-link-active { font-weight: 500 !important; }
+      .dark .nav-link-active { background-color: rgba(16, 185, 129, 0.2) !important; color: #10b981 !important; border-right: 4px solid #10b981 !important; }
+      .dark .nav-link-active span, .dark .nav-link-active .nav-text { color: #10b981 !important; }
+      :root:not(.dark) .nav-link-active { background-color: #eff6ff !important; color: #1d4ed8 !important; border-right: 4px solid #3b82f6 !important; }
+      :root:not(.dark) #sidebar { background-color: #ffffff !important; }
+      :root:not(.dark) #sidebar a:not(.nav-link-active) { color: #475569 !important; }
+      :root:not(.dark) #sidebar a:not(.nav-link-active):hover { color: #2563eb !important; }
       .dark body {
         background-color: #0b0e11;
         color: #ffffff;
@@ -98,7 +105,7 @@
       <div class="flex items-center space-x-8">
         <button
           id="mobile-menu-btn"
-          class="p-2 text-gray-400 hover:text-accent-green lg:hidden"
+          class="p-2 text-gray-400 hover:text-accent-green"
         >
           <span class="material-symbols-outlined">menu</span>
         </button>
@@ -208,9 +215,13 @@
       <!-- BEGIN: LeftSidebar -->
       <aside
         id="sidebar"
-        class="w-[240px] shrink-0 border-r border-gray-200 dark:border-brand-border bg-white dark:bg-brand-dark flex flex-col hidden lg:flex overflow-y-auto custom-scrollbar transition-all duration-300"
+        class="fixed inset-y-0 left-0 z-[60] transition-all duration-300 bg-white dark:bg-dark-bg border-r border-gray-200 dark:border-border-subtle p-6 overflow-y-auto -translate-x-full lg:translate-x-0 lg:static h-full flex flex-col custom-scrollbar"
         data-purpose="sports-categories"
       >
+        <!-- Mobile Close Button -->
+        <button id="close-sidebar-btn" class="lg:hidden p-2 absolute top-4 right-4 text-gray-400">
+          <span class="material-symbols-outlined">close</span>
+        </button>
         <!-- Logo Container -->
         <div
           class="p-4 flex items-center space-x-2 logo-container cursor-pointer mb-6"
@@ -228,45 +239,51 @@
         >
           Sports
         </p>
-        <nav class="space-y-4">
-          <a
-            class="flex items-center space-x-3 text-gray-400 hover:text-white transition p-3"
-            href="livematches.html"
-            ><span class="">🏆</span><span class="">All Sports</span></a
-          ><a
-            class="flex items-center space-x-3 text-gray-400 hover:text-white transition p-3"
-            href="kabbaddi.html"
-            ><span class="">🤼</span><span class="">Kabaddi</span></a
-          ><a
-            class="flex items-center space-x-3 text-gray-400 hover:text-white transition p-3"
-            href="cricket.html"
-            ><span class="">🏏</span><span class="">Cricket</span></a
-          ><a
-            class="flex items-center space-x-3 text-gray-400 hover:text-white transition p-3"
-            href="football.html"
-            ><span class="">⚽</span><span class="">Football</span></a
-          ><a
-            class="flex items-center space-x-3 text-gray-400 hover:text-white transition p-3"
-            href="basketball.html"
-            ><span class="">🏀</span><span class="">Basketball</span></a
-          ><a
-            class="flex items-center space-x-3 text-gray-400 hover:text-white transition p-3"
-            href="tennis.html"
-            ><span class="">🎾</span><span class="">Tennis</span></a
-          ><a
-            class="flex items-center space-x-3 p-3 rounded-xl text-accent-green bg-gray-800/40"
-            href="hockey.html"
-            ><span class="">🏑</span
-            ><span class="font-semibold">Hockey</span></a
-          ><a
-            class="flex items-center space-x-3 text-gray-400 hover:text-white transition p-3"
-            href="e-sports.html"
-            ><span class="">🎮</span><span class="">E-Sports</span></a
-          ><a
-            class="flex items-center space-x-3 text-gray-400 hover:text-white transition p-3"
-            href=""
-            ><span class="">•••</span><span class="">More</span></a
-          >
+        <nav class="space-y-1">
+          <a class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link" href="livematches.html">
+            <span class="material-symbols-outlined text-xl">grid_view</span>
+            <span class="nav-text">All Sports</span>
+          </a>
+          <a class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link" href="cricket.html">
+            <span class="material-symbols-outlined text-xl">sports_cricket</span>
+            <span class="nav-text">Cricket</span>
+          </a>
+          <a class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link" href="football.html">
+            <span class="material-symbols-outlined text-xl">sports_soccer</span>
+            <span class="nav-text">Football</span>
+          </a>
+          <a class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link" href="basketball.html">
+            <span class="material-symbols-outlined text-xl">sports_basketball</span>
+            <span class="nav-text">Basketball</span>
+          </a>
+          <a class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link" href="tennis.html">
+            <span class="material-symbols-outlined text-xl">sports_tennis</span>
+            <span class="nav-text">Tennis</span>
+          </a>
+          <a class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link" href="hockey.html">
+            <span class="material-symbols-outlined text-xl">sports_hockey</span>
+            <span class="nav-text">Hockey</span>
+          </a>
+          <a class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link" href="kabbaddi.html">
+            <span class="material-symbols-outlined text-xl">sports_kabaddi</span>
+            <span class="nav-text">Kabaddi</span>
+          </a>
+          <a class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link" href="e-sports.html">
+            <span class="material-symbols-outlined text-xl">sports_esports</span>
+            <span class="nav-text">E-Sports</span>
+          </a>
+          <a class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link" href="baseball.html">
+            <span class="material-symbols-outlined text-xl">sports_baseball</span>
+            <span class="nav-text">Baseball</span>
+          </a>
+          <a class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link" href="vollyeball.html">
+            <span class="material-symbols-outlined text-xl">sports_volleyball</span>
+            <span class="nav-text">Volleyball</span>
+          </a>
+          <a class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link" href="tabletennis.html">
+            <span class="material-symbols-outlined text-xl">sports_tennis</span>
+            <span class="nav-text">Table Tennis</span>
+          </a>
         </nav>
         <!-- Premium Banner -->
         <div
@@ -291,6 +308,7 @@
             Ad-free experience, exclusive badges &amp; more!
           </p>
           <button
+            onclick="window.location.href='https://play.google.com/store/apps'"
             class="w-full bg-accent-green text-brand-dark font-bold py-2 rounded-lg text-xs"
           >
             Go Premium
@@ -862,5 +880,6 @@
       <!-- END: RightSidebar -->
     </div>
     <script type="module" src="js/script.js"></script>
+    <script src="js/theme.js"></script>
   </body>
 </html>
