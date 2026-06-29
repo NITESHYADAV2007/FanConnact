@@ -1,66 +1,202 @@
 <!doctype html>
 
-<html lang="en">
+<html class="dark" lang="en">
   <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <script>
-      if (
-        localStorage.getItem("color-theme") === "dark" ||
-        (!("color-theme" in localStorage) &&
-          window.matchMedia("(prefers-color-scheme: dark)").matches)
-      ) {
-        document.documentElement.classList.add("dark");
-      } else {
-        document.documentElement.classList.remove("dark");
-      }
-    </script>
-    <title>FanConnect - Table Tennis Matches</title>
-    <!-- Tailwind CSS CDN -->
+    <title>FanConnect | Table Tennis Dashboard</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <!-- Google Fonts: Lexend -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="css/style.css" />
     <link
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
       rel="stylesheet"
     />
-    <script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
       tailwind.config = {
         darkMode: "class",
         theme: {
           extend: {
-            fontFamily: {
-              lexend: ["Lexend", "sans-serif"],
-            },
             colors: {
+              "on-primary-fixed-variant": "#005226",
+              "surface-bright": "#343941",
+              "on-tertiary-fixed": "#3c0700",
+              "surface-container-low": "#171c23",
+              "error-container": "#93000a",
+              "primary-container": "#00e676",
+              "primary-fixed-dim": "#00e475",
+              "surface-dim": "#0f141b",
+              "on-secondary-container": "#f2f3ff",
+              "on-surface-variant": "#bacbb9",
+              "on-error": "#690005",
+              "surface-container": "#1b2027",
+              primary: "#75ff9e",
+              "secondary-container": "#0068ed",
+              "tertiary-fixed": "#ffdad2",
+              "surface-variant": "#30353d",
+              "surface-tint": "#00e475",
+              secondary: "#b0c6ff",
+              surface: "#0f141b",
+              "on-secondary-fixed-variant": "#00429b",
+              "on-tertiary-container": "#a12300",
+              "surface-container-highest": "#30353d",
+              "inverse-primary": "#006d35",
+              "tertiary-container": "#ffb7a5",
+              outline: "#859585",
+              "on-secondary-fixed": "#001945",
+              "on-surface": "#dee2ec",
+              "outline-variant": "#3b4a3d",
+              "secondary-fixed-dim": "#b0c6ff",
+              "on-background": "#dee2ec",
+              "surface-container-high": "#252a32",
+              "on-tertiary": "#621100",
+              "inverse-on-surface": "#2c3138",
+              background: "#0f141b",
+              "on-secondary": "#002d6e",
+              error: "#ffb4ab",
+              "on-primary-fixed": "#00210b",
+              "secondary-fixed": "#d9e2ff",
+              "on-primary-container": "#00612e",
+              "on-primary": "#003918",
+              "surface-container-lowest": "#090f15",
+              "on-error-container": "#ffdad6",
+              tertiary: "#ffddd5",
+              "primary-fixed": "#62ff96",
+              "tertiary-fixed-dim": "#ffb4a2",
+              "inverse-surface": "#dee2ec",
+              "on-tertiary-fixed-variant": "#8a1d00",
               "emerald-accent": "#10b981",
               "dark-bg": "#0a0e14",
               "sidebar-bg": "#0f172a",
               "card-bg": "#161d2b",
               "border-subtle": "#1e293b",
+              "brand-dark": "#0a0e14",
+              "brand-border": "#1e293b",
+              "brand-card": "#161d2b",
+            },
+            borderRadius: {
+              DEFAULT: "0.125rem",
+              lg: "0.25rem",
+              xl: "0.5rem",
+              full: "0.75rem",
+            },
+            spacing: {
+              gutter: "20px",
+              xs: "4px",
+              "sidebar-left": "240px",
+              base: "8px",
+              sm: "8px",
+              md: "16px",
+              xl: "32px",
+              lg: "24px",
+              "sidebar-right": "320px",
+            },
+            fontFamily: {
+              "body-lg": ["Inter"],
+              "numeric-data": ["Inter"],
+              "label-caps": ["Inter"],
+              "body-sm": ["Inter"],
+              "display-lg": ["Inter"],
+              "headline-md": ["Inter"],
+              "headline-lg-mobile": ["Inter"],
+              "headline-lg": ["Inter"],
+            },
+            fontSize: {
+              "body-lg": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+              "numeric-data": [
+                "18px",
+                { lineHeight: "24px", fontWeight: "700" },
+              ],
+              "label-caps": [
+                "12px",
+                {
+                  lineHeight: "16px",
+                  letterSpacing: "0.05em",
+                  fontWeight: "700",
+                },
+              ],
+              "body-sm": ["14px", { lineHeight: "20px", fontWeight: "400" }],
+              "display-lg": [
+                "48px",
+                {
+                  lineHeight: "56px",
+                  letterSpacing: "-0.02em",
+                  fontWeight: "800",
+                },
+              ],
+              "headline-md": [
+                "20px",
+                { lineHeight: "28px", fontWeight: "600" },
+              ],
+              "headline-lg-mobile": [
+                "24px",
+                { lineHeight: "32px", fontWeight: "700" },
+              ],
+              "headline-lg": [
+                "32px",
+                {
+                  lineHeight: "40px",
+                  letterSpacing: "-0.01em",
+                  fontWeight: "700",
+                },
+              ],
             },
           },
         },
       };
     </script>
-    <style data-purpose="custom-scrollbar">
-      ::-webkit-scrollbar {
-        width: 6px;
+    <style>
+      body {
+        background-color: #090b0e;
+        color: #dee2ec;
+        overflow-x: hidden;
       }
-      ::-webkit-scrollbar-track {
-        background: #0a0e14;
+      .material-symbols-outlined {
+        font-variation-settings:
+          "FILL" 0,
+          "wght" 400,
+          "GRAD" 0,
+          "opsz" 24;
       }
-      ::-webkit-scrollbar-thumb {
-        background: #1e293b;
+      .live-pulse {
+        animation: pulse 1.5s infinite;
+      }
+      @keyframes pulse {
+        0% {
+          opacity: 1;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 0.5;
+          transform: scale(1.2);
+        }
+        100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 4px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: #0f141b;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #3b4a3d;
         border-radius: 10px;
       }
-      ::-webkit-scrollbar-thumb:hover {
-        background: #10b981;
+      .match-card:hover {
+        border-color: #ffffff30;
+        transform: translateY(-2px);
+        transition: all 0.3s ease;
       }
+
       .sidebar-collapsed #sidebar { width: 0 !important; min-width: 0 !important; border: 0 !important; padding: 0 !important; overflow: hidden !important; }
       .text-fan { color: #ffffff !important; }
       :root:not(.dark) .text-connect { color: #2563eb !important; }
@@ -86,9 +222,7 @@
     />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
   </head>
-  <body
-    class="h-screen w-full flex flex-col overflow-hidden transition-colors duration-300 bg-[#F8F9FF] dark:bg-[#0F172A] text-slate-900 dark:text-slate-100"
-  >
+  <body class="h-screen w-full flex flex-col overflow-hidden transition-colors duration-300 bg-[#F8F9FF] dark:bg-[#0F172A] text-slate-900 dark:text-slate-100">
     <!-- BEGIN: MainHeader -->
     <header
       class="sticky top-0 z-50 transition-colors duration-300 bg-white dark:bg-dark-bg border-b border-gray-200 dark:border-border-subtle px-4 md:px-8 py-4 flex items-center justify-between"
@@ -182,7 +316,7 @@
             id="user-profile-img"
             alt="User Profile"
             class="w-9 h-9 md:w-10 md:h-10 rounded-full border-2 border-emerald-accent"
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDOdWz0yXTAfug92jAlZ-XZtnL5urTJNu8npwz7RIfeTacw2m4yeAoKNMAkf3MLOCIk0iI35_ID8tSabIp6I7MF2N_gez6RO01_i0q1DX3bj656URDlnI8A34wDvyRB5WoPOVTN1qvuyGRfskySDI-pCWAnw3raxBsKX2G6sEhrFHiweAO4TxLdxuB-4_oHoAPBbm9bwmrKrqSGKFEtAeXpM76OE_C1cQQSNmRYmIRT01ZVb4lT2k1tR1xDw6ujXtxiain2IWfiKxim"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDtvk-QCgSniwXRflWYIMKqji4dtzlgHLRq9MYl7vdmd57lVL8wCfv9VovGuRS9YlIgfXr-qMsg57iDtKfAcbfF1yhnjhq7v4fF6aLJ6pnQDXwg94JHxnNFKsdmeNMbc-mH7NpjvJVYUGiyTwbxBwyGpMDmzIDn0OS3VHi8ciPJZNO9P3pzsCzQ-WwH5M1v_O-V1QKKCJE36l_N5xfr8FJjhR8E81DvPirMJ9CVJzidpK4fQTOCF9wldgmfBNPdJD7uz46woP-zs7Y"
           />
           <div class="hidden sm:block">
             <p
@@ -201,7 +335,6 @@
         </div>
       </div>
     </header>
-
     <!-- Mobile Sub-Nav -->
     <nav class="xl:hidden flex overflow-x-auto gap-1 sm:gap-2 px-2 py-1.5 sm:px-4 sm:py-2.5 bg-white dark:bg-dark-bg border-b border-gray-200 dark:border-border-subtle scrollbar-none whitespace-nowrap" style="-webkit-overflow-scrolling:touch;scrollbar-width:none;">
       <a href="index.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Home</a>
@@ -210,7 +343,6 @@
       <a href="index.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Leaderboard</a>
       <a href="news&update.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">News</a>
     </nav>
-
     <!-- END: MainHeader -->
     <div class="flex flex-1 overflow-hidden">
       <!-- BEGIN: SidebarNav -->
@@ -345,7 +477,7 @@
             <li class="">
               <a
                 class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
-                href="vollyeball.html"
+                href="volleyball.html"
               >
                 <span class="material-symbols-outlined text-xl"
                   >sports_volleyball</span
@@ -355,7 +487,7 @@
             </li>
             <li class="">
               <a
-                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link nav-link-active"
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors group nav-link nav-link-active"
                 href="tabletennis.html"
               >
                 <span class="material-symbols-outlined text-xl">sports_tennis</span>
@@ -400,7 +532,7 @@
         </div>
       </aside>
       <!-- END: SidebarNav -->
-      <!-- Main Content Area: Use internal scroll to avoid disturbing top bar -->
+      <!-- Main Feed -->
       <main
         class="flex-1 overflow-y-auto bg-surface-dim custom-scrollbar px-md lg:px-xl py-lg"
       >
@@ -726,8 +858,339 @@
           </div>
         </div>
       </main>
+      <!-- Right Sidebar: Widgets -->
+      <aside
+        class="hidden xl:flex flex-col w-[320px] bg-surface-container-low border-l border-outline-variant/30 overflow-y-auto custom-scrollbar p-md"
+      >
+        <!-- Calendar Widget -->
+        <div
+          class="bg-surface-container rounded-xl p-md border border-outline-variant/20 mb-lg"
+        >
+          <div class="flex items-center justify-between mb-md">
+            <h3 class="font-headline-md text-on-surface text-base">Calendar</h3>
+            <a
+              class="text-[10px] font-bold text-primary uppercase hover:underline"
+              href="index.html"
+              >View Full Calendar</a
+            >
+          </div>
+          <div class="flex justify-between text-center mb-sm">
+            <div
+              class="flex-1 text-[10px] text-on-surface-variant font-bold opacity-50"
+            >
+              MON
+            </div>
+            <div
+              class="flex-1 text-[10px] text-on-surface-variant font-bold opacity-50"
+            >
+              TUE
+            </div>
+            <div
+              class="flex-1 text-[10px] text-on-surface-variant font-bold opacity-50"
+            >
+              WED
+            </div>
+            <div
+              class="flex-1 text-[10px] text-on-surface-variant font-bold opacity-50"
+            >
+              THU
+            </div>
+            <div
+              class="flex-1 text-[10px] text-on-surface-variant font-bold opacity-50"
+            >
+              FRI
+            </div>
+            <div
+              class="flex-1 text-[10px] text-on-surface-variant font-bold opacity-50"
+            >
+              SAT
+            </div>
+            <div
+              class="flex-1 text-[10px] text-on-surface-variant font-bold opacity-50"
+            >
+              SUN
+            </div>
+          </div>
+          <div class="flex justify-between text-center mb-md">
+            <div class="flex-1 text-sm font-bold p-1">13</div>
+            <div class="flex-1 text-sm font-bold p-1">14</div>
+            <div
+              class="flex-1 text-sm font-bold p-1 bg-primary text-on-primary rounded-lg"
+            >
+              15
+            </div>
+            <div class="flex-1 text-sm font-bold p-1">16</div>
+            <div class="flex-1 text-sm font-bold p-1">17</div>
+            <div class="flex-1 text-sm font-bold p-1">18</div>
+            <div class="flex-1 text-sm font-bold p-1">19</div>
+          </div>
+          <div class="flex flex-col gap-sm">
+            <div
+              class="p-sm bg-surface-container-high rounded border-l-2 border-primary flex gap-sm items-center"
+            >
+              <div
+                class="w-8 h-8 rounded bg-surface-variant flex items-center justify-center overflow-hidden"
+              >
+                <img
+                  alt="Logo"
+                  class="w-6 h-6 object-contain"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7rNzq34GsNy1VaXJZR1s2C7Ee1s8YpLvq7TIo_AJmJJGoYk0Nz6WUqWcvT7NxSjnO6f_dAchw2YbD_E_TJE4020JAyN-il-8iDjtGR6mkfhtNgN4tRhhNXV9HnmuCvYNHz6By2XOZB94olvCObF9O1sjgBLLG_GEvFHg_b_hzFLyM7tMwSe__a9XAMRlURU9_nzd2lN7cl2zfXHWNPcj5uXilIZQy85YSOZ6m_DLmyQPUjbeh91c1Wv8vMEox7U1jDlhYTsHHINI"
+                />
+              </div>
+              <div class="flex-1 min-w-0">
+                <p
+                  class="text-[10px] text-on-surface-variant font-bold uppercase truncate"
+                >
+                  WTT Champions
+                </p>
+                <p class="text-xs font-bold text-on-surface truncate">
+                  Fan Z vs Ma L
+                </p>
+              </div>
+              <span
+                class="text-[10px] font-bold text-error bg-error/10 px-1 rounded"
+                >LIVE</span
+              >
+            </div>
+            <div
+              class="p-sm bg-surface-container-high/40 rounded border-l-2 border-outline-variant flex gap-sm items-center"
+            >
+              <div
+                class="w-8 h-8 rounded bg-surface-variant flex items-center justify-center overflow-hidden"
+              >
+                <img
+                  alt="Logo"
+                  class="w-6 h-6 object-contain"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7rNzq34GsNy1VaXJZR1s2C7Ee1s8YpLvq7TIo_AJmJJGoYk0Nz6WUqWcvT7NxSjnO6f_dAchw2YbD_E_TJE4020JAyN-il-8iDjtGR6mkfhtNgN4tRhhNXV9HnmuCvYNHz6By2XOZB94olvCObF9O1sjgBLLG_GEvFHg_b_hzFLyM7tMwSe__a9XAMRlURU9_nzd2lN7cl2zfXHWNPcj5uXilIZQy85YSOZ6m_DLmyQPUjbeh91c1Wv8vMEox7U1jDlhYTsHHINI"
+                />
+              </div>
+              <div class="flex-1 min-w-0">
+                <p
+                  class="text-[10px] text-on-surface-variant font-bold uppercase truncate"
+                >
+                  World Cup 2024
+                </p>
+                <p class="text-xs font-bold text-on-surface truncate">
+                  Upcoming matches
+                </p>
+              </div>
+              <span class="text-[10px] font-bold text-on-surface-variant"
+                >20:30</span
+              >
+            </div>
+          </div>
+        </div>
+        <!-- Rankings Leaderboard Widget -->
+        <div
+          class="bg-surface-container rounded-xl p-md border border-outline-variant/20"
+        >
+          <div class="flex items-center justify-between mb-md">
+            <h3 class="font-headline-md text-on-surface text-base">
+              ITTF Rankings
+            </h3>
+            <div class="flex gap-xs">
+              <button class="p-xs bg-surface-container-high rounded">
+                <span class="material-symbols-outlined text-xs"
+                  >chevron_left</span
+                >
+              </button>
+              <button class="p-xs bg-surface-container-high rounded">
+                <span class="material-symbols-outlined text-xs"
+                  >chevron_right</span
+                >
+              </button>
+            </div>
+          </div>
+          <div class="flex gap-sm mb-md">
+            <button
+              class="flex-1 py-1 px-xs bg-primary text-on-primary font-bold text-[10px] rounded uppercase"
+            >
+              Men's
+            </button>
+            <button
+              class="flex-1 py-1 px-xs bg-surface-container-high text-on-surface-variant font-bold text-[10px] rounded uppercase"
+            >
+              Women's
+            </button>
+          </div>
+          <div class="flex flex-col">
+            <!-- Rank Item 1 -->
+            <div
+              class="flex items-center gap-md py-sm border-b border-outline-variant/10 group"
+            >
+              <span
+                class="font-numeric-data text-primary italic font-bold w-4 text-center"
+                >1</span
+              >
+              <div
+                class="w-10 h-10 rounded-full bg-surface-variant border border-outline-variant overflow-hidden"
+              >
+                <img
+                  alt="Fan Zhendong"
+                  class="w-full h-full object-cover"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvwPqctXOHVslGftmGZ4xd3ngftFcydIZ8Cudj9zaWozQV4yuYqU6fXFaXFHgL6MQgODRPHNFR5lZft6uE1hrNxYYWCnaTEct-wzK2JMiFtXvCxTJhGV67E8-DnGGap40PRMFvkjh7ZTFW_J4-D5bKUa68Chv1tpWc5DrpA_zAk3DfhtGlFD-xIjwRq4gYF4k7u7VWDBXkB6Xb-LuEIhxmUigasDMsGUCz3Oj3lyNp517a_2vxFH4vmM0ubyu90GBOg9QqSD-BirE"
+                />
+              </div>
+              <div class="flex-1">
+                <p class="text-xs font-bold text-on-surface">Fan Zhendong</p>
+                <p class="text-[10px] text-on-surface-variant">China (CHN)</p>
+              </div>
+              <div class="text-right">
+                <p class="text-xs font-bold text-on-surface">6,410</p>
+                <p class="text-[9px] text-on-surface-variant uppercase">
+                  Points
+                </p>
+              </div>
+            </div>
+            <!-- Rank Item 2 -->
+            <div
+              class="flex items-center gap-md py-sm border-b border-outline-variant/10 group"
+            >
+              <span
+                class="font-numeric-data text-on-surface-variant italic font-bold w-4 text-center"
+                >2</span
+              >
+              <div
+                class="w-10 h-10 rounded-full bg-surface-variant border border-outline-variant overflow-hidden"
+              >
+                <img
+                  alt="Wang Chuqin"
+                  class="w-full h-full object-cover"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuBG2JGtacahIUKNSlQnVB34HUnc-COaj7xzhhQv_6lJxAiaPstKxVOYfHes7_oZnAZ6C2hTq7YGztWPTb8lCAD2E4pB1byF7rJyJ_3T5d5fQqgOGcoa6tkSf1hhWGN0wc2NRbcrZ7YptyOe71BOAjk9IkFx4g2zlCHuqbX_Nxc6ReN34hBS98Ds3CUWjSAlSzNhn-tinKdNR6K9tQhRIEPV7_5g4UxlDiJKEC4hH7lZMp1lw5crxCrN0RPvWEmHOhdkPHMK1sYlORY"
+                />
+              </div>
+              <div class="flex-1">
+                <p class="text-xs font-bold text-on-surface">Wang Chuqin</p>
+                <p class="text-[10px] text-on-surface-variant">China (CHN)</p>
+              </div>
+              <div class="text-right">
+                <p class="text-xs font-bold text-on-surface">5,820</p>
+                <p class="text-[9px] text-on-surface-variant uppercase">
+                  Points
+                </p>
+              </div>
+            </div>
+            <!-- Rank Item 3 -->
+            <div
+              class="flex items-center gap-md py-sm border-b border-outline-variant/10 group"
+            >
+              <span
+                class="font-numeric-data text-on-surface-variant italic font-bold w-4 text-center"
+                >3</span
+              >
+              <div
+                class="w-10 h-10 rounded-full bg-surface-variant border border-outline-variant overflow-hidden"
+              >
+                <img
+                  alt="Ma Long"
+                  class="w-full h-full object-cover"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuAtlJB3lWnPq1WMUjSrSHFLEIm5gqdT14k-Ghdg_6mssqs5SdaRIHzPAOPBn4U9G7l-VKtBF7vuguw70yO_idSbqdLvrDWClMTlcPta3I4-nN7FpzVmQ9SyhdqZ1B_u_zmMOluJsnAYM6I3pX6tM2-5-iteR7YIjg31oe4lBdQkZ_qYGm48tmXsWvhiBZ3GHjupgKtuQuaGzYaUj4aJ_E4Rw3wd9hTWq1rcHkoD-miF4_De-Pz6Tfl4dN849BTE4Pnqajk8wE0a9T8"
+                />
+              </div>
+              <div class="flex-1">
+                <p class="text-xs font-bold text-on-surface">Ma Long</p>
+                <p class="text-[10px] text-on-surface-variant">China (CHN)</p>
+              </div>
+              <div class="text-right">
+                <p class="text-xs font-bold text-on-surface">4,950</p>
+                <p class="text-[9px] text-on-surface-variant uppercase">
+                  Points
+                </p>
+              </div>
+            </div>
+            <!-- Rank Item 4 -->
+            <div
+              class="flex items-center gap-md py-sm border-b border-outline-variant/10 group"
+            >
+              <span
+                class="font-numeric-data text-on-surface-variant italic font-bold w-4 text-center"
+                >4</span
+              >
+              <div
+                class="w-10 h-10 rounded-full bg-surface-variant border border-outline-variant overflow-hidden"
+              >
+                <img
+                  alt="Harimoto"
+                  class="w-full h-full object-cover"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuAYkvFIsFwKtHWEqNMdZ6BGPvB4mXo_6TszDQvmIbLVpEGsXyc_4NQ4BIO-wZHtaGwUekZZcSdC0JySi-esN2yhqBpPQzon_tmqx-kRao4MRBv4lvokcKRZuZH66GDhJOHCuOkTvJ7BuUNsS-eywZYGFp8Flf7ZL2jw7U3CxyYCIK6ErX6rw3RX_jRPdsuJm0KBjnUO1yKnH3g7oImyBbm70erCWPhh1n1UODqTtazbsdlewkrNpIv_Wr20atTyc_brF-AYYDVZfqk"
+                />
+              </div>
+              <div class="flex-1">
+                <p class="text-xs font-bold text-on-surface">T. Harimoto</p>
+                <p class="text-[10px] text-on-surface-variant">Japan (JPN)</p>
+              </div>
+              <div class="text-right">
+                <p class="text-xs font-bold text-on-surface">3,210</p>
+                <p class="text-[9px] text-on-surface-variant uppercase">
+                  Points
+                </p>
+              </div>
+            </div>
+          </div>
+          <button
+            class="w-full mt-md py-sm text-xs font-bold text-on-surface-variant hover:text-on-surface transition-all border border-outline-variant/30 rounded-lg"
+          >
+            View Full Rankings
+          </button>
+        </div>
+        <div
+          class="mt-lg p-md bg-gradient-to-br from-primary-container/20 to-transparent rounded-xl border border-primary/20"
+        >
+          <p class="font-label-caps text-label-caps text-primary mb-xs">
+            Upcoming Event
+          </p>
+          <h4 class="font-headline-md text-on-surface text-sm mb-md">
+            World Team Championships 2024
+          </h4>
+          <div class="flex items-center justify-between">
+            <div class="flex -space-x-3">
+              <div
+                class="w-8 h-8 rounded-full border-2 border-surface bg-surface-variant"
+              ></div>
+              <div
+                class="w-8 h-8 rounded-full border-2 border-surface bg-surface-variant"
+              ></div>
+              <div
+                class="w-8 h-8 rounded-full border-2 border-surface bg-surface-variant"
+              ></div>
+              <div
+                class="w-8 h-8 rounded-full border-2 border-surface bg-surface-container flex items-center justify-center text-[10px] font-bold"
+              >
+                +12
+              </div>
+            </div>
+            <button
+              class="px-sm py-1 bg-on-surface text-surface text-[10px] font-bold rounded"
+            >
+              Remind Me
+            </button>
+          </div>
+        </div>
+      </aside>
     </div>
-    <script type="module" src="js/script.js"></script>
+
+    <script>
+      // Simple interactive effects
+      document.querySelectorAll(".match-card").forEach((card) => {
+        card.addEventListener("mouseenter", () => {
+          card.classList.add("shadow-primary/5");
+        });
+        card.addEventListener("mouseleave", () => {
+          card.classList.remove("shadow-primary/5");
+        });
+      });
+
+      // Search bar interaction
+      const searchInput = document.querySelector('input[type="text"]');
+      searchInput.addEventListener("focus", () => {
+        searchInput.parentElement.classList.add("w-80");
+      });
+      searchInput.addEventListener("blur", () => {
+        searchInput.parentElement.classList.remove("w-80");
+      });
+    </script>
     <script src="js/theme.js"></script>
+    <script src="js/sidebar.js"></script>
+    <script type="module" src="js/script.js"></script>
   </body>
 </html>
