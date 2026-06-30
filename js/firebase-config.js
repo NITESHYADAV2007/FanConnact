@@ -1,6 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {
     getAuth,
+    fetchSignInMethodsForEmail,
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
     sendPasswordResetEmail,
@@ -13,17 +14,16 @@ import {
     signOut,
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js";
-import {
-    getStorage,
-    ref,
-    uploadBytes,
-    getDownloadURL,
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+import { getStorage } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 import {
     getFirestore,
     doc,
     getDoc,
     setDoc,
+    collection,
+    query,
+    where,
+    getDocs,
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -66,14 +66,18 @@ const handleSocialLogin = async(provider) => {
         const userSnap = await getDoc(userRef);
 
         if (!userSnap.exists()) {
+            const email = user.email;
+            const username = email.split("@")[0] + Math.floor(Math.random() * 1000);
             await setDoc(userRef, {
-                fullName: user.displayName,
-                email: user.email,
-                username: user.email.split("@")[0] + Math.floor(Math.random() * 1000),
+                fullName: user.displayName || email.split("@")[0],
+                email: email,
+                username: username,
+                photoURL: user.photoURL,
                 coins: 4250,
                 level: 1,
                 createdAt: new Date().toISOString(),
             });
+            await setDoc(doc(db, "usernames", username), { uid: user.uid });
         }
 
         window.location.href = "index.html";
@@ -115,12 +119,30 @@ loginForm?.addEventListener("submit", async(e) => {
     const password = passwordInput.value;
 
     try {
-        await signInWithEmailAndPassword(auth, email, password);
+        const result = await signInWithEmailAndPassword(auth, email, password);
+
+        // Check Firestore emailVerified (for new OTP-verified users)
+        // Missing field = legacy user = allow login; false = block
+        const userRef = doc(db, "users", result.user.uid);
+        const userSnap = await getDoc(userRef);
+        const userData = userSnap.data();
+        if (userData && userData.emailVerified === false) {
+            await signOut(auth);
+            alert("Please verify your email before logging in. Contact support if you need a new verification email.");
+            return;
+        }
+
         window.location.href = "index.html";
     } catch (error) {
-        alert(
-            "Email login failed. Make sure you have signed up in Firebase Console first.",
-        );
+        if (error.code === "auth/user-not-found") {
+            alert("No account found with this email. Please sign up first.");
+        } else if (error.code === "auth/wrong-password" || error.code === "auth/invalid-credential") {
+            alert("Incorrect password. Try again.");
+        } else if (error.code === "auth/too-many-requests") {
+            alert("Too many failed attempts. Please wait and try again.");
+        } else {
+            alert("Login failed: " + error.message);
+        }
     }
 });
 
@@ -136,6 +158,11 @@ signupForm?.addEventListener("submit", async(e) => {
     const email = document.getElementById("email").value;
     const mobile = document.getElementById("mobile").value;
     const dob = document.getElementById("dob").value;
+    let dobISO = "";
+    if (/^\d{2}\/\d{2}\/\d{4}$/.test(dob)) {
+        const [dd, mm, yyyy] = dob.split('/');
+        dobISO = `${yyyy}-${mm}-${dd}`;
+    }
     const gender =
         document.querySelector('input[name="gender"]:checked')?.value || "Other";
     const password = document.getElementById("password").value;
@@ -149,69 +176,400 @@ signupForm?.addEventListener("submit", async(e) => {
     const favoriteSports = selectedSports ?
         selectedSports.split(",").filter(Boolean) : [];
     const terms = document.getElementById("terms").checked;
-    const croppedBlob = window.croppedProfileBlob; // Access via global state set by signup script
+    const croppedProfileBase64 = window.croppedProfileBase64;
+
+    if (!window.emailOTPVerified) {
+        alert("Please verify your email via OTP before signing up.");
+        return;
+    }
+
+    // All fields compulsory
+    if (!fullName) { alert("Full name is required."); return; }
+    if (!email) { alert("Email is required."); return; }
+    if (!mobile) { alert("Mobile number is required."); return; }
+    if (!dob) { alert("Date of birth is required."); return; }
+    if (!password || password.length < 8) { alert("Password must be at least 8 characters."); return; }
+    if (!/[A-Z]/.test(password)) { alert("Password must contain at least one uppercase letter."); return; }
+    if (!/[a-z]/.test(password)) { alert("Password must contain at least one lowercase letter."); return; }
+    if (!/[@#_]/.test(password)) { alert("Password must contain at least one special character (@, #, or _)."); return; }
+    if (/(?:012|123|234|345|456|567|678|789|890|abc|bcd|cde|def|efg|fgh|ghi|hij|ijk|jkl|klm|lmn|mno|nop|opq|pqr|qrs|rst|stu|tuv|uvw|vwx|wxy|xyz)/i.test(password)) { alert("Password must not contain sequential characters (e.g. 123, abc)."); return; }
+
+    // Auto-generate username from full name if empty
+    const finalUsername = username || (fullName.toLowerCase().replace(/[^a-z0-9]/g, "") + Math.floor(Math.random() * 10000));
+    if (!finalUsername || finalUsername.length < 2) {
+        alert("Could not generate username. Please enter one manually.");
+        return;
+    }
 
     if (!terms) {
         alert("Please agree to the Terms of Service.");
         return;
     }
 
+    // DOB validation (DD/MM/YYYY)
+    if (!dob || !dobISO) {
+        alert("Please enter your date of birth in DD/MM/YYYY format.");
+        return;
+    }
+    const [dd, mm, yyyy] = dob.split('/').map(Number);
+    const birthDate = new Date(yyyy, mm - 1, dd);
+    if (birthDate.getDate() !== dd || birthDate.getMonth() !== mm - 1) {
+        alert("Invalid date.");
+        return;
+    }
+    const today = new Date();
+    if (birthDate >= today) {
+        alert("Date of birth cannot be in the future.");
+        return;
+    }
+    const age = today.getFullYear() - yyyy;
+    const monthDiff = today.getMonth() - (mm - 1);
+    const actualAge = monthDiff < 0 || (monthDiff === 0 && today.getDate() < dd) ? age - 1 : age;
+    if (actualAge < 13) {
+        alert("You must be at least 13 years old to register.");
+        return;
+    }
+
     try {
-        // 1. Check if username exists in Firestore
-        const usernameRef = doc(db, "usernames", username);
+        // 1. Check if username exists in Firestore (usernames collection has public read)
+        const usernameRef = doc(db, "usernames", finalUsername);
         const usernameSnap = await getDoc(usernameRef);
 
         if (usernameSnap.exists()) {
             throw new Error("Username is already taken. Please choose another one.");
         }
 
+        // 2. Final email duplicate check via Firebase Auth
+        const methods = await fetchSignInMethodsForEmail(auth, email);
+        if (methods.length > 0) {
+            throw new Error("This email is already registered. Please login.");
+        }
+
+        // 3. Create Firebase Auth user
         const userCredential = await createUserWithEmailAndPassword(
             auth,
             email,
             password,
         );
 
+        // 4. Check mobile duplicate via mobiles collection
+        const mobileRef = doc(db, "mobiles", mobile);
+        if ((await getDoc(mobileRef)).exists()) {
+            await userCredential.user.delete();
+            throw new Error("This mobile number is already registered. Please login.");
+        }
+
         console.log("User created, starting upload...");
 
         let photoURL = defaultAvatar || null;
 
-        if (croppedBlob) {
-            const storageRef = ref(storage, `profiles/${userCredential.user.uid}`);
-            const snapshot = await uploadBytes(storageRef, croppedBlob);
-            photoURL = await getDownloadURL(snapshot.ref);
-            console.log("Photo uploaded successfully:", photoURL);
-        }
+        if (croppedProfileBase64) photoURL = croppedProfileBase64;
 
         await updateProfile(userCredential.user, {
             displayName: fullName,
-            photoURL: photoURL,
         });
 
-        // 3. Store user data and reserve username in Firestore
+        // 5. Store user data, reserve mobile and username in Firestore
         await setDoc(doc(db, "users", userCredential.user.uid), {
             fullName,
-            username,
+            username: finalUsername,
             email,
             mobile,
-            dob,
+            dob: dobISO,
             gender,
             frame: selectedFrame,
             favoriteSports,
-            coins: 4250, // Initial default coins
-            level: 12, // Initial default level
+            coins: 4250,
+            level: 12,
+            photoURL: photoURL,
+            emailVerified: true,
             createdAt: new Date().toISOString(),
         });
 
+        await setDoc(mobileRef, { uid: userCredential.user.uid });
         await setDoc(usernameRef, { uid: userCredential.user.uid });
 
-        // Prevent auto-login redirect so the user sees the success alert
         await signOut(auth);
 
-        alert("Sign up successfully!");
+        alert("Sign up successfully! Your email has been verified via OTP. You can now log in.");
         window.location.href = "login.html";
     } catch (error) {
         alert("Registration failed: " + error.message);
     }
+});
+
+// --- Real-time Field Validation (with DB duplicate checks) ---
+function valMsg(inputId) {
+    const input = document.getElementById(inputId);
+    if (!input) return null;
+    let el = input.parentElement.querySelector('.vmsg');
+    if (!el) {
+        el = document.createElement('p');
+        el.className = 'vmsg text-xs mt-1 ml-1 hidden';
+        input.parentElement.appendChild(el);
+    }
+    return el;
+}
+function v(el, text, ok) {
+    if (!el) return;
+    el.textContent = text;
+    el.className = `vmsg text-xs mt-1 ml-1 ${ok ? 'text-brand-green' : 'text-red-400'} ${text ? '' : 'hidden'}`;
+}
+let valTimers = {};
+
+function debounceDb(field, cb, ms) {
+    if (valTimers[field]) clearTimeout(valTimers[field]);
+    valTimers[field] = setTimeout(cb, ms);
+}
+
+document.getElementById('full-name')?.addEventListener('input', function () {
+    const m = valMsg('full-name'); v(m, this.value.trim() ? '' : 'Name is required', !!this.value.trim());
+});
+
+document.getElementById('signup-username')?.addEventListener('input', function () {
+    const m = valMsg('signup-username');
+    const val = this.value.trim().toLowerCase();
+    if (!val) { v(m, 'Optional — auto-generated if blank', true); return; }
+    if (!/^[a-z0-9_]{3,20}$/.test(val)) { v(m, '3–20 letters, numbers or underscores only', false); return; }
+    v(m, 'Checking...', true);
+    debounceDb('username', async () => {
+        try {
+            const snap = await getDoc(doc(db, "usernames", val));
+            if (snap.exists()) v(m, 'Username taken', false);
+            else v(m, 'Available', true);
+        } catch (_) { v(m, 'Available', true); }
+    }, 400);
+});
+
+document.getElementById('email')?.addEventListener('input', function () {
+    const m = valMsg('email');
+    const val = this.value.trim();
+
+    // Reset OTP verification when email changes
+    if (window.emailOTPVerified && this.dataset.lastVal && this.dataset.lastVal !== val) {
+        window.emailOTPVerified = false;
+        sendEmailOTPBtn.textContent = "Send Email OTP";
+        sendEmailOTPBtn.disabled = false;
+        emailOTPInput.disabled = true;
+        emailOTPInput.value = "";
+        verifyEmailOTPBtn.disabled = true;
+        if (emailOTPTimer) clearTimeout(emailOTPTimer);
+        emailOTP = null;
+        emailOTPStatus.textContent = "Email changed — re-verify required";
+        emailOTPStatus.className = "text-xs text-amber-400";
+    }
+    this.dataset.lastVal = val;
+
+    if (!val) { v(m, '', true); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) { v(m, 'Invalid email format', false); return; }
+    v(m, 'Valid format', true);
+    debounceDb('email', async () => {
+        v(m, 'Checking...', true);
+        try {
+            const methods = await fetchSignInMethodsForEmail(auth, val);
+            if (methods.length > 0) {
+                v(m, 'Already registered — cannot send OTP', false);
+                sendEmailOTPBtn.disabled = true;
+            } else {
+                v(m, 'Available', true);
+                if (!window.emailOTPVerified) sendEmailOTPBtn.disabled = false;
+            }
+        } catch (_) { v(m, 'Check failed', false); }
+    }, 400);
+});
+
+document.getElementById('mobile')?.addEventListener('input', function () {
+    const m = valMsg('mobile');
+    const val = this.value.trim();
+    if (!val) { v(m, '', true); return; }
+    if (!/^\+[1-9]\d{9,14}$/.test(val)) { v(m, 'Format: +91XXXXXXXXXX (10-15 digits)', false); return; }
+    v(m, 'Valid format', true);
+    debounceDb('mobile', async () => {
+        v(m, 'Checking...', true);
+        try {
+            const snap = await getDoc(doc(db, "mobiles", val));
+            if (snap.exists()) v(m, 'Already registered', false);
+            else v(m, 'Available', true);
+        } catch (_) { v(m, 'Check failed', false); }
+    }, 400);
+});
+
+document.getElementById('password')?.addEventListener('input', function () {
+    const m = valMsg('password');
+    const val = this.value;
+    if (!val) { v(m, '', true); return; }
+    const fails = [];
+    if (val.length < 8) fails.push('8+ chars');
+    if (!/[A-Z]/.test(val)) fails.push('A-Z');
+    if (!/[a-z]/.test(val)) fails.push('a-z');
+    if (!/[@#_]/.test(val)) fails.push('@ # _');
+    if (/(?:012|123|234|345|456|567|678|789|890|abc|bcd|cde|def|efg|fgh|ghi|hij|ijk|jkl|klm|lmn|mno|nop|opq|pqr|qrs|rst|stu|tuv|uvw|vwx|wxy|xyz)/i.test(val)) fails.push('no seq (123, abc)');
+    if (fails.length) v(m, 'Missing: ' + fails.join(', '), false);
+    else v(m, 'Strong password', true);
+});
+
+// DOB input mask — auto-adds / after DD and MM
+document.getElementById('dob')?.addEventListener('input', function () {
+    let v = this.value.replace(/\D/g, '').slice(0, 8);
+    if (v.length > 4) v = v.slice(0, 2) + '/' + v.slice(2, 4) + '/' + v.slice(4);
+    else if (v.length > 2) v = v.slice(0, 2) + '/' + v.slice(2);
+    this.value = v;
+});
+document.getElementById('dob')?.addEventListener('blur', function () {
+    const m = valMsg('dob');
+    const val = this.value.trim();
+    if (!val) { v(m, '', true); return; }
+    if (!/^\d{2}\/\d{2}\/\d{4}$/.test(val)) { v(m, 'Use DD/MM/YYYY format', false); return; }
+    const [d, mo, y] = val.split('/').map(Number);
+    if (mo < 1 || mo > 12) { v(m, 'Month must be 01-12', false); return; }
+    if (d < 1 || d > 31) { v(m, 'Day must be 01-31', false); return; }
+    const bd = new Date(y, mo - 1, d);
+    if (bd.getDate() !== d || bd.getMonth() !== mo - 1) { v(m, 'Invalid date', false); return; }
+    const now = new Date();
+    if (bd >= now) { v(m, 'Cannot be in future', false); return; }
+    const age = now.getFullYear() - y;
+    const adj = now.getMonth() < (mo - 1) || (now.getMonth() === (mo - 1) && now.getDate() < d) ? age - 1 : age;
+    if (adj < 13) v(m, 'Must be 13+', false);
+    else v(m, '', true);
+});
+
+// --- Email OTP Logic ---
+if (typeof emailjs !== "undefined") emailjs.init("64zTCXrsJZHB9u2tY");
+let emailOTP = null;
+let emailOTPTimer = null;
+let otpSendCount = 0;
+const MAX_OTP_SENDS = 3;
+let otpCooldownTimer = null;
+window.emailOTPVerified = false;
+
+const sendEmailOTPBtn = document.getElementById("send-email-otp-btn");
+const verifyEmailOTPBtn = document.getElementById("verify-email-otp-btn");
+const emailOTPInput = document.getElementById("email-otp-input");
+const emailOTPStatus = document.getElementById("email-otp-status");
+
+function generateOTP() {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
+function updateSendBtnLabel() {
+    const remaining = MAX_OTP_SENDS - otpSendCount;
+    if (remaining <= 0) {
+        sendEmailOTPBtn.textContent = "No sends left";
+        sendEmailOTPBtn.disabled = true;
+    } else {
+        sendEmailOTPBtn.textContent = `Send Email OTP (${remaining} left)`;
+    }
+}
+
+function startCooldown() {
+    let seconds = 120;
+    sendEmailOTPBtn.disabled = true;
+    const cooldownLabel = () => {
+        sendEmailOTPBtn.textContent = `Resend in ${seconds}s`;
+    };
+    cooldownLabel();
+    otpCooldownTimer = setInterval(() => {
+        seconds--;
+        if (seconds <= 0) {
+            clearInterval(otpCooldownTimer);
+            otpCooldownTimer = null;
+            updateSendBtnLabel();
+        } else {
+            cooldownLabel();
+        }
+    }, 1000);
+}
+
+sendEmailOTPBtn?.addEventListener("click", async () => {
+    if (otpSendCount >= MAX_OTP_SENDS) {
+        alert("Maximum OTP limit reached (3 per session). Please try again later.");
+        return;
+    }
+
+    const email = document.getElementById("email").value.trim();
+    if (!email || !email.includes("@")) {
+        alert("Please enter a valid email address first.");
+        return;
+    }
+
+    // Check if email already registered (before wasting an OTP)
+    try {
+        const methods = await fetchSignInMethodsForEmail(auth, email);
+        if (methods.length > 0) {
+            alert("This email is already registered. Please login instead.");
+            return;
+        }
+    } catch (_) {}
+
+    sendEmailOTPBtn.disabled = true;
+    emailOTPStatus.textContent = "Sending...";
+    emailOTPStatus.className = "text-xs text-surface-dim/70";
+
+    emailOTP = generateOTP();
+
+    try {
+        await emailjs.send(
+            "service_ntkex4p",
+            "template_0d6nbzt",
+            {
+                to_email: email,
+                passcode: emailOTP,
+                time: new Date(Date.now() + 300000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            }
+        );
+        otpSendCount++;
+        emailOTPStatus.textContent = "OTP sent to " + email;
+        emailOTPStatus.className = "text-xs text-brand-green";
+        emailOTPInput.disabled = false;
+        verifyEmailOTPBtn.disabled = false;
+        emailOTPInput.focus();
+
+        if (emailOTPTimer) clearTimeout(emailOTPTimer);
+        emailOTPTimer = setTimeout(() => {
+            emailOTP = null;
+            emailOTPStatus.textContent = "OTP expired. Request a new one.";
+            emailOTPStatus.className = "text-xs text-red-400";
+        }, 300000);
+
+        startCooldown();
+    } catch (err) {
+        console.error("EmailJS error:", err);
+        emailOTPStatus.textContent = "Failed to send OTP. Check EmailJS config (Service ID, Template ID, Public Key).";
+        emailOTPStatus.className = "text-xs text-red-400";
+        updateSendBtnLabel();
+    }
+});
+
+if (sendEmailOTPBtn) updateSendBtnLabel();
+
+verifyEmailOTPBtn?.addEventListener("click", () => {
+    const entered = emailOTPInput.value.trim();
+    if (!entered || entered.length < 4) {
+        alert("Please enter the OTP sent to your email.");
+        return;
+    }
+
+    if (!emailOTP) {
+        emailOTPStatus.textContent = "No OTP sent or OTP expired. Request a new one.";
+        emailOTPStatus.className = "text-xs text-red-400";
+        return;
+    }
+
+    if (entered !== emailOTP) {
+        emailOTPStatus.textContent = "Invalid OTP. Try again.";
+        emailOTPStatus.className = "text-xs text-red-400";
+        return;
+    }
+
+    window.emailOTPVerified = true;
+    emailOTPStatus.textContent = "Email verified!";
+    emailOTPStatus.className = "text-xs text-brand-green font-semibold";
+    sendEmailOTPBtn.textContent = "Verified";
+    sendEmailOTPBtn.disabled = true;
+    emailOTPInput.disabled = true;
+    verifyEmailOTPBtn.disabled = true;
+    if (emailOTPTimer) clearTimeout(emailOTPTimer);
+    if (otpCooldownTimer) clearInterval(otpCooldownTimer);
 });
 
 // Monitor Auth State
@@ -221,4 +579,4 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
-export { auth, db, storage };
+export { auth, db, storage, valMsg, v, debounceDb, generateOTP };

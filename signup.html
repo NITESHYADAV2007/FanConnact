@@ -3,9 +3,20 @@
 <html class="h-full" lang="en">
 
 <head>
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/fancoin/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/fancoin/favicon-16x16.png" />
+    <meta property="og:site_name" content="Fanconnact" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="assets/fancoin/fanconnactlogo.png" />
+    <meta property="og:title" content="Sign Up | Fanconnact" />
+    <meta property="og:description" content="Join Fanconnact for fantasy sports, predictions, and live matches." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Sign Up | Fanconnact" />
+    <meta name="twitter:description" content="Join Fanconnact for fantasy sports, predictions, and live matches." />
+    <meta name="twitter:image" content="assets/fancoin/fanconnactlogo.png" />
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Sign Up | FanConnect</title>
+    <title>Sign Up | Fanconnact</title>
     <script>
         if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
@@ -20,6 +31,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/selfie_segmentation.js" crossorigin="anonymous"></script>
     <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
@@ -190,8 +202,24 @@
             overflow: hidden!important;
         }
     </style>
-    <meta name="description" content="FanConnect sports platform for fans, scores, communities and updates.">
-    <meta property="og:title" content="FanConnect">
+    <style>
+        /* Camera filter styles */
+        .cam-filter-none { filter: none; }
+        .cam-filter-vivid { filter: saturate(1.5) contrast(1.1) brightness(1.03); }
+        .cam-filter-warm { filter: sepia(0.35) saturate(1.3) hue-rotate(-8deg) brightness(1.05); }
+        .cam-filter-cool { filter: saturate(0.85) hue-rotate(12deg) brightness(1.08) contrast(0.95); }
+        .cam-filter-noir { filter: grayscale(1) contrast(1.25) brightness(0.95); }
+        .cam-filter-retro { filter: sepia(0.5) saturate(0.7) contrast(0.85) brightness(1.1); }
+        .cam-filter-dramatic { filter: contrast(1.5) brightness(0.85) saturate(1.3); }
+        .cam-beauty { filter: brightness(1.06) contrast(0.94) saturate(1.15) blur(0.5px) drop-shadow(0 0 2px rgba(255,200,150,0.15)); }
+        .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+        .scrollbar-none::-webkit-scrollbar { display: none; }
+        .zoom-range { -webkit-appearance: none; appearance: none; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; outline: none; }
+        .zoom-range::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 16px; height: 16px; border-radius: 50%; background: #10b981; cursor: pointer; border: 2px solid white; }
+        .zoom-range::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; background: #10b981; cursor: pointer; border: 2px solid white; }
+    </style>
+    <meta name="description" content="Fanconnact sports platform for fans, scores, communities and updates.">
+    <meta property="og:title" content="Fanconnact">
     <meta name="robots" content="index,follow">
     <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;">
     <meta name="referrer" content="strict-origin-when-cross-origin">
@@ -204,7 +232,7 @@
         <div class="relative z-10 p-xl flex flex-col h-full justify-between">
             <!-- Brand Logo -->
             <div class="flex items-center gap-base">
-                <img src="assets/fancoin/fanconnactlogo.png" alt="FanConnect" class="w-12 h-12" />
+                <img src="assets/fancoin/fanconnactlogo.png" alt="Fanconnact" class="w-12 h-12" />
                 <div>
                     <h1 class="font-headline-md text-headline-md text-primary-fixed tracking-tight leading-none">
                         <span class="text-fan">Fan</span><span class="text-connect">Connact</span>
@@ -315,7 +343,7 @@
             </div>
         </div>
         <!-- Right Side: Sign-Up Form -->
-        <div class="flex-1 h-full bg-inverse-surface overflow-y-auto px-margin-mobile py-lg md:px-xl md:py-xl flex flex-col items-center justify-center relative">
+        <div class="flex-1 h-full bg-inverse-surface overflow-y-auto px-margin-mobile md:px-xl flex flex-col items-center relative">
             <button id="theme-toggle" class="absolute top-4 right-4 z-10 p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-all active:scale-95">
         <span
           id="theme-toggle-light-icon"
@@ -328,7 +356,7 @@
           >dark_mode</span
         >
       </button>
-            <div class="w-full max-w-md space-y-lg">
+            <div class="w-full max-w-md space-y-lg py-lg md:py-xl my-auto">
                 <!-- Header -->
                 <div class="text-center md:text-left space-y-xs">
                     <div class="md:hidden flex justify-center mb-md">
@@ -348,19 +376,15 @@
         <form id="signup-form" class="space-y-md">
           <!-- Profile Upload Placeholder -->
           <div class="flex flex-col items-center gap-sm">
-            <div
-              class="relative group cursor-pointer"
-              onclick="document.getElementById('profile-upload').click()"
-            >
+            <div class="relative cursor-pointer" id="avatar-preview-wrapper">
               <input
                 type="file"
                 id="profile-upload"
                 class="hidden"
                 accept="image/*"
-                capture="user"
               />
               <div
-                class="w-24 h-24 rounded-full border-2 border-dashed border-outline-variant/30 bg-surface-variant/5 flex items-center justify-center overflow-hidden transition-all group-hover:border-primary-fixed-dim/50 group-hover:bg-primary/5"
+                class="w-24 h-24 rounded-full border-2 border-dashed border-outline-variant/30 bg-surface-variant/5 flex items-center justify-center overflow-hidden"
               >
                 <img
                   id="profile-preview"
@@ -368,18 +392,29 @@
                 />
                 <span
                   id="upload-icon"
-                  class="material-symbols-outlined text-surface-dim text-4xl group-hover:text-primary-fixed-dim"
+                  class="material-symbols-outlined text-surface-dim text-4xl"
                   >add_a_photo</span
                 >
               </div>
-              <div
-                class="absolute bottom-0 right-0 w-8 h-8 bg-primary-container rounded-full flex items-center justify-center text-on-primary-container shadow-lg"
+            </div>
+            <div class="flex gap-3 mt-1">
+              <button
+                type="button"
+                id="gallery-btn"
+                class="px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-label-md font-label-md text-white hover:bg-white/20 transition-colors flex items-center gap-2"
               >
-                <span class="material-symbols-outlined text-sm">add</span>
-                        </div>
-                    </div>
-                    <span class="text-label-sm font-label-sm text-surface-dim/60">Upload Profile Picture</span
-            >
+                <span class="material-symbols-outlined text-base">photo_library</span>
+                Gallery
+              </button>
+              <button
+                type="button"
+                id="camera-capture-btn"
+                class="px-4 py-2 bg-emerald-accent/20 border border-emerald-accent/40 rounded-xl text-label-md font-label-md text-emerald-300 hover:bg-emerald-accent/30 transition-colors flex items-center gap-2"
+              >
+                <span class="material-symbols-outlined text-base">camera_alt</span>
+                Camera
+              </button>
+            </div>
           </div>
 
           <!-- Default Avatars Selection -->
@@ -395,21 +430,25 @@
                 src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix"
                 class="w-12 h-12 rounded-full cursor-pointer border-2 border-transparent hover:border-primary-fixed-dim transition-all default-avatar-item"
                 data-url="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix"
+                onerror="this.src='https://ui-avatars.com/api/?name=FX&background=10b981&color=fff&size=48'"
               />
               <img
                 src="https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka"
                 class="w-12 h-12 rounded-full cursor-pointer border-2 border-transparent hover:border-primary-fixed-dim transition-all default-avatar-item"
                 data-url="https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka"
+                onerror="this.src='https://ui-avatars.com/api/?name=AN&background=10b981&color=fff&size=48'"
               />
               <img
                 src="https://api.dicebear.com/7.x/avataaars/svg?seed=George"
                 class="w-12 h-12 rounded-full cursor-pointer border-2 border-transparent hover:border-primary-fixed-dim transition-all default-avatar-item"
                 data-url="https://api.dicebear.com/7.x/avataaars/svg?seed=George"
+                onerror="this.src='https://ui-avatars.com/api/?name=GR&background=10b981&color=fff&size=48'"
               />
               <img
                 src="https://api.dicebear.com/7.x/avataaars/svg?seed=Spooky"
                 class="w-12 h-12 rounded-full cursor-pointer border-2 border-transparent hover:border-primary-fixed-dim transition-all default-avatar-item"
                 data-url="https://api.dicebear.com/7.x/avataaars/svg?seed=Spooky"
+                onerror="this.src='https://ui-avatars.com/api/?name=SP&background=10b981&color=fff&size=48'"
               />
             </div>
           </div>
@@ -480,6 +519,129 @@
             </div>
           </div>
 
+          <!-- Review Modal -->
+          <div id="review-modal" class="hidden fixed inset-0 z-[100] bg-black/90 flex items-center justify-center p-2 sm:p-4">
+            <div class="bg-inverse-surface rounded-2xl p-4 sm:p-6 max-w-lg w-full max-h-[95vh] overflow-y-auto custom-scrollbar">
+              <div class="flex items-center justify-between mb-3">
+                <h3 class="text-lg font-bold text-white">Review Photo</h3>
+                <button type="button" id="close-review-modal" class="text-gray-400 hover:text-white p-1">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                  </svg>
+                </button>
+              </div>
+              <div class="rounded-xl overflow-hidden bg-black max-h-[200px] sm:max-h-[300px] flex items-center justify-center">
+                <canvas id="review-canvas" class="max-w-full max-h-[200px] sm:max-h-[300px] object-contain"></canvas>
+              </div>
+              <div class="mt-3">
+                <p class="text-[10px] text-gray-400 mb-1.5 uppercase tracking-wider font-medium">Background</p>
+                <div class="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none" id="review-bg-options">
+                  <button class="review-bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white bg-white/10 shrink-0 font-medium" data-bg="none">None</button>
+                  <button class="review-bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="stadium">🏟 Stadium</button>
+                  <button class="review-bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="cricket">🏏 Cricket</button>
+                  <button class="review-bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="football">⚽ Football</button>
+                  <button class="review-bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="basketball">🏀 Basketball</button>
+                </div>
+              </div>
+              <div class="mt-2.5 flex justify-center gap-4 sm:gap-3">
+                <button type="button" id="review-rotate-left" class="w-12 h-12 sm:w-10 sm:h-10 rounded-full bg-white/10 text-white hover:bg-white/20 transition flex items-center justify-center active:scale-90" title="Rotate Left">
+                  <svg class="w-6 h-6 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M1 4v6h6M3.51 15a9 9 0 102.13-9.36L1 10" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+                </button>
+                <button type="button" id="review-rotate-right" class="w-12 h-12 sm:w-10 sm:h-10 rounded-full bg-white/10 text-white hover:bg-white/20 transition flex items-center justify-center active:scale-90" title="Rotate Right">
+                  <svg class="w-6 h-6 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M23 4v6h-6M20.49 15a9 9 0 11-2.12-9.36L23 10" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+                </button>
+                <button type="button" id="review-flip-h" class="w-12 h-12 sm:w-10 sm:h-10 rounded-full bg-white/10 text-white hover:bg-white/20 transition flex items-center justify-center active:scale-90" title="Flip Horizontal">
+                  <svg class="w-6 h-6 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 3v18M3 12h18M8 8l-4 4 4 4M16 8l4 4-4 4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+                </button>
+              </div>
+              <div class="mt-4 flex flex-col gap-3 sm:gap-2">
+                <button type="button" id="review-crop-btn" class="w-full py-3 sm:py-2.5 rounded-xl bg-white/10 text-white text-sm font-medium hover:bg-white/20 transition-colors active:scale-[0.98]">✂ Crop Photo</button>
+                <button type="button" id="review-download-btn" class="w-full py-3 sm:py-2.5 rounded-xl bg-white/10 text-white text-sm font-medium hover:bg-white/20 transition-colors active:scale-[0.98]">⬇ Download</button>
+                <button type="button" id="review-use-btn" class="w-full py-3 sm:py-2.5 rounded-xl bg-primary text-white text-sm font-semibold hover:brightness-110 transition-all active:scale-[0.98]">Use as Profile Photo</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Camera Modal -->
+          <div
+            id="camera-modal"
+            class="hidden fixed inset-0 z-[100] bg-black/90 flex items-center justify-center p-2 sm:p-4"
+          >
+            <div class="bg-inverse-surface rounded-2xl p-4 sm:p-6 max-w-lg w-full max-h-[95vh] overflow-y-auto custom-scrollbar">
+              <div class="flex items-center justify-between mb-3">
+                <h3 class="text-lg font-bold text-white">Take a Photo</h3>
+                <button type="button" id="close-camera-modal" class="text-gray-400 hover:text-white p-1">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                  </svg>
+                </button>
+              </div>
+
+              <!-- Video Preview -->
+              <div class="relative rounded-xl overflow-hidden bg-black" id="camera-video-wrapper">
+                <video id="camera-preview" autoplay playsinline class="w-full object-contain max-h-[350px] hidden"></video>
+                <canvas id="camera-composited" class="w-full object-contain max-h-[350px]"></canvas>
+                <div id="camera-loading" class="hidden absolute inset-0 flex items-center justify-center bg-black/60">
+                  <div class="flex flex-col items-center gap-2">
+                    <svg class="animate-spin h-8 w-8 text-brand-green" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                    <span class="text-xs text-gray-300">Applying background...</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Filters -->
+              <div class="mt-3">
+                <p class="text-[10px] text-gray-400 mb-1.5 uppercase tracking-wider font-medium">Filters</p>
+                <div class="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none" id="filter-options">
+                  <button class="filter-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white bg-white/10 shrink-0 font-medium" data-filter="none">Original</button>
+                  <button class="filter-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-filter="vivid">Vivid</button>
+                  <button class="filter-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-filter="warm">Warm</button>
+                  <button class="filter-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-filter="cool">Cool</button>
+                  <button class="filter-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-filter="noir">Noir</button>
+                  <button class="filter-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-filter="retro">Retro</button>
+                  <button class="filter-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-filter="dramatic">Dramatic</button>
+                </div>
+              </div>
+
+              <!-- Backgrounds -->
+              <div class="mt-2.5">
+                <p class="text-[10px] text-gray-400 mb-1.5 uppercase tracking-wider font-medium">Sports Background</p>
+                <div class="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none" id="bg-options">
+                  <button class="bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white bg-white/10 shrink-0 font-medium" data-bg="none">None</button>
+                  <button class="bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="stadium">🏟 Stadium</button>
+                  <button class="bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="cricket">🏏 Cricket</button>
+                  <button class="bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="football">⚽ Football</button>
+                  <button class="bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="basketball">🏀 Basketball</button>
+                </div>
+              </div>
+
+              <!-- Beauty Toggle -->
+              <div class="mt-2.5 flex items-center justify-between px-1">
+                <span class="text-[10px] text-gray-400 uppercase tracking-wider font-medium">Beauty Mode</span>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" id="beauty-toggle" class="sr-only peer">
+                  <div class="w-9 h-5 bg-white/20 rounded-full peer peer-checked:bg-brand-green after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-full"></div>
+                </label>
+              </div>
+
+              <!-- Zoom Slider -->
+              <div class="mt-2.5 px-1">
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-[10px] text-gray-400 uppercase tracking-wider font-medium">Zoom</span>
+                  <span class="text-[11px] text-white font-medium" id="zoom-label">1.0x</span>
+                </div>
+                <input type="range" id="zoom-range" min="1" max="4" step="0.1" value="1" class="zoom-range w-full">
+              </div>
+
+              <!-- Capture Button -->
+              <div class="flex justify-center gap-6 mt-4">
+                <button type="button" id="capture-photo-btn" class="w-16 h-16 rounded-full bg-white flex items-center justify-center shadow-lg hover:bg-gray-200 transition-colors active:scale-95">
+                  <div class="w-14 h-14 rounded-full border-4 border-black"></div>
+                </button>
+              </div>
+            </div>
+          </div>
+
           <div class="grid grid-cols-1 md:grid-cols-2 gap-base">
             <!-- Full Name -->
             <div class="md:col-span-2 space-y-xs">
@@ -513,8 +675,7 @@
                 <input
                   id="signup-username"
                   class="w-full bg-surface-variant/5 border border-outline-variant/20 rounded-xl py-3 pl-12 pr-4 text-on-tertiary placeholder:text-surface-dim/30 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
-                  placeholder="Choose a unique username"
-                  required
+                  placeholder="Leave blank for auto-generate"
                   type="text"
                 />
               </div>
@@ -538,6 +699,15 @@
                 />
               </div>
             </div>
+            <!-- Email OTP Verification -->
+            <div class="md:col-span-2">
+              <div class="flex flex-wrap items-center gap-2">
+                <input id="email-otp-input" type="text" maxlength="6" placeholder="Enter 6-digit OTP" class="w-32 bg-surface-variant/5 border border-outline-variant/20 rounded-xl py-3 px-4 text-sm text-on-tertiary placeholder:text-surface-dim/30 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all" disabled />
+                <button type="button" id="send-email-otp-btn" class="px-4 py-3 text-sm bg-primary/20 text-primary rounded-xl hover:bg-primary/30 transition-colors disabled:opacity-50 whitespace-nowrap">Send Email OTP</button>
+                <button type="button" id="verify-email-otp-btn" class="px-4 py-3 text-sm bg-brand-green text-white rounded-xl hover:brightness-110 transition-colors disabled:opacity-50 whitespace-nowrap" disabled>Verify</button>
+                <span id="email-otp-status" class="text-xs text-surface-dim/70"></span>
+              </div>
+            </div>
             <!-- Mobile Number -->
             <div class="space-y-xs">
               <label class="text-label-md font-label-md text-surface-dim ml-1"
@@ -551,7 +721,8 @@
                 <input
                   id="mobile"
                   class="w-full bg-surface-variant/5 border border-outline-variant/20 rounded-xl py-3 pl-12 pr-4 text-on-tertiary placeholder:text-surface-dim/30 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
-                  placeholder="+91"
+                  placeholder="+91XXXXXXXXXX"
+                  required
                   type="tel"
                 />
               </div>
@@ -569,7 +740,11 @@
                 <input
                   id="dob"
                   class="w-full bg-surface-variant/5 border border-outline-variant/20 rounded-xl py-3 pl-12 pr-4 text-on-tertiary placeholder:text-surface-dim/30 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
-                  type="date"
+                  type="text"
+                  inputmode="numeric"
+                  placeholder="DD/MM/YYYY"
+                  maxlength="10"
+                  required
                 />
               </div>
             </div>
@@ -586,7 +761,7 @@
                 <input
                   id="password"
                   class="w-full bg-surface-variant/5 border border-outline-variant/20 rounded-xl py-3 pl-12 pr-4 text-on-tertiary placeholder:text-surface-dim/30 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
-                  placeholder="Min. 6 characters"
+                  placeholder="8+ chars, A-Z, a-z, @ # _"
                   required
                   type="password"
                 />
@@ -604,28 +779,29 @@
                   checked=""
                   class="hidden peer"
                   name="gender"
+                  value="Male"
                   type="radio"
                 />
                 <div
                   class="py-2 text-center text-label-sm font-label-sm rounded-lg text-surface-dim/50 peer-checked:bg-primary-container peer-checked:text-on-primary-container transition-all"
                 >
-                  Male
+                  Male / पुरुष
                 </div>
               </label>
               <label class="flex-1 cursor-pointer">
-                <input class="hidden peer" name="gender" type="radio" />
+                <input class="hidden peer" name="gender" value="Female" type="radio" />
                 <div
                   class="py-2 text-center text-label-sm font-label-sm rounded-lg text-surface-dim/50 peer-checked:bg-primary-container peer-checked:text-on-primary-container transition-all"
                 >
-                  Female
+                  Female / महिला
                 </div>
               </label>
               <label class="flex-1 cursor-pointer">
-                <input class="hidden peer" name="gender" type="radio" />
+                <input class="hidden peer" name="gender" value="Other" type="radio" />
                 <div
                   class="py-2 text-center text-label-sm font-label-sm rounded-lg text-surface-dim/50 peer-checked:bg-primary-container peer-checked:text-on-primary-container transition-all"
                 >
-                  Other
+                  Prefer not to say / नहीं कहना चाहते
                 </div>
               </label>
             </div>
@@ -716,11 +892,11 @@
               for="terms"
             >
               I agree to the
-              <a class="text-primary-fixed-dim underline" href="index.html"
+              <a class="text-primary-fixed-dim underline" href="terms.html"
                 >Terms of Service</a
               >
               and
-              <a class="text-primary-fixed-dim underline" href="index.html"
+              <a class="text-primary-fixed-dim underline" href="terms.html#privacy"
                 >Privacy Policy</a
               >.
             </label>
@@ -767,25 +943,33 @@
             </div>
             <script>
                 // Simple interactivity for gender selection (visual only since we use peer classes)
-                console.log("FanConnect Sign Up initialized.");
+                console.log("Fanconnact Sign Up initialized.");
 
                 // Micro-interaction for inputs
                 document.querySelectorAll("input").forEach((input) => {
                     input.addEventListener("focus", () => {
                         input.parentElement
-                            .querySelector(".material-symbols-outlined") ?
-                            .classList.add("text-primary-fixed-dim");
+                            .querySelector(".material-symbols-outlined")
+                            ?.classList.add("text-primary-fixed-dim");
                     });
                     input.addEventListener("blur", () => {
                         input.parentElement
-                            .querySelector(".material-symbols-outlined") ?
-                            .classList.remove("text-primary-fixed-dim");
+                            .querySelector(".material-symbols-outlined")
+                            ?.classList.remove("text-primary-fixed-dim");
                     });
                 });
 
                 // Profile Image Preview & Crop Logic
                 let cropper = null;
-                window.croppedProfileBlob = null;
+                window.croppedProfileBase64 = null;
+
+                document.getElementById("gallery-btn").addEventListener("click", () => {
+                    document.getElementById("profile-upload").click();
+                });
+
+                document.getElementById("avatar-preview-wrapper").addEventListener("click", () => {
+                    document.getElementById("profile-upload").click();
+                });
 
                 document
                     .getElementById("profile-upload")
@@ -808,9 +992,586 @@
                         }
                     });
 
+                // Camera Capture Logic
+                let cameraStream = null;
+                let selectedFilter = "none";
+                let selectedBg = "none";
+                let currentZoom = 1;
+                let segModel = null;
+                let segModelReady = false;
+
+                const FILTER_MAP = {
+                    none: "", vivid: "cam-filter-vivid", warm: "cam-filter-warm",
+                    cool: "cam-filter-cool", noir: "cam-filter-noir",
+                    retro: "cam-filter-retro", dramatic: "cam-filter-dramatic",
+                };
+
+                const BG_GRADIENTS = {
+                    none: "",
+                    stadium: "linear-gradient(135deg, #1a8a2e 0%, #0d5e1a 30%, #1a5f7a 60%, #0d3b5e 100%)",
+                    cricket: "linear-gradient(135deg, #2d8a2d 0%, #1a6e1a 25%, #8b6914 50%, #2d8a2d 75%, #1a6e1a 100%)",
+                    football: "linear-gradient(135deg, #1e7a2e 0%, #3a9a3a 20%, #ffffff22 50%, #1e7a2e 80%, #0d5e1a 100%)",
+                    basketball: "linear-gradient(135deg, #c4721a 0%, #8b4513 25%, #d4952e 50%, #8b4513 75%, #6b3410 100%)",
+                };
+
+                async function initSegModel() {
+                    if (segModelReady) return true;
+                    try {
+                        if (typeof SelfieSegmentation === "undefined") return false;
+                        segModel = new SelfieSegmentation({
+                            locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/${file}`
+                        });
+                        segModel.setOptions({ modelSelection: 1, minDetectionConfidence: 0.5 });
+                        await segModel.initialize();
+                        segModelReady = true;
+                        return true;
+                    } catch (e) {
+                        console.warn("Background removal unavailable:", e);
+                        segModel = null;
+                        segModelReady = false;
+                        return false;
+                    }
+                }
+
+                function drawBgGradient(ctx, type, w, h) {
+                    if (type === "none") return;
+                    const grad = ctx.createLinearGradient(0, 0, w, h);
+                    switch (type) {
+                        case "stadium":
+                            grad.addColorStop(0, "#1a8a2e"); grad.addColorStop(0.3, "#0d5e1a");
+                            grad.addColorStop(0.6, "#1a5f7a"); grad.addColorStop(1, "#0d3b5e"); break;
+                        case "cricket":
+                            grad.addColorStop(0, "#2d8a2d"); grad.addColorStop(0.25, "#1a6e1a");
+                            grad.addColorStop(0.5, "#8b6914"); grad.addColorStop(0.75, "#2d8a2d");
+                            grad.addColorStop(1, "#1a6e1a"); break;
+                        case "football":
+                            grad.addColorStop(0, "#1e7a2e"); grad.addColorStop(0.2, "#3a9a3a");
+                            grad.addColorStop(0.5, "#4a8a3a"); grad.addColorStop(0.8, "#1e7a2e");
+                            grad.addColorStop(1, "#0d5e1a"); break;
+                        case "basketball":
+                            grad.addColorStop(0, "#c4721a"); grad.addColorStop(0.25, "#8b4513");
+                            grad.addColorStop(0.5, "#d4952e"); grad.addColorStop(0.75, "#8b4513");
+                            grad.addColorStop(1, "#6b3410"); break;
+                    }
+                    ctx.fillStyle = grad;
+                    ctx.fillRect(0, 0, w, h);
+                    if (type === "stadium" || type === "cricket" || type === "football") {
+                        ctx.fillStyle = "rgba(255,255,255,0.04)";
+                        for (let i = 0; i < w; i += 50) ctx.fillRect(i, 0, 2, h);
+                    }
+                }
+
+                function applyBeautyCapture(imageData, w, h) {
+                    const data = imageData.data;
+                    const len = data.length;
+
+                    // ── Step 1: Skin mask (RGB heuristic) ──
+                    const skin = new Uint8Array(w * h);
+                    for (let i = 0, p = 0; i < len; i += 4, p++) {
+                        const r = data[i], g = data[i+1], b = data[i+2];
+                        const max = Math.max(r, g, b), min = Math.min(r, g, b);
+                        skin[p] = (r > 50 && g > 20 && b > 10 && r > g && r > b &&
+                                   r - g > 8 && max - min > 12) ? 255 : 0;
+                    }
+
+                    // Dilate 3x3 for smooth edges
+                    const dil = new Uint8Array(w * h);
+                    for (let y = 1; y < h - 1; y++) {
+                        for (let x = 1; x < w - 1; x++) {
+                            let m = 0;
+                            for (let dy = -1; dy <= 1; dy++)
+                                for (let dx = -1; dx <= 1; dx++)
+                                    m = Math.max(m, skin[(y+dy) * w + (x+dx)]);
+                            dil[y * w + x] = m;
+                        }
+                    }
+
+                    // Feather mask via blur
+                    const fTmp = new Float32Array(w * h);
+                    for (let p = 0; p < w * h; p++) fTmp[p] = dil[p] / 255;
+                    for (let y = 0; y < h; y++) {
+                        for (let x = 2; x < w - 2; x++) {
+                            let s = 0;
+                            for (let dx = -2; dx <= 2; dx++) s += fTmp[y * w + x + dx];
+                            dil[y * w + x] = (s / 5) * 255;
+                        }
+                    }
+                    for (let x = 0; x < w; x++) {
+                        for (let y = 2; y < h - 2; y++) {
+                            let s = 0;
+                            for (let dy = -2; dy <= 2; dy++) s += dil[(y+dy) * w + x] / 255;
+                            dil[y * w + x] = (s / 5) * 255;
+                        }
+                    }
+
+                    // ── Step 2: Strong blur (radius 3) for smoothing ──
+                    const blur = new Uint8ClampedArray(data);
+                    for (let y = 0; y < h; y++) {
+                        for (let x = 3; x < w - 3; x++) {
+                            let r = 0, g = 0, b = 0, n = 0;
+                            for (let dx = -3; dx <= 3; dx++) {
+                                const idx = (y * w + x + dx) * 4;
+                                r += blur[idx]; g += blur[idx+1]; b += blur[idx+2]; n++;
+                            }
+                            const idx = (y * w + x) * 4;
+                            blur[idx] = r/n; blur[idx+1] = g/n; blur[idx+2] = b/n;
+                        }
+                    }
+                    for (let x = 0; x < w; x++) {
+                        for (let y = 3; y < h - 3; y++) {
+                            let r = 0, g = 0, b = 0, n = 0;
+                            for (let dy = -3; dy <= 3; dy++) {
+                                const idx = ((y+dy) * w + x) * 4;
+                                r += blur[idx]; g += blur[idx+1]; b += blur[idx+2]; n++;
+                            }
+                            const idx = (y * w + x) * 4;
+                            blur[idx] = r/n; blur[idx+1] = g/n; blur[idx+2] = b/n;
+                        }
+                    }
+
+                    // ── Step 3: Skin smoothing + fairness ──
+                    for (let i = 0, p = 0; i < len; i += 4, p++) {
+                        const m = Math.min(1, dil[p] / 255);
+                        if (m > 0.01) {
+                            const s = 0.75 * m;
+                            data[i]   = data[i]   * (1 - s) + blur[i]   * s;
+                            data[i+1] = data[i+1] * (1 - s) + blur[i+1] * s;
+                            data[i+2] = data[i+2] * (1 - s) + blur[i+2] * s;
+                            const l = 1 + 0.12 * m;
+                            data[i]   = Math.min(255, data[i]   * l);
+                            data[i+1] = Math.min(255, data[i+1] * l);
+                            data[i+2] = Math.min(255, data[i+2] * l);
+                            data[i]   = Math.min(255, data[i]   * 1.04);
+                            data[i+2] = Math.max(0,   data[i+2] * 0.95);
+                        }
+                    }
+
+                    // ── Step 4: Blemish removal ──
+                    for (let y = 1; y < h - 1; y++) {
+                        for (let x = 1; x < w - 1; x++) {
+                            const p = y * w + x;
+                            if (dil[p] < 128) continue;
+                            const idx = p * 4;
+                            const r = data[idx], g = data[idx+1], b = data[idx+2];
+                            let nr = 0, ng = 0, nb = 0, nn = 0;
+                            for (let dy = -1; dy <= 1; dy++) {
+                                for (let dx = -1; dx <= 1; dx++) {
+                                    if (dx === 0 && dy === 0) continue;
+                                    const ni = ((y+dy) * w + (x+dx)) * 4;
+                                    nr += data[ni]; ng += data[ni+1]; nb += data[ni+2]; nn++;
+                                }
+                            }
+                            const aR = nr/nn, aG = ng/nn, aB = nb/nn;
+                            if (r < aR * 0.7 && g < aG * 0.7) {
+                                data[idx] = aR; data[idx+1] = aG; data[idx+2] = aB;
+                            }
+                        }
+                    }
+
+                    // ── Step 5: Glow + brightness ──
+                    for (let i = 0; i < len; i += 4) {
+                        const g = 0.299*data[i] + 0.587*data[i+1] + 0.114*data[i+2];
+                        const sb = 1.15;
+                        data[i]   = Math.min(255, data[i]   * sb - g * (sb - 1));
+                        data[i+1] = Math.min(255, data[i+1] * sb - g * (sb - 1));
+                        data[i+2] = Math.min(255, data[i+2] * sb - g * (sb - 1));
+                        data[i]   = Math.min(255, data[i]   * 1.06);
+                        data[i+1] = Math.min(255, data[i+1] * 1.06);
+                        data[i+2] = Math.min(255, data[i+2] * 1.06);
+                    }
+                    return imageData;
+                }
+
+                function applyVideoFilter() {
+                    const el = document.getElementById("camera-composited");
+                    if (!el) return;
+                    const b = document.getElementById("beauty-toggle")?.checked || false;
+                    const fc = FILTER_MAP[selectedFilter] || "";
+                    el.className = `w-full object-contain max-h-[350px]`;
+                    el.style.transform = "scaleX(-1)";
+                    if (!fc && !b) {
+                        el.style.filter = "none";
+                    } else {
+                        const parts = [];
+                        if (fc) {
+                            switch (selectedFilter) {
+                                case "vivid": parts.push("saturate(1.5) contrast(1.1) brightness(1.03)"); break;
+                                case "warm": parts.push("sepia(0.35) saturate(1.3) hue-rotate(-8deg) brightness(1.05)"); break;
+                                case "cool": parts.push("saturate(0.85) hue-rotate(12deg) brightness(1.08) contrast(0.95)"); break;
+                                case "noir": parts.push("grayscale(1) contrast(1.25) brightness(0.95)"); break;
+                                case "retro": parts.push("sepia(0.5) saturate(0.7) contrast(0.85) brightness(1.1)"); break;
+                                case "dramatic": parts.push("contrast(1.5) brightness(0.85) saturate(1.3)"); break;
+                            }
+                        }
+                        if (b) parts.push("brightness(1.06) contrast(0.94) saturate(1.15) blur(0.5px) drop-shadow(0 0 2px rgba(255,200,150,0.15))");
+                        el.style.filter = parts.join(" ");
+                    }
+                }
+
+                function applyBgPreview() {
+                    const w = document.getElementById("camera-video-wrapper");
+                    if (!w) return;
+                    w.style.background = selectedBg !== "none" ? "#000" : "";
+                    w.style.padding = "";
+                }
+
+                let previewRunning = false;
+
+                function startPreviewLoop() {
+                    const v = document.getElementById("camera-preview");
+                    const c = document.getElementById("camera-composited");
+                    const ctx = c.getContext("2d");
+                    previewRunning = true;
+
+                    async function loop() {
+                        let tempCanvas = null, tempCtx = null;
+                        while (previewRunning) {
+                            if (v.readyState >= 2 && v.videoWidth > 0) {
+                                const vw = v.videoWidth, vh = v.videoHeight;
+                                if (c.width !== vw || c.height !== vh) { c.width = vw; c.height = vh; }
+                                const z = currentZoom;
+                                const visW = vw / z, visH = vh / z;
+                                const sx = (vw - visW) / 2, sy = (vh - visH) / 2;
+
+                                ctx.clearRect(0, 0, vw, vh);
+
+                                if (selectedBg !== "none") {
+                                    const doSeg = segModelReady && selectedBg !== "none";
+                                    if (doSeg) {
+                                        try {
+                                            const res = await segModel.send({ image: v });
+                                            drawBgGradient(ctx, selectedBg, vw, vh);
+                                            const ms = res.segmentationMask;
+                                            if (!tempCanvas) {
+                                                tempCanvas = document.createElement("canvas");
+                                                tempCtx = tempCanvas.getContext("2d");
+                                            }
+                                            tempCanvas.width = vw; tempCanvas.height = vh;
+                                            tempCtx.drawImage(v, sx, sy, visW, visH, 0, 0, vw, vh);
+                                            tempCtx.globalCompositeOperation = "destination-in";
+                                            tempCtx.drawImage(ms, sx, sy, visW, visH, 0, 0, vw, vh);
+                                            tempCtx.globalCompositeOperation = "source-over";
+                                            ctx.drawImage(tempCanvas, 0, 0);
+                                        } catch (e) {
+                                            drawBgGradient(ctx, selectedBg, vw, vh);
+                                            ctx.globalAlpha = 0.88;
+                                            ctx.drawImage(v, sx, sy, visW, visH, 0, 0, vw, vh);
+                                            ctx.globalAlpha = 1;
+                                        }
+                                    } else {
+                                        drawBgGradient(ctx, selectedBg, vw, vh);
+                                        ctx.globalAlpha = 0.88;
+                                        ctx.drawImage(v, sx, sy, visW, visH, 0, 0, vw, vh);
+                                        ctx.globalAlpha = 1;
+                                    }
+                                } else {
+                                    ctx.drawImage(v, sx, sy, visW, visH, 0, 0, vw, vh);
+                                }
+                            }
+                            if (segModelReady && selectedBg !== "none") {
+                                await new Promise(r => setTimeout(r, 120));
+                            } else {
+                                await new Promise(r => requestAnimationFrame(r));
+                            }
+                        }
+                    }
+                    loop();
+                }
+
+                function stopPreviewLoop() {
+                    previewRunning = false;
+                }
+
+                document.getElementById("camera-capture-btn").addEventListener("click", async () => {
+                    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                        const inp = document.createElement("input");
+                        inp.type = "file"; inp.accept = "image/*"; inp.capture = "user";
+                        inp.onchange = (e) => {
+                            const f = e.target.files[0];
+                            if (!f) return;
+                            const r = new FileReader();
+                            r.onload = (ev) => {
+                                document.getElementById("crop-image").src = ev.target.result;
+                                document.getElementById("crop-modal").classList.remove("hidden");
+                                if (cropper) cropper.destroy();
+                                cropper = new Cropper(document.getElementById("crop-image"), { aspectRatio: 1, viewMode: 1 });
+                            };
+                            r.readAsDataURL(f);
+                        };
+                        inp.click();
+                        return;
+                    }
+                    try {
+                        cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 720 } } });
+                        document.getElementById("camera-preview").srcObject = cameraStream;
+                        document.getElementById("camera-modal").classList.remove("hidden");
+                        selectedFilter = "none"; selectedBg = "none"; currentZoom = 1;
+                        document.getElementById("zoom-range").value = 1;
+                        document.getElementById("zoom-label").textContent = "1.0x";
+                        document.querySelectorAll(".filter-btn").forEach(b => {
+                            b.className = "filter-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors";
+                        });
+                        document.querySelector('.filter-btn[data-filter="none"]').className = "filter-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white bg-white/10 shrink-0 font-medium";
+                        document.querySelectorAll(".bg-btn").forEach(b => {
+                            b.className = "bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors";
+                        });
+                        document.querySelector('.bg-btn[data-bg="none"]').className = "bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white bg-white/10 shrink-0 font-medium";
+                        document.getElementById("beauty-toggle").checked = false;
+                        applyVideoFilter(); applyBgPreview();
+                        initSegModel();
+                        document.getElementById("camera-preview").onloadedmetadata = () => startPreviewLoop();
+                    } catch (err) {
+                        if (err.name === "NotAllowedError" || err.name === "PermissionDeniedError")
+                            alert("Camera permission denied.");
+                        else alert("Camera error: " + err.message + "\n\nTry Gallery instead.");
+                    }
+                });
+
+                document.querySelectorAll(".filter-btn").forEach(btn => {
+                    btn.addEventListener("click", () => {
+                        document.querySelectorAll(".filter-btn").forEach(b => {
+                            b.className = "filter-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors";
+                        });
+                        btn.className = "filter-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white bg-white/10 shrink-0 font-medium";
+                        selectedFilter = btn.dataset.filter;
+                        applyVideoFilter();
+                    });
+                });
+
+                document.querySelectorAll(".bg-btn").forEach(btn => {
+                    btn.addEventListener("click", () => {
+                        document.querySelectorAll(".bg-btn").forEach(b => {
+                            b.className = "bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors";
+                        });
+                        btn.className = "bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white bg-white/10 shrink-0 font-medium";
+                        selectedBg = btn.dataset.bg;
+                        applyBgPreview();
+                    });
+                });
+
+                document.getElementById("beauty-toggle")?.addEventListener("change", applyVideoFilter);
+
+                document.getElementById("zoom-range")?.addEventListener("input", function() {
+                    currentZoom = parseFloat(this.value);
+                    document.getElementById("zoom-label").textContent = currentZoom.toFixed(1) + "x";
+                });
+
+                async function capturePhotoWithEffects(video, zoom) {
+                    const canvas = document.createElement("canvas");
+                    const ctx = canvas.getContext("2d");
+                    const vw = video.videoWidth, vh = video.videoHeight;
+                    canvas.width = vw; canvas.height = vh;
+                    const visW = vw / zoom, visH = vh / zoom;
+                    const sx = (vw - visW) / 2, sy = (vh - visH) / 2;
+
+                    if (selectedBg !== "none") {
+                        drawBgGradient(ctx, selectedBg, vw, vh);
+                        if (segModelReady) {
+                            try {
+                                const ld = document.getElementById("camera-loading");
+                                if (ld) ld.classList.remove("hidden");
+                                const res = await segModel.send({ image: video });
+                                const ms = res.segmentationMask;
+                                const t = document.createElement("canvas");
+                                t.width = vw; t.height = vh;
+                                const tc = t.getContext("2d");
+                                tc.drawImage(video, sx, sy, visW, visH, 0, 0, vw, vh);
+                                tc.globalCompositeOperation = "destination-in";
+                                tc.drawImage(ms, sx, sy, visW, visH, 0, 0, vw, vh);
+                                tc.globalCompositeOperation = "source-over";
+                                ctx.drawImage(t, 0, 0);
+                                if (ld) ld.classList.add("hidden");
+                                return applyPixelEffects(ctx, canvas);
+                            } catch (e) {
+                                console.warn("Seg fallback:", e);
+                                ctx.globalAlpha = 0.88;
+                                ctx.drawImage(video, sx, sy, visW, visH, 0, 0, vw, vh);
+                                ctx.globalAlpha = 1;
+                            }
+                        } else {
+                            ctx.globalAlpha = 0.88;
+                            ctx.drawImage(video, sx, sy, visW, visH, 0, 0, vw, vh);
+                            ctx.globalAlpha = 1;
+                        }
+                    } else {
+                        ctx.drawImage(video, sx, sy, visW, visH, 0, 0, vw, vh);
+                    }
+                    return applyPixelEffects(ctx, canvas);
+                }
+
+                function applyPixelEffects(ctx, canvas) {
+                    if (selectedFilter !== "none") {
+                        const id = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                        const d = id.data;
+                        for (let i = 0; i < d.length; i += 4) {
+                            let r = d[i], g = d[i+1], b = d[i+2];
+                            switch (selectedFilter) {
+                                case "vivid": r=Math.min(255,r*1.3); g=Math.min(255,g*1.2); b=Math.min(255,b*1.1); break;
+                                case "warm": r=Math.min(255,r*1.2); g=g; b=Math.max(0,b*0.85); break;
+                                case "cool": r=Math.max(0,r*0.85); g=g*0.95; b=Math.min(255,b*1.25); break;
+                                case "noir": { const gr=0.299*r+0.587*g+0.114*b; r=g=b=Math.min(255,gr*1.1); } break;
+                                case "retro": r=Math.min(255,r*1.15); g=Math.max(0,g*0.85); b=Math.max(0,b*0.7); break;
+                                case "dramatic": r=Math.min(255,r*1.4); g=Math.min(255,g*1.3); b=Math.min(255,b*1.2); break;
+                            }
+                            d[i]=r; d[i+1]=g; d[i+2]=b;
+                        }
+                        ctx.putImageData(id, 0, 0);
+                    }
+
+                    if (document.getElementById("beauty-toggle")?.checked) {
+                        const w = canvas.width, h = canvas.height;
+                        const id = ctx.getImageData(0, 0, w, h);
+                        applyBeautyCapture(id, w, h);
+                        ctx.putImageData(id, 0, 0);
+                    }
+                    return canvas;
+                }
+
+                document.getElementById("close-camera-modal").addEventListener("click", () => {
+                    stopPreviewLoop();
+                    if (cameraStream) { cameraStream.getTracks().forEach(t => t.stop()); cameraStream = null; }
+                    document.getElementById("camera-modal").classList.add("hidden");
+                });
+
+                // ── Review Modal State ──
+                let reviewState = { rawCanvas: null, personCanvas: null, zoom: 1, filter: "none", beauty: false, bg: "none" };
+                let reviewRotation = 0, reviewFlipH = false, cropFromReview = false;
+
+                document.getElementById("capture-photo-btn").addEventListener("click", async () => {
+                    const video = document.getElementById("camera-preview");
+                    const zoom = currentZoom;
+
+                    const raw = document.createElement("canvas");
+                    raw.width = video.videoWidth; raw.height = video.videoHeight;
+                    raw.getContext("2d").drawImage(video, 0, 0);
+                    reviewState = { rawCanvas: raw, personCanvas: null, zoom, filter: selectedFilter, beauty: !!document.getElementById("beauty-toggle")?.checked, bg: selectedBg };
+
+                    if (selectedBg !== "none" && segModelReady) {
+                        try {
+                            const vw = raw.width, vh = raw.height;
+                            const visW = vw / zoom, visH = vh / zoom;
+                            const sx = (vw - visW) / 2, sy = (vh - visH) / 2;
+                            const res = await segModel.send({ image: video });
+                            const mask = res.segmentationMask;
+                            const pc = document.createElement("canvas");
+                            pc.width = vw; pc.height = vh;
+                            const pctx = pc.getContext("2d");
+                            pctx.drawImage(video, sx, sy, visW, visH, 0, 0, vw, vh);
+                            pctx.globalCompositeOperation = "destination-in";
+                            pctx.drawImage(mask, sx, sy, visW, visH, 0, 0, vw, vh);
+                            pctx.globalCompositeOperation = "source-over";
+                            reviewState.personCanvas = pc;
+                        } catch (e) { reviewState.personCanvas = null; }
+                    }
+
+                    const canvas = await capturePhotoWithEffects(video, zoom);
+                    stopPreviewLoop();
+                    if (cameraStream) { cameraStream.getTracks().forEach(t => t.stop()); cameraStream = null; }
+                    document.getElementById("camera-modal").classList.add("hidden");
+                    reviewRotation = 0; reviewFlipH = false;
+                    updateReviewCanvas(canvas);
+                    document.getElementById("review-modal").classList.remove("hidden");
+                });
+
+                function updateReviewCanvas(sourceCanvas) {
+                    const rc = document.getElementById("review-canvas");
+                    const ctx = rc.getContext("2d");
+                    let w = sourceCanvas.width, h = sourceCanvas.height;
+                    if (reviewRotation === 90 || reviewRotation === 270) { const t = w; w = h; h = t; }
+                    rc.width = w; rc.height = h;
+                    ctx.save();
+                    ctx.translate(w / 2, h / 2);
+                    ctx.rotate(reviewRotation * Math.PI / 180);
+                    if (reviewFlipH) ctx.scale(-1, 1);
+                    ctx.drawImage(sourceCanvas, -sourceCanvas.width / 2, -sourceCanvas.height / 2);
+                    ctx.restore();
+                }
+
+                function composeReviewCanvas() {
+                    const { rawCanvas, personCanvas, zoom, filter, beauty, bg } = reviewState;
+                    const vw = rawCanvas.width, vh = rawCanvas.height;
+                    const visW = vw / zoom, visH = vh / zoom;
+                    const sx = (vw - visW) / 2, sy = (vh - visH) / 2;
+                    const c = document.createElement("canvas");
+                    c.width = vw; c.height = vh;
+                    const ctx = c.getContext("2d");
+                    if (bg !== "none") {
+                        drawBgGradient(ctx, bg, vw, vh);
+                        if (personCanvas) { ctx.drawImage(personCanvas, 0, 0); }
+                        else { ctx.globalAlpha = 0.88; ctx.drawImage(rawCanvas, sx, sy, visW, visH, 0, 0, vw, vh); ctx.globalAlpha = 1; }
+                    } else { ctx.drawImage(rawCanvas, sx, sy, visW, visH, 0, 0, vw, vh); }
+                    applyPixelEffects(ctx, c);
+                    return c;
+                }
+
+                function renderReviewWithBg(newBg) {
+                    reviewState.bg = newBg;
+                    updateReviewCanvas(composeReviewCanvas());
+                }
+
+                document.getElementById("close-review-modal").addEventListener("click", () => {
+                    document.getElementById("review-modal").classList.add("hidden");
+                    reviewState = { rawCanvas: null, personCanvas: null, zoom: 1, filter: "none", beauty: false, bg: "none" };
+                });
+
+                document.querySelectorAll(".review-bg-btn").forEach(btn => {
+                    btn.addEventListener("click", () => {
+                        document.querySelectorAll(".review-bg-btn").forEach(b => {
+                            b.className = "review-bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors";
+                        });
+                        btn.className = "review-bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white bg-white/10 shrink-0 font-medium";
+                        renderReviewWithBg(btn.dataset.bg);
+                    });
+                });
+
+                document.getElementById("review-rotate-left").addEventListener("click", () => {
+                    reviewRotation = (reviewRotation - 90 + 360) % 360;
+                    updateReviewCanvas(composeReviewCanvas());
+                });
+                document.getElementById("review-rotate-right").addEventListener("click", () => {
+                    reviewRotation = (reviewRotation + 90) % 360;
+                    updateReviewCanvas(composeReviewCanvas());
+                });
+                document.getElementById("review-flip-h").addEventListener("click", () => {
+                    reviewFlipH = !reviewFlipH;
+                    updateReviewCanvas(composeReviewCanvas());
+                });
+
+                document.getElementById("review-download-btn").addEventListener("click", () => {
+                    const link = document.createElement("a");
+                    link.download = "fanconnect-photo.jpg";
+                    link.href = document.getElementById("review-canvas").toDataURL("image/jpeg", 0.92);
+                    link.click();
+                });
+
+                document.getElementById("review-crop-btn").addEventListener("click", () => {
+                    cropFromReview = true;
+                    const img = document.getElementById("crop-image");
+                    img.src = document.getElementById("review-canvas").toDataURL("image/jpeg", 0.95);
+                    document.getElementById("review-modal").classList.add("hidden");
+                    document.getElementById("crop-modal").classList.remove("hidden");
+                    if (cropper) cropper.destroy();
+                    cropper = new Cropper(img, { aspectRatio: NaN, viewMode: 1, rotatable: true, scalable: true });
+                });
+
+                document.getElementById("review-use-btn").addEventListener("click", () => {
+                    cropFromReview = true;
+                    const img = document.getElementById("crop-image");
+                    img.src = document.getElementById("review-canvas").toDataURL("image/jpeg", 0.95);
+                    document.getElementById("review-modal").classList.add("hidden");
+                    document.getElementById("crop-modal").classList.remove("hidden");
+                    if (cropper) cropper.destroy();
+                    cropper = new Cropper(img, { aspectRatio: 1, viewMode: 1 });
+                });
+
                 document.getElementById("cancel-crop").addEventListener("click", () => {
                     document.getElementById("crop-modal").classList.add("hidden");
-                    document.getElementById("profile-upload").value = "";
+                    if (cropFromReview) {
+                        cropFromReview = false;
+                        document.getElementById("review-modal").classList.remove("hidden");
+                    } else {
+                        document.getElementById("profile-upload").value = "";
+                    }
                 });
 
                 document.getElementById("confirm-crop").addEventListener("click", () => {
@@ -818,18 +1579,16 @@
                         width: 400,
                         height: 400
                     });
-                    canvas.toBlob((blob) => {
-                        window.croppedProfileBlob = blob;
-                        const preview = document.getElementById("profile-preview");
-                        preview.src = canvas.toDataURL();
-                        preview.classList.remove("hidden");
-                        document.getElementById("upload-icon").classList.add("hidden");
-                        document.getElementById("crop-modal").classList.add("hidden");
-                        document
-                            .querySelectorAll(".default-avatar-item")
-                            .forEach((i) => i.classList.remove("border-primary-fixed-dim"));
-                        document.getElementById("selected-default-avatar").value = "";
-                    });
+                    window.croppedProfileBase64 = canvas.toDataURL("image/jpeg", 0.85);
+                    const preview = document.getElementById("profile-preview");
+                    preview.src = window.croppedProfileBase64;
+                    preview.classList.remove("hidden");
+                    document.getElementById("upload-icon").classList.add("hidden");
+                    document.getElementById("crop-modal").classList.add("hidden");
+                    document
+                        .querySelectorAll(".default-avatar-item")
+                        .forEach((i) => i.classList.remove("border-primary-fixed-dim"));
+                    document.getElementById("selected-default-avatar").value = "";
                 });
 
                 // Default Avatar Selection
@@ -846,7 +1605,7 @@
                         preview.classList.remove("hidden");
                         document.getElementById("upload-icon").classList.add("hidden");
                         document.getElementById("profile-upload").value = "";
-                        window.croppedProfileBlob = null;
+                        window.croppedProfileBase64 = null;
                     });
                 });
 
@@ -863,6 +1622,7 @@
                     });
                 });
             </script>
+            <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
             <script type="module" src="js/firebase-config.js"></script>
             <script src="js/theme.js"></script>
             <script src="js/sidebar.js"></script>
@@ -878,32 +1638,7 @@
             </script>
 
 
-            <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    const page = location.pathname.split('/').pop();
-                    document.querySelectorAll('a[href]').forEach(a => {
-                        const h = a.getAttribute('href');
-                        if (h === page) {
-                            a.classList.add('bg-emerald-accent/10', 'text-emerald-accent');
-                        }
-                    });
-                    const t = document.getElementById('theme-toggle');
-                    const light = document.getElementById('theme-toggle-light-icon');
-                    const dark = document.getElementById('theme-toggle-dark-icon');
 
-                    function sync() {
-                        const isDark = document.documentElement.classList.contains('dark');
-                        if (light) light.classList.toggle('hidden', !isDark);
-                        if (dark) dark.classList.toggle('hidden', isDark);
-                    }
-                    sync();
-                    t?.addEventListener('click', () => {
-                        document.documentElement.classList.toggle('dark');
-                        localStorage.setItem('color-theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
-                        sync();
-                    });
-                });
-            </script>
 
             <script>
                 document.addEventListener('DOMContentLoaded', () => {
@@ -926,13 +1661,6 @@
                             } else {
                                 sidebar.classList.toggle('-translate-x-full');
                             }
-                        });
-                    }
-                    const t = document.getElementById('theme-toggle');
-                    if (t) {
-                        t.addEventListener('click', () => {
-                            const dark = document.documentElement.classList.toggle('dark');
-                            localStorage.setItem('color-theme', dark ? 'dark' : 'light');
                         });
                     }
                 });

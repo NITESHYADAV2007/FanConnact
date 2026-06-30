@@ -2,6 +2,17 @@
 
 <html class="light" lang="en">
   <head>
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/fancoin/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/fancoin/favicon-16x16.png" />
+    <meta property="og:site_name" content="Fanconnact" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="assets/fancoin/fanconnactlogo.png" />
+    <meta property="og:title" content="Fanconnact - Fantasy Sports" />
+    <meta property="og:description" content="Join Fanconnact for fantasy sports, predictions, and live matches." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Fanconnact - Fantasy Sports" />
+    <meta name="twitter:description" content="Join Fanconnact for fantasy sports, predictions, and live matches." />
+    <meta name="twitter:image" content="assets/fancoin/fanconnactlogo.png" />
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <script>
@@ -25,6 +36,8 @@
       rel="stylesheet"
     />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/selfie_segmentation.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script id="tailwind-config">
       tailwind.config = {
@@ -210,9 +223,24 @@
       }
     
 .sidebar-collapsed #sidebar{width:0!important;min-width:0!important;border:0!important;padding:0!important;overflow:hidden!important;}
+
+/* Camera filter styles */
+.cam-filter-none { filter: none; }
+.cam-filter-vivid { filter: saturate(1.5) contrast(1.1) brightness(1.03); }
+.cam-filter-warm { filter: sepia(0.35) saturate(1.3) hue-rotate(-8deg) brightness(1.05); }
+.cam-filter-cool { filter: saturate(0.85) hue-rotate(12deg) brightness(1.08) contrast(0.95); }
+.cam-filter-noir { filter: grayscale(1) contrast(1.25) brightness(0.95); }
+.cam-filter-retro { filter: sepia(0.5) saturate(0.7) contrast(0.85) brightness(1.1); }
+.cam-filter-dramatic { filter: contrast(1.5) brightness(0.85) saturate(1.3); }
+.cam-beauty { filter: brightness(1.06) contrast(0.94) saturate(1.15) blur(0.5px) drop-shadow(0 0 2px rgba(255,200,150,0.15)); }
+.scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+.scrollbar-none::-webkit-scrollbar { display: none; }
+.zoom-range { -webkit-appearance: none; appearance: none; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; outline: none; }
+.zoom-range::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 16px; height: 16px; border-radius: 50%; background: #10b981; cursor: pointer; border: 2px solid white; }
+.zoom-range::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; background: #10b981; cursor: pointer; border: 2px solid white; }
 </style>
-  <meta name="description" content="FanConnect sports platform for fans, scores, communities and updates.">
-<meta property="og:title" content="FanConnect">
+  <meta name="description" content="Fanconnact sports platform for fans, scores, communities and updates.">
+<meta property="og:title" content="Fanconnact">
 <meta name="robots" content="index,follow">
 <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;">
 <meta name="referrer" content="strict-origin-when-cross-origin">
@@ -220,47 +248,56 @@
   <body class="h-screen w-full flex flex-col overflow-hidden transition-colors duration-300 bg-[#F8F9FF] dark:bg-[#0F172A]">
 
     <main class="flex-1 flex flex-col h-screen overflow-hidden transition-colors duration-300 bg-[#F8F9FF] dark:bg-brand-dark">
-      <!-- Top AppBar Header -->
-      <header class="bg-white dark:bg-brand-dark border-b border-gray-200 dark:border-brand-border text-slate-900 dark:text-white docked full-width top-0 sticky z-50 transition-all duration-300 ease-in-out h-20 shrink-0">
-        <div class="flex justify-between items-center px-4 md:px-8 h-full max-w-[1440px] mx-auto">
-          <div class="flex items-center flex-1">
-            <div id="header-logo" class="lg:hidden flex items-center space-x-2">
-                <img src="assets/fancoin/fanconnactlogo.png" alt="FanConnect" class="w-8 h-8" />
-                <span class="text-xl font-bold font-headline tracking-tight"><span class="text-fan">Fan</span><span class="text-connect">Connact</span></span>
-            </div>
-
-            <!-- Top Navigation -->
-            <nav class="hidden md:flex items-center space-x-6 mx-6 shrink-0">
-              <a class="text-gray-400 hover:text-brand-green transition-colors font-medium text-sm" href="index.html">Home</a>
-              <a class="text-gray-400 hover:text-brand-green transition-colors font-medium text-sm" href="news&update.html">News</a>
-              <a class="text-gray-400 hover:text-brand-green transition-colors font-medium text-sm" href="livematches.html">Matches</a>
-            </nav>
+      <!-- Top AppBar Header (like news page, NO sidebar) -->
+      <header class="sticky top-0 z-50 transition-colors duration-300 bg-white dark:bg-brand-dark border-b border-gray-200 dark:border-brand-border px-4 md:px-6 py-3 md:py-4 flex items-center justify-between shrink-0">
+        <div class="flex items-center space-x-4 md:space-x-8">
+          <div id="header-logo" class="flex items-center gap-2" onclick="window.location.href='index.html'" style="cursor:pointer">
+            <img src="assets/fancoin/fanconnactlogo.png" alt="Fanconnact" class="w-7 h-7" />
+            <span class="text-base font-bold whitespace-nowrap"><span class="text-fan">Fan</span><span class="text-connect">Connact</span></span>
           </div>
-          <div class="flex items-center space-x-4">
-          <button class="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10" id="theme-toggle">
+
+          <!-- Desktop Nav -->
+          <nav class="hidden xl:flex items-center space-x-6 shrink-0">
+            <a class="text-gray-400 hover:text-brand-green transition-colors font-medium text-sm" href="index.html">Home</a>
+            <a class="text-gray-400 hover:text-brand-green transition-colors font-medium text-sm" href="livematches.html">Matches</a>
+            <a class="text-gray-400 hover:text-brand-green transition-colors font-medium text-sm" href="prediction.html">Predictions</a>
+            <a class="text-gray-400 hover:text-brand-green transition-colors font-medium text-sm" href="leaderboard.html">Leaderboard</a>
+            <a class="text-brand-green font-bold border-b-2 border-brand-green pb-0.5 text-sm" href="profile.html">Profile</a>
+          </nav>
+        </div>
+
+        <div class="flex items-center gap-3 md:gap-5">
+          <button class="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-all active:scale-95" id="theme-toggle">
             <span id="theme-toggle-light-icon" class="material-symbols-outlined hidden text-yellow-400">light_mode</span>
-            <span id="theme-toggle-dark-icon" class="material-symbols-outlined text-slate-600">dark_mode</span>
+            <span id="theme-toggle-dark-icon" class="material-symbols-outlined text-slate-500 dark:text-slate-400">dark_mode</span>
           </button>
           <button id="mobile-logout-btn" class="p-2 hover:bg-error/10 text-error rounded-full transition-all">
             <span class="material-symbols-outlined">logout</span>
           </button>
         </div>
-      </div>
       </header>
 
+      <!-- Mobile Sub-Nav (scrollable pills, like news page) -->
+      <nav class="xl:hidden flex overflow-x-auto gap-1 sm:gap-2 px-2 py-1.5 sm:px-4 sm:py-2 bg-white dark:bg-brand-dark border-b border-gray-200 dark:border-brand-border scrollbar-none whitespace-nowrap shrink-0" style="-webkit-overflow-scrolling:touch;scrollbar-width:none;">
+        <a href="index.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Home</a>
+        <a href="livematches.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Matches</a>
+        <a href="prediction.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Predictions</a>
+        <a href="leaderboard.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Leaderboard</a>
+        <a href="profile.html" class="text-brand-green font-bold border-b-2 border-brand-green text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Profile</a>
+      </nav>
+
       <!-- Scrollable Content -->
-      <div class="flex-1 overflow-y-auto custom-scrollbar p-md md:p-xl lg:px-lg xl:px-xl">
-      <div class="dashboard-container space-y-lg">
+      <div class="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-6 lg:px-8">
+      <div class="dashboard-container space-y-4 md:space-y-6">
         <!-- Profile Hero Section -->
         <div
-          class="flex flex-col lg:flex-row items-center lg:items-center justify-between gap-xl bg-surface-variant/5 border border-outline-variant/10 p-lg rounded-[2rem]"
+          class="flex flex-col lg:flex-row items-center lg:items-center justify-between gap-4 md:gap-6 bg-surface-variant/5 border border-outline-variant/10 p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem]"
         >
-          <div class="flex flex-col md:flex-row items-center gap-lg">
+          <div class="flex flex-col md:flex-row items-center gap-4 md:gap-6">
             <div class="relative">
               <div
                 id="hero-img-container"
-                class="w-40 h-40 rounded-full border-4 border-primary-container p-1 overflow-hidden cursor-pointer"
-                onclick="document.getElementById('profile-edit-upload').click()"
+                class="w-28 sm:w-36 md:w-40 h-28 sm:h-36 md:h-40 rounded-full border-4 border-primary-container p-1 overflow-hidden"
               >
                 <img
                   id="profile-hero-img"
@@ -274,6 +311,17 @@
                   class="hidden"
                   accept="image/*"
                 />
+                <button
+                  type="button"
+                  id="camera-capture-btn"
+                  class="absolute bottom-0 left-0 w-10 h-10 bg-emerald-accent rounded-full flex items-center justify-center shadow-lg hover:bg-emerald-400 transition-colors"
+                  title="Take a photo"
+                >
+                  <svg class="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                    <path d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                  </svg>
+                </button>
               </div>
 
               <!-- Edit Picture & Frame Controls (Initially hidden) -->
@@ -315,162 +363,173 @@
                 </div>
                 <input type="hidden" id="edit-selected-frame" value="none" />
                 <input type="hidden" id="edit-selected-avatar" value="" />
+                <div class="flex gap-2">
+                  <button type="button" id="gallery-btn-profile" class="px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-label-md font-label-md text-white hover:bg-white/20 transition-colors flex items-center gap-2">
+                    <span class="material-symbols-outlined text-base">photo_library</span>
+                    Gallery
+                  </button>
+                  <button type="button" id="camera-btn-profile" class="px-4 py-2 bg-emerald-accent/20 border border-emerald-accent/40 rounded-xl text-label-md font-label-md text-emerald-300 hover:bg-emerald-accent/30 transition-colors flex items-center gap-2">
+                    <span class="material-symbols-outlined text-base">camera_alt</span>
+                    Camera
+                  </button>
+                </div>
               </div>
 
-              <div
-                id="profile-hero-level"
-                class="absolute bottom-2 right-2 bg-primary-container text-on-primary-container px-4 py-1.5 rounded-full text-label-md font-label-md shadow-xl border-2 border-inverse-surface"
-              >
-                LVL 12
-              </div>
             </div>
-            <div class="text-center md:text-left space-y-xs">
-              <h1
-                id="profile-hero-name"
-                class="text-headline-xl font-headline-xl text-white"
-              >
-                User Name
-              </h1>
-              <p
-                class="text-surface-dim text-body-lg flex items-center justify-center md:justify-start gap-2"
-              >
-                <span
-                  class="material-symbols-outlined text-primary-fixed"
-                  data-icon="verified"
-                  >verified</span
-                >
-                Elite Predictor • Since 2023
-              </p>
-              <div
-                class="flex flex-wrap justify-center md:justify-start gap-sm pt-md"
-              >
-                <div
-                  class="flex items-center gap-2 bg-primary/10 border border-primary/20 px-4 py-2 rounded-full"
-                >
-                  <span
-                    class="material-symbols-outlined text-primary-fixed text-[20px]"
-                    data-icon="monetization_on"
-                    style="font-variation-settings: &quot;FILL&quot; 1"
-                    >monetization_on</span
-                  >
-                  <span
-                    id="profile-hero-coins"
-                    class="text-primary-fixed font-bold"
-                    >0 Coins</span
-                  >
-                </div>
-                <button
-                  id="edit-profile-btn"
-                  class="bg-primary-container text-on-primary-container px-4 py-2 rounded-full font-label-md hover:scale-105 transition-transform flex items-center gap-2"
-                >
-                  <span
-                    class="material-symbols-outlined text-[20px]"
-                    data-icon="add"
-                    >add</span
-                  >
-                  Edit Profile
-                </button>
-              </div>
-            </div>
-          </div>
-          <!-- Achievements Section (New) -->
-          <div class="w-full lg:w-auto space-y-md">
-            <h4
-              class="text-surface-dim text-label-md uppercase tracking-widest text-center lg:text-left"
+            <div
+              id="profile-hero-level"
+              class="mt-1 self-start bg-primary-container text-on-primary-container px-4 py-1.5 rounded-full text-xs md:text-label-md font-label-md shadow-xl border-2 border-inverse-surface"
             >
-              Achievements
-            </h4>
-            <div class="flex justify-center lg:justify-start gap-md">
-              <div class="group relative">
-                <div
-                  class="w-14 h-14 rounded-full bg-secondary-container/20 flex items-center justify-center border border-secondary/30 text-secondary-fixed hover:scale-110 transition-transform cursor-help"
-                >
-                  <span
-                    class="material-symbols-outlined text-3xl"
-                    data-icon="nest_clock_farsight_analog"
-                    >nest_clock_farsight_analog</span
-                  >
-                </div>
-                <span
-                  class="absolute -bottom-8 left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 transition-transform bg-on-surface text-surface px-2 py-1 rounded text-[10px] whitespace-nowrap"
-                  >Early Bird</span
-                >
-              </div>
-              <div class="group relative">
-                <div
-                  class="w-14 h-14 rounded-full bg-primary/20 flex items-center justify-center border border-primary/30 text-primary-fixed hover:scale-110 transition-transform cursor-help"
-                >
-                  <span
-                    class="material-symbols-outlined text-3xl"
-                    data-icon="psychology_alt"
-                    >psychology_alt</span
-                  >
-                </div>
-                <span
-                  class="absolute -bottom-8 left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 transition-transform bg-on-surface text-surface px-2 py-1 rounded text-[10px] whitespace-nowrap"
-                  >Quiz Master</span
-                >
-              </div>
-              <div class="group relative">
-                <div
-                  class="w-14 h-14 rounded-full bg-yellow-500/20 flex items-center justify-center border border-yellow-500/30 text-yellow-500 hover:scale-110 transition-transform cursor-help"
-                >
-                  <span
-                    class="material-symbols-outlined text-3xl"
-                    data-icon="military_tech"
-                    style="font-variation-settings: &quot;FILL&quot; 1"
-                    >military_tech</span
-                  >
-                </div>
-                <span
-                  class="absolute -bottom-8 left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 transition-transform bg-on-surface text-surface px-2 py-1 rounded text-[10px] whitespace-nowrap"
-                  >Top 1%</span
-                >
-              </div>
+              LVL 12
+            </div>
+            </div>
+          <div class="text-center md:text-left space-y-2 md:space-y-xs">
+            <h1
+              id="profile-hero-name"
+              class="text-xl sm:text-2xl md:text-3xl lg:text-headline-xl font-headline-xl text-gray-900 dark:text-white text-center md:text-left"
+            >
+              User Name
+            </h1>
+            <p
+              class="text-surface-dim text-sm sm:text-body-lg flex items-center justify-center md:justify-start gap-2"
+            >
+              <span
+                class="material-symbols-outlined text-primary-fixed"
+                data-icon="verified"
+                >verified</span
+              >
+              Elite Predictor • Since 2023
+            </p>
+            <div
+              class="flex flex-wrap justify-center md:justify-start gap-2 md:gap-sm pt-2 md:pt-md"
+            >
               <div
-                class="w-14 h-14 rounded-full bg-surface-variant/10 flex items-center justify-center border border-outline-variant/10 text-surface-dim opacity-50"
+                class="flex items-center gap-2 bg-primary/10 border border-primary/20 px-3 md:px-4 py-2 rounded-full"
               >
                 <span
-                  class="material-symbols-outlined text-3xl"
-                  data-icon="lock"
-                  >lock</span
+                  class="material-symbols-outlined text-primary-fixed text-[18px] md:text-[20px]"
+                  data-icon="monetization_on"
+                  style="font-variation-settings: &quot;FILL&quot; 1"
+                  >monetization_on</span
+                >
+                <span
+                  id="profile-hero-coins"
+                  class="text-primary-fixed font-bold text-sm md:text-base"
+                  >0 Coins</span
                 >
               </div>
+              <button
+                id="edit-profile-btn"
+                class="bg-primary-container text-on-primary-container px-3 md:px-4 py-2 rounded-full font-label-md hover:scale-105 transition-transform flex items-center gap-2 text-sm md:text-base"
+              >
+                <span
+                  class="material-symbols-outlined text-[18px] md:text-[20px]"
+                  data-icon="add"
+                  >add</span
+                >
+                Edit Profile
+              </button>
             </div>
           </div>
         </div>
+        <!-- Achievements Section (New) -->
+        <div class="w-full lg:w-auto space-y-2 md:space-y-md">
+          <h4
+            class="text-surface-dim text-label-sm uppercase tracking-widest text-center lg:text-left"
+          >
+            Achievements
+          </h4>
+          <div class="flex justify-center lg:justify-start gap-3 md:gap-md">
+            <div class="group relative">
+              <div
+                class="w-10 h-10 md:w-14 md:h-14 rounded-full bg-secondary-container/20 flex items-center justify-center border border-secondary/30 text-secondary-fixed hover:scale-110 transition-transform cursor-help"
+              >
+                <span
+                  class="material-symbols-outlined text-xl md:text-3xl"
+                  data-icon="nest_clock_farsight_analog"
+                  >nest_clock_farsight_analog</span
+                >
+              </div>
+              <span
+                class="absolute -bottom-8 left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 transition-transform bg-on-surface text-surface px-2 py-1 rounded text-[10px] whitespace-nowrap"
+                >Early Bird</span
+              >
+            </div>
+            <div class="group relative">
+              <div
+                class="w-10 h-10 md:w-14 md:h-14 rounded-full bg-primary/20 flex items-center justify-center border border-primary/30 text-primary-fixed hover:scale-110 transition-transform cursor-help"
+              >
+                <span
+                  class="material-symbols-outlined text-xl md:text-3xl"
+                  data-icon="psychology_alt"
+                  >psychology_alt</span
+                >
+              </div>
+              <span
+                class="absolute -bottom-8 left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 transition-transform bg-on-surface text-surface px-2 py-1 rounded text-[10px] whitespace-nowrap"
+                >Quiz Master</span
+              >
+            </div>
+            <div class="group relative">
+              <div
+                class="w-10 h-10 md:w-14 md:h-14 rounded-full bg-yellow-500/20 flex items-center justify-center border border-yellow-500/30 text-yellow-500 hover:scale-110 transition-transform cursor-help"
+              >
+                <span
+                  class="material-symbols-outlined text-xl md:text-3xl"
+                  data-icon="military_tech"
+                  style="font-variation-settings: &quot;FILL&quot; 1"
+                  >military_tech</span
+                >
+              </div>
+              <span
+                class="absolute -bottom-8 left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 transition-transform bg-on-surface text-surface px-2 py-1 rounded text-[10px] whitespace-nowrap"
+                >Top 1%</span
+              >
+            </div>
+            <div
+              class="w-10 h-10 md:w-14 md:h-14 rounded-full bg-surface-variant/10 flex items-center justify-center border border-outline-variant/10 text-surface-dim opacity-50"
+            >
+              <span
+                class="material-symbols-outlined text-xl md:text-3xl"
+                data-icon="lock"
+                >lock</span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
         <!-- Dashboard Grid -->
         <div class="grid grid-cols-1 xl:grid-cols-12 gap-lg">
           <!-- Left Column: Stats & Activity -->
           <div class="xl:col-span-8 space-y-lg">
             <!-- Performance Stats Grid (New) -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-md">
+            <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
               <div
-                class="bg-surface-variant/5 border border-outline-variant/10 p-md rounded-2xl"
+                class="bg-surface-variant/5 border border-outline-variant/10 p-3 md:p-4 rounded-2xl"
               >
                 <p class="text-surface-dim text-label-sm uppercase">
                   Total Predictions
                 </p>
-                <p class="text-headline-md font-headline-md text-white mt-base">
-                  512
-                </p>
-                <p class="text-primary-fixed text-body-sm mt-xs">
+                <p class="text-headline-md font-headline-md text-gray-900 dark:text-white mt-2">
+                   512
+                 </p>
+                <p class="text-primary-fixed text-body-sm mt-1">
                   +12 this week
                 </p>
               </div>
               <div
-                class="bg-surface-variant/5 border border-outline-variant/10 p-md rounded-2xl"
+                class="bg-surface-variant/5 border border-outline-variant/10 p-3 md:p-4 rounded-2xl"
               >
                 <p class="text-surface-dim text-label-sm uppercase">
                   Win Rate %
                 </p>
                 <p
-                  class="text-headline-md font-headline-md text-primary-fixed mt-base"
+                  class="text-headline-md font-headline-md text-primary-fixed mt-2"
                 >
                   68.4%
                 </p>
                 <div
-                  class="w-full bg-surface-variant/20 h-1 rounded-full mt-md"
+                  class="w-full bg-surface-variant/20 h-1 rounded-full mt-3"
                 >
                   <div
                     class="bg-primary-fixed h-1 rounded-full"
@@ -479,7 +538,7 @@
                 </div>
               </div>
               <div
-                class="bg-surface-variant/5 border border-outline-variant/10 p-md rounded-2xl"
+                class="bg-surface-variant/5 border border-outline-variant/10 p-3 md:p-4 rounded-2xl"
               >
                 <div class="flex justify-between items-start">
                   <p class="text-surface-dim text-label-sm uppercase">
@@ -487,11 +546,11 @@
                   </p>
                   <span class="text-surface-dim text-label-sm">LVL 12</span>
                 </div>
-                <p class="text-headline-md font-headline-md text-white mt-base">
-                  1,240 XP
-                </p>
+                <p class="text-headline-md font-headline-md text-gray-900 dark:text-white mt-2">
+                   1,240 XP
+                 </p>
                 <div
-                  class="w-full bg-surface-variant/20 h-1 rounded-full mt-md overflow-hidden"
+                  class="w-full bg-surface-variant/20 h-1 rounded-full mt-3 overflow-hidden"
                 >
                   <div
                     class="bg-secondary h-1 rounded-full animate-pulse"
@@ -500,29 +559,29 @@
                 </div>
               </div>
               <div
-                class="bg-surface-variant/5 border border-outline-variant/10 p-md rounded-2xl"
+                class="bg-surface-variant/5 border border-outline-variant/10 p-3 md:p-4 rounded-2xl"
               >
                 <p class="text-surface-dim text-label-sm uppercase">
                   Global Rank
                 </p>
-                <p class="text-headline-md font-headline-md text-white mt-base">
-                  #1,204
-                </p>
-                <p class="text-surface-dim text-body-sm mt-xs">
+                <p class="text-headline-md font-headline-md text-gray-900 dark:text-white mt-2">
+                   #1,204
+                 </p>
+                <p class="text-surface-dim text-body-sm mt-1">
                   Top 5% Players
                 </p>
               </div>
             </div>
             <!-- Recent Activity (New) -->
             <div
-              class="bg-surface-variant/5 border border-outline-variant/10 rounded-[2rem] overflow-hidden"
+              class="bg-surface-variant/5 border border-outline-variant/10 rounded-[1.5rem] md:rounded-[2rem] overflow-hidden"
             >
               <div
-                class="p-lg border-b border-outline-variant/10 flex justify-between items-center"
+                class="p-4 md:p-6 border-b border-outline-variant/10 flex justify-between items-center"
               >
-                <h3 class="text-headline-sm font-headline-sm text-white">
-                  Recent Activity
-                </h3>
+                <h3 class="text-lg md:text-headline-sm font-headline-sm text-gray-900 dark:text-white">
+                   Recent Activity
+                  </h3>
                 <button
                   class="text-primary-fixed text-label-md hover:underline"
                 >
@@ -530,66 +589,66 @@
                 </button>
               </div>
               <div
-                class="p-lg max-h-[400px] overflow-y-auto custom-scrollbar space-y-md"
+                class="p-4 md:p-6 max-h-[400px] overflow-y-auto custom-scrollbar space-y-3 md:space-y-4"
               >
                 <div
-                  class="flex items-center gap-md p-md rounded-xl hover:bg-surface-variant/10 transition-colors group"
+                  class="flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-xl hover:bg-surface-variant/10 transition-colors group"
                 >
                   <div
-                    class="w-10 h-10 bg-secondary/20 rounded-lg flex items-center justify-center text-secondary-fixed"
+                    class="w-8 h-8 md:w-10 md:h-10 bg-secondary/20 rounded-lg flex items-center justify-center text-secondary-fixed shrink-0"
                   >
-                    <span class="material-symbols-outlined" data-icon="groups"
+                    <span class="material-symbols-outlined text-base md:text-xl" data-icon="groups"
                       >groups</span
                     >
                   </div>
-                  <div class="flex-1">
-                    <p class="text-white font-medium">
-                      Joined RCB vs CSK Fan War
-                    </p>
-                    <p class="text-surface-dim text-body-sm">2 hours ago</p>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-gray-900 dark:text-white font-medium text-sm md:text-base truncate">
+                       Joined RCB vs CSK Fan War
+                      </p>
+                    <p class="text-surface-dim text-xs md:text-body-sm">2 hours ago</p>
                   </div>
                   <span
-                    class="text-primary-fixed font-bold opacity-0 group-hover:opacity-100 transition-opacity"
+                    class="text-primary-fixed font-bold text-xs md:text-sm opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
                     >JOINED</span
                   >
                 </div>
                 <div
-                  class="flex items-center gap-md p-md rounded-xl hover:bg-surface-variant/10 transition-colors group"
+                  class="flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-xl hover:bg-surface-variant/10 transition-colors group"
                 >
                   <div
-                    class="w-10 h-10 bg-primary/20 rounded-lg flex items-center justify-center text-primary-fixed"
+                    class="w-8 h-8 md:w-10 md:h-10 bg-primary/20 rounded-lg flex items-center justify-center text-primary-fixed shrink-0"
                   >
-                    <span class="material-symbols-outlined" data-icon="quiz"
+                    <span class="material-symbols-outlined text-base md:text-xl" data-icon="quiz"
                       >quiz</span
                     >
                   </div>
-                  <div class="flex-1">
-                    <p class="text-white font-medium">
-                      Won 50 FanCoins in Daily Quiz
-                    </p>
-                    <p class="text-surface-dim text-body-sm">Yesterday</p>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-gray-900 dark:text-white font-medium text-sm md:text-base truncate">
+                       Won 50 FanCoins in Daily Quiz
+                      </p>
+                    <p class="text-surface-dim text-xs md:text-body-sm">Yesterday</p>
                   </div>
-                  <span class="text-primary-fixed font-bold">+50 FC</span>
+                  <span class="text-primary-fixed font-bold text-xs md:text-sm shrink-0">+50 FC</span>
                 </div>
                 <div
-                  class="flex items-center gap-md p-md rounded-xl hover:bg-surface-variant/10 transition-colors group"
+                  class="flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-xl hover:bg-surface-variant/10 transition-colors group"
                 >
                   <div
-                    class="w-10 h-10 bg-tertiary/20 rounded-lg flex items-center justify-center text-tertiary-fixed"
+                    class="w-8 h-8 md:w-10 md:h-10 bg-tertiary/20 rounded-lg flex items-center justify-center text-tertiary-fixed shrink-0"
                   >
                     <span
-                      class="material-symbols-outlined"
+                      class="material-symbols-outlined text-base md:text-xl"
                       data-icon="sports_cricket"
                       >sports_cricket</span
                     >
                   </div>
-                  <div class="flex-1">
-                    <p class="text-white font-medium">
-                      Placed prediction on MI vs CSK
-                    </p>
-                    <p class="text-surface-dim text-body-sm">2 days ago</p>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-gray-900 dark:text-white font-medium text-sm md:text-base truncate">
+                       Placed prediction on MI vs CSK
+                      </p>
+                    <p class="text-surface-dim text-xs md:text-body-sm">2 days ago</p>
                   </div>
-                  <span class="text-surface-dim text-body-sm italic"
+                  <span class="text-surface-dim text-xs md:text-body-sm italic shrink-0"
                     >Pending</span
                   >
                 </div>
@@ -597,10 +656,10 @@
             </div>
           </div>
           <!-- Right Column: Personal Info & Actions -->
-          <div class="xl:col-span-4 space-y-lg">
+          <div class="xl:col-span-4 space-y-4 md:space-y-6">
             <!-- Identity Details -->
             <div
-              class="bg-surface-variant/5 border border-outline-variant/10 p-lg rounded-[2rem] space-y-md"
+              class="bg-surface-variant/5 border border-outline-variant/10 p-4 md:p-6 rounded-[1.5rem] space-y-3 md:space-y-4"
             >
               <h3
                 class="text-primary-fixed font-headline-sm flex items-center gap-2"
@@ -612,59 +671,65 @@
                 >
                 Identity Details
               </h3>
-              <div class="space-y-md pt-md">
+              <div class="space-y-3 pt-3 md:space-y-4 md:pt-4">
                 <div
-                  class="flex justify-between border-b border-outline-variant/10 pb-md"
+                  class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 border-b border-outline-variant/10 pb-3 md:pb-4"
                 >
                   <span class="text-surface-dim text-body-md">Full Name</span>
                   <input
                     id="profile-detail-fullname"
-                    class="bg-transparent text-right text-white font-medium outline-none focus:border-b border-primary-fixed"
+                    class="bg-transparent text-left sm:text-right text-gray-900 dark:text-white font-medium outline-none focus:border-b border-primary-fixed"
                     value="User Name"
                     readonly
                   />
                 </div>
                 <div
-                  class="flex justify-between border-b border-outline-variant/10 pb-md"
+                  class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-1 border-b border-outline-variant/10 pb-3 md:pb-4"
                 >
-                  <span class="text-surface-dim text-body-md">Username</span>
-                  <input
-                    id="profile-detail-username"
-                    class="bg-transparent text-right text-white font-medium outline-none focus:border-b border-primary-fixed"
-                    value="@username"
-                    readonly
-                  />
+                  <span class="text-surface-dim text-body-md pt-1">Username</span>
+                  <div class="flex flex-col items-end w-full sm:w-auto">
+                    <input
+                      id="profile-detail-username"
+                      class="bg-transparent text-left sm:text-right text-gray-900 dark:text-white font-medium outline-none focus:border-b border-primary-fixed w-full"
+                      value="@username"
+                      readonly
+                    />
+                  </div>
                 </div>
                 <div
-                  class="flex justify-between border-b border-outline-variant/10 pb-md"
+                  class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 border-b border-outline-variant/10 pb-3 md:pb-4"
                 >
                   <span class="text-surface-dim text-body-md">Gender</span>
                   <input
                     id="profile-detail-gender"
-                    class="bg-transparent text-right text-white font-medium outline-none focus:border-b border-primary-fixed"
+                    class="bg-transparent text-left sm:text-right text-gray-900 dark:text-white font-medium outline-none focus:border-b border-primary-fixed"
                     value="Not Specified"
                     readonly
                   />
                 </div>
                 <div
-                  class="flex justify-between border-b border-outline-variant/10 pb-md"
+                  class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-1 border-b border-outline-variant/10 pb-3 md:pb-4"
                 >
-                  <span class="text-surface-dim text-body-md"
+                  <span class="text-surface-dim text-body-md pt-1"
                     >Date of Birth</span
                   >
-                  <input
-                    id="profile-detail-dob"
-                    type="date"
-                    class="bg-transparent text-right text-white font-medium outline-none focus:border-b border-primary-fixed"
-                    value=""
-                    readonly
-                  />
+                  <div class="flex flex-col items-end w-full sm:w-auto">
+                    <input
+                      id="profile-detail-dob"
+                      type="text"
+                      inputmode="numeric"
+                      placeholder="DD/MM/YYYY"
+                      class="bg-transparent text-left sm:text-right text-gray-900 dark:text-white font-medium outline-none focus:border-b border-primary-fixed w-full"
+                      value=""
+                      readonly
+                    />
+                  </div>
                 </div>
               </div>
             </div>
             <!-- Contact Info -->
             <div
-              class="bg-surface-variant/5 border border-outline-variant/10 p-lg rounded-[2rem] space-y-md"
+              class="bg-surface-variant/5 border border-outline-variant/10 p-4 md:p-6 rounded-[1.5rem] space-y-3 md:space-y-4"
             >
               <h3
                 class="text-primary-fixed font-headline-sm flex items-center gap-2"
@@ -674,42 +739,72 @@
                 >
                 Contact Info
               </h3>
-              <div class="space-y-md pt-md">
+              <div class="space-y-3 pt-3 md:space-y-4 md:pt-4">
                 <div
-                  class="flex flex-col gap-1 border-b border-outline-variant/10 pb-md"
+                  class="flex flex-col gap-1 border-b border-outline-variant/10 pb-3 md:pb-4"
                 >
                   <span class="text-surface-dim text-label-sm uppercase"
                     >Email</span
                   >
                   <input
                     id="profile-detail-email"
-                    class="bg-transparent text-white font-medium outline-none"
+                    class="bg-transparent text-gray-900 dark:text-white font-medium outline-none text-sm sm:text-base"
                     value="email@example.com"
                     readonly
                   />
+                  <!-- Email OTP Section (hidden by default) -->
+                  <div id="profile-email-otp-section" class="hidden mt-2 space-y-2">
+                    <button
+                      id="profile-send-otp-btn"
+                      class="px-3 py-1.5 text-xs bg-primary-container text-on-primary-container rounded-lg hover:bg-primary-container/80 transition-colors disabled:opacity-50"
+                    >
+                      Send OTP
+                    </button>
+                    <div class="flex gap-2 items-center">
+                      <input
+                        type="text"
+                        id="profile-otp-input"
+                        inputmode="numeric"
+                        maxlength="6"
+                        placeholder="Enter 6-digit OTP"
+                        class="flex-1 bg-transparent border border-outline-variant/30 rounded-lg px-3 py-1.5 text-sm text-gray-900 dark:text-white outline-none focus:border-primary-fixed disabled:opacity-50"
+                        disabled
+                      />
+                      <button
+                        id="profile-verify-otp-btn"
+                        class="px-3 py-1.5 text-xs bg-brand-green text-black rounded-lg hover:bg-emerald-400 transition-colors disabled:opacity-50 font-medium"
+                        disabled
+                      >
+                        Verify
+                      </button>
+                    </div>
+                    <p id="profile-otp-status" class="text-xs"></p>
+                  </div>
                 </div>
                 <div
-                  class="flex flex-col gap-1 border-b border-outline-variant/10 pb-md"
+                  class="flex flex-col gap-1 border-b border-outline-variant/10 pb-3 md:pb-4"
                 >
                   <span class="text-surface-dim text-label-sm uppercase"
                     >Mobile</span
                   >
-                  <input
-                    id="profile-detail-mobile"
-                    class="bg-transparent text-white font-medium outline-none focus:border-b border-primary-fixed"
-                    value="+91 ----------"
-                    readonly
-                  />
+                  <div class="flex flex-col">
+                    <input
+                      id="profile-detail-mobile"
+                      class="bg-transparent text-gray-900 dark:text-white font-medium outline-none focus:border-b border-primary-fixed text-sm sm:text-base"
+                      value="+91 ----------"
+                      readonly
+                    />
+                  </div>
                 </div>
                 <div
-                  class="flex flex-col gap-1 border-b border-outline-variant/10 pb-md"
+                  class="flex flex-col gap-1 border-b border-outline-variant/10 pb-3 md:pb-4"
                 >
                   <span class="text-surface-dim text-label-sm uppercase"
                     >Location</span
                   >
                   <input
                     id="profile-detail-location"
-                    class="bg-transparent text-white font-medium outline-none focus:border-b border-primary-fixed"
+                    class="bg-transparent text-gray-900 dark:text-white font-medium outline-none focus:border-b border-primary-fixed text-sm sm:text-base"
                     value="New Delhi, India"
                     readonly
                   />
@@ -717,23 +812,26 @@
               </div>
             </div>
             <!-- Actions -->
-            <div class="flex flex-col gap-md">
+            <div class="flex flex-col gap-3 md:gap-4">
               <button
                 id="profile-save-btn"
-                class="w-full py-4 px-md border border-primary-container/30 text-primary-container rounded-2xl font-label-md hover:bg-primary-container/10 transition-colors flex items-center justify-center gap-3"
+                class="hidden w-full py-3 md:py-4 px-4 bg-primary-container text-on-primary-container rounded-2xl font-label-md hover:bg-primary-container/80 transition-colors flex items-center justify-center gap-3 text-sm md:text-base"
               >
-                <span
-                  class="material-symbols-outlined"
-                  data-icon="support_agent"
-                  >support_agent</span
-                >
+                <span class="material-symbols-outlined text-base" data-icon="save">save</span>
                 Save Changes
               </button>
               <button
-                id="profile-signout-btn"
-                class="w-full py-4 px-md border border-error/20 text-error rounded-2xl font-label-md hover:bg-error/10 transition-colors flex items-center justify-center gap-3"
+                id="profile-cancel-btn"
+                class="hidden w-full py-3 md:py-4 px-4 border border-outline-variant/20 text-surface-dim rounded-2xl font-label-md hover:bg-surface-variant/10 transition-colors flex items-center justify-center gap-3 text-sm md:text-base"
               >
-                <span class="material-symbols-outlined" data-icon="logout"
+                <span class="material-symbols-outlined text-base" data-icon="close">close</span>
+                Cancel
+              </button>
+              <button
+                id="profile-signout-btn"
+                class="w-full py-3 md:py-4 px-4 border border-error/20 text-error rounded-2xl font-label-md hover:bg-error/10 transition-colors flex items-center justify-center gap-3 text-sm md:text-base"
+              >
+                <span class="material-symbols-outlined text-base" data-icon="logout"
                   >logout</span
                 >
                 Sign Out Account
@@ -744,6 +842,94 @@
       </div>
     </main>
     <script type="module" src="js/script.js"></script>
+    <!-- Camera Modal -->
+    <div
+      id="camera-modal"
+      class="hidden fixed inset-0 z-[100] bg-black/90 flex items-center justify-center p-2 sm:p-4"
+    >
+      <div class="bg-inverse-surface rounded-2xl p-4 sm:p-6 max-w-lg w-full max-h-[95vh] overflow-y-auto custom-scrollbar">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-lg font-bold text-white">Take a Photo</h3>
+          <button
+            type="button"
+            id="close-camera-modal"
+            class="text-gray-400 hover:text-white p-1"
+          >
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Video Preview -->
+        <div class="relative rounded-xl overflow-hidden bg-black" id="camera-video-wrapper">
+          <video id="camera-preview" autoplay playsinline class="w-full object-contain max-h-[350px] hidden"></video>
+          <canvas id="camera-composited" class="w-full object-contain max-h-[350px]"></canvas>
+          <div id="camera-loading" class="hidden absolute inset-0 flex items-center justify-center bg-black/60">
+            <div class="flex flex-col items-center gap-2">
+              <svg class="animate-spin h-8 w-8 text-brand-green" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+              <span class="text-xs text-gray-300">Applying background...</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="mt-3">
+          <p class="text-[10px] text-gray-400 mb-1.5 uppercase tracking-wider font-medium">Filters</p>
+          <div class="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none" id="filter-options">
+            <button class="filter-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white bg-white/10 shrink-0 font-medium" data-filter="none">Original</button>
+            <button class="filter-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-filter="vivid">Vivid</button>
+            <button class="filter-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-filter="warm">Warm</button>
+            <button class="filter-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-filter="cool">Cool</button>
+            <button class="filter-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-filter="noir">Noir</button>
+            <button class="filter-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-filter="retro">Retro</button>
+            <button class="filter-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-filter="dramatic">Dramatic</button>
+          </div>
+        </div>
+
+        <!-- Backgrounds -->
+        <div class="mt-2.5">
+          <p class="text-[10px] text-gray-400 mb-1.5 uppercase tracking-wider font-medium">Sports Background</p>
+          <div class="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none" id="bg-options">
+            <button class="bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white bg-white/10 shrink-0 font-medium" data-bg="none">None</button>
+            <button class="bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="stadium">🏟 Stadium</button>
+            <button class="bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="cricket">🏏 Cricket</button>
+            <button class="bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="football">⚽ Football</button>
+            <button class="bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="basketball">🏀 Basketball</button>
+          </div>
+        </div>
+
+        <!-- Beauty Toggle -->
+        <div class="mt-2.5 flex items-center justify-between px-1">
+          <span class="text-[10px] text-gray-400 uppercase tracking-wider font-medium">Beauty Mode</span>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" id="beauty-toggle" class="sr-only peer">
+            <div class="w-9 h-5 bg-white/20 rounded-full peer peer-checked:bg-brand-green after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-full"></div>
+          </label>
+        </div>
+
+        <!-- Zoom Slider -->
+        <div class="mt-2.5 px-1">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-[10px] text-gray-400 uppercase tracking-wider font-medium">Zoom</span>
+            <span class="text-[11px] text-white font-medium" id="zoom-label">1.0x</span>
+          </div>
+          <input type="range" id="zoom-range" min="1" max="4" step="0.1" value="1" class="zoom-range w-full">
+        </div>
+
+        <!-- Capture Button -->
+        <div class="flex justify-center gap-6 mt-4">
+          <button
+            type="button"
+            id="capture-photo-btn"
+            class="w-16 h-16 rounded-full bg-white flex items-center justify-center shadow-lg hover:bg-gray-200 transition-colors active:scale-95"
+          >
+            <div class="w-14 h-14 rounded-full border-4 border-black"></div>
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Crop Modal Profile -->
     <div
       id="crop-modal-profile"
@@ -773,6 +959,64 @@
       </div>
     </div>
 
+    <!-- Review Modal -->
+    <div id="review-modal" class="hidden fixed inset-0 z-[100] bg-black/90 flex items-center justify-center p-2 sm:p-4">
+      <div class="bg-inverse-surface rounded-2xl p-4 sm:p-6 max-w-lg w-full max-h-[95vh] overflow-y-auto custom-scrollbar">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-lg font-bold text-white">Review Photo</h3>
+          <button type="button" id="close-review-modal" class="text-gray-400 hover:text-white p-1">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+            </svg>
+          </button>
+        </div>
+        <div class="rounded-xl overflow-hidden bg-black max-h-[200px] sm:max-h-[300px] flex items-center justify-center">
+          <canvas id="review-canvas" class="max-w-full max-h-[200px] sm:max-h-[300px] object-contain"></canvas>
+        </div>
+        <div class="mt-3">
+          <p class="text-[10px] text-gray-400 mb-1.5 uppercase tracking-wider font-medium">Background</p>
+          <div class="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none" id="review-bg-options">
+            <button class="review-bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white bg-white/10 shrink-0 font-medium" data-bg="none">None</button>
+            <button class="review-bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="stadium">🏟 Stadium</button>
+            <button class="review-bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="cricket">🏏 Cricket</button>
+            <button class="review-bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="football">⚽ Football</button>
+            <button class="review-bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="basketball">🏀 Basketball</button>
+          </div>
+        </div>
+        <div class="mt-2.5 flex justify-center gap-4 sm:gap-3">
+          <button type="button" id="review-rotate-left" class="w-12 h-12 sm:w-10 sm:h-10 rounded-full bg-white/10 text-white hover:bg-white/20 transition flex items-center justify-center active:scale-90" title="Rotate Left">
+            <svg class="w-6 h-6 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M1 4v6h6M3.51 15a9 9 0 102.13-9.36L1 10" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+          </button>
+          <button type="button" id="review-rotate-right" class="w-12 h-12 sm:w-10 sm:h-10 rounded-full bg-white/10 text-white hover:bg-white/20 transition flex items-center justify-center active:scale-90" title="Rotate Right">
+            <svg class="w-6 h-6 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M23 4v6h-6M20.49 15a9 9 0 11-2.12-9.36L23 10" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+          </button>
+          <button type="button" id="review-flip-h" class="w-12 h-12 sm:w-10 sm:h-10 rounded-full bg-white/10 text-white hover:bg-white/20 transition flex items-center justify-center active:scale-90" title="Flip Horizontal">
+            <svg class="w-6 h-6 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 3v18M3 12h18M8 8l-4 4 4 4M16 8l4 4-4 4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+          </button>
+        </div>
+        <div class="mt-4 flex flex-col gap-3 sm:gap-2">
+          <button type="button" id="review-crop-btn" class="w-full py-3 sm:py-2.5 rounded-xl bg-white/10 text-white text-sm font-medium hover:bg-white/20 transition-colors active:scale-[0.98]">✂ Crop Photo</button>
+          <button type="button" id="review-download-btn" class="w-full py-3 sm:py-2.5 rounded-xl bg-white/10 text-white text-sm font-medium hover:bg-white/20 transition-colors active:scale-[0.98]">⬇ Download</button>
+          <button type="button" id="review-use-btn" class="w-full py-3 sm:py-2.5 rounded-xl bg-primary text-white text-sm font-semibold hover:brightness-110 transition-all active:scale-[0.98]">Use as Profile Photo</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Photo Viewer Modal -->
+    <div id="photo-viewer" class="hidden fixed inset-0 z-[110] bg-black/95 flex items-center justify-center p-2 sm:p-4">
+      <div class="relative max-w-2xl w-full max-h-[90vh] flex flex-col items-center">
+        <div class="absolute top-0 right-0 z-10 flex gap-2 p-2">
+          <button type="button" id="pv-crop-free" class="px-4 py-2 rounded-xl bg-white/15 text-white text-sm font-medium hover:bg-white/25 transition-colors backdrop-blur-sm">Crop</button>
+          <button type="button" id="pv-download" class="px-4 py-2 rounded-xl bg-white/15 text-white text-sm font-medium hover:bg-white/25 transition-colors backdrop-blur-sm">Download</button>
+          <button type="button" id="pv-close" class="w-10 h-10 rounded-full bg-white/15 text-white hover:bg-white/25 transition-colors flex items-center justify-center backdrop-blur-sm">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+          </button>
+        </div>
+        <div class="flex items-center justify-center flex-1 w-full h-full min-h-0 p-2 pt-14">
+          <img id="pv-image" src="" class="max-w-full max-h-full object-contain rounded-lg" />
+        </div>
+      </div>
+    </div>
 
     <script>
       // Tooltip logic
@@ -788,17 +1032,13 @@
       });
     </script>
     <script type="module">
-      import { auth, db, storage } from "./js/firebase-config.js";
+      import { auth, db, valMsg, v, debounceDb, generateOTP } from "./js/firebase-config.js";
       import {
         onAuthStateChanged,
         signOut,
         updateProfile,
+        fetchSignInMethodsForEmail,
       } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-      import {
-        ref,
-        uploadBytes,
-        getDownloadURL,
-      } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
       import {
         doc,
         getDoc,
@@ -806,7 +1046,24 @@
       } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
       let profileCropper = null;
-      let croppedBlobEdit = null;
+      let croppedBase64Edit = null;
+      let isSaving = false;
+      let cropFromViewer = false;
+
+      if (typeof emailjs !== "undefined") emailjs.init("64zTCXrsJZHB9u2tY");
+
+      // Edit state
+      let originalProfileData = {};
+      let originalEmail = "";
+      let profileEmailChanged = false;
+      let profileEmailVerified = false;
+
+      // OTP state (independent of signup page OTP)
+      let profileOTP = null;
+      let profileOTPTimer = null;
+      let profileOTPSendCount = 0;
+      const PROFILE_MAX_OTP = 3;
+      let profileOTPCooldown = null;
 
       onAuthStateChanged(auth, async (user) => {
         if (!user) {
@@ -814,25 +1071,23 @@
           return;
         }
 
-        // Fallback UI while loading Firestore
         const fallbackHandle = user.displayName || user.email.split("@")[0];
         document.getElementById("profile-hero-name").textContent =
           `@${fallbackHandle.toLowerCase().replace(/\s+/g, "")}`;
 
         document.getElementById("profile-detail-fullname").value =
-          user.displayName || "FanConnect User";
+          user.displayName || "Fanconnact User";
         document.getElementById("profile-detail-email").value = user.email;
         if (user.photoURL) {
           document.getElementById("profile-hero-img").src = user.photoURL;
         }
 
-        // Fetch Firestore Data
         const userDoc = await getDoc(doc(db, "users", user.uid));
         if (userDoc.exists()) {
           const data = userDoc.data();
           if (data.frame) {
             document.getElementById("hero-img-container").className =
-              `w-40 h-40 rounded-full border-4 p-1 overflow-hidden cursor-pointer frame-${data.frame}`;
+              `w-28 sm:w-36 md:w-40 h-28 sm:h-36 md:h-40 rounded-full border-4 p-1 overflow-hidden cursor-pointer frame-${data.frame}`;
             document.getElementById("edit-selected-frame").value = data.frame;
           }
           document.getElementById("profile-hero-level").textContent =
@@ -842,6 +1097,7 @@
 
           if (data.photoURL) {
             document.getElementById("profile-hero-img").src = data.photoURL;
+            window._originalPhotoURL = data.photoURL;
           }
 
           const username = data.username || user.email.split("@")[0];
@@ -859,157 +1115,1021 @@
         }
       });
 
-      // Edit/Save Handlers
-      document
-        .getElementById("edit-profile-btn")
-        ?.addEventListener("click", () => {
-          document.querySelectorAll("input[readonly]").forEach((input) => {
-            if (input.id !== "profile-detail-email") input.readOnly = false;
+      // ── DOB mask + validation ──
+      document.getElementById("profile-detail-dob")?.addEventListener("input", function () {
+        if (this.readOnly) return;
+        let val = this.value.replace(/\D/g, "").slice(0, 8);
+        if (val.length > 4) val = val.slice(0, 2) + "/" + val.slice(2, 4) + "/" + val.slice(4);
+        else if (val.length > 2) val = val.slice(0, 2) + "/" + val.slice(2);
+        this.value = val;
+      });
+      document.getElementById("profile-detail-dob")?.addEventListener("blur", function () {
+        if (this.readOnly) return;
+        const m = valMsg("profile-detail-dob");
+        const val = this.value.trim();
+        if (val === originalProfileData.dob) { v(m, "", true); return; }
+        if (!val) { v(m, "", true); return; }
+        if (!/^\d{2}\/\d{2}\/\d{4}$/.test(val)) { v(m, "Use DD/MM/YYYY format", false); return; }
+        const [d, mo, y] = val.split("/").map(Number);
+        if (mo < 1 || mo > 12) { v(m, "Month 01-12", false); return; }
+        if (d < 1 || d > 31) { v(m, "Day 01-31", false); return; }
+        const bd = new Date(y, mo - 1, d);
+        if (bd.getDate() !== d || bd.getMonth() !== mo - 1) { v(m, "Invalid date", false); return; }
+        const now = new Date();
+        if (bd >= now) { v(m, "Cannot be in future", false); return; }
+        const rawAge = now.getFullYear() - y;
+        const adj = now.getMonth() < (mo - 1) || (now.getMonth() === (mo - 1) && now.getDate() < d) ? rawAge - 1 : rawAge;
+        if (adj < 13) v(m, "Must be 13+", false);
+        else v(m, "", true);
+      });
+
+      // ── Username validation ──
+      document.getElementById("profile-detail-username")?.addEventListener("input", function () {
+        if (this.readOnly) return;
+        const m = valMsg("profile-detail-username");
+        const val = this.value.trim().toLowerCase().replace("@", "");
+        if (!val) { v(m, "Required", false); return; }
+        if (!/^[a-z0-9_]{3,20}$/.test(val)) { v(m, "3–20 letters, numbers or _", false); return; }
+        v(m, "Checking...", true);
+        debounceDb("profile-username", async () => {
+          const origUser = originalProfileData.username?.replace("@", "");
+          if (val === origUser) { v(m, "", true); return; }
+          try {
+            const snap = await getDoc(doc(db, "usernames", val));
+            if (snap.exists()) v(m, "Taken", false);
+            else v(m, "Available", true);
+          } catch (_) { v(m, "Check failed", false); }
+        }, 400);
+      });
+
+      // ── Email validation + OTP ──
+      document.getElementById("profile-detail-email")?.addEventListener("input", function () {
+        if (this.readOnly) return;
+        const m = valMsg("profile-detail-email");
+        const val = this.value.trim();
+        if (!val) { v(m, "Required", false); return; }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) { v(m, "Invalid format", false); return; }
+        v(m, "Valid format", true);
+
+        profileEmailChanged = (val !== originalEmail);
+        const otpSection = document.getElementById("profile-email-otp-section");
+        if (profileEmailChanged) {
+          otpSection?.classList.remove("hidden");
+          profileOTP = null; profileEmailVerified = false;
+          document.getElementById("profile-send-otp-btn").disabled = false;
+          document.getElementById("profile-send-otp-btn").textContent = "Send OTP";
+          document.getElementById("profile-otp-input").disabled = true;
+          document.getElementById("profile-otp-input").value = "";
+          document.getElementById("profile-verify-otp-btn").disabled = true;
+          document.getElementById("profile-otp-status").textContent = "";
+          if (profileOTPTimer) clearTimeout(profileOTPTimer);
+          if (profileOTPCooldown) clearInterval(profileOTPCooldown);
+          profileOTPCooldown = null;
+          profileOTPSendCount = 0;
+        } else {
+          otpSection?.classList.add("hidden");
+          profileEmailVerified = true;
+        }
+
+        debounceDb("profile-email", async () => {
+          if (val === originalEmail) { v(m, "", true); return; }
+          v(m, "Checking...", true);
+          try {
+            const methods = await fetchSignInMethodsForEmail(auth, val);
+            if (methods.length > 0) v(m, "Already registered", false);
+            else v(m, "Available", true);
+          } catch (_) { v(m, "Check failed", false); }
+        }, 400);
+      });
+
+      // ── Mobile validation ──
+      document.getElementById("profile-detail-mobile")?.addEventListener("input", function () {
+        if (this.readOnly) return;
+        const m = valMsg("profile-detail-mobile");
+        const val = this.value.trim();
+        if (!val) { v(m, "", true); return; }
+        if (!/^\+[1-9]\d{9,14}$/.test(val)) { v(m, "Use +91XXXXXXXXXX", false); return; }
+        v(m, "Valid format", true);
+        debounceDb("profile-mobile", async () => {
+          const origMob = originalProfileData.mobile;
+          if (val === origMob) { v(m, "", true); return; }
+          v(m, "Checking...", true);
+          try {
+            const snap = await getDoc(doc(db, "mobiles", val));
+            if (snap.exists()) v(m, "Already registered", false);
+            else v(m, "Available", true);
+          } catch (_) { v(m, "Check failed", false); }
+        }, 400);
+      });
+
+      // ── OTP Send ──
+      document.getElementById("profile-send-otp-btn")?.addEventListener("click", async () => {
+        if (profileOTPSendCount >= PROFILE_MAX_OTP) {
+          alert("Max OTP limit (3 per session).");
+          return;
+        }
+        const email = document.getElementById("profile-detail-email").value.trim();
+        if (!email || !email.includes("@")) { alert("Enter a valid email first."); return; }
+        const sendBtn = document.getElementById("profile-send-otp-btn");
+        const status = document.getElementById("profile-otp-status");
+        sendBtn.disabled = true;
+        status.textContent = "Sending...";
+        status.className = "text-xs text-surface-dim/70";
+        profileOTP = generateOTP();
+        try {
+          await emailjs.send("service_ntkex4p", "template_0d6nbzt", {
+            to_email: email,
+            passcode: profileOTP,
+            time: new Date(Date.now() + 300000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
           });
-          document
-            .getElementById("profile-picture-controls")
-            .classList.remove("hidden");
-          alert("Editing enabled! Update your info and click 'Save Changes'.");
-        });
+          profileOTPSendCount++;
+          status.textContent = "OTP sent to " + email;
+          status.className = "text-xs text-brand-green";
+          document.getElementById("profile-otp-input").disabled = false;
+          document.getElementById("profile-verify-otp-btn").disabled = false;
+          document.getElementById("profile-otp-input").focus();
+          if (profileOTPTimer) clearTimeout(profileOTPTimer);
+          profileOTPTimer = setTimeout(() => {
+            profileOTP = null;
+            status.textContent = "OTP expired. Request a new one.";
+            status.className = "text-xs text-red-400";
+          }, 300000);
+          let sec = 120;
+          profileOTPCooldown = setInterval(() => {
+            sec--;
+            if (sec <= 0) {
+              clearInterval(profileOTPCooldown);
+              profileOTPCooldown = null;
+              if (profileOTPSendCount < PROFILE_MAX_OTP) {
+                sendBtn.disabled = false;
+                sendBtn.textContent = "Resend OTP";
+              }
+            } else {
+              sendBtn.textContent = `Resend in ${sec}s`;
+            }
+          }, 1000);
+        } catch (err) {
+          console.error("EmailJS error:", err);
+          status.textContent = "Failed to send OTP.";
+          status.className = "text-xs text-red-400";
+          sendBtn.disabled = false;
+          sendBtn.textContent = "Send OTP";
+        }
+      });
 
-      document
-        .getElementById("profile-edit-upload")
-        .addEventListener("change", (e) => {
-          const file = e.target.files[0];
-          if (file) {
-            const reader = new FileReader();
-            reader.onload = (event) => {
-              const cropModal = document.getElementById("crop-modal-profile");
-              const cropImage = document.getElementById("crop-image-profile");
-              cropImage.src = event.target.result;
-              cropModal.classList.remove("hidden");
-              if (profileCropper) profileCropper.destroy();
-              profileCropper = new Cropper(cropImage, {
-                aspectRatio: 1,
-                viewMode: 1,
-              });
-            };
-            reader.readAsDataURL(file);
+      // ── OTP Verify ──
+      document.getElementById("profile-verify-otp-btn")?.addEventListener("click", () => {
+        const entered = document.getElementById("profile-otp-input").value.trim();
+        const status = document.getElementById("profile-otp-status");
+        if (!entered || entered.length < 4) { alert("Enter the OTP."); return; }
+        if (!profileOTP) {
+          status.textContent = "No OTP or expired. Request a new one.";
+          status.className = "text-xs text-red-400";
+          return;
+        }
+        if (entered !== profileOTP) {
+          status.textContent = "Invalid OTP. Try again.";
+          status.className = "text-xs text-red-400";
+          return;
+        }
+        profileEmailVerified = true;
+        status.textContent = "Email verified!";
+        status.className = "text-xs text-brand-green font-semibold";
+        document.getElementById("profile-send-otp-btn").textContent = "Verified";
+        document.getElementById("profile-send-otp-btn").disabled = true;
+        document.getElementById("profile-otp-input").disabled = true;
+        document.getElementById("profile-verify-otp-btn").disabled = true;
+        if (profileOTPTimer) clearTimeout(profileOTPTimer);
+        if (profileOTPCooldown) clearInterval(profileOTPCooldown);
+        profileOTPCooldown = null;
+      });
+
+      // ── Profile image upload / cropper ──
+      document.getElementById("profile-edit-upload")?.addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            const cropModal = document.getElementById("crop-modal-profile");
+            const cropImage = document.getElementById("crop-image-profile");
+            cropImage.src = event.target.result;
+            cropModal.classList.remove("hidden");
+            if (profileCropper) profileCropper.destroy();
+            profileCropper = new Cropper(cropImage, { aspectRatio: 1, viewMode: 1 });
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+      document.getElementById("cancel-crop-profile")?.addEventListener("click", () => {
+        document.getElementById("crop-modal-profile").classList.add("hidden");
+        if (cropFromReview) {
+          cropFromReview = false;
+          document.getElementById("review-modal").classList.remove("hidden");
+        } else if (cropFromViewer) {
+          cropFromViewer = false;
+          document.getElementById("photo-viewer").classList.remove("hidden");
+        }
+      });
+      document.getElementById("confirm-crop-profile")?.addEventListener("click", () => {
+        if (!profileCropper) { alert("Crop tool not ready."); return; }
+        try {
+          const isFree = isNaN(profileCropper.options.aspectRatio) || profileCropper.options.aspectRatio === undefined;
+          let canvas;
+          if (isFree) {
+            const data = profileCropper.getData();
+            const maxDim = 1200;
+            let w = Math.round(data.width), h = Math.round(data.height);
+            if (w > maxDim || h > maxDim) {
+              const scale = Math.min(maxDim / w, maxDim / h);
+              w = Math.round(w * scale); h = Math.round(h * scale);
+            }
+            canvas = profileCropper.getCroppedCanvas({ width: w, height: h });
+          } else {
+            canvas = profileCropper.getCroppedCanvas({ width: 400, height: 400 });
           }
-        });
-
-      document
-        .getElementById("confirm-crop-profile")
-        .addEventListener("click", () => {
-          profileCropper
-            .getCroppedCanvas({ width: 400, height: 400 })
-            .toBlob((blob) => {
-              croppedBlobEdit = blob;
-              document.getElementById("profile-hero-img").src =
-                URL.createObjectURL(blob);
-              document
-                .getElementById("crop-modal-profile")
-                .classList.add("hidden");
-              document.getElementById("edit-selected-avatar").value = "";
-            });
-        });
-
+          croppedBase64Edit = canvas.toDataURL("image/jpeg", 0.85);
+          document.getElementById("profile-hero-img").src = croppedBase64Edit;
+          document.getElementById("crop-modal-profile").classList.add("hidden");
+          document.getElementById("edit-selected-avatar").value = "";
+          cropFromReview = false;
+          cropFromViewer = false;
+        } catch (e) {
+          alert("Crop failed: " + e.message);
+        }
+      });
       document.querySelectorAll(".default-avatar-edit").forEach((img) => {
         img.addEventListener("click", () => {
-          document.getElementById("edit-selected-avatar").value =
-            img.dataset.url;
+          document.getElementById("edit-selected-avatar").value = img.dataset.url;
           document.getElementById("profile-hero-img").src = img.dataset.url;
-          croppedBlobEdit = null;
+          croppedBase64Edit = null;
         });
       });
-
       document.querySelectorAll(".frame-edit-item").forEach((item) => {
         item.addEventListener("click", () => {
-          document.getElementById("edit-selected-frame").value =
-            item.dataset.frame;
+          document.getElementById("edit-selected-frame").value = item.dataset.frame;
           document.getElementById("hero-img-container").className =
-            `w-40 h-40 rounded-full border-4 p-1 overflow-hidden cursor-pointer frame-${item.dataset.frame}`;
+            `w-28 sm:w-36 md:w-40 h-28 sm:h-36 md:h-40 rounded-full border-4 p-1 overflow-hidden cursor-pointer frame-${item.dataset.frame}`;
         });
       });
 
-      document
-        .getElementById("profile-save-btn")
-        ?.addEventListener("click", async () => {
-          const user = auth.currentUser;
-          if (!user) return;
+      // ── Camera capture ──
+      let cameraStream = null;
+      let selectedFilter = "none";
+      let selectedBg = "none";
+      let currentZoom = 1;
+      let segModel = null;
+      let segModelReady = false;
 
-          const newFullName = document.getElementById(
-            "profile-detail-fullname",
-          ).value;
-          const newUsername = document
-            .getElementById("profile-detail-username")
-            .value.replace("@", "");
-          const newLocation = document.getElementById(
-            "profile-detail-location",
-          ).value;
-          const selectedFrame = document.getElementById(
-            "edit-selected-frame",
-          ).value;
-          const selectedDefault = document.getElementById(
-            "edit-selected-avatar",
-          ).value;
+      const FILTER_MAP = {
+        none: "", vivid: "cam-filter-vivid", warm: "cam-filter-warm",
+        cool: "cam-filter-cool", noir: "cam-filter-noir",
+        retro: "cam-filter-retro", dramatic: "cam-filter-dramatic",
+      };
 
-          try {
-            let finalPhotoURL = user.photoURL;
-            if (selectedDefault) finalPhotoURL = selectedDefault;
-            if (croppedBlobEdit) {
-              const storageRef = ref(storage, `profiles/${user.uid}`);
-              const snapshot = await uploadBytes(storageRef, croppedBlobEdit);
-              finalPhotoURL = await getDownloadURL(snapshot.ref);
-            }
+      const BG_GRADIENTS = {
+        none: "",
+        stadium: "linear-gradient(135deg, #1a8a2e 0%, #0d5e1a 30%, #1a5f7a 60%, #0d3b5e 100%)",
+        cricket: "linear-gradient(135deg, #2d8a2d 0%, #1a6e1a 25%, #8b6914 50%, #2d8a2d 75%, #1a6e1a 100%)",
+        football: "linear-gradient(135deg, #1e7a2e 0%, #3a9a3a 20%, #ffffff22 50%, #1e7a2e 80%, #0d5e1a 100%)",
+        basketball: "linear-gradient(135deg, #c4721a 0%, #8b4513 25%, #d4952e 50%, #8b4513 75%, #6b3410 100%)",
+      };
 
-            // 1. Sync Name & Photo with Firebase Auth
-            await updateProfile(user, {
-              displayName: newFullName,
-              photoURL: finalPhotoURL,
-            });
+      async function initSegModel() {
+        if (segModelReady) return true;
+        try {
+          if (typeof SelfieSegmentation === "undefined") return false;
+          segModel = new SelfieSegmentation({
+            locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/${file}`
+          });
+          segModel.setOptions({ modelSelection: 1, minDetectionConfidence: 0.5 });
+          await segModel.initialize();
+          segModelReady = true;
+          return true;
+        } catch (e) {
+          console.warn("Background removal unavailable:", e);
+          segModel = null;
+          segModelReady = false;
+          return false;
+        }
+      }
 
-            // 2. Upsert Firestore for persistent data (creates if missing)
-            await setDoc(
-              doc(db, "users", user.uid),
-              {
-                fullName: newFullName,
-                email: user.email,
-                username: newUsername,
-                gender: document.getElementById("profile-detail-gender").value,
-                dob: document.getElementById("profile-detail-dob").value,
-                mobile: document.getElementById("profile-detail-mobile").value,
-                location: newLocation,
-                frame: selectedFrame,
-                photoURL: finalPhotoURL,
-              },
-              { merge: true },
-            );
+      function drawBgGradient(ctx, type, w, h) {
+        if (type === "none") return;
+        const grad = ctx.createLinearGradient(0, 0, w, h);
+        switch (type) {
+          case "stadium":
+            grad.addColorStop(0, "#1a8a2e"); grad.addColorStop(0.3, "#0d5e1a");
+            grad.addColorStop(0.6, "#1a5f7a"); grad.addColorStop(1, "#0d3b5e"); break;
+          case "cricket":
+            grad.addColorStop(0, "#2d8a2d"); grad.addColorStop(0.25, "#1a6e1a");
+            grad.addColorStop(0.5, "#8b6914"); grad.addColorStop(0.75, "#2d8a2d");
+            grad.addColorStop(1, "#1a6e1a"); break;
+          case "football":
+            grad.addColorStop(0, "#1e7a2e"); grad.addColorStop(0.2, "#3a9a3a");
+            grad.addColorStop(0.5, "#4a8a3a"); grad.addColorStop(0.8, "#1e7a2e");
+            grad.addColorStop(1, "#0d5e1a"); break;
+          case "basketball":
+            grad.addColorStop(0, "#c4721a"); grad.addColorStop(0.25, "#8b4513");
+            grad.addColorStop(0.5, "#d4952e"); grad.addColorStop(0.75, "#8b4513");
+            grad.addColorStop(1, "#6b3410"); break;
+        }
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, w, h);
+        if (type === "stadium" || type === "cricket" || type === "football") {
+          ctx.fillStyle = "rgba(255,255,255,0.04)";
+          for (let i = 0; i < w; i += 50) ctx.fillRect(i, 0, 2, h);
+        }
+      }
 
-            // 3. Update UI locally and immediately
-            document.getElementById("profile-hero-name").textContent =
-              `@${newUsername}`;
-            document.getElementById("profile-hero-img").src = finalPhotoURL;
-            document.getElementById("profile-detail-fullname").value =
-              newFullName;
+      function applyBeautyCapture(imageData, w, h) {
+        const data = imageData.data;
+        const len = data.length;
 
-            document
-              .querySelectorAll("input")
-              .forEach((i) => (i.readOnly = true));
-            document
-              .getElementById("profile-picture-controls")
-              .classList.add("hidden");
-            alert("Changes saved and synced successfully!");
-          } catch (error) {
-            alert("Update failed: " + error.message);
+        // ── Step 1: Skin mask ──
+        const skin = new Uint8Array(w * h);
+        for (let i = 0, p = 0; i < len; i += 4, p++) {
+          const r = data[i], g = data[i+1], b = data[i+2];
+          const max = Math.max(r, g, b), min = Math.min(r, g, b);
+          skin[p] = (r > 50 && g > 20 && b > 10 && r > g && r > b &&
+                     r - g > 8 && max - min > 12) ? 255 : 0;
+        }
+
+        const dil = new Uint8Array(w * h);
+        for (let y = 1; y < h - 1; y++) {
+          for (let x = 1; x < w - 1; x++) {
+            let m = 0;
+            for (let dy = -1; dy <= 1; dy++)
+              for (let dx = -1; dx <= 1; dx++)
+                m = Math.max(m, skin[(y+dy) * w + (x+dx)]);
+            dil[y * w + x] = m;
           }
-        });
+        }
 
+        const fTmp = new Float32Array(w * h);
+        for (let p = 0; p < w * h; p++) fTmp[p] = dil[p] / 255;
+        for (let y = 0; y < h; y++) {
+          for (let x = 2; x < w - 2; x++) {
+            let s = 0;
+            for (let dx = -2; dx <= 2; dx++) s += fTmp[y * w + x + dx];
+            dil[y * w + x] = (s / 5) * 255;
+          }
+        }
+        for (let x = 0; x < w; x++) {
+          for (let y = 2; y < h - 2; y++) {
+            let s = 0;
+            for (let dy = -2; dy <= 2; dy++) s += dil[(y+dy) * w + x] / 255;
+            dil[y * w + x] = (s / 5) * 255;
+          }
+        }
+
+        // ── Step 2: Strong blur ──
+        const blur = new Uint8ClampedArray(data);
+        for (let y = 0; y < h; y++) {
+          for (let x = 3; x < w - 3; x++) {
+            let r = 0, g = 0, b = 0, n = 0;
+            for (let dx = -3; dx <= 3; dx++) {
+              const idx = (y * w + x + dx) * 4;
+              r += blur[idx]; g += blur[idx+1]; b += blur[idx+2]; n++;
+            }
+            const idx = (y * w + x) * 4;
+            blur[idx] = r/n; blur[idx+1] = g/n; blur[idx+2] = b/n;
+          }
+        }
+        for (let x = 0; x < w; x++) {
+          for (let y = 3; y < h - 3; y++) {
+            let r = 0, g = 0, b = 0, n = 0;
+            for (let dy = -3; dy <= 3; dy++) {
+              const idx = ((y+dy) * w + x) * 4;
+              r += blur[idx]; g += blur[idx+1]; b += blur[idx+2]; n++;
+            }
+            const idx = (y * w + x) * 4;
+            blur[idx] = r/n; blur[idx+1] = g/n; blur[idx+2] = b/n;
+          }
+        }
+
+        // ── Step 3: Smooth + fairness ──
+        for (let i = 0, p = 0; i < len; i += 4, p++) {
+          const m = Math.min(1, dil[p] / 255);
+          if (m > 0.01) {
+            const s = 0.75 * m;
+            data[i]   = data[i]   * (1 - s) + blur[i]   * s;
+            data[i+1] = data[i+1] * (1 - s) + blur[i+1] * s;
+            data[i+2] = data[i+2] * (1 - s) + blur[i+2] * s;
+            const l = 1 + 0.12 * m;
+            data[i]   = Math.min(255, data[i]   * l);
+            data[i+1] = Math.min(255, data[i+1] * l);
+            data[i+2] = Math.min(255, data[i+2] * l);
+            data[i]   = Math.min(255, data[i]   * 1.04);
+            data[i+2] = Math.max(0,   data[i+2] * 0.95);
+          }
+        }
+
+        // ── Step 4: Blemish removal ──
+        for (let y = 1; y < h - 1; y++) {
+          for (let x = 1; x < w - 1; x++) {
+            const p = y * w + x;
+            if (dil[p] < 128) continue;
+            const idx = p * 4;
+            const r = data[idx], g = data[idx+1], b = data[idx+2];
+            let nr = 0, ng = 0, nb = 0, nn = 0;
+            for (let dy = -1; dy <= 1; dy++) {
+              for (let dx = -1; dx <= 1; dx++) {
+                if (dx === 0 && dy === 0) continue;
+                const ni = ((y+dy) * w + (x+dx)) * 4;
+                nr += data[ni]; ng += data[ni+1]; nb += data[ni+2]; nn++;
+              }
+            }
+            const aR = nr/nn, aG = ng/nn, aB = nb/nn;
+            if (r < aR * 0.7 && g < aG * 0.7) {
+              data[idx] = aR; data[idx+1] = aG; data[idx+2] = aB;
+            }
+          }
+        }
+
+        // ── Step 5: Glow + brightness ──
+        for (let i = 0; i < len; i += 4) {
+          const g = 0.299*data[i] + 0.587*data[i+1] + 0.114*data[i+2];
+          const sb = 1.15;
+          data[i]   = Math.min(255, data[i]   * sb - g * (sb - 1));
+          data[i+1] = Math.min(255, data[i+1] * sb - g * (sb - 1));
+          data[i+2] = Math.min(255, data[i+2] * sb - g * (sb - 1));
+          data[i]   = Math.min(255, data[i]   * 1.06);
+          data[i+1] = Math.min(255, data[i+1] * 1.06);
+          data[i+2] = Math.min(255, data[i+2] * 1.06);
+        }
+        return imageData;
+      }
+
+      function applyVideoFilter() {
+        const el = document.getElementById("camera-composited");
+        if (!el) return;
+        const b = document.getElementById("beauty-toggle")?.checked || false;
+        const fc = FILTER_MAP[selectedFilter] || "";
+        el.className = `w-full object-contain max-h-[350px]`;
+        el.style.transform = "scaleX(-1)";
+        if (!fc && !b) {
+          el.style.filter = "none";
+        } else {
+          const parts = [];
+          if (fc) {
+            switch (selectedFilter) {
+              case "vivid": parts.push("saturate(1.5) contrast(1.1) brightness(1.03)"); break;
+              case "warm": parts.push("sepia(0.35) saturate(1.3) hue-rotate(-8deg) brightness(1.05)"); break;
+              case "cool": parts.push("saturate(0.85) hue-rotate(12deg) brightness(1.08) contrast(0.95)"); break;
+              case "noir": parts.push("grayscale(1) contrast(1.25) brightness(0.95)"); break;
+              case "retro": parts.push("sepia(0.5) saturate(0.7) contrast(0.85) brightness(1.1)"); break;
+              case "dramatic": parts.push("contrast(1.5) brightness(0.85) saturate(1.3)"); break;
+            }
+          }
+          if (b) parts.push("brightness(1.06) contrast(0.94) saturate(1.15) blur(0.5px) drop-shadow(0 0 2px rgba(255,200,150,0.15))");
+          el.style.filter = parts.join(" ");
+        }
+      }
+
+      function applyBgPreview() {
+        const w = document.getElementById("camera-video-wrapper");
+        if (!w) return;
+        w.style.background = selectedBg !== "none" ? "#000" : "";
+        w.style.padding = "";
+      }
+
+      let previewRunning = false;
+
+      function startPreviewLoop() {
+        const v = document.getElementById("camera-preview");
+        const c = document.getElementById("camera-composited");
+        const ctx = c.getContext("2d");
+        previewRunning = true;
+
+        async function loop() {
+          let tempCanvas = null, tempCtx = null;
+          while (previewRunning) {
+            if (v.readyState >= 2 && v.videoWidth > 0) {
+              const vw = v.videoWidth, vh = v.videoHeight;
+              if (c.width !== vw || c.height !== vh) { c.width = vw; c.height = vh; }
+              const z = currentZoom;
+              const visW = vw / z, visH = vh / z;
+              const sx = (vw - visW) / 2, sy = (vh - visH) / 2;
+
+              ctx.clearRect(0, 0, vw, vh);
+
+              if (selectedBg !== "none") {
+                if (segModelReady) {
+                  try {
+                    const res = await segModel.send({ image: v });
+                    drawBgGradient(ctx, selectedBg, vw, vh);
+                    const ms = res.segmentationMask;
+                    if (!tempCanvas) { tempCanvas = document.createElement("canvas"); tempCtx = tempCanvas.getContext("2d"); }
+                    tempCanvas.width = vw; tempCanvas.height = vh;
+                    tempCtx.drawImage(v, sx, sy, visW, visH, 0, 0, vw, vh);
+                    tempCtx.globalCompositeOperation = "destination-in";
+                    tempCtx.drawImage(ms, sx, sy, visW, visH, 0, 0, vw, vh);
+                    tempCtx.globalCompositeOperation = "source-over";
+                    ctx.drawImage(tempCanvas, 0, 0);
+                  } catch (e) {
+                    drawBgGradient(ctx, selectedBg, vw, vh);
+                    ctx.globalAlpha = 0.88;
+                    ctx.drawImage(v, sx, sy, visW, visH, 0, 0, vw, vh);
+                    ctx.globalAlpha = 1;
+                  }
+                } else {
+                  drawBgGradient(ctx, selectedBg, vw, vh);
+                  ctx.globalAlpha = 0.88;
+                  ctx.drawImage(v, sx, sy, visW, visH, 0, 0, vw, vh);
+                  ctx.globalAlpha = 1;
+                }
+              } else {
+                ctx.drawImage(v, sx, sy, visW, visH, 0, 0, vw, vh);
+              }
+            }
+            if (segModelReady && selectedBg !== "none") {
+              await new Promise(r => setTimeout(r, 120));
+            } else {
+              await new Promise(r => requestAnimationFrame(r));
+            }
+          }
+        }
+        loop();
+      }
+
+      function stopPreviewLoop() {
+        previewRunning = false;
+      }
+
+      async function openCamera() {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+          alert("Camera not available. Try Gallery instead."); return;
+        }
+        try {
+          cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 720 } } });
+          document.getElementById("camera-preview").srcObject = cameraStream;
+          document.getElementById("camera-modal").classList.remove("hidden");
+          selectedFilter = "none"; selectedBg = "none"; currentZoom = 1;
+          document.getElementById("zoom-range").value = 1;
+          document.getElementById("zoom-label").textContent = "1.0x";
+          document.querySelectorAll(".filter-btn").forEach(b => {
+            b.className = "filter-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors";
+          });
+          document.querySelector('.filter-btn[data-filter="none"]').className = "filter-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white bg-white/10 shrink-0 font-medium";
+          document.querySelectorAll(".bg-btn").forEach(b => {
+            b.className = "bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors";
+          });
+          document.querySelector('.bg-btn[data-bg="none"]').className = "bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white bg-white/10 shrink-0 font-medium";
+          document.getElementById("beauty-toggle").checked = false;
+          applyVideoFilter(); applyBgPreview();
+          initSegModel();
+          document.getElementById("camera-preview").onloadedmetadata = () => startPreviewLoop();
+        } catch (err) {
+          if (err.name === "NotAllowedError" || err.name === "PermissionDeniedError")
+            alert("Camera permission denied.");
+          else
+            alert("Camera error: " + err.message);
+        }
+      }
+
+      document.querySelectorAll(".filter-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".filter-btn").forEach(b => {
+            b.className = "filter-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors";
+          });
+          btn.className = "filter-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white bg-white/10 shrink-0 font-medium";
+          selectedFilter = btn.dataset.filter;
+          applyVideoFilter();
+        });
+      });
+
+      document.querySelectorAll(".bg-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".bg-btn").forEach(b => {
+            b.className = "bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors";
+          });
+          btn.className = "bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white bg-white/10 shrink-0 font-medium";
+          selectedBg = btn.dataset.bg;
+          applyBgPreview();
+        });
+      });
+
+      document.getElementById("beauty-toggle")?.addEventListener("change", applyVideoFilter);
+
+      document.getElementById("zoom-range")?.addEventListener("input", function() {
+        currentZoom = parseFloat(this.value);
+        document.getElementById("zoom-label").textContent = currentZoom.toFixed(1) + "x";
+      });
+
+      async function capturePhotoWithEffects(video, zoom) {
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+        const vw = video.videoWidth, vh = video.videoHeight;
+        canvas.width = vw; canvas.height = vh;
+        const visW = vw / zoom, visH = vh / zoom;
+        const sx = (vw - visW) / 2, sy = (vh - visH) / 2;
+
+        if (selectedBg !== "none") {
+          drawBgGradient(ctx, selectedBg, vw, vh);
+          if (segModelReady) {
+            try {
+              const ld = document.getElementById("camera-loading");
+              if (ld) ld.classList.remove("hidden");
+              const res = await segModel.send({ image: video });
+              const ms = res.segmentationMask;
+              const t = document.createElement("canvas");
+              t.width = vw; t.height = vh;
+              const tc = t.getContext("2d");
+              tc.drawImage(video, sx, sy, visW, visH, 0, 0, vw, vh);
+              tc.globalCompositeOperation = "destination-in";
+              tc.drawImage(ms, sx, sy, visW, visH, 0, 0, vw, vh);
+              tc.globalCompositeOperation = "source-over";
+              ctx.drawImage(t, 0, 0);
+              if (ld) ld.classList.add("hidden");
+              return applyPixelEffects(ctx, canvas);
+            } catch (e) {
+              console.warn("Seg fallback:", e);
+              ctx.globalAlpha = 0.88;
+              ctx.drawImage(video, sx, sy, visW, visH, 0, 0, vw, vh);
+              ctx.globalAlpha = 1;
+            }
+          } else {
+            ctx.globalAlpha = 0.88;
+            ctx.drawImage(video, sx, sy, visW, visH, 0, 0, vw, vh);
+            ctx.globalAlpha = 1;
+          }
+        } else {
+          ctx.drawImage(video, sx, sy, visW, visH, 0, 0, vw, vh);
+        }
+        return applyPixelEffects(ctx, canvas);
+      }
+
+      function applyPixelEffects(ctx, canvas) {
+        if (selectedFilter !== "none") {
+          const id = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          const d = id.data;
+          for (let i = 0; i < d.length; i += 4) {
+            let r = d[i], g = d[i+1], b = d[i+2];
+            switch (selectedFilter) {
+              case "vivid": r=Math.min(255,r*1.3); g=Math.min(255,g*1.2); b=Math.min(255,b*1.1); break;
+              case "warm": r=Math.min(255,r*1.2); g=g; b=Math.max(0,b*0.85); break;
+              case "cool": r=Math.max(0,r*0.85); g=g*0.95; b=Math.min(255,b*1.25); break;
+              case "noir": { const gr=0.299*r+0.587*g+0.114*b; r=g=b=Math.min(255,gr*1.1); } break;
+              case "retro": r=Math.min(255,r*1.15); g=Math.max(0,g*0.85); b=Math.max(0,b*0.7); break;
+              case "dramatic": r=Math.min(255,r*1.4); g=Math.min(255,g*1.3); b=Math.min(255,b*1.2); break;
+            }
+            d[i]=r; d[i+1]=g; d[i+2]=b;
+          }
+          ctx.putImageData(id, 0, 0);
+        }
+
+        if (document.getElementById("beauty-toggle")?.checked) {
+          const w = canvas.width, h = canvas.height;
+          const id = ctx.getImageData(0, 0, w, h);
+          applyBeautyCapture(id, w, h);
+          ctx.putImageData(id, 0, 0);
+        }
+        return canvas;
+      }
+
+      document.getElementById("camera-capture-btn")?.addEventListener("click", openCamera);
+      const cameraBtnProfile = document.getElementById("camera-btn-profile");
+      if (cameraBtnProfile) cameraBtnProfile.addEventListener("click", openCamera);
+      document.getElementById("gallery-btn-profile")?.addEventListener("click", () => {
+        document.getElementById("profile-edit-upload").click();
+      });
+      document.getElementById("close-camera-modal")?.addEventListener("click", () => {
+        stopPreviewLoop();
+        if (cameraStream) { cameraStream.getTracks().forEach(t => t.stop()); cameraStream = null; }
+        document.getElementById("camera-modal").classList.add("hidden");
+      });
+      // ── Review Modal State ──
+      let reviewState = { rawCanvas: null, personCanvas: null, zoom: 1, filter: "none", beauty: false, bg: "none" };
+      let reviewRotation = 0, reviewFlipH = false, cropFromReview = false;
+
+      document.getElementById("capture-photo-btn")?.addEventListener("click", async () => {
+        const video = document.getElementById("camera-preview");
+        const zoom = currentZoom;
+
+        const raw = document.createElement("canvas");
+        raw.width = video.videoWidth; raw.height = video.videoHeight;
+        raw.getContext("2d").drawImage(video, 0, 0);
+        reviewState = { rawCanvas: raw, personCanvas: null, zoom, filter: selectedFilter, beauty: !!document.getElementById("beauty-toggle")?.checked, bg: selectedBg };
+
+        if (selectedBg !== "none" && segModelReady) {
+          try {
+            const vw = raw.width, vh = raw.height;
+            const visW = vw / zoom, visH = vh / zoom;
+            const sx = (vw - visW) / 2, sy = (vh - visH) / 2;
+            const res = await segModel.send({ image: video });
+            const mask = res.segmentationMask;
+            const pc = document.createElement("canvas");
+            pc.width = vw; pc.height = vh;
+            const pctx = pc.getContext("2d");
+            pctx.drawImage(video, sx, sy, visW, visH, 0, 0, vw, vh);
+            pctx.globalCompositeOperation = "destination-in";
+            pctx.drawImage(mask, sx, sy, visW, visH, 0, 0, vw, vh);
+            pctx.globalCompositeOperation = "source-over";
+            reviewState.personCanvas = pc;
+          } catch (e) { reviewState.personCanvas = null; }
+        }
+
+        const canvas = await capturePhotoWithEffects(video, zoom);
+        stopPreviewLoop();
+        if (cameraStream) { cameraStream.getTracks().forEach(t => t.stop()); cameraStream = null; }
+        document.getElementById("camera-modal").classList.add("hidden");
+        reviewRotation = 0; reviewFlipH = false;
+        updateReviewCanvas(canvas);
+        document.getElementById("review-modal").classList.remove("hidden");
+      });
+
+      function updateReviewCanvas(sourceCanvas) {
+        const rc = document.getElementById("review-canvas");
+        const ctx = rc.getContext("2d");
+        let w = sourceCanvas.width, h = sourceCanvas.height;
+        if (reviewRotation === 90 || reviewRotation === 270) { const t = w; w = h; h = t; }
+        rc.width = w; rc.height = h;
+        ctx.save();
+        ctx.translate(w / 2, h / 2);
+        ctx.rotate(reviewRotation * Math.PI / 180);
+        if (reviewFlipH) ctx.scale(-1, 1);
+        ctx.drawImage(sourceCanvas, -sourceCanvas.width / 2, -sourceCanvas.height / 2);
+        ctx.restore();
+      }
+
+      function composeReviewCanvas() {
+        const { rawCanvas, personCanvas, zoom, bg } = reviewState;
+        const vw = rawCanvas.width, vh = rawCanvas.height;
+        const visW = vw / zoom, visH = vh / zoom;
+        const sx = (vw - visW) / 2, sy = (vh - visH) / 2;
+        const c = document.createElement("canvas");
+        c.width = vw; c.height = vh;
+        const ctx = c.getContext("2d");
+        if (bg !== "none") {
+          drawBgGradient(ctx, bg, vw, vh);
+          if (personCanvas) { ctx.drawImage(personCanvas, 0, 0); }
+          else { ctx.globalAlpha = 0.88; ctx.drawImage(rawCanvas, sx, sy, visW, visH, 0, 0, vw, vh); ctx.globalAlpha = 1; }
+        } else { ctx.drawImage(rawCanvas, sx, sy, visW, visH, 0, 0, vw, vh); }
+        applyPixelEffects(ctx, c);
+        return c;
+      }
+
+      function renderReviewWithBg(newBg) {
+        reviewState.bg = newBg;
+        updateReviewCanvas(composeReviewCanvas());
+      }
+
+      document.getElementById("close-review-modal")?.addEventListener("click", () => {
+        document.getElementById("review-modal").classList.add("hidden");
+        reviewState = { rawCanvas: null, personCanvas: null, zoom: 1, filter: "none", beauty: false, bg: "none" };
+      });
+
+      document.querySelectorAll(".review-bg-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".review-bg-btn").forEach(b => {
+            b.className = "review-bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors";
+          });
+          btn.className = "review-bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white bg-white/10 shrink-0 font-medium";
+          renderReviewWithBg(btn.dataset.bg);
+        });
+      });
+
+      document.getElementById("review-rotate-left")?.addEventListener("click", () => {
+        reviewRotation = (reviewRotation - 90 + 360) % 360;
+        updateReviewCanvas(composeReviewCanvas());
+      });
+      document.getElementById("review-rotate-right")?.addEventListener("click", () => {
+        reviewRotation = (reviewRotation + 90) % 360;
+        updateReviewCanvas(composeReviewCanvas());
+      });
+      document.getElementById("review-flip-h")?.addEventListener("click", () => {
+        reviewFlipH = !reviewFlipH;
+        updateReviewCanvas(composeReviewCanvas());
+      });
+
+      document.getElementById("review-download-btn")?.addEventListener("click", () => {
+        const link = document.createElement("a");
+        link.download = "fanconnect-photo.jpg";
+        link.href = document.getElementById("review-canvas").toDataURL("image/jpeg", 0.92);
+        link.click();
+      });
+
+      document.getElementById("review-crop-btn")?.addEventListener("click", () => {
+        cropFromReview = true;
+        const img = document.getElementById("crop-image-profile");
+        img.src = document.getElementById("review-canvas").toDataURL("image/jpeg", 0.95);
+        document.getElementById("review-modal").classList.add("hidden");
+        document.getElementById("crop-modal-profile").classList.remove("hidden");
+        if (profileCropper) profileCropper.destroy();
+        profileCropper = new Cropper(img, { aspectRatio: NaN, viewMode: 1, rotatable: true, scalable: true });
+      });
+
+      document.getElementById("review-use-btn")?.addEventListener("click", () => {
+        cropFromReview = true;
+        const img = document.getElementById("crop-image-profile");
+        img.src = document.getElementById("review-canvas").toDataURL("image/jpeg", 0.95);
+        document.getElementById("review-modal").classList.add("hidden");
+        document.getElementById("crop-modal-profile").classList.remove("hidden");
+        if (profileCropper) profileCropper.destroy();
+        profileCropper = new Cropper(img, { aspectRatio: 1, viewMode: 1 });
+      });
+
+      // ── Photo Viewer ──
+      document.getElementById("hero-img-container")?.addEventListener("click", () => {
+        const src = document.getElementById("profile-hero-img").src;
+        if (!src || src.includes("aida-public")) return;
+        document.getElementById("pv-image").src = src;
+        document.getElementById("photo-viewer").classList.remove("hidden");
+      });
+      document.getElementById("pv-close")?.addEventListener("click", () => {
+        document.getElementById("photo-viewer").classList.add("hidden");
+      });
+      document.getElementById("photo-viewer")?.addEventListener("click", (e) => {
+        if (e.target === document.getElementById("photo-viewer")) {
+          document.getElementById("photo-viewer").classList.add("hidden");
+        }
+      });
+      document.getElementById("pv-crop-free")?.addEventListener("click", () => {
+        const src = document.getElementById("pv-image").src;
+        const img = document.getElementById("crop-image-profile");
+        img.src = src;
+        document.getElementById("photo-viewer").classList.add("hidden");
+        document.getElementById("crop-modal-profile").classList.remove("hidden");
+        if (profileCropper) profileCropper.destroy();
+        profileCropper = new Cropper(img, { aspectRatio: NaN, viewMode: 1, rotatable: true, scalable: true });
+        cropFromViewer = true;
+        cropFromReview = false;
+      });
+      document.getElementById("pv-download")?.addEventListener("click", () => {
+        const link = document.createElement("a");
+        link.download = "profile-photo.jpg";
+        link.href = document.getElementById("pv-image").src;
+        link.click();
+      });
+
+      // ── Edit button ──
+      document.getElementById("edit-profile-btn")?.addEventListener("click", () => {
+        originalProfileData = {
+          fullname: document.getElementById("profile-detail-fullname").value,
+          username: document.getElementById("profile-detail-username").value,
+          gender: document.getElementById("profile-detail-gender").value,
+          dob: document.getElementById("profile-detail-dob").value,
+          mobile: document.getElementById("profile-detail-mobile").value,
+          location: document.getElementById("profile-detail-location").value,
+        };
+        originalEmail = document.getElementById("profile-detail-email").value;
+        profileEmailChanged = false;
+        profileEmailVerified = true;
+        document.querySelectorAll("input[readonly]").forEach(input => input.readOnly = false);
+        document.getElementById("profile-picture-controls").classList.remove("hidden");
+        document.getElementById("edit-profile-btn").classList.add("hidden");
+        document.getElementById("profile-save-btn").classList.remove("hidden");
+        document.getElementById("profile-cancel-btn").classList.remove("hidden");
+      });
+
+      // ── Save button (with validation) ──
+      document.getElementById("profile-save-btn")?.addEventListener("click", async () => {
+        if (isSaving) return;
+        isSaving = true;
+
+        const user = auth.currentUser;
+        if (!user) { isSaving = false; alert("Please login again."); return; }
+
+        const newFullName = document.getElementById("profile-detail-fullname").value.trim();
+        const newUsername = document.getElementById("profile-detail-username").value.trim().toLowerCase().replace("@", "");
+        const newEmail = document.getElementById("profile-detail-email").value.trim();
+        const newMobile = document.getElementById("profile-detail-mobile").value.trim();
+        const newDob = document.getElementById("profile-detail-dob").value.trim();
+        const newLocation = document.getElementById("profile-detail-location").value.trim();
+        const selectedFrame = document.getElementById("edit-selected-frame").value;
+        const selectedDefault = document.getElementById("edit-selected-avatar").value;
+
+        // Validate name
+        if (!newFullName) { isSaving = false; alert("Full name is required."); return; }
+
+        // Validate username (only if changed)
+        const origUser = originalProfileData.username?.replace("@", "");
+        const usernameChanged = newUsername !== origUser;
+        if (usernameChanged) {
+          if (!newUsername) { isSaving = false; alert("Username is required."); return; }
+          if (!/^[a-z0-9_]{3,20}$/.test(newUsername)) { isSaving = false; alert("Username: 3–20 letters, numbers or underscores."); return; }
+          try {
+            const uSnap = await getDoc(doc(db, "usernames", newUsername));
+            if (uSnap.exists()) { isSaving = false; alert("Username already taken."); return; }
+          } catch (_) {}
+        }
+
+        // Validate mobile (only if changed)
+        const origMob = originalProfileData.mobile;
+        const mobileChanged = newMobile !== origMob;
+        if (mobileChanged && newMobile) {
+          if (!/^\+[1-9]\d{9,14}$/.test(newMobile)) { isSaving = false; alert("Invalid mobile. Use +91XXXXXXXXXX."); return; }
+          try {
+            const mSnap = await getDoc(doc(db, "mobiles", newMobile));
+            if (mSnap.exists()) { isSaving = false; alert("Mobile already registered."); return; }
+          } catch (_) {}
+        }
+
+        // Validate DOB (only if changed)
+        const dobChanged = newDob !== originalProfileData.dob;
+        if (dobChanged && newDob) {
+          if (!/^\d{2}\/\d{2}\/\d{4}$/.test(newDob)) { isSaving = false; alert("Use DD/MM/YYYY for DOB."); return; }
+          const [d, mo, y] = newDob.split("/").map(Number);
+          if (mo < 1 || mo > 12) { isSaving = false; alert("Invalid month."); return; }
+          if (d < 1 || d > 31) { isSaving = false; alert("Invalid day."); return; }
+          const bd = new Date(y, mo - 1, d);
+          if (bd.getDate() !== d || bd.getMonth() !== mo - 1) { isSaving = false; alert("Invalid date."); return; }
+          if (bd >= new Date()) { isSaving = false; alert("DOB cannot be in future."); return; }
+          const rawAge = new Date().getFullYear() - y;
+          const adj = new Date().getMonth() < (mo - 1) || (new Date().getMonth() === (mo - 1) && new Date().getDate() < d) ? rawAge - 1 : rawAge;
+          if (adj < 13) { isSaving = false; alert("Must be 13+."); return; }
+        }
+
+        // Validate email (only if changed)
+        const emailChanged = newEmail !== originalEmail;
+        if (emailChanged) {
+          if (!newEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)) { isSaving = false; alert("Valid email required."); return; }
+          if (!profileEmailVerified) { isSaving = false; alert("Verify your new email via OTP first."); return; }
+          try {
+            const methods = await fetchSignInMethodsForEmail(auth, newEmail);
+            if (methods.length > 0) { isSaving = false; alert("Email already registered."); return; }
+          } catch (_) {}
+        }
+
+        // ── Save ──
+        const saveBtn = document.getElementById("profile-save-btn");
+        const originalText = saveBtn.innerHTML;
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<span class="material-symbols-outlined text-base">hourglass_top</span> Saving...';
+        const saveTimeout = setTimeout(() => {
+          saveBtn.disabled = false;
+          saveBtn.innerHTML = originalText;
+          isSaving = false;
+          alert("Save timed out. Check your connection and try again.");
+        }, 20000);
+
+        let finalPhotoURL = window._originalPhotoURL;
+        if (selectedDefault) finalPhotoURL = selectedDefault;
+        if (croppedBase64Edit) finalPhotoURL = croppedBase64Edit;
+
+        try {
+          await updateProfile(user, { displayName: newFullName });
+          const firestoreData = {
+            fullName: newFullName, email: newEmail, username: newUsername,
+            gender: document.getElementById("profile-detail-gender").value,
+            dob: newDob, mobile: newMobile, location: newLocation, frame: selectedFrame,
+          };
+          if (finalPhotoURL) firestoreData.photoURL = finalPhotoURL;
+          await setDoc(doc(db, "users", user.uid), firestoreData, { merge: true });
+          clearTimeout(saveTimeout);
+          if (finalPhotoURL) window._originalPhotoURL = finalPhotoURL;
+          document.getElementById("profile-hero-name").textContent = `@${newUsername}`;
+          document.getElementById("profile-hero-img").src = finalPhotoURL;
+          document.getElementById("profile-detail-fullname").value = newFullName;
+          document.querySelectorAll("input").forEach(i => i.readOnly = true);
+          document.getElementById("profile-picture-controls").classList.add("hidden");
+          document.getElementById("edit-profile-btn").classList.remove("hidden");
+          document.getElementById("profile-save-btn").classList.add("hidden");
+          document.getElementById("profile-cancel-btn").classList.add("hidden");
+          document.getElementById("profile-email-otp-section").classList.add("hidden");
+          isSaving = false;
+          alert("Changes saved!");
+        } catch (error) {
+          clearTimeout(saveTimeout);
+          saveBtn.disabled = false;
+          saveBtn.innerHTML = originalText;
+          isSaving = false;
+          console.error("Save error:", error);
+          alert("Update failed: " + error.message);
+        }
+      });
+
+      // ── Cancel button ──
+      document.getElementById("profile-cancel-btn")?.addEventListener("click", () => {
+        document.getElementById("profile-detail-fullname").value = originalProfileData.fullname;
+        document.getElementById("profile-detail-username").value = originalProfileData.username;
+        document.getElementById("profile-detail-gender").value = originalProfileData.gender;
+        document.getElementById("profile-detail-dob").value = originalProfileData.dob;
+        document.getElementById("profile-detail-mobile").value = originalProfileData.mobile;
+        document.getElementById("profile-detail-location").value = originalProfileData.location;
+        document.getElementById("profile-detail-email").value = originalEmail;
+        if (window._originalPhotoURL) document.getElementById("profile-hero-img").src = window._originalPhotoURL;
+        document.querySelectorAll("input").forEach(i => i.readOnly = true);
+        document.getElementById("profile-picture-controls").classList.add("hidden");
+        document.getElementById("edit-profile-btn").classList.remove("hidden");
+        document.getElementById("profile-save-btn").classList.add("hidden");
+        document.getElementById("profile-cancel-btn").classList.add("hidden");
+        document.getElementById("profile-email-otp-section").classList.add("hidden");
+        profileEmailChanged = false; profileEmailVerified = false; profileOTP = null;
+        if (profileOTPTimer) clearTimeout(profileOTPTimer);
+        if (profileOTPCooldown) clearInterval(profileOTPCooldown);
+        profileOTPCooldown = null; profileOTPSendCount = 0;
+        ["profile-detail-username", "profile-detail-dob", "profile-detail-email", "profile-detail-mobile"].forEach(id => {
+          const m = valMsg(id); if (m) v(m, "", true);
+        });
+      });
+
+      // ── Logout ──
       const logoutHandler = () => {
         signOut(auth).then(() => (window.location.href = "berforeloginindex.html"));
       };
-
-      document
-        .getElementById("profile-signout-btn")
-        ?.addEventListener("click", logoutHandler);
-      document
-        .getElementById("mobile-logout-btn")
-        ?.addEventListener("click", logoutHandler);
+      document.getElementById("profile-signout-btn")?.addEventListener("click", logoutHandler);
+      document.getElementById("mobile-logout-btn")?.addEventListener("click", logoutHandler);
     </script>
     <script type="module" src="js/script.js"></script>
     <script src="js/theme.js"></script>

@@ -87,14 +87,26 @@ document.addEventListener("DOMContentLoaded", () => {
         window.location.href = "berforeloginindex.html";
         return;
       }
-    } else {
+    } else if (user) {
       // User is logged in. Redirect away from landing and auth pages to dashboard.
       const page = window.location.pathname.split("/").pop();
       if (
         page === "berforeloginindex.html" ||
-        page === "login.html" ||
-        page === "signup.html"
+        page === "login.html"
       ) {
+        // Check Firestore emailVerified for OTP-verified users
+        // Missing field = legacy user = allow; false = block
+        let emailVerified = true;
+        try {
+          const userSnap = await getDoc(doc(db, "users", user.uid));
+          if (userSnap.exists() && userSnap.data().emailVerified === false) {
+            emailVerified = false;
+          }
+        } catch (_) {}
+        if (!emailVerified) {
+          await signOut(auth);
+          return;
+        }
         window.location.href = "index.html";
         return;
       }
@@ -106,18 +118,17 @@ document.addEventListener("DOMContentLoaded", () => {
     const welcomeElem = document.getElementById("welcome-message");
 
     if (user) {
-      let displayIdentity = user.displayName || user.email.split("@")[0];
+      const emailPrefix = user.email.split("@")[0].toLowerCase().replace(/[^a-z0-9]/g, "");
+      let displayIdentity = emailPrefix || "user";
       const photo =
         user.photoURL ||
         `https://ui-avatars.com/api/?name=${encodeURIComponent(displayIdentity)}&background=10b981&color=fff`;
 
       // Show Auth data immediately to prevent flicker
       if (userNameElem)
-        userNameElem.textContent = displayIdentity.startsWith("@")
-          ? displayIdentity
-          : `@${displayIdentity}`;
+        userNameElem.textContent = `@${displayIdentity}`;
       if (welcomeElem)
-        welcomeElem.innerHTML = `Welcome back, ${displayIdentity.replace("@", "")}! <span class="ml-2 text-2xl">👋</span>`;
+        welcomeElem.innerHTML = `Welcome back, ${displayIdentity}! <span class="ml-2 text-2xl">👋</span>`;
       if (userAvatarElem) userAvatarElem.src = photo;
 
       // Fetch extra Firestore details in the background
@@ -143,6 +154,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
           if (data.username && userNameElem)
             userNameElem.textContent = `@${data.username}`;
+          if (data.photoURL && userAvatarElem) {
+            userAvatarElem.src = data.photoURL;
+          }
+          if (welcomeElem) {
+            const name = data.fullName || data.username || displayIdentity;
+            welcomeElem.textContent = `Welcome back, ${name}!`;
+          }
         }
       } catch (error) {
         console.error("Error fetching user data from Firestore:", error);
@@ -310,6 +328,7 @@ document.addEventListener("DOMContentLoaded", () => {
         "Baseball",
         "Cricket", // Assuming cricket.html is also a sport page
         "Hockey",
+        "All Games",
       ];
 
       // Check if the clicked link is a sport-related page (or general match page)

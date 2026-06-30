@@ -2,9 +2,20 @@
 
 <html class="dark" lang="en">
   <head>
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/fancoin/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/fancoin/favicon-16x16.png" />
+    <meta property="og:site_name" content="Fanconnact" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="assets/fancoin/fanconnactlogo.png" />
+    <meta property="og:title" content="Fanconnact | Table Tennis Dashboard" />
+    <meta property="og:description" content="Join Fanconnact for fantasy sports, predictions, and live matches." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Fanconnact | Table Tennis Dashboard" />
+    <meta name="twitter:description" content="Join Fanconnact for fantasy sports, predictions, and live matches." />
+    <meta name="twitter:image" content="assets/fancoin/fanconnactlogo.png" />
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>FanConnect | Table Tennis Dashboard</title>
+    <title>Fanconnact | Table Tennis Dashboard</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;display=swap"
@@ -212,9 +223,9 @@
     </style>
     <meta
       name="description"
-      content="FanConnect sports platform for fans, scores, communities and updates."
+      content="Fanconnact sports platform for fans, scores, communities and updates."
     />
-    <meta property="og:title" content="FanConnect" />
+    <meta property="og:title" content="Fanconnact" />
     <meta name="robots" content="index,follow" />
     <meta
       http-equiv="Content-Security-Policy"
@@ -236,7 +247,7 @@
         </button>
 
           <div id="header-logo" class="lg:hidden flex items-center gap-2 ml-2">
-            <img src="assets/fancoin/fanconnactlogo.png" alt="FanConnect" class="w-7 h-7" />
+            <img src="assets/fancoin/fanconnactlogo.png" alt="Fanconnact" class="w-7 h-7" />
             <span class="text-base font-bold whitespace-nowrap"><span class="text-fan">Fan</span><span class="text-connect">Connact</span></span>
           </div>
 
@@ -362,7 +373,7 @@
           class="p-6 flex items-center space-x-2 logo-container cursor-pointer"
           onclick="window.location.href = 'index.html'"
         >
-          <img src="assets/fancoin/fanconnactlogo.png" alt="FanConnect" class="w-8 h-8 flex-shrink-0" />
+          <img src="assets/fancoin/fanconnactlogo.png" alt="Fanconnact" class="w-8 h-8 flex-shrink-0" />
           <span
             class="text-xl font-bold tracking-tight font-headline logo-text"
             ><span class="text-fan">Fan</span><span class="text-connect">Connact</span></span
@@ -519,7 +530,7 @@
               </svg>
             </div>
           </div>
-          <h4 class="font-bold text-sm mb-1">FanConnect Premium</h4>
+          <h4 class="font-bold text-sm mb-1">Fanconnact Premium</h4>
           <p class="text-[11px] text-gray-400 mb-4 leading-tight">
             Ad-free experience, exclusive badges &amp; more!
           </p>
@@ -980,6 +991,191 @@
             </div>
           </div>
         </div>
+        <!-- BEGIN: TopPlayersWidget -->
+        <div
+          class="bg-surface-container rounded-xl p-md border border-outline-variant/20 mb-lg"
+        >
+          <div class="flex items-center justify-between mb-md">
+            <div class="flex items-center space-x-2">
+              <h3 class="font-headline-md text-on-surface text-base">
+                Top Players
+              </h3>
+              <div class="flex items-center space-x-1 ml-2">
+                <button
+                  class="p-1 rounded hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface"
+                >
+                  <span class="material-symbols-outlined text-sm"
+                    >chevron_left</span
+                  >
+                </button>
+                <button
+                  class="p-1 rounded hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface"
+                >
+                  <span class="material-symbols-outlined text-sm"
+                    >chevron_right</span
+                  >
+                </button>
+              </div>
+            </div>
+            <a
+              class="text-[10px] font-bold text-primary uppercase hover:underline"
+              href="index.html"
+              >View All</a
+            >
+          </div>
+          <div
+            class="flex gap-sm mb-md bg-surface-container-high p-1 rounded-lg"
+          >
+            <button
+              class="flex-1 py-1 px-xs bg-primary text-on-primary font-bold text-[10px] rounded uppercase"
+            >
+              Run Scorers
+            </button>
+            <button
+              class="flex-1 py-1 px-xs bg-surface-container-high text-on-surface-variant font-bold text-[10px] rounded uppercase"
+            >
+              Wicket Takers
+            </button>
+            <button
+              class="flex-1 py-1 px-xs bg-surface-container-high text-on-surface-variant font-bold text-[10px] rounded uppercase"
+            >
+              Most Sixes
+            </button>
+          </div>
+          <div class="flex flex-col">
+            <!-- Player 1 -->
+            <div
+              class="flex items-center gap-md py-sm border-b border-outline-variant/10 group"
+            >
+              <span
+                class="font-numeric-data text-primary italic font-bold w-4 text-center"
+                >1</span
+              >
+              <div
+                class="w-10 h-10 rounded-full bg-surface-variant border border-outline-variant overflow-hidden"
+              >
+                <img
+                  alt="Player"
+                  class="w-full h-full object-cover"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuDLDPrPcqWJxv2qo9yWmwWC-ty1lnU3gcywyMoVfGrbX5Qe0_nxYx8tLFLrPWo5E70dAb7i_5lRIE2nCiBAMkEbUBH9_TniUU6nX4php6ExpRClnGnztsgdpkKLrZ81jtQoYnGo0Z526JYwmDZzfdsvkkx3hzA6FzHu2cOP5V--DcxY6ewXS4DNc9sHVlRAfLTXb74nJbEVTSX5cPtRND4iS2SKRn2KQ8oyPMhyGL8v2lepI4p9ogmBASf1tfBke4is3CTn21ru-66x"
+                />
+              </div>
+              <div class="flex-1">
+                <p class="text-xs font-bold text-on-surface">Virat Kohli</p>
+                <p class="text-[10px] text-on-surface-variant">RCB</p>
+              </div>
+              <div class="text-right">
+                <p class="text-xs font-bold text-on-surface">687</p>
+                <p class="text-[9px] text-on-surface-variant uppercase">Runs</p>
+              </div>
+            </div>
+            <!-- Player 2 -->
+            <div
+              class="flex items-center gap-md py-sm border-b border-outline-variant/10 group"
+            >
+              <span
+                class="font-numeric-data text-primary italic font-bold w-4 text-center"
+                >2</span
+              >
+              <div
+                class="w-10 h-10 rounded-full bg-surface-variant border border-outline-variant overflow-hidden"
+              >
+                <img
+                  alt="Player"
+                  class="w-full h-full object-cover"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuARoeVfdmCB0gmB_7GZiGJEHq7GWlZhNqExPDSBPKGIh_MhSiQ58Iv9x5syL2EGN05s-_FRnyasjTjuSmu7SCi9rb7UxDprcxw9-n87GpCqDDNQ7tsoo3pEfre-F3V14PLbn8c3l3PZarZy8uq-vcFyKeddhqff00ltBhZra007NodLBwe1daNCicoSZZ1gZW19PoIdXNeIO5t95OYrQ8-ZUnIrsRWATC1R-qbofVug36c_aig3hTHIfNrf-4kFTgpVXg-oH8z9HNJI"
+                />
+              </div>
+              <div class="flex-1">
+                <p class="text-xs font-bold text-on-surface">Ruturaj Gaikwad</p>
+                <p class="text-[10px] text-on-surface-variant">CSK</p>
+              </div>
+              <div class="text-right">
+                <p class="text-xs font-bold text-on-surface">583</p>
+                <p class="text-[9px] text-on-surface-variant uppercase">Runs</p>
+              </div>
+            </div>
+            <!-- Player 3 -->
+            <div
+              class="flex items-center gap-md py-sm border-b border-outline-variant/10 group"
+            >
+              <span
+                class="font-numeric-data text-primary italic font-bold w-4 text-center"
+                >3</span
+              >
+              <div
+                class="w-10 h-10 rounded-full bg-surface-variant border border-outline-variant overflow-hidden"
+              >
+                <img
+                  alt="Player"
+                  class="w-full h-full object-cover"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuAfg2qyUACeD4MlfftLeMU8ztnPquy1ELU9zVM2SIZitnTbqPI8ixKG73GIzciPbIdyLQ8O0oTkBMn_UA2oSHMe2GKhdqEC2GinFn9Cj-CbyLEoyuXNnOCeuI3GUst_dzGoGceNytjJWxJXiy-RdODDmeG-Ax2cCYOWfzNmrjDbjjBPX6ZhQy097T3YaG4y1mQ9U5OBEosTC3tQTgs6IONjfy_djp9lR_IE0xLRDUIJvi4dWOwvR98uCmjHMVNVBzqWZkONB7EvL8qJ"
+                />
+              </div>
+              <div class="flex-1">
+                <p class="text-xs font-bold text-on-surface">Rohit Sharma</p>
+                <p class="text-[10px] text-on-surface-variant">MI</p>
+              </div>
+              <div class="text-right">
+                <p class="text-xs font-bold text-on-surface">535</p>
+                <p class="text-[9px] text-on-surface-variant uppercase">Runs</p>
+              </div>
+            </div>
+            <!-- Player 4 -->
+            <div
+              class="flex items-center gap-md py-sm border-b border-outline-variant/10 group"
+            >
+              <span
+                class="font-numeric-data text-primary italic font-bold w-4 text-center"
+                >4</span
+              >
+              <div
+                class="w-10 h-10 rounded-full bg-surface-variant border border-outline-variant overflow-hidden"
+              >
+                <img
+                  alt="Player"
+                  class="w-full h-full object-cover"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuCzN12hLyukBpAhgiTDVCYyC3JOohsyEsDmKKpiBasPkvLfXYhltpiVi-8Y7YOkRc7txBeEdhWWRiFkiFpqG12UdFGIDjy2Js447FWl8t4CCcd7uHBSMMw2ewq6Qyw6dgCX3gvMqmsi4Lf3sINgVbp5_Syf15qnaK-Bu8-Kq2czUIKboXuHpCGsmXZhzR-A3KaPypso6uerUOca6OJt29ypfGrvx8iPmVr3SJ961sGXAubFJmz73kP1R6Nmfsbygn4n3yb8p9Bif0nW"
+                />
+              </div>
+              <div class="flex-1">
+                <p class="text-xs font-bold text-on-surface">Shubman Gill</p>
+                <p class="text-[10px] text-on-surface-variant">GT</p>
+              </div>
+              <div class="text-right">
+                <p class="text-xs font-bold text-on-surface">508</p>
+                <p class="text-[9px] text-on-surface-variant uppercase">Runs</p>
+              </div>
+            </div>
+            <!-- Player 5 -->
+            <div
+              class="flex items-center gap-md py-sm border-b border-outline-variant/10 group"
+            >
+              <span
+                class="font-numeric-data text-primary italic font-bold w-4 text-center"
+                >5</span
+              >
+              <div
+                class="w-10 h-10 rounded-full bg-surface-variant border border-outline-variant overflow-hidden"
+              >
+                <img
+                  alt="Player"
+                  class="w-full h-full object-cover"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuDIbZAWgJFUi3axi4bstHaedS2KOC-Pp79ULxYAL6s3thZIfNYVZxG2wNk9QMAqSbuTAGG68vDkOEAtOCHNXJaHLNqWXqdyAaXr9digtML9E6nt2GyXylG1kJT7jX4ddl0eTWCFCjT9xrsBS4IuqIyVTOdGvixL53HGY0D84qG5KbbCdsyOnMwkBAILU7V6r5AKGY49sq_pxGMOMlB8c0VqEvNPAS6aItcXVqHxRJ6saRJF2WgpDr-Rvh-Kp1huUvCi5AqdeBg3VhCy"
+                />
+              </div>
+              <div class="flex-1">
+                <p class="text-xs font-bold text-on-surface">KL Rahul</p>
+                <p class="text-[10px] text-on-surface-variant">LSG</p>
+              </div>
+              <div class="text-right">
+                <p class="text-xs font-bold text-on-surface">496</p>
+                <p class="text-[9px] text-on-surface-variant uppercase">Runs</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- END: TopPlayersWidget -->
         <!-- Rankings Leaderboard Widget -->
         <div
           class="bg-surface-container rounded-xl p-md border border-outline-variant/20"

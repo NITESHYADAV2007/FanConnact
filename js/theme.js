@@ -11,7 +11,6 @@ function render(){
  if(light) light.classList.toggle('hidden',!isDark);
  if(dark) dark.classList.toggle('hidden',isDark);
 }
-if(!localStorage.getItem('color-theme')) localStorage.setItem('color-theme','dark');
 render();
 
 btn?.addEventListener('click',()=>{
