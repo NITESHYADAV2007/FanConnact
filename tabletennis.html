@@ -1,6 +1,6 @@
 <!doctype html>
 
-<html class="dark" lang="en">
+<html lang="en">
   <head>
     <link rel="icon" type="image/png" sizes="32x32" href="assets/fancoin/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="assets/fancoin/favicon-16x16.png" />
@@ -16,6 +16,13 @@
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Fanconnact | Table Tennis Dashboard</title>
+    <script>
+      if (localStorage.getItem("color-theme") === "dark" || (!("color-theme" in localStorage) && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
+    </script>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;display=swap"
@@ -83,13 +90,13 @@
               "inverse-surface": "#dee2ec",
               "on-tertiary-fixed-variant": "#8a1d00",
               "emerald-accent": "#10b981",
-              "dark-bg": "#0a0e14",
-              "sidebar-bg": "#0f172a",
-              "card-bg": "#161d2b",
-              "border-subtle": "#1e293b",
-              "brand-dark": "#0a0e14",
-              "brand-border": "#1e293b",
-              "brand-card": "#161d2b",
+              "dark-bg": "#000000",
+              "sidebar-bg": "#000000",
+              "card-bg": "#000000",
+              "border-subtle": "#333333",
+              "brand-dark": "#000000",
+              "brand-border": "#333333",
+              "brand-card": "#000000",
             },
             borderRadius: {
               DEFAULT: "0.125rem",
@@ -164,9 +171,15 @@
     </script>
     <style>
       body {
+        overflow-x: hidden;
+      }
+      :root:not(.dark) body {
+        background-color: #ffffff;
+        color: #0f172a;
+      }
+      .dark body {
         background-color: #090b0e;
         color: #dee2ec;
-        overflow-x: hidden;
       }
       .material-symbols-outlined {
         font-variation-settings:
@@ -210,7 +223,7 @@
 
       .sidebar-collapsed #sidebar { width: 0 !important; min-width: 0 !important; border: 0 !important; padding: 0 !important; overflow: hidden !important; }
       .text-fan { color: #ffffff !important; }
-      :root:not(.dark) .text-connect { color: #2563eb !important; }
+      :root:not(.dark) .text-connect { color: #2196f3 !important; }
       .dark .text-connect { color: #10b981 !important; }
       :root:not(.dark) .text-fan { color: #374151 !important; }
       .nav-link-active { font-weight: 500 !important; }
@@ -219,7 +232,86 @@
       :root:not(.dark) .nav-link-active { background-color: #eff6ff !important; color: #1d4ed8 !important; border-right: 4px solid #3b82f6 !important; }
       :root:not(.dark) #sidebar { background-color: #ffffff !important; }
       :root:not(.dark) #sidebar a:not(.nav-link-active) { color: #475569 !important; }
-      :root:not(.dark) #sidebar a:not(.nav-link-active):hover { color: #2563eb !important; }
+      :root:not(.dark) #sidebar a:not(.nav-link-active):hover { color: #2196f3 !important; }
+
+      :root:not(.dark) .hover\:text-emerald-accent:hover,
+      :root:not(.dark) .nav-link:hover,
+      :root:not(.dark) [class*="hover:text-emerald"] {
+        color: #2196f3 !important;
+      }
+      :root:not(.dark) ::-webkit-scrollbar-track {
+        background: #f1f5f9;
+      }
+      :root:not(.dark) ::-webkit-scrollbar-thumb {
+        background: #2196f3;
+      }
+      :root:not(.dark) ::-webkit-scrollbar-thumb:hover {
+        background: #1e88e5;
+      }
+      .dark ::-webkit-scrollbar-thumb {
+        background: #10b981;
+      }
+      .dark ::-webkit-scrollbar-thumb:hover {
+        background: #34d399;
+      }
+      :root:not(.dark) input:focus {
+        border-color: #2196f3 !important;
+        box-shadow: 0 0 0 2px rgba(33,150,243,0.2) !important;
+      }
+      :root:not(.dark) .bg-card-bg { background: #ffffff !important; }
+      :root:not(.dark) .bg-dark-bg { background: #f1f5f9 !important; }
+      :root:not(.dark) .bg-brand-surface { background: #ffffff !important; }
+      :root:not(.dark) .bg-brand-dark { background: #f8fafc !important; }
+      :root:not(.dark) .bg-gray-800 { background: #ffffff !important; }
+      :root:not(.dark) .bg-gray-800\/40 { background: #f8fafc !important; }
+      :root:not(.dark) .bg-gray-800\/50 { background: #ffffff !important; }
+      :root:not(.dark) [class*="bg-gray-900"] { background: #f8fafc !important; }
+      :root:not(.dark) .from-gray-800 { --tw-gradient-from: #f1f5f9 !important; }
+      :root:not(.dark) .to-gray-900 { --tw-gradient-to: #e2e8f0 !important; }
+      :root:not(.dark) .from-gray-800.to-gray-900 { background: linear-gradient(135deg,#f1f5f9,#e2e8f0) !important; }
+      :root:not(.dark) .bg-gradient-to-br.from-gray-800.to-gray-900 { background: #f8fafc !important; border-color: #e2e8f0 !important; }
+      :root:not(.dark) .text-white { color: #0f172a !important; }
+      :root:not(.dark) .text-gray-400 { color: #64748b !important; }
+      :root:not(.dark) .text-gray-500 { color: #64748b !important; }
+      :root:not(.dark) .text-gray-300 { color: #334155 !important; }
+      :root:not(.dark) .bg-emerald-accent { background: #2196f3 !important; }
+      :root:not(.dark) .bg-emerald-accent\/10 { background: #dbeafe !important; }
+      :root:not(.dark) .border-emerald-accent { border-color: #2196f3 !important; }
+      :root:not(.dark) .text-emerald-accent { color: #2196f3 !important; }
+      :root:not(.dark) .bg-accent-green { background: #dbeafe !important; }
+      :root:not(.dark) .text-accent-green { color: #2196f3 !important; }
+      :root:not(.dark) .border-accent-green { border-color: #2196f3 !important; }
+      :root:not(.dark) .bg-brand-green { background: #2196f3 !important; }
+      :root:not(.dark) .border-gray-700 { border-color: #e2e8f0 !important; }
+      :root:not(.dark) .border-gray-800 { border-color: #e2e8f0 !important; }
+      :root:not(.dark) .border-gray-800\/50 { border-color: #e2e8f0 !important; }
+      :root:not(.dark) .hover\:bg-gray-800:hover { background: #f1f5f9 !important; }
+      :root:not(.dark) .hover\:text-white:hover { color: #0f172a !important; }
+      :root:not(.dark) .dark\:hover\:bg-white\/5:hover { background: #f1f5f9 !important; }
+      :root:not(.dark) .bg-surface-dim { background: #f8fafc !important; }
+      :root:not(.dark) .bg-surface-container { background: #ffffff !important; }
+      :root:not(.dark) .bg-surface-container-high { background: #f1f5f9 !important; }
+      :root:not(.dark) .bg-surface-container-low { background: #f8fafc !important; }
+      :root:not(.dark) .bg-surface-variant { background: #f1f5f9 !important; }
+      :root:not(.dark) .bg-surface-variant\/40 { background: #e2e8f0 !important; }
+      :root:not(.dark) .bg-surface-container-high\/40 { background: #f1f5f9 !important; }
+      :root:not(.dark) .text-on-surface-variant { color: #64748b !important; }
+      :root:not(.dark) .text-on-surface { color: #0f172a !important; }
+      :root:not(.dark) .text-primary { color: #2196f3 !important; }
+      :root:not(.dark) .text-error { color: #ef4444 !important; }
+      :root:not(.dark) .bg-primary { background: #2196f3 !important; }
+      :root:not(.dark) .bg-primary\/10 { background: #dbeafe !important; }
+      :root:not(.dark) .bg-primary\/20 { background: #bfdbfe !important; }
+      :root:not(.dark) .bg-error\/20 { background: #fecaca !important; }
+      :root:not(.dark) .bg-error\/10 { background: #fee2e2 !important; }
+      :root:not(.dark) .border-outline-variant { border-color: #e2e8f0 !important; }
+      :root:not(.dark) .border-outline-variant\/30 { border-color: #e2e8f0 !important; }
+      :root:not(.dark) .border-outline-variant\/20 { border-color: #e2e8f0 !important; }
+      :root:not(.dark) .border-outline-variant\/10 { border-color: #e2e8f0 !important; }
+      :root:not(.dark) .border-primary\/20 { border-color: #bfdbfe !important; }
+      :root:not(.dark) .border-surface { border-color: #e2e8f0 !important; }
+      :root:not(.dark) .hover\:bg-surface-container-high:hover { background: #f1f5f9 !important; }
+      :root:not(.dark) .hover\:bg-surface-container:hover { background: #ffffff !important; }
     </style>
     <meta
       name="description"
@@ -233,10 +325,10 @@
     />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
   </head>
-  <body class="h-screen w-full flex flex-col overflow-hidden transition-colors duration-300 bg-[#F8F9FF] dark:bg-[#0F172A] text-slate-900 dark:text-slate-100">
+  <body class="h-screen w-full flex flex-col overflow-hidden transition-colors duration-300 bg-white dark:bg-black text-slate-900 dark:text-slate-100">
     <!-- BEGIN: MainHeader -->
     <header
-      class="sticky top-0 z-50 transition-colors duration-300 bg-white dark:bg-dark-bg border-b border-gray-200 dark:border-border-subtle px-4 md:px-8 py-4 flex items-center justify-between"
+      class="sticky top-0 z-50 transition-colors duration-300 bg-white dark:bg-black border-b border-gray-200 dark:border-border-subtle px-4 md:px-8 py-4 flex items-center justify-between"
     >
       <div class="flex items-center space-x-4 md:space-x-12">
         <button
@@ -284,7 +376,7 @@
       <div class="flex items-center gap-5 md:gap-8">
         <div class="relative hidden lg:block">
           <input
-            class="bg-gray-100 dark:bg-[#161d2b] text-slate-900 dark:text-white border-none rounded-xl py-2.5 pl-10 pr-4 text-sm w-64 focus:ring-1 focus:ring-emerald-accent"
+            class="bg-gray-100 dark:bg-[#1a1a1a] text-slate-900 dark:text-white border-none rounded-xl py-2.5 pl-10 pr-4 text-sm w-64 focus:ring-1 focus:ring-emerald-accent"
             placeholder="Search teams, matches, players..."
             type="text"
           />
@@ -311,7 +403,7 @@
         </button>
         <div class="relative notification-trigger cursor-pointer">
           <span
-            class="material-symbols-outlined text-slate-500 dark:text-gray-400 cursor-pointer"
+            class="material-symbols-outlined text-slate-500 dark:text-gray-300 cursor-pointer"
             >notifications</span
           >
           <span
@@ -347,7 +439,7 @@
       </div>
     </header>
     <!-- Mobile Sub-Nav -->
-    <nav class="xl:hidden flex overflow-x-auto gap-1 sm:gap-2 px-2 py-1.5 sm:px-4 sm:py-2.5 bg-white dark:bg-dark-bg border-b border-gray-200 dark:border-border-subtle scrollbar-none whitespace-nowrap" style="-webkit-overflow-scrolling:touch;scrollbar-width:none;">
+    <nav class="xl:hidden flex overflow-x-auto gap-1 sm:gap-2 px-2 py-1.5 sm:px-4 sm:py-2.5 bg-white dark:bg-black border-b border-gray-200 dark:border-border-subtle scrollbar-none whitespace-nowrap" style="-webkit-overflow-scrolling:touch;scrollbar-width:none;">
       <a href="index.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Home</a>
       <a href="livematches.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Matches</a>
       <a href="index.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Predictions</a>
@@ -359,7 +451,7 @@
       <!-- BEGIN: SidebarNav -->
       <aside
         id="sidebar"
-        class="w-64 fixed inset-y-0 left-0 z-[60] transition-all duration-300 bg-white dark:bg-dark-bg border-r border-gray-200 dark:border-border-subtle p-6 overflow-y-auto -translate-x-full lg:translate-x-0 lg:static h-full"
+        class="w-64 fixed inset-y-0 left-0 z-[60] transition-all duration-300 bg-white dark:bg-black border-r border-gray-200 dark:border-border-subtle p-6 overflow-y-auto -translate-x-full lg:translate-x-0 lg:static h-full"
       >
         <!-- Mobile Close Button -->
         <button
@@ -383,14 +475,14 @@
 
         <div class="mb-8">
           <h3
-            class="text-xs font-bold text-slate-500 dark:text-gray-400 uppercase tracking-wider mb-4"
+            class="text-xs font-bold text-slate-500 dark:text-gray-300 uppercase tracking-wider mb-4"
           >
             SPORTS
           </h3>
           <ul class="space-y-1">
             <li>
               <a
-                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
                 href="livematches.html"
               >
                 <span class="material-symbols-outlined text-xl">grid_view</span>
@@ -399,7 +491,7 @@
             </li>
             <li class="">
               <a
-                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
                 href="cricket.html"
               >
                 <span class="material-symbols-outlined text-xl"
@@ -410,7 +502,7 @@
             </li>
             <li class="">
               <a
-                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
                 href="football.html"
               >
                 <span class="material-symbols-outlined text-xl"
@@ -421,7 +513,7 @@
             </li>
             <li class="">
               <a
-                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
                 href="basketball.html"
               >
                 <span class="material-symbols-outlined text-xl"
@@ -432,7 +524,7 @@
             </li>
             <li class="">
               <a
-                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
                 href="tennis.html"
               >
                 <span class="material-symbols-outlined text-xl"
@@ -443,7 +535,7 @@
             </li>
             <li class="">
               <a
-                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
                 href="hockey.html"
               >
                 <span class="material-symbols-outlined text-xl"
@@ -454,7 +546,7 @@
             </li>
             <li class="">
               <a
-                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
                 href="kabbaddi.html"
               >
                 <span class="material-symbols-outlined text-xl"
@@ -465,7 +557,7 @@
             </li>
             <li class="">
               <a
-                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
                 href="e-sports.html"
               >
                 <span class="material-symbols-outlined text-xl"
@@ -476,7 +568,7 @@
             </li>
             <li class="">
               <a
-                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
                 href="baseball.html"
               >
                 <span class="material-symbols-outlined text-xl"
@@ -487,8 +579,8 @@
             </li>
             <li class="">
               <a
-                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
-                href="volleyball.html"
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                href="vollyeball.html"
               >
                 <span class="material-symbols-outlined text-xl"
                   >sports_volleyball</span
@@ -991,191 +1083,7 @@
             </div>
           </div>
         </div>
-        <!-- BEGIN: TopPlayersWidget -->
-        <div
-          class="bg-surface-container rounded-xl p-md border border-outline-variant/20 mb-lg"
-        >
-          <div class="flex items-center justify-between mb-md">
-            <div class="flex items-center space-x-2">
-              <h3 class="font-headline-md text-on-surface text-base">
-                Top Players
-              </h3>
-              <div class="flex items-center space-x-1 ml-2">
-                <button
-                  class="p-1 rounded hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface"
-                >
-                  <span class="material-symbols-outlined text-sm"
-                    >chevron_left</span
-                  >
-                </button>
-                <button
-                  class="p-1 rounded hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface"
-                >
-                  <span class="material-symbols-outlined text-sm"
-                    >chevron_right</span
-                  >
-                </button>
-              </div>
-            </div>
-            <a
-              class="text-[10px] font-bold text-primary uppercase hover:underline"
-              href="index.html"
-              >View All</a
-            >
-          </div>
-          <div
-            class="flex gap-sm mb-md bg-surface-container-high p-1 rounded-lg"
-          >
-            <button
-              class="flex-1 py-1 px-xs bg-primary text-on-primary font-bold text-[10px] rounded uppercase"
-            >
-              Run Scorers
-            </button>
-            <button
-              class="flex-1 py-1 px-xs bg-surface-container-high text-on-surface-variant font-bold text-[10px] rounded uppercase"
-            >
-              Wicket Takers
-            </button>
-            <button
-              class="flex-1 py-1 px-xs bg-surface-container-high text-on-surface-variant font-bold text-[10px] rounded uppercase"
-            >
-              Most Sixes
-            </button>
-          </div>
-          <div class="flex flex-col">
-            <!-- Player 1 -->
-            <div
-              class="flex items-center gap-md py-sm border-b border-outline-variant/10 group"
-            >
-              <span
-                class="font-numeric-data text-primary italic font-bold w-4 text-center"
-                >1</span
-              >
-              <div
-                class="w-10 h-10 rounded-full bg-surface-variant border border-outline-variant overflow-hidden"
-              >
-                <img
-                  alt="Player"
-                  class="w-full h-full object-cover"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuDLDPrPcqWJxv2qo9yWmwWC-ty1lnU3gcywyMoVfGrbX5Qe0_nxYx8tLFLrPWo5E70dAb7i_5lRIE2nCiBAMkEbUBH9_TniUU6nX4php6ExpRClnGnztsgdpkKLrZ81jtQoYnGo0Z526JYwmDZzfdsvkkx3hzA6FzHu2cOP5V--DcxY6ewXS4DNc9sHVlRAfLTXb74nJbEVTSX5cPtRND4iS2SKRn2KQ8oyPMhyGL8v2lepI4p9ogmBASf1tfBke4is3CTn21ru-66x"
-                />
-              </div>
-              <div class="flex-1">
-                <p class="text-xs font-bold text-on-surface">Virat Kohli</p>
-                <p class="text-[10px] text-on-surface-variant">RCB</p>
-              </div>
-              <div class="text-right">
-                <p class="text-xs font-bold text-on-surface">687</p>
-                <p class="text-[9px] text-on-surface-variant uppercase">Runs</p>
-              </div>
-            </div>
-            <!-- Player 2 -->
-            <div
-              class="flex items-center gap-md py-sm border-b border-outline-variant/10 group"
-            >
-              <span
-                class="font-numeric-data text-primary italic font-bold w-4 text-center"
-                >2</span
-              >
-              <div
-                class="w-10 h-10 rounded-full bg-surface-variant border border-outline-variant overflow-hidden"
-              >
-                <img
-                  alt="Player"
-                  class="w-full h-full object-cover"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuARoeVfdmCB0gmB_7GZiGJEHq7GWlZhNqExPDSBPKGIh_MhSiQ58Iv9x5syL2EGN05s-_FRnyasjTjuSmu7SCi9rb7UxDprcxw9-n87GpCqDDNQ7tsoo3pEfre-F3V14PLbn8c3l3PZarZy8uq-vcFyKeddhqff00ltBhZra007NodLBwe1daNCicoSZZ1gZW19PoIdXNeIO5t95OYrQ8-ZUnIrsRWATC1R-qbofVug36c_aig3hTHIfNrf-4kFTgpVXg-oH8z9HNJI"
-                />
-              </div>
-              <div class="flex-1">
-                <p class="text-xs font-bold text-on-surface">Ruturaj Gaikwad</p>
-                <p class="text-[10px] text-on-surface-variant">CSK</p>
-              </div>
-              <div class="text-right">
-                <p class="text-xs font-bold text-on-surface">583</p>
-                <p class="text-[9px] text-on-surface-variant uppercase">Runs</p>
-              </div>
-            </div>
-            <!-- Player 3 -->
-            <div
-              class="flex items-center gap-md py-sm border-b border-outline-variant/10 group"
-            >
-              <span
-                class="font-numeric-data text-primary italic font-bold w-4 text-center"
-                >3</span
-              >
-              <div
-                class="w-10 h-10 rounded-full bg-surface-variant border border-outline-variant overflow-hidden"
-              >
-                <img
-                  alt="Player"
-                  class="w-full h-full object-cover"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuAfg2qyUACeD4MlfftLeMU8ztnPquy1ELU9zVM2SIZitnTbqPI8ixKG73GIzciPbIdyLQ8O0oTkBMn_UA2oSHMe2GKhdqEC2GinFn9Cj-CbyLEoyuXNnOCeuI3GUst_dzGoGceNytjJWxJXiy-RdODDmeG-Ax2cCYOWfzNmrjDbjjBPX6ZhQy097T3YaG4y1mQ9U5OBEosTC3tQTgs6IONjfy_djp9lR_IE0xLRDUIJvi4dWOwvR98uCmjHMVNVBzqWZkONB7EvL8qJ"
-                />
-              </div>
-              <div class="flex-1">
-                <p class="text-xs font-bold text-on-surface">Rohit Sharma</p>
-                <p class="text-[10px] text-on-surface-variant">MI</p>
-              </div>
-              <div class="text-right">
-                <p class="text-xs font-bold text-on-surface">535</p>
-                <p class="text-[9px] text-on-surface-variant uppercase">Runs</p>
-              </div>
-            </div>
-            <!-- Player 4 -->
-            <div
-              class="flex items-center gap-md py-sm border-b border-outline-variant/10 group"
-            >
-              <span
-                class="font-numeric-data text-primary italic font-bold w-4 text-center"
-                >4</span
-              >
-              <div
-                class="w-10 h-10 rounded-full bg-surface-variant border border-outline-variant overflow-hidden"
-              >
-                <img
-                  alt="Player"
-                  class="w-full h-full object-cover"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuCzN12hLyukBpAhgiTDVCYyC3JOohsyEsDmKKpiBasPkvLfXYhltpiVi-8Y7YOkRc7txBeEdhWWRiFkiFpqG12UdFGIDjy2Js447FWl8t4CCcd7uHBSMMw2ewq6Qyw6dgCX3gvMqmsi4Lf3sINgVbp5_Syf15qnaK-Bu8-Kq2czUIKboXuHpCGsmXZhzR-A3KaPypso6uerUOca6OJt29ypfGrvx8iPmVr3SJ961sGXAubFJmz73kP1R6Nmfsbygn4n3yb8p9Bif0nW"
-                />
-              </div>
-              <div class="flex-1">
-                <p class="text-xs font-bold text-on-surface">Shubman Gill</p>
-                <p class="text-[10px] text-on-surface-variant">GT</p>
-              </div>
-              <div class="text-right">
-                <p class="text-xs font-bold text-on-surface">508</p>
-                <p class="text-[9px] text-on-surface-variant uppercase">Runs</p>
-              </div>
-            </div>
-            <!-- Player 5 -->
-            <div
-              class="flex items-center gap-md py-sm border-b border-outline-variant/10 group"
-            >
-              <span
-                class="font-numeric-data text-primary italic font-bold w-4 text-center"
-                >5</span
-              >
-              <div
-                class="w-10 h-10 rounded-full bg-surface-variant border border-outline-variant overflow-hidden"
-              >
-                <img
-                  alt="Player"
-                  class="w-full h-full object-cover"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuDIbZAWgJFUi3axi4bstHaedS2KOC-Pp79ULxYAL6s3thZIfNYVZxG2wNk9QMAqSbuTAGG68vDkOEAtOCHNXJaHLNqWXqdyAaXr9digtML9E6nt2GyXylG1kJT7jX4ddl0eTWCFCjT9xrsBS4IuqIyVTOdGvixL53HGY0D84qG5KbbCdsyOnMwkBAILU7V6r5AKGY49sq_pxGMOMlB8c0VqEvNPAS6aItcXVqHxRJ6saRJF2WgpDr-Rvh-Kp1huUvCi5AqdeBg3VhCy"
-                />
-              </div>
-              <div class="flex-1">
-                <p class="text-xs font-bold text-on-surface">KL Rahul</p>
-                <p class="text-[10px] text-on-surface-variant">LSG</p>
-              </div>
-              <div class="text-right">
-                <p class="text-xs font-bold text-on-surface">496</p>
-                <p class="text-[9px] text-on-surface-variant uppercase">Runs</p>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- END: TopPlayersWidget -->
+
         <!-- Rankings Leaderboard Widget -->
         <div
           class="bg-surface-container rounded-xl p-md border border-outline-variant/20"
@@ -1328,39 +1236,6 @@
           >
             View Full Rankings
           </button>
-        </div>
-        <div
-          class="mt-lg p-md bg-gradient-to-br from-primary-container/20 to-transparent rounded-xl border border-primary/20"
-        >
-          <p class="font-label-caps text-label-caps text-primary mb-xs">
-            Upcoming Event
-          </p>
-          <h4 class="font-headline-md text-on-surface text-sm mb-md">
-            World Team Championships 2024
-          </h4>
-          <div class="flex items-center justify-between">
-            <div class="flex -space-x-3">
-              <div
-                class="w-8 h-8 rounded-full border-2 border-surface bg-surface-variant"
-              ></div>
-              <div
-                class="w-8 h-8 rounded-full border-2 border-surface bg-surface-variant"
-              ></div>
-              <div
-                class="w-8 h-8 rounded-full border-2 border-surface bg-surface-variant"
-              ></div>
-              <div
-                class="w-8 h-8 rounded-full border-2 border-surface bg-surface-container flex items-center justify-center text-[10px] font-bold"
-              >
-                +12
-              </div>
-            </div>
-            <button
-              class="px-sm py-1 bg-on-surface text-surface text-[10px] font-bold rounded"
-            >
-              Remind Me
-            </button>
-          </div>
         </div>
       </aside>
     </div>

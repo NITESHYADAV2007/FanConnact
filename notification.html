@@ -19,6 +19,48 @@
     <title>
         Notifications | Fanconnact
     </title>
+    <script>
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
+    <style>
+        body { transition: background 0.3s, color 0.3s; }
+        ::-webkit-scrollbar { width: 5px; }
+        :root:not(.dark) ::-webkit-scrollbar-track { background: #f1f5f9; }
+        :root:not(.dark) ::-webkit-scrollbar-thumb { background: #2196f3; border-radius: 99px; }
+        .dark ::-webkit-scrollbar-track { background: #0a0a0a; }
+        .dark ::-webkit-scrollbar-thumb { background: #10b981; border-radius: 99px; }
+        :root:not(.dark) input:focus { border-color: #2196f3 !important; box-shadow: 0 0 0 2px rgba(33,150,243,0.2) !important; }
+        .dark input:focus { border-color: #10b981 !important; box-shadow: 0 0 0 2px rgba(16,185,129,0.2) !important; }
+
+        .header-right { display: flex; align-items: center; gap: 8px; }
+        .theme-toggle-btn {
+            border: none; width: 40px; height: 40px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: all 0.25s;
+        }
+        .theme-toggle-btn:active { transform: scale(0.9); }
+        .theme-toggle-btn .material-symbols-outlined { font-size: 22px; }
+        :root:not(.dark) .theme-toggle-btn {
+            background: #ffffff; color: #2196f3;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+        }
+        :root:not(.dark) .theme-toggle-btn:hover {
+            background: #eff6ff; box-shadow: 0 4px 12px rgba(33,150,243,0.15);
+        }
+        .dark .theme-toggle-btn {
+            background: #111111; color: #10b981;
+            border: 1px solid #1e1e1e;
+        }
+        .dark .theme-toggle-btn:hover {
+            background: #1a1a1a; border-color: #10b981;
+        }
+    </style>
 
     <link rel="stylesheet" href="css/notification.css">
 </head>
@@ -46,10 +88,15 @@
 
             </div>
 
-            <button class="settings-btn">
-                ⚙
-            </button>
-
+            <div class="header-right">
+                <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle theme">
+                    <span id="theme-toggle-light-icon" class="material-symbols-outlined hidden">light_mode</span>
+                    <span id="theme-toggle-dark-icon" class="material-symbols-outlined">dark_mode</span>
+                </button>
+                <button class="settings-btn">
+                    ⚙
+                </button>
+            </div>
 
         </div>
 
@@ -516,6 +563,26 @@
 
         </div>
         <script src="js/notification.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const btn = document.getElementById('theme-toggle');
+                const light = document.getElementById('theme-toggle-light-icon');
+                const dark = document.getElementById('theme-toggle-dark-icon');
+                function render() {
+                    const isDark = localStorage.getItem('color-theme') === 'dark' ||
+                        (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
+                    document.documentElement.classList.toggle('dark', isDark);
+                    if (light) light.classList.toggle('hidden', !isDark);
+                    if (dark) dark.classList.toggle('hidden', isDark);
+                }
+                render();
+                btn?.addEventListener('click', () => {
+                    const next = document.documentElement.classList.contains('dark') ? 'light' : 'dark';
+                    localStorage.setItem('color-theme', next);
+                    render();
+                });
+            });
+        </script>
 </body>
 
 </html>

@@ -1,6 +1,6 @@
 <!doctype html>
 
-<html class="light" lang="en">
+<html lang="en">
   <head>
     <link rel="icon" type="image/png" sizes="32x32" href="assets/fancoin/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="assets/fancoin/favicon-16x16.png" />
@@ -92,6 +92,7 @@
               "error-container": "#ffdad6",
               "tertiary-container": "#98a3ba",
               "on-secondary": "#ffffff",
+              "emerald-accent": "#10b981",
               brand: {
                 green: "#10b981",
                 dark: "#0B0E11",
@@ -181,6 +182,13 @@
       }
       .dark body { background-color: #0b1c30; }
       html:not(.dark) body { background-color: #f8f9ff; }
+      /* Light-mode overrides for profile page */
+      html:not(.dark) .text-surface-dim { color: #4b5563; }
+      html:not(.dark) .text-primary-fixed { color: #047857; }
+      html:not(.dark) [class*="bg-surface-variant"][class*="border-outline-variant"] { background-color: #ffffff; border-color: #e5e7eb; }
+      html:not(.dark) .glass-card { background: rgba(255,255,255,0.8); border-color: rgba(0,0,0,0.08); }
+      html:not(.dark) [class*="bg-surface-variant/5"] { background-color: #ffffff; }
+      html:not(.dark) [class*="border-outline-variant/10"] { border-color: #e5e7eb; }
       /* Profile Frames */
       .frame-gold {
         border: 4px solid #eab308 !important;
@@ -364,7 +372,7 @@
                 <input type="hidden" id="edit-selected-frame" value="none" />
                 <input type="hidden" id="edit-selected-avatar" value="" />
                 <div class="flex gap-2">
-                  <button type="button" id="gallery-btn-profile" class="px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-label-md font-label-md text-white hover:bg-white/20 transition-colors flex items-center gap-2">
+                  <button type="button" id="gallery-btn-profile" class="px-4 py-2 bg-gray-200 dark:bg-white/10 border border-gray-300 dark:border-white/20 rounded-xl text-label-md font-label-md text-gray-700 dark:text-white hover:bg-gray-300 dark:hover:bg-white/20 transition-colors flex items-center gap-2">
                     <span class="material-symbols-outlined text-base">photo_library</span>
                     Gallery
                   </button>
@@ -1315,7 +1323,7 @@
             cropImage.src = event.target.result;
             cropModal.classList.remove("hidden");
             if (profileCropper) profileCropper.destroy();
-            profileCropper = new Cropper(cropImage, { aspectRatio: 1, viewMode: 1 });
+            profileCropper = new Cropper(cropImage, { aspectRatio: NaN, viewMode: 2, autoCropArea: 0.8 });
           };
           reader.readAsDataURL(file);
         }
@@ -1388,10 +1396,10 @@
 
       const BG_GRADIENTS = {
         none: "",
-        stadium: "linear-gradient(135deg, #1a8a2e 0%, #0d5e1a 30%, #1a5f7a 60%, #0d3b5e 100%)",
-        cricket: "linear-gradient(135deg, #2d8a2d 0%, #1a6e1a 25%, #8b6914 50%, #2d8a2d 75%, #1a6e1a 100%)",
-        football: "linear-gradient(135deg, #1e7a2e 0%, #3a9a3a 20%, #ffffff22 50%, #1e7a2e 80%, #0d5e1a 100%)",
-        basketball: "linear-gradient(135deg, #c4721a 0%, #8b4513 25%, #d4952e 50%, #8b4513 75%, #6b3410 100%)",
+        stadium: "linear-gradient(180deg, #4a90d9 0%, #87ceeb 35%, #1a8a2e 45%, #0d5e1a 70%, #1a3a1a 100%)",
+        cricket: "linear-gradient(180deg, #87ceeb 0%, #b8e0b8 30%, #2d8a2d 45%, #8b6914 48%, #c4a44a 50%, #8b6914 52%, #2d8a2d 55%, #1a6e1a 100%)",
+        football: "linear-gradient(180deg, #4a90d9 0%, #87ceeb 30%, #1e7a2e 40%, #3a9a3a 50%, #1e7a2e 60%, #0d5e1a 100%)",
+        basketball: "linear-gradient(135deg, #d4952e 0%, #c4721a 20%, #8b4513 40%, #a0522d 55%, #8b4513 75%, #6b3410 100%)",
       };
 
       async function initSegModel() {
@@ -1415,29 +1423,66 @@
 
       function drawBgGradient(ctx, type, w, h) {
         if (type === "none") return;
-        const grad = ctx.createLinearGradient(0, 0, w, h);
-        switch (type) {
-          case "stadium":
-            grad.addColorStop(0, "#1a8a2e"); grad.addColorStop(0.3, "#0d5e1a");
-            grad.addColorStop(0.6, "#1a5f7a"); grad.addColorStop(1, "#0d3b5e"); break;
-          case "cricket":
-            grad.addColorStop(0, "#2d8a2d"); grad.addColorStop(0.25, "#1a6e1a");
-            grad.addColorStop(0.5, "#8b6914"); grad.addColorStop(0.75, "#2d8a2d");
-            grad.addColorStop(1, "#1a6e1a"); break;
-          case "football":
-            grad.addColorStop(0, "#1e7a2e"); grad.addColorStop(0.2, "#3a9a3a");
-            grad.addColorStop(0.5, "#4a8a3a"); grad.addColorStop(0.8, "#1e7a2e");
-            grad.addColorStop(1, "#0d5e1a"); break;
-          case "basketball":
-            grad.addColorStop(0, "#c4721a"); grad.addColorStop(0.25, "#8b4513");
-            grad.addColorStop(0.5, "#d4952e"); grad.addColorStop(0.75, "#8b4513");
-            grad.addColorStop(1, "#6b3410"); break;
+
+        if (type === "stadium") {
+          const sky = ctx.createLinearGradient(0, 0, 0, h * 0.45);
+          sky.addColorStop(0, "#2196f3"); sky.addColorStop(1, "#87ceeb");
+          ctx.fillStyle = sky; ctx.fillRect(0, 0, w, h * 0.45);
+          const field = ctx.createLinearGradient(0, h * 0.4, 0, h);
+          field.addColorStop(0, "#1a8a2e"); field.addColorStop(0.3, "#15803d");
+          field.addColorStop(0.7, "#166534"); field.addColorStop(1, "#14532d");
+          ctx.fillStyle = field; ctx.fillRect(0, h * 0.4, w, h * 0.6);
+          ctx.strokeStyle = "rgba(255,255,255,0.07)";
+          ctx.lineWidth = 1;
+          for (let x = 0; x < w; x += 40) { ctx.beginPath(); ctx.moveTo(x, h * 0.38); ctx.lineTo(x - 20, h); ctx.stroke(); }
+          for (let y = 0; y < 6; y++) { ctx.fillStyle = "rgba(255,255,255,0.03)"; ctx.fillRect(0, h * 0.42 + y * h * 0.08, w, 2); }
+          return;
         }
-        ctx.fillStyle = grad;
-        ctx.fillRect(0, 0, w, h);
-        if (type === "stadium" || type === "cricket" || type === "football") {
+
+        if (type === "cricket") {
+          const outfield = ctx.createRadialGradient(w / 2, h * 0.8, 0, w / 2, h * 0.8, w * 0.8);
+          outfield.addColorStop(0, "#22c55e"); outfield.addColorStop(1, "#166534");
+          ctx.fillStyle = outfield; ctx.fillRect(0, 0, w, h);
+          ctx.fillStyle = "#a16207"; ctx.fillRect(w * 0.3, 0, w * 0.08, h * 0.7);
+          ctx.fillStyle = "#ca8a04"; ctx.fillRect(w * 0.32, 0, w * 0.04, h * 0.7);
+          ctx.fillStyle = "#eab308"; ctx.fillRect(w * 0.33, 0, w * 0.02, h * 0.7);
           ctx.fillStyle = "rgba(255,255,255,0.04)";
-          for (let i = 0; i < w; i += 50) ctx.fillRect(i, 0, 2, h);
+          for (let i = 0; i < w; i += 30) ctx.fillRect(i, 0, 1, h);
+          return;
+        }
+
+        if (type === "football") {
+          const sky = ctx.createLinearGradient(0, 0, 0, h * 0.4);
+          sky.addColorStop(0, "#1d4ed8"); sky.addColorStop(1, "#93c5fd");
+          ctx.fillStyle = sky; ctx.fillRect(0, 0, w, h * 0.4);
+          const field = ctx.createLinearGradient(0, h * 0.35, 0, h);
+          field.addColorStop(0, "#16a34a"); field.addColorStop(0.5, "#15803d");
+          field.addColorStop(1, "#166534");
+          ctx.fillStyle = field; ctx.fillRect(0, h * 0.35, w, h * 0.65);
+          ctx.fillStyle = "rgba(255,255,255,0.06)";
+          for (let x = 0; x < w; x += 60) ctx.fillRect(x, h * 0.35, 4, h * 0.65);
+          ctx.strokeStyle = "rgba(255,255,255,0.08)";
+          ctx.lineWidth = 1;
+          ctx.strokeRect(w * 0.08, h * 0.4, w * 0.84, h * 0.55);
+          ctx.beginPath();
+          ctx.arc(w / 2, h * 0.67, 20, 0, Math.PI * 2);
+          ctx.stroke();
+          return;
+        }
+
+        if (type === "basketball") {
+          const court = ctx.createLinearGradient(0, 0, w, h);
+          court.addColorStop(0, "#d97706"); court.addColorStop(0.3, "#b45309");
+          court.addColorStop(0.5, "#92400e"); court.addColorStop(1, "#78350f");
+          ctx.fillStyle = court; ctx.fillRect(0, 0, w, h);
+          ctx.strokeStyle = "rgba(255,255,255,0.08)";
+          ctx.lineWidth = 2;
+          ctx.strokeRect(w * 0.05, h * 0.05, w * 0.9, h * 0.9);
+          ctx.beginPath(); ctx.arc(w / 2, h / 2, 30, 0, Math.PI * 2); ctx.stroke();
+          ctx.fillStyle = "rgba(255,255,255,0.02)";
+          ctx.fillRect(0, h * 0.3, w * 0.15, h * 0.4);
+          ctx.fillRect(w * 0.85, h * 0.3, w * 0.15, h * 0.4);
+          return;
         }
       }
 
@@ -1926,7 +1971,7 @@
         document.getElementById("review-modal").classList.add("hidden");
         document.getElementById("crop-modal-profile").classList.remove("hidden");
         if (profileCropper) profileCropper.destroy();
-        profileCropper = new Cropper(img, { aspectRatio: 1, viewMode: 1 });
+        profileCropper = new Cropper(img, { aspectRatio: NaN, viewMode: 2, autoCropArea: 0.8 });
       });
 
       // ── Photo Viewer ──

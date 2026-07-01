@@ -49,10 +49,10 @@
             },
             colors: {
               "emerald-accent": "#10b981",
-              "dark-bg": "#0a0e14",
+              "dark-bg": "#000000",
               "sidebar-bg": "#0f172a",
-              "card-bg": "#161d2b",
-              "border-subtle": "#1e293b",
+              "card-bg": "#000000",
+              "border-subtle": "#333333",
             },
           },
         },
@@ -74,7 +74,7 @@
       }
       .sidebar-collapsed #sidebar { width: 0 !important; min-width: 0 !important; border: 0 !important; padding: 0 !important; overflow: hidden !important; }
       .text-fan { color: #ffffff !important; }
-      :root:not(.dark) .text-connect { color: #2563eb !important; }
+      :root:not(.dark) .text-connect { color: #2196f3 !important; }
       .dark .text-connect { color: #10b981 !important; }
       :root:not(.dark) .text-fan { color: #374151 !important; }
       .nav-link-active { font-weight: 500 !important; }
@@ -83,7 +83,62 @@
       :root:not(.dark) .nav-link-active { background-color: #eff6ff !important; color: #1d4ed8 !important; border-right: 4px solid #3b82f6 !important; }
       :root:not(.dark) #sidebar { background-color: #ffffff !important; }
       :root:not(.dark) #sidebar a:not(.nav-link-active) { color: #475569 !important; }
-      :root:not(.dark) #sidebar a:not(.nav-link-active):hover { color: #2563eb !important; }
+      :root:not(.dark) #sidebar a:not(.nav-link-active):hover { color: #2196f3 !important; }
+      :root:not(.dark) .hover\:text-emerald-accent:hover,
+      :root:not(.dark) .nav-link:hover,
+      :root:not(.dark) [class*="hover:text-emerald"] {
+        color: #2196f3 !important;
+      }
+      :root:not(.dark) ::-webkit-scrollbar-track {
+        background: #f1f5f9;
+      }
+      :root:not(.dark) ::-webkit-scrollbar-thumb {
+        background: #2196f3;
+      }
+      :root:not(.dark) ::-webkit-scrollbar-thumb:hover {
+        background: #1e88e5;
+      }
+      .dark ::-webkit-scrollbar-thumb {
+        background: #10b981;
+      }
+      .dark ::-webkit-scrollbar-thumb:hover {
+        background: #34d399;
+      }
+      :root:not(.dark) input:focus {
+        border-color: #2196f3 !important;
+        box-shadow: 0 0 0 2px rgba(33,150,243,0.2) !important;
+      }
+      .dark .text-gray-400 { color: #94a3b8 !important; }
+      :root:not(.dark) .bg-card-bg { background: #ffffff !important; }
+      :root:not(.dark) .bg-dark-bg { background: #f1f5f9 !important; }
+      :root:not(.dark) .bg-brand-surface { background: #ffffff !important; }
+      :root:not(.dark) .bg-brand-dark { background: #f8fafc !important; }
+      :root:not(.dark) .bg-gray-800 { background: #ffffff !important; }
+      :root:not(.dark) .bg-gray-800\/40 { background: #f8fafc !important; }
+      :root:not(.dark) .bg-gray-800\/50 { background: #ffffff !important; }
+      :root:not(.dark) [class*="bg-gray-900"] { background: #f8fafc !important; }
+      :root:not(.dark) .from-gray-800 { --tw-gradient-from: #f1f5f9 !important; }
+      :root:not(.dark) .to-gray-900 { --tw-gradient-to: #e2e8f0 !important; }
+      :root:not(.dark) .from-gray-800.to-gray-900 { background: linear-gradient(135deg,#f1f5f9,#e2e8f0) !important; }
+      :root:not(.dark) .bg-gradient-to-br.from-gray-800.to-gray-900 { background: #f8fafc !important; border-color: #e2e8f0 !important; }
+      :root:not(.dark) .text-white { color: #0f172a !important; }
+      :root:not(.dark) .text-gray-400 { color: #64748b !important; }
+      :root:not(.dark) .text-gray-500 { color: #64748b !important; }
+      :root:not(.dark) .text-gray-300 { color: #334155 !important; }
+      :root:not(.dark) .bg-emerald-accent { background: #2196f3 !important; }
+      :root:not(.dark) .bg-emerald-accent\/10 { background: #dbeafe !important; }
+      :root:not(.dark) .border-emerald-accent { border-color: #2196f3 !important; }
+      :root:not(.dark) .text-emerald-accent { color: #2196f3 !important; }
+      :root:not(.dark) .bg-accent-green { background: #dbeafe !important; }
+      :root:not(.dark) .text-accent-green { color: #2196f3 !important; }
+      :root:not(.dark) .border-accent-green { border-color: #2196f3 !important; }
+      :root:not(.dark) .bg-brand-green { background: #2196f3 !important; }
+      :root:not(.dark) .border-gray-700 { border-color: #e2e8f0 !important; }
+      :root:not(.dark) .border-gray-800 { border-color: #e2e8f0 !important; }
+      :root:not(.dark) .border-gray-800\/50 { border-color: #e2e8f0 !important; }
+      :root:not(.dark) .hover\:bg-gray-800:hover { background: #f1f5f9 !important; }
+      :root:not(.dark) .hover\:text-white:hover { color: #0f172a !important; }
+      :root:not(.dark) .dark\:hover\:bg-white\/5:hover { background: #f1f5f9 !important; }
     </style>
     <meta
       name="description"
@@ -98,11 +153,11 @@
     <meta name="referrer" content="strict-origin-when-cross-origin" />
   </head>
   <body
-    class="h-screen w-full flex flex-col overflow-hidden transition-colors duration-300 bg-[#F8F9FF] dark:bg-[#0F172A] text-slate-900 dark:text-slate-100"
+    class="h-screen w-full flex flex-col overflow-hidden transition-colors duration-300 bg-white dark:bg-black text-slate-900 dark:text-slate-100"
   >
     <!-- BEGIN: MainHeader -->
     <header
-      class="sticky top-0 z-50 transition-colors duration-300 bg-white dark:bg-dark-bg border-b border-gray-200 dark:border-border-subtle px-4 md:px-8 py-4 flex items-center justify-between"
+      class="sticky top-0 z-50 transition-colors duration-300 bg-white dark:bg-black border-b border-gray-200 dark:border-border-subtle px-4 md:px-8 py-4 flex items-center justify-between"
     >
       <div class="flex items-center space-x-4 md:space-x-12">
         <button
@@ -150,7 +205,7 @@
       <div class="flex items-center gap-5 md:gap-8">
         <div class="relative hidden lg:block">
           <input
-            class="bg-gray-100 dark:bg-[#161d2b] text-slate-900 dark:text-white border-none rounded-xl py-2.5 pl-10 pr-4 text-sm w-64 focus:ring-1 focus:ring-emerald-accent"
+            class="bg-gray-100 dark:bg-[#1a1a1a] text-slate-900 dark:text-white border-none rounded-xl py-2.5 pl-10 pr-4 text-sm w-64 focus:ring-1 focus:ring-emerald-accent"
             placeholder="Search teams, matches, players..."
             type="text"
           />
@@ -214,7 +269,7 @@
     </header>
 
     <!-- Mobile Sub-Nav -->
-    <nav class="xl:hidden flex overflow-x-auto gap-1 sm:gap-2 px-2 py-1.5 sm:px-4 sm:py-2.5 bg-white dark:bg-dark-bg border-b border-gray-200 dark:border-border-subtle scrollbar-none whitespace-nowrap" style="-webkit-overflow-scrolling:touch;scrollbar-width:none;">
+    <nav class="xl:hidden flex overflow-x-auto gap-1 sm:gap-2 px-2 py-1.5 sm:px-4 sm:py-2.5 bg-white dark:bg-black border-b border-gray-200 dark:border-border-subtle scrollbar-none whitespace-nowrap" style="-webkit-overflow-scrolling:touch;scrollbar-width:none;">
       <a href="index.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Home</a>
       <a href="livematches.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Matches</a>
       <a href="index.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Predictions</a>
@@ -227,7 +282,7 @@
       <!-- BEGIN: SidebarNav -->
       <aside
         id="sidebar"
-        class="w-64 fixed inset-y-0 left-0 z-[60] transition-all duration-300 bg-white dark:bg-dark-bg border-r border-gray-200 dark:border-border-subtle p-6 overflow-y-auto -translate-x-full lg:translate-x-0 lg:static h-full"
+        class="w-64 fixed inset-y-0 left-0 z-[60] transition-all duration-300 bg-white dark:bg-black border-r border-gray-200 dark:border-border-subtle p-6 overflow-y-auto -translate-x-full lg:translate-x-0 lg:static h-full"
       >
         <!-- Mobile Close Button -->
         <button

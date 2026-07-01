@@ -53,6 +53,63 @@
       :root:not(.dark) .text-connect { color: #4648d4 !important; }
       .dark .text-connect { color: #10b981 !important; }
       :root:not(.dark) .text-fan { color: #374151 !important; }
+      :root:not(.dark) .hover\:text-emerald-accent:hover,
+      :root:not(.dark) .hover\:text-brand-green:hover,
+      :root:not(.dark) .nav-link:hover,
+      :root:not(.dark) [class*="hover:text-emerald"],
+      :root:not(.dark) [class*="hover:text-brand-green"] {
+        color: #2196f3 !important;
+      }
+      :root:not(.dark) ::-webkit-scrollbar-track {
+        background: #f1f5f9;
+      }
+      :root:not(.dark) ::-webkit-scrollbar-thumb {
+        background: #2196f3;
+      }
+      :root:not(.dark) ::-webkit-scrollbar-thumb:hover {
+        background: #1e88e5;
+      }
+      .dark ::-webkit-scrollbar-thumb {
+        background: #10b981;
+      }
+      .dark ::-webkit-scrollbar-thumb:hover {
+        background: #34d399;
+      }
+      :root:not(.dark) input:focus {
+        border-color: #2196f3 !important;
+        box-shadow: 0 0 0 2px rgba(33,150,243,0.2) !important;
+      }
+      .dark .text-gray-400 { color: #94a3b8 !important; }
+      :root:not(.dark) .bg-card-bg { background: #ffffff !important; }
+      :root:not(.dark) .bg-dark-bg { background: #f1f5f9 !important; }
+      :root:not(.dark) .bg-brand-surface { background: #ffffff !important; }
+      :root:not(.dark) .bg-brand-dark { background: #f8fafc !important; }
+      :root:not(.dark) .bg-gray-800 { background: #ffffff !important; }
+      :root:not(.dark) .bg-gray-800\/40 { background: #f8fafc !important; }
+      :root:not(.dark) .bg-gray-800\/50 { background: #ffffff !important; }
+      :root:not(.dark) [class*="bg-gray-900"] { background: #f8fafc !important; }
+      :root:not(.dark) .from-gray-800 { --tw-gradient-from: #f1f5f9 !important; }
+      :root:not(.dark) .to-gray-900 { --tw-gradient-to: #e2e8f0 !important; }
+      :root:not(.dark) .from-gray-800.to-gray-900 { background: linear-gradient(135deg,#f1f5f9,#e2e8f0) !important; }
+      :root:not(.dark) .bg-gradient-to-br.from-gray-800.to-gray-900 { background: #f8fafc !important; border-color: #e2e8f0 !important; }
+      :root:not(.dark) .text-white { color: #0f172a !important; }
+      :root:not(.dark) .text-gray-400 { color: #64748b !important; }
+      :root:not(.dark) .text-gray-500 { color: #64748b !important; }
+      :root:not(.dark) .text-gray-300 { color: #334155 !important; }
+      :root:not(.dark) .bg-emerald-accent { background: #2196f3 !important; }
+      :root:not(.dark) .bg-emerald-accent\/10 { background: #dbeafe !important; }
+      :root:not(.dark) .border-emerald-accent { border-color: #2196f3 !important; }
+      :root:not(.dark) .text-emerald-accent { color: #2196f3 !important; }
+      :root:not(.dark) .bg-accent-green { background: #dbeafe !important; }
+      :root:not(.dark) .text-accent-green { color: #2196f3 !important; }
+      :root:not(.dark) .border-accent-green { border-color: #2196f3 !important; }
+      :root:not(.dark) .bg-brand-green { background: #2196f3 !important; }
+      :root:not(.dark) .border-gray-700 { border-color: #e2e8f0 !important; }
+      :root:not(.dark) .border-gray-800 { border-color: #e2e8f0 !important; }
+      :root:not(.dark) .border-gray-800\/50 { border-color: #e2e8f0 !important; }
+      :root:not(.dark) .hover\:bg-gray-800:hover { background: #f1f5f9 !important; }
+      :root:not(.dark) .hover\:text-white:hover { color: #0f172a !important; }
+      :root:not(.dark) .dark\:hover\:bg-white\/5:hover { background: #f1f5f9 !important; }
     </style>
     <script id="tailwind-config">
       tailwind.config = {
@@ -82,12 +139,12 @@
   <meta name="referrer" content="strict-origin-when-cross-origin">
 </head>
   <body
-    class="h-screen w-full flex flex-row overflow-hidden transition-colors duration-300 bg-[#F8F9FF] dark:bg-brand-dark"
+    class="h-screen w-full flex flex-row overflow-hidden transition-colors duration-300 bg-white dark:bg-black"
   >
     <!-- BEGIN: Sidebar -->
     <aside
       id="sidebar"
-      class="fixed inset-y-0 left-0 z-[60] w-64 flex-shrink-0 flex flex-col h-screen transition-all duration-300 bg-white dark:bg-brand-dark border-r border-gray-200 dark:border-brand-border shadow-xl lg:shadow-none -translate-x-full lg:translate-x-0 lg:static overflow-y-auto custom-scrollbar"
+      class="fixed inset-y-0 left-0 z-[60] w-64 flex-shrink-0 flex flex-col h-screen transition-all duration-300 bg-white dark:bg-black border-r border-gray-200 dark:border-brand-border shadow-xl lg:shadow-none -translate-x-full lg:translate-x-0 lg:static overflow-y-auto custom-scrollbar"
     >
       <button
         id="close-sidebar-btn"
@@ -141,7 +198,7 @@
     <!-- Main Content Area -->
     <main class="flex-1 flex flex-col h-screen overflow-hidden">
       <!-- BEGIN: Header -->
-      <header class="sticky top-0 z-50 transition-colors duration-300 bg-white dark:bg-brand-dark border-b border-gray-200 dark:border-brand-border px-4 md:px-6 py-4 flex items-center justify-between">
+      <header class="sticky top-0 z-50 transition-colors duration-300 bg-white dark:bg-black border-b border-gray-200 dark:border-brand-border px-4 md:px-6 py-4 flex items-center justify-between">
         <div class="flex items-center space-x-4 md:space-x-12">
           <button class="text-gray-400 hover:text-emerald-accent" id="mobile-menu-btn">
             <span class="material-symbols-outlined">menu</span>
@@ -165,14 +222,14 @@
               <span class="material-symbols-outlined text-sm">translate</span>
               <span id="current-lang-label" class="hidden sm:inline">EN</span>
             </button>
-            <div id="lang-dropdown" class="absolute top-full right-0 mt-1 bg-white dark:bg-brand-card border border-gray-200 dark:border-brand-border rounded-xl shadow-xl py-2 z-50 hidden max-h-60 overflow-y-auto custom-scrollbar min-w-[140px]">
+            <div id="lang-dropdown" class="absolute top-full right-0 mt-1 bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-brand-border rounded-xl shadow-xl py-2 z-50 hidden max-h-60 overflow-y-auto custom-scrollbar min-w-[140px]">
             </div>
           </div>
         </div>
 
         <div class="flex items-center gap-5 md:gap-8">
           <div class="relative hidden lg:block">
-            <input class="bg-gray-100 dark:bg-brand-card text-slate-900 dark:text-white border-none rounded-xl py-2.5 pl-10 pr-4 text-sm w-64 focus:ring-1 focus:ring-brand-green" placeholder="Search teams, matches, players..." type="text" />
+            <input class="bg-gray-100 dark:bg-[#1a1a1a] text-slate-900 dark:text-white border-none rounded-xl py-2.5 pl-10 pr-4 text-sm w-64 focus:ring-1 focus:ring-brand-green" placeholder="Search teams, matches, players..." type="text" />
             <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl">search</span>
           </div>
 
@@ -198,7 +255,7 @@
       <!-- END: Header -->
 
       <!-- Mobile Sub-Nav -->
-      <nav class="xl:hidden flex overflow-x-auto gap-1 sm:gap-2 px-2 py-1.5 sm:px-4 sm:py-2.5 bg-white dark:bg-brand-dark border-b border-gray-200 dark:border-brand-border scrollbar-none whitespace-nowrap" style="-webkit-overflow-scrolling:touch;scrollbar-width:none;">
+      <nav class="xl:hidden flex overflow-x-auto gap-1 sm:gap-2 px-2 py-1.5 sm:px-4 sm:py-2.5 bg-white dark:bg-black border-b border-gray-200 dark:border-brand-border scrollbar-none whitespace-nowrap" style="-webkit-overflow-scrolling:touch;scrollbar-width:none;">
         <a href="index.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Home</a>
         <a href="livematches.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Matches</a>
         <a href="index.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Predictions</a>
@@ -230,7 +287,7 @@
               <h2 class="text-lg md:text-xl font-bold font-headline dark:text-white text-gray-900">Latest Headlines</h2>
               <span class="text-xs text-gray-500 dark:text-gray-400" id="article-count"></span>
             </div>
-            <div id="news-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6"></div>
+            <div id="news-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4"></div>
           </section>
 
           <!-- Video Section -->

@@ -76,14 +76,30 @@ document.addEventListener("DOMContentLoaded", () => {
         "signup.html",
         "news.html",
         "news&update.html",
+        "index.html",
+        "cricket.html",
+        "football.html",
+        "basketball.html",
+        "baseball.html",
+        "hockey.html",
+        "tennis.html",
+        "tabletennis.html",
+        "vollyeball.html",
+        "kabbaddi.html",
+        "e-sports.html",
+        "livematches.html",
+        "all-games.html",
+        "match-center.html",
+        "notification.html",
+        "profile.html",
+        "terms.html",
+        "forget-password.html",
+        "setting.html",
+        "fancoin.html",
       ];
 
-      // Default landing page for unauthenticated users visiting root, dashboard or protected pages
-      if (
-        page === "index.html" ||
-        page === "" ||
-        !guestAllowedPages.includes(page)
-      ) {
+      // Default landing page for unauthenticated users visiting root or protected pages
+      if (page === "" || !guestAllowedPages.includes(page)) {
         window.location.href = "berforeloginindex.html";
         return;
       }
@@ -248,13 +264,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const isDark = document.documentElement.classList.contains("dark");
 
     if (isDark) {
-      document.documentElement.classList.remove("light");
-      darkIcon?.classList.add("hidden");
-      lightIcon?.classList.remove("hidden");
-    } else {
-      document.documentElement.classList.add("light");
       darkIcon?.classList.remove("hidden");
       lightIcon?.classList.add("hidden");
+    } else {
+      darkIcon?.classList.add("hidden");
+      lightIcon?.classList.remove("hidden");
     }
   };
   syncIcons();

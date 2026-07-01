@@ -16,8 +16,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>Match Center | Fanconnact</title>
+    <script>
+      if (
+        localStorage.getItem("color-theme") === "dark" ||
+        (!("color-theme" in localStorage) &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches)
+      ) {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
+    </script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
 
     <link rel="stylesheet" href="css/match-center.css" />
+    <style>
+      body { background: #ffffff; color: #0f172a; transition: background 0.3s, color 0.3s; }
+      .dark body, .dark .match-center-container { background: #000000; color: #f1f5f9; }
+      :root:not(.dark) ::-webkit-scrollbar-track { background: #f1f5f9; }
+      :root:not(.dark) ::-webkit-scrollbar-thumb { background: #2196f3; }
+      :root:not(.dark) ::-webkit-scrollbar-thumb:hover { background: #1e88e5; }
+      .dark ::-webkit-scrollbar-thumb { background: #10b981; }
+      .dark ::-webkit-scrollbar-thumb:hover { background: #34d399; }
+      :root:not(.dark) input:focus { border-color: #2196f3 !important; box-shadow: 0 0 0 2px rgba(33,150,243,0.2) !important; }
+    </style>
   </head>
 
   <body>

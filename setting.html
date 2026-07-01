@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script>
+  if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    document.documentElement.classList.add('dark');
+  } else {
+    document.documentElement.classList.remove('dark');
+  }
+</script>
+<title>FanConnact - Settings</title>
+<link rel="icon" type="image/png" sizes="32x32" href="assets/fancoin/favicon-32x32.png" />
+<link rel="stylesheet" href="css/style.css" />
+<link rel="stylesheet" href="css/settings.css" />
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "surface-container-high": "#e6e8ea",
+          "secondary-container": "#d5e0f8",
+          "secondary": "#545f73",
+          "inverse-primary": "#adc6ff",
+          "tertiary-container": "#00855b",
+          "surface-tint": "#005ac2",
+          "primary-fixed-dim": "#adc6ff",
+          "secondary-fixed-dim": "#bcc7de",
+          "on-primary-fixed": "#001a42",
+          "on-primary-container": "#fefcff",
+          "surface-container-lowest": "#ffffff",
+          "surface-bright": "#f7f9fb",
+          "on-tertiary-fixed": "#002113",
+          "tertiary-fixed-dim": "#4edea3",
+          "on-secondary-container": "#586377",
+          "on-background": "#191c1e",
+          "on-error": "#ffffff",
+          "outline-variant": "#c2c6d6",
+          "on-secondary-fixed": "#111c2d",
+          "on-surface": "#191c1e",
+          "on-error-container": "#93000a",
+          "surface-container-low": "#f2f4f6",
+          "outline": "#727785",
+          "on-tertiary-fixed-variant": "#005236",
+          "inverse-on-surface": "#eff1f3",
+          "primary-container": "#2170e4",
+          "on-tertiary": "#ffffff",
+          "surface-variant": "#e0e3e5",
+          "primary-fixed": "#d8e2ff",
+          "inverse-surface": "#2d3133",
+          "on-primary": "#ffffff",
+          "surface-container": "#eceef0",
+          "tertiary-fixed": "#6ffbbe",
+          "surface-dim": "#d8dadc",
+          "on-secondary-fixed-variant": "#3c475a",
+          "error": "#ba1a1a",
+          "surface": "#f7f9fb",
+          "surface-container-highest": "#e0e3e5",
+          "secondary-fixed": "#d8e3fb",
+          "error-container": "#ffdad6",
+          "primary": "#0058be",
+          "on-primary-fixed-variant": "#004395",
+          "on-surface-variant": "#424754",
+          "on-secondary": "#ffffff",
+          "tertiary": "#006947",
+          "background": "#f7f9fb",
+          "on-tertiary-container": "#f5fff6",
+          "emerald-accent": "#10b981",
+          "brand-green": "#10b981",
+          brand: { dark: "#0b1220", green: "#10b981", card: "#111827", border: "#243347" },
+        },
+        borderRadius: { DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px" },
+        spacing: { xl: "32px", sm: "8px", lg: "24px", base: "4px", md: "16px", gutter: "16px", "container-margin": "24px", xs: "4px" },
+        fontFamily: { "headline-lg": ["Inter"], "headline-md": ["Inter"], "body-sm": ["Inter"], "body-lg": ["Inter"], "label-caps": ["Inter"] },
+        fontSize: {
+          "headline-lg": ["30px", { lineHeight: "36px", letterSpacing: "-0.01em", fontWeight: "700" }],
+          "headline-md": ["20px", { lineHeight: "28px", fontWeight: "600" }],
+          "body-sm": ["14px", { lineHeight: "20px", fontWeight: "400" }],
+          "body-lg": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+          "label-caps": ["12px", { lineHeight: "16px", letterSpacing: "0.05em", fontWeight: "700" }]
+        }
+      },
+    },
+  }
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+</head>
+<body id="appBody" class="bg-background text-on-surface">
+<script>
+  (function() {
+    var isDark = document.documentElement.classList.contains('dark');
+    var b = document.getElementById('appBody');
+    b.classList.add(isDark ? 'theme-dark' : 'theme-light');
+    var obs = new MutationObserver(function() {
+      var d = document.documentElement.classList.contains('dark');
+      b.classList.remove('theme-dark', 'theme-light');
+      b.classList.add(d ? 'theme-dark' : 'theme-light');
+    });
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+  })();
+</script>
+
+<style>
+  .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; display: inline-block; line-height: 1; vertical-align: middle; }
+  .theme-card-selected { border: 2px solid #0058be; position: relative; }
+  .theme-card-selected::after { content: 'check_circle'; font-family: 'Material Symbols Outlined'; position: absolute; top: 8px; right: 8px; color: #0058be; font-variation-settings: 'FILL' 1; }
+  body { font-family: 'Inter', sans-serif; }
+  .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+  .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+  .dark body { background-color: #0b1220 !important; }
+  html:not(.dark) body { background-color: #f7f9fb !important; }
+  .switch-thumb { transition: all 0.2s; }
+  input:checked ~ .switch-track .switch-thumb { transform: translateX(20px); }
+</style>
+
+<!-- Top Navigation Bar -->
+<header class="sticky top-0 z-50 bg-surface dark:bg-brand-dark border-b border-outline-variant dark:border-brand-border flex items-center justify-between px-lg py-md w-full">
+  <div class="flex items-center gap-xl">
+    <button onclick="window.location.href='javascript:history.back()'" class="p-2 rounded-full hover:bg-surface-container-high dark:hover:bg-white/10 transition-all">
+      <span class="material-symbols-outlined text-on-surface-variant dark:text-slate-400">arrow_back</span>
+    </button>
+    <div class="flex items-center gap-sm cursor-pointer" onclick="window.location.href='index.html'">
+      <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-on-primary">
+        <span class="material-symbols-outlined text-sm" style="font-variation-settings:'FILL'1;">sports_soccer</span>
+      </div>
+      <span class="font-bold text-headline-md text-primary"><span class="text-fan">Fan</span><span class="text-connect">Connact</span></span>
+    </div>
+    <nav class="hidden md:flex items-center gap-lg">
+      <a class="font-body-lg text-on-surface-variant dark:text-slate-400 hover:text-primary transition-colors" href="index.html">Home</a>
+      <a class="font-body-lg text-on-surface-variant dark:text-slate-400 hover:text-primary transition-colors" href="news&update.html">News</a>
+      <a class="font-body-lg text-on-surface-variant dark:text-slate-400 hover:text-primary transition-colors" href="livematches.html">Matches</a>
+      <a class="font-body-lg text-on-surface-variant dark:text-slate-400 hover:text-primary transition-colors" href="all-games.html">Communities</a>
+      <a class="font-body-lg text-on-surface-variant dark:text-slate-400 hover:text-primary transition-colors" href="leaderboard.html">Leaderboard</a>
+    </nav>
+  </div>
+  <div class="flex items-center gap-md">
+    <button id="theme-toggle" class="hover:bg-surface-container-high dark:hover:bg-white/10 rounded-full p-2 transition-all">
+      <span id="theme-toggle-light-icon" class="material-symbols-outlined hidden text-yellow-500">light_mode</span>
+      <span id="theme-toggle-dark-icon" class="material-symbols-outlined text-on-surface-variant dark:text-slate-400">dark_mode</span>
+    </button>
+    <button class="relative hover:bg-surface-container-high dark:hover:bg-white/10 rounded-full p-2 transition-all" onclick="window.location.href='notification.html'">
+      <span class="material-symbols-outlined text-on-surface-variant dark:text-slate-400">notifications</span>
+      <span class="absolute top-1.5 right-1.5 w-4 h-4 bg-error text-on-error text-[10px] flex items-center justify-center rounded-full font-bold">3</span>
+    </button>
+    <div class="w-9 h-9 rounded-full overflow-hidden border-2 border-primary cursor-pointer" onclick="window.location.href='profile.html'">
+      <img id="user-profile-img" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBCShTNHatUjHAVa91KGjp3sE4d-6H9oWVOJb-me8mR3dk5lUYwzf2pqUIvSS3MJM-1KnL0yycvf8R0OVis_ow_-iImf4cXZrepwFhmBLl8tl5MiYMFs4gITgHFHrVo9e4sem6PCbmTsCQ8Bdbe20-xo2_mL8LKuX0wIfR8JHC8diuFa5JyRnz8DXytr739hpvIXkp8QCwyNRTEtXKqXoP1EMhSubhkN7KvmmE5GUu9YEqUiagIirpcOSsW5EDEF0mzdIUTn9CqJKY"/>
+    </div>
+  </div>
+</header>
+
+<main class="max-w-[1400px] mx-auto p-lg lg:p-xl space-y-xl">
+  <!-- Header Section -->
+  <section>
+    <h1 class="font-headline-lg text-headline-lg text-on-surface dark:text-white">Settings</h1>
+    <p class="font-body-lg text-on-surface-variant dark:text-slate-400">Manage your preferences and account settings</p>
+  </section>
+
+  <!-- Appearance Section -->
+  <section class="bg-surface-container-lowest dark:bg-brand-card border border-outline-variant dark:border-brand-border rounded-xl p-lg shadow-sm">
+    <h2 class="font-headline-md text-headline-md mb-xs text-on-surface dark:text-white">Appearance</h2>
+    <p class="font-body-sm text-on-surface-variant dark:text-slate-400 mb-lg">Customize the look and feel of FanConnact</p>
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-md mb-lg">
+      <!-- Light Theme -->
+      <button class="theme-light-btn flex flex-col items-center gap-sm p-base border border-outline-variant rounded-lg theme-card-selected bg-white dark:bg-brand-dark group hover:border-primary transition-all">
+        <div class="w-full h-24 rounded bg-slate-50 dark:bg-slate-800 flex items-center justify-center">
+          <span class="material-symbols-outlined text-yellow-500 text-3xl">light_mode</span>
+        </div>
+        <div class="text-center pb-sm">
+          <span class="block font-bold text-body-sm text-on-surface dark:text-white">Light</span>
+          <span class="text-[10px] text-on-surface-variant dark:text-slate-400">Clean and bright</span>
+        </div>
+      </button>
+      <!-- Dark Theme -->
+      <button class="theme-dark-btn flex flex-col items-center gap-sm p-base border border-outline-variant rounded-lg bg-white dark:bg-brand-dark group hover:border-primary transition-all">
+        <div class="w-full h-24 rounded bg-slate-900 flex items-center justify-center">
+          <span class="material-symbols-outlined text-white text-3xl">dark_mode</span>
+        </div>
+        <div class="text-center pb-sm">
+          <span class="block font-bold text-body-sm text-on-surface dark:text-white">Dark</span>
+          <span class="text-[10px] text-on-surface-variant dark:text-slate-400">Easy on the eyes</span>
+        </div>
+      </button>
+      <!-- Stadium Theme -->
+      <div class="relative group cursor-pointer border border-outline-variant rounded-lg overflow-hidden h-36">
+        <div class="absolute inset-0 bg-cover bg-center" style="background-image:url('https://images.unsplash.com/photo-1459865264687-595d652de67e?w=400&q=80')"></div>
+        <div class="absolute inset-0 bg-black/40 flex flex-col items-center justify-end pb-sm">
+          <span class="block font-bold text-body-sm text-white">Stadium</span>
+          <span class="text-[10px] text-white/80">Feel the game</span>
+        </div>
+      </div>
+      <!-- Esports Theme -->
+      <div class="relative group cursor-pointer border border-outline-variant rounded-lg overflow-hidden h-36">
+        <div class="absolute inset-0 bg-cover bg-center" style="background-image:url('https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&q=80')"></div>
+        <div class="absolute inset-0 bg-black/40 flex flex-col items-center justify-end pb-sm">
+          <span class="block font-bold text-body-sm text-white">Esports</span>
+          <span class="text-[10px] text-white/80">For esports fans</span>
+        </div>
+      </div>
+      <!-- Royal Blue Theme -->
+      <div class="relative group cursor-pointer border border-outline-variant rounded-lg overflow-hidden h-36">
+        <div class="absolute inset-0 bg-cover bg-center" style="background-image:url('https://images.unsplash.com/photo-1553356084-58ef4a67b2a7?w=400&q=80')"></div>
+        <div class="absolute inset-0 bg-black/40 flex flex-col items-center justify-end pb-sm">
+          <span class="block font-bold text-body-sm text-white">Royal Blue</span>
+          <span class="text-[10px] text-white/80">Classic and sleek</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-lg border-t border-outline-variant dark:border-brand-border pt-lg">
+      <div class="flex items-center justify-between p-sm hover:bg-surface-container-low dark:hover:bg-white/5 rounded-lg transition-colors">
+        <div class="flex items-center gap-md">
+          <span class="material-symbols-outlined text-on-surface-variant dark:text-slate-400">grid_view</span>
+          <div>
+            <span class="block font-bold text-body-sm text-on-surface dark:text-white">Compact Mode</span>
+            <span class="block text-[11px] text-on-surface-variant dark:text-slate-400">Show more content in less space</span>
+          </div>
+        </div>
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input class="sr-only peer" type="checkbox"/>
+          <div class="w-11 h-6 bg-surface-container-high dark:bg-slate-600 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+        </label>
+      </div>
+      <div class="flex items-center justify-between p-sm hover:bg-surface-container-low dark:hover:bg-white/5 rounded-lg transition-colors">
+        <div class="flex items-center gap-md">
+          <span class="material-symbols-outlined text-on-surface-variant dark:text-slate-400">motion_photos_off</span>
+          <div>
+            <span class="block font-bold text-body-sm text-on-surface dark:text-white">Reduce Animations</span>
+            <span class="block text-[11px] text-on-surface-variant dark:text-slate-400">Reduce motion for a smoother experience</span>
+          </div>
+        </div>
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input checked class="sr-only peer" type="checkbox"/>
+          <div class="w-11 h-6 bg-surface-container-high dark:bg-slate-600 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+        </label>
+      </div>
+      <div class="flex items-center justify-between p-sm hover:bg-surface-container-low dark:hover:bg-white/5 rounded-lg transition-colors">
+        <div class="flex items-center gap-md">
+          <span class="material-symbols-outlined text-on-surface-variant dark:text-slate-400">text_fields</span>
+          <div>
+            <span class="block font-bold text-body-sm text-on-surface dark:text-white">Large Text</span>
+            <span class="block text-[11px] text-on-surface-variant dark:text-slate-400">Increase text size for better readability</span>
+          </div>
+        </div>
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input class="sr-only peer" type="checkbox"/>
+          <div class="w-11 h-6 bg-surface-container-high dark:bg-slate-600 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+        </label>
+      </div>
+    </div>
+  </section>
+
+  <!-- Preferences Grid -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-xl">
+
+    <!-- Sports Preferences -->
+    <section class="bg-surface-container-lowest dark:bg-brand-card border border-outline-variant dark:border-brand-border rounded-xl p-lg shadow-sm">
+      <h2 class="font-headline-md text-headline-md mb-xs text-on-surface dark:text-white">Sports Preferences</h2>
+      <p class="font-body-sm text-on-surface-variant dark:text-slate-400 mb-lg">Select your favorite sports to get personalized updates</p>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-md">
+        <label class="flex items-center justify-between p-sm border border-outline-variant dark:border-brand-border rounded-lg hover:border-primary cursor-pointer transition-all">
+          <div class="flex items-center gap-sm">
+            <span class="material-symbols-outlined text-primary">sports_cricket</span>
+            <span class="text-body-sm font-semibold text-on-surface dark:text-white">Cricket</span>
+          </div>
+          <input checked class="rounded border-outline-variant text-primary focus:ring-primary h-4 w-4" type="checkbox"/>
+        </label>
+        <label class="flex items-center justify-between p-sm border border-outline-variant dark:border-brand-border rounded-lg hover:border-primary cursor-pointer transition-all">
+          <div class="flex items-center gap-sm">
+            <span class="material-symbols-outlined text-primary">sports_soccer</span>
+            <span class="text-body-sm font-semibold text-on-surface dark:text-white">Football</span>
+          </div>
+          <input checked class="rounded border-outline-variant text-primary focus:ring-primary h-4 w-4" type="checkbox"/>
+        </label>
+        <label class="flex items-center justify-between p-sm border border-outline-variant dark:border-brand-border rounded-lg hover:border-primary cursor-pointer transition-all">
+          <div class="flex items-center gap-sm">
+            <span class="material-symbols-outlined text-primary">sports_basketball</span>
+            <span class="text-body-sm font-semibold text-on-surface dark:text-white">Basketball</span>
+          </div>
+          <input checked class="rounded border-outline-variant text-primary focus:ring-primary h-4 w-4" type="checkbox"/>
+        </label>
+        <label class="flex items-center justify-between p-sm border border-outline-variant dark:border-brand-border rounded-lg hover:border-primary cursor-pointer transition-all">
+          <div class="flex items-center gap-sm">
+            <span class="material-symbols-outlined text-primary">sports_tennis</span>
+            <span class="text-body-sm font-semibold text-on-surface dark:text-white">Tennis</span>
+          </div>
+          <input checked class="rounded border-outline-variant text-primary focus:ring-primary h-4 w-4" type="checkbox"/>
+        </label>
+        <label class="flex items-center justify-between p-sm border border-outline-variant dark:border-brand-border rounded-lg hover:border-primary cursor-pointer transition-all">
+          <div class="flex items-center gap-sm">
+            <span class="material-symbols-outlined text-primary">sports_hockey</span>
+            <span class="text-body-sm font-semibold text-on-surface dark:text-white">Hockey</span>
+          </div>
+          <input checked class="rounded border-outline-variant text-primary focus:ring-primary h-4 w-4" type="checkbox"/>
+        </label>
+        <label class="flex items-center justify-between p-sm border border-outline-variant dark:border-brand-border rounded-lg hover:border-primary cursor-pointer transition-all">
+          <div class="flex items-center gap-sm">
+            <span class="material-symbols-outlined text-primary">sports_kabaddi</span>
+            <span class="text-body-sm font-semibold text-on-surface dark:text-white">Kabaddi</span>
+          </div>
+          <input checked class="rounded border-outline-variant text-primary focus:ring-primary h-4 w-4" type="checkbox"/>
+        </label>
+        <label class="flex items-center justify-between p-sm border border-outline-variant dark:border-brand-border rounded-lg hover:border-primary cursor-pointer transition-all">
+          <div class="flex items-center gap-sm">
+            <span class="material-symbols-outlined text-primary">sports_volleyball</span>
+            <span class="text-body-sm font-semibold text-on-surface dark:text-white">Volleyball</span>
+          </div>
+          <input checked class="rounded border-outline-variant text-primary focus:ring-primary h-4 w-4" type="checkbox"/>
+        </label>
+        <label class="flex items-center justify-between p-sm border border-outline-variant dark:border-brand-border rounded-lg hover:border-primary cursor-pointer transition-all">
+          <div class="flex items-center gap-sm">
+            <span class="material-symbols-outlined text-primary">sports_handball</span>
+            <span class="text-body-sm font-semibold text-on-surface dark:text-white">Table Tennis</span>
+          </div>
+          <input checked class="rounded border-outline-variant text-primary focus:ring-primary h-4 w-4" type="checkbox"/>
+        </label>
+        <label class="flex items-center justify-between p-sm border border-outline-variant dark:border-brand-border rounded-lg hover:border-primary cursor-pointer transition-all">
+          <div class="flex items-center gap-sm">
+            <span class="material-symbols-outlined text-on-surface-variant dark:text-slate-400">sports_esports</span>
+            <span class="text-body-sm font-semibold text-on-surface dark:text-white">Esports</span>
+          </div>
+          <input class="rounded border-outline-variant text-primary focus:ring-primary h-4 w-4" type="checkbox"/>
+        </label>
+        <label class="flex items-center justify-between p-sm border border-outline-variant dark:border-brand-border rounded-lg hover:border-primary cursor-pointer transition-all">
+          <div class="flex items-center gap-sm">
+            <span class="material-symbols-outlined text-primary">sports_baseball</span>
+            <span class="text-body-sm font-semibold text-on-surface dark:text-white">Baseball</span>
+          </div>
+          <input checked class="rounded border-outline-variant text-primary focus:ring-primary h-4 w-4" type="checkbox"/>
+        </label>
+      </div>
+      <button class="mt-lg text-primary font-bold text-body-sm flex items-center gap-base hover:underline transition-all">
+        <span class="material-symbols-outlined text-base">add</span>
+        Add more sports
+      </button>
+    </section>
+
+    <!-- Notification Preferences -->
+    <section class="bg-surface-container-lowest dark:bg-brand-card border border-outline-variant dark:border-brand-border rounded-xl p-lg shadow-sm">
+      <h2 class="font-headline-md text-headline-md mb-xs text-on-surface dark:text-white">Notification Preferences</h2>
+      <p class="font-body-sm text-on-surface-variant dark:text-slate-400 mb-lg">Choose what you want to be notified about</p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-xl gap-y-sm">
+        <div class="space-y-sm">
+          <div class="flex items-center justify-between p-sm hover:bg-surface-container-low dark:hover:bg-white/5 rounded-lg transition-colors">
+            <div class="flex items-center gap-md">
+              <span class="material-symbols-outlined text-on-surface-variant dark:text-slate-400">sensors</span>
+              <span class="text-body-sm text-on-surface dark:text-white">Live Match Alerts</span>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input checked class="sr-only peer" type="checkbox"/>
+              <div class="w-10 h-5 bg-surface-container-high dark:bg-slate-600 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[1px] after:left-[1px] after:bg-white after:rounded-full after:h-[18px] after:w-[18px] after:transition-all peer-checked:bg-primary"></div>
+            </label>
+          </div>
+          <div class="flex items-center justify-between p-sm hover:bg-surface-container-low dark:hover:bg-white/5 rounded-lg transition-colors">
+            <div class="flex items-center gap-md">
+              <span class="material-symbols-outlined text-on-surface-variant dark:text-slate-400">newspaper</span>
+              <span class="text-body-sm text-on-surface dark:text-white">Breaking News</span>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input checked class="sr-only peer" type="checkbox"/>
+              <div class="w-10 h-5 bg-surface-container-high dark:bg-slate-600 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[1px] after:left-[1px] after:bg-white after:rounded-full after:h-[18px] after:w-[18px] after:transition-all peer-checked:bg-primary"></div>
+            </label>
+          </div>
+          <div class="flex items-center justify-between p-sm hover:bg-surface-container-low dark:hover:bg-white/5 rounded-lg transition-colors">
+            <div class="flex items-center gap-md">
+              <span class="material-symbols-outlined text-on-surface-variant dark:text-slate-400">analytics</span>
+              <span class="text-body-sm text-on-surface dark:text-white">Prediction Results</span>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input checked class="sr-only peer" type="checkbox"/>
+              <div class="w-10 h-5 bg-surface-container-high dark:bg-slate-600 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[1px] after:left-[1px] after:bg-white after:rounded-full after:h-[18px] after:w-[18px] after:transition-all peer-checked:bg-primary"></div>
+            </label>
+          </div>
+          <div class="flex items-center justify-between p-sm hover:bg-surface-container-low dark:hover:bg-white/5 rounded-lg transition-colors">
+            <div class="flex items-center gap-md">
+              <span class="material-symbols-outlined text-on-surface-variant dark:text-slate-400">group</span>
+              <span class="text-body-sm text-on-surface dark:text-white">Community Updates</span>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input checked class="sr-only peer" type="checkbox"/>
+              <div class="w-10 h-5 bg-surface-container-high dark:bg-slate-600 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[1px] after:left-[1px] after:bg-white after:rounded-full after:h-[18px] after:w-[18px] after:transition-all peer-checked:bg-primary"></div>
+            </label>
+          </div>
+        </div>
+        <div class="space-y-sm">
+          <div class="flex items-center justify-between p-sm hover:bg-surface-container-low dark:hover:bg-white/5 rounded-lg transition-colors">
+            <div class="flex items-center gap-md">
+              <span class="material-symbols-outlined text-on-surface-variant dark:text-slate-400">mail</span>
+              <span class="text-body-sm text-on-surface dark:text-white">Email Notifications</span>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input checked class="sr-only peer" type="checkbox"/>
+              <div class="w-10 h-5 bg-surface-container-high dark:bg-slate-600 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[1px] after:left-[1px] after:bg-white after:rounded-full after:h-[18px] after:w-[18px] after:transition-all peer-checked:bg-primary"></div>
+            </label>
+          </div>
+          <div class="flex items-center justify-between p-sm hover:bg-surface-container-low dark:hover:bg-white/5 rounded-lg transition-colors">
+            <div class="flex items-center gap-md">
+              <span class="material-symbols-outlined text-on-surface-variant dark:text-slate-400">notifications_active</span>
+              <span class="text-body-sm text-on-surface dark:text-white">Push Notifications</span>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input checked class="sr-only peer" type="checkbox"/>
+              <div class="w-10 h-5 bg-surface-container-high dark:bg-slate-600 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[1px] after:left-[1px] after:bg-white after:rounded-full after:h-[18px] after:w-[18px] after:transition-all peer-checked:bg-primary"></div>
+            </label>
+          </div>
+          <div class="flex items-center justify-between p-sm hover:bg-surface-container-low dark:hover:bg-white/5 rounded-lg transition-colors">
+            <div class="flex items-center gap-md">
+              <span class="material-symbols-outlined text-on-surface-variant dark:text-slate-400">alternate_email</span>
+              <span class="text-body-sm text-on-surface dark:text-white">Mentions & Replies</span>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input checked class="sr-only peer" type="checkbox"/>
+              <div class="w-10 h-5 bg-surface-container-high dark:bg-slate-600 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[1px] after:left-[1px] after:bg-white after:rounded-full after:h-[18px] after:w-[18px] after:transition-all peer-checked:bg-primary"></div>
+            </label>
+          </div>
+          <div class="flex items-center justify-between p-sm hover:bg-surface-container-low dark:hover:bg-white/5 rounded-lg transition-colors">
+            <div class="flex items-center gap-md">
+              <span class="material-symbols-outlined text-on-surface-variant dark:text-slate-400">person_add</span>
+              <span class="text-body-sm text-on-surface dark:text-white">New Followers</span>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input checked class="sr-only peer" type="checkbox"/>
+              <div class="w-10 h-5 bg-surface-container-high dark:bg-slate-600 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[1px] after:left-[1px] after:bg-white after:rounded-full after:h-[18px] after:w-[18px] after:transition-all peer-checked:bg-primary"></div>
+            </label>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Footer Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-xl">
+    <!-- Security -->
+    <section class="bg-surface-container-lowest dark:bg-brand-card border border-outline-variant dark:border-brand-border rounded-xl p-lg shadow-sm">
+      <h2 class="font-headline-md text-headline-md mb-xs text-on-surface dark:text-white">Security</h2>
+      <p class="font-body-sm text-on-surface-variant dark:text-slate-400 mb-lg">Keep your account safe and secure</p>
+      <div class="space-y-sm">
+        <div class="flex items-center justify-between p-sm hover:bg-surface-container-low dark:hover:bg-white/5 rounded-lg transition-colors">
+          <div class="flex items-center gap-md">
+            <div class="w-6 h-6 flex items-center justify-center">
+              <svg class="w-5 h-5" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+            </div>
+            <span class="text-body-sm font-semibold text-on-surface dark:text-white">Google</span>
+          </div>
+          <div class="flex items-center gap-base">
+            <span class="text-[11px] text-tertiary-container font-bold">Connected</span>
+            <span class="material-symbols-outlined text-tertiary-container text-sm" style="font-variation-settings:'FILL'1;">check_circle</span>
+          </div>
+        </div>
+        <div class="flex items-center justify-between p-sm hover:bg-surface-container-low dark:hover:bg-white/5 rounded-lg transition-colors">
+          <div class="flex items-center gap-md">
+            <div class="w-6 h-6 flex items-center justify-center">
+              <svg class="w-5 h-5" fill="#1877F2" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+            </div>
+            <span class="text-body-sm font-semibold text-on-surface dark:text-white">Facebook</span>
+          </div>
+          <div class="flex items-center gap-base">
+            <span class="text-[11px] text-tertiary-container font-bold">Connected</span>
+            <span class="material-symbols-outlined text-tertiary-container text-sm" style="font-variation-settings:'FILL'1;">check_circle</span>
+          </div>
+        </div>
+        <button class="w-full flex items-center justify-between p-sm hover:bg-surface-container-low dark:hover:bg-white/5 rounded-lg transition-colors group">
+          <div class="flex items-center gap-md">
+            <span class="material-symbols-outlined text-on-surface-variant dark:text-slate-400">lock</span>
+            <span class="text-body-sm text-on-surface dark:text-white">Change Password</span>
+          </div>
+          <span class="material-symbols-outlined text-on-surface-variant dark:text-slate-400 group-hover:translate-x-1 transition-transform">chevron_right</span>
+        </button>
+        <div class="flex items-center justify-between p-sm hover:bg-surface-container-low dark:hover:bg-white/5 rounded-lg transition-colors">
+          <div class="flex items-center gap-md">
+            <span class="material-symbols-outlined text-on-surface-variant dark:text-slate-400">security</span>
+            <span class="text-body-sm text-on-surface dark:text-white">Two-Factor Authentication</span>
+          </div>
+          <div class="flex items-center gap-sm">
+            <span class="text-[11px] text-on-surface-variant dark:text-slate-400">Off</span>
+            <span class="material-symbols-outlined text-on-surface-variant dark:text-slate-400">chevron_right</span>
+          </div>
+        </div>
+        <button class="w-full flex items-center justify-between p-sm hover:bg-surface-container-low dark:hover:bg-white/5 rounded-lg transition-colors group">
+          <div class="flex items-center gap-md">
+            <span class="material-symbols-outlined text-error">logout</span>
+            <span class="text-body-sm text-error font-semibold">Logout All Devices</span>
+          </div>
+          <span class="material-symbols-outlined text-error group-hover:translate-x-1 transition-transform">chevron_right</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Language & Region -->
+    <section class="bg-surface-container-lowest dark:bg-brand-card border border-outline-variant dark:border-brand-border rounded-xl p-lg shadow-sm">
+      <h2 class="font-headline-md text-headline-md mb-xs text-on-surface dark:text-white">Language & Region</h2>
+      <p class="font-body-sm text-on-surface-variant dark:text-slate-400 mb-lg">Manage your language and region preferences</p>
+      <div class="space-y-md">
+        <div>
+          <label class="block text-[10px] font-bold text-on-surface-variant dark:text-slate-400 uppercase mb-xs px-sm">Language</label>
+          <div class="relative">
+            <div class="flex items-center gap-md p-sm bg-surface-container-low dark:bg-brand-dark rounded-lg border border-outline-variant dark:border-brand-border">
+              <span class="material-symbols-outlined text-on-surface-variant dark:text-slate-400">language</span>
+              <span class="flex-1 text-body-sm text-on-surface dark:text-white">English</span>
+              <span class="material-symbols-outlined text-on-surface-variant dark:text-slate-400">expand_more</span>
+            </div>
+          </div>
+        </div>
+        <div>
+          <label class="block text-[10px] font-bold text-on-surface-variant dark:text-slate-400 uppercase mb-xs px-sm">Timezone</label>
+          <div class="relative">
+            <div class="flex items-center gap-md p-sm bg-surface-container-low dark:bg-brand-dark rounded-lg border border-outline-variant dark:border-brand-border">
+              <span class="material-symbols-outlined text-on-surface-variant dark:text-slate-400">schedule</span>
+              <span class="flex-1 text-body-sm text-on-surface dark:text-white">(GMT+5:30) Asia/Kolkata</span>
+              <span class="material-symbols-outlined text-on-surface-variant dark:text-slate-400">expand_more</span>
+            </div>
+          </div>
+        </div>
+        <div>
+          <label class="block text-[10px] font-bold text-on-surface-variant dark:text-slate-400 uppercase mb-xs px-sm">Region</label>
+          <div class="relative">
+            <div class="flex items-center gap-md p-sm bg-surface-container-low dark:bg-brand-dark rounded-lg border border-outline-variant dark:border-brand-border">
+              <span class="material-symbols-outlined text-on-surface-variant dark:text-slate-400">location_on</span>
+              <span class="flex-1 text-body-sm text-on-surface dark:text-white">India</span>
+              <span class="material-symbols-outlined text-on-surface-variant dark:text-slate-400">expand_more</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Support & About -->
+    <section class="bg-surface-container-lowest dark:bg-brand-card border border-outline-variant dark:border-brand-border rounded-xl p-lg shadow-sm flex flex-col">
+      <h2 class="font-headline-md text-headline-md mb-xs text-on-surface dark:text-white">Support & About</h2>
+      <p class="font-body-sm text-on-surface-variant dark:text-slate-400 mb-lg">Help, feedback and app information</p>
+      <div class="space-y-sm flex-1">
+        <button class="w-full flex items-center justify-between p-sm hover:bg-surface-container-low dark:hover:bg-white/5 rounded-lg transition-colors group">
+          <div class="flex items-center gap-md">
+            <span class="material-symbols-outlined text-on-surface-variant dark:text-slate-400">bug_report</span>
+            <span class="text-body-sm text-on-surface dark:text-white">Report Bug</span>
+          </div>
+          <span class="material-symbols-outlined text-on-surface-variant dark:text-slate-400 group-hover:translate-x-1 transition-transform">chevron_right</span>
+        </button>
+        <button class="w-full flex items-center justify-between p-sm hover:bg-surface-container-low dark:hover:bg-white/5 rounded-lg transition-colors group">
+          <div class="flex items-center gap-md">
+            <span class="material-symbols-outlined text-on-surface-variant dark:text-slate-400">chat_bubble</span>
+            <span class="text-body-sm text-on-surface dark:text-white">Send Feedback</span>
+          </div>
+          <span class="material-symbols-outlined text-on-surface-variant dark:text-slate-400 group-hover:translate-x-1 transition-transform">chevron_right</span>
+        </button>
+        <button class="w-full flex items-center justify-between p-sm hover:bg-surface-container-low dark:hover:bg-white/5 rounded-lg transition-colors group">
+          <div class="flex items-center gap-md">
+            <span class="material-symbols-outlined text-on-surface-variant dark:text-slate-400">contact_support</span>
+            <span class="text-body-sm text-on-surface dark:text-white">Contact Support</span>
+          </div>
+          <span class="material-symbols-outlined text-on-surface-variant dark:text-slate-400 group-hover:translate-x-1 transition-transform">chevron_right</span>
+        </button>
+        <button class="w-full flex items-center justify-between p-sm hover:bg-surface-container-low dark:hover:bg-white/5 rounded-lg transition-colors group">
+          <div class="flex items-center gap-md">
+            <span class="material-symbols-outlined text-on-surface-variant dark:text-slate-400">policy</span>
+            <span class="text-body-sm text-on-surface dark:text-white">Privacy Policy</span>
+          </div>
+          <span class="material-symbols-outlined text-on-surface-variant dark:text-slate-400 group-hover:translate-x-1 transition-transform">chevron_right</span>
+        </button>
+        <button class="w-full flex items-center justify-between p-sm hover:bg-surface-container-low dark:hover:bg-white/5 rounded-lg transition-colors group">
+          <div class="flex items-center gap-md">
+            <span class="material-symbols-outlined text-on-surface-variant dark:text-slate-400">description</span>
+            <span class="text-body-sm text-on-surface dark:text-white">Terms & Conditions</span>
+          </div>
+          <span class="material-symbols-outlined text-on-surface-variant dark:text-slate-400 group-hover:translate-x-1 transition-transform">chevron_right</span>
+        </button>
+      </div>
+      <div class="pt-lg mt-auto text-center">
+        <span class="text-[11px] text-on-surface-variant dark:text-slate-400 opacity-60">Version 1.0.0</span>
+      </div>
+    </section>
+  </div>
+</main>
+
+<script type="module" src="js/script.js"></script>
+<script src="js/theme.js"></script>
+<script>
+  document.querySelectorAll('input[type="checkbox"].sr-only').forEach(function(cb) {
+    cb.addEventListener('change', function() {
+      var p = this.closest('label');
+      if (this.checked) p.classList.add('active');
+      else p.classList.remove('active');
+    });
+  });
+</script>
+</body>
+</html>

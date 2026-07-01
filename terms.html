@@ -46,13 +46,13 @@
               "surface-dim": "#cbdbf5",
               "surface-container-high": "#dce9ff",
               "surface-container": "#e2ecfc",
-              "inverse-surface": "#081b33",
+              "inverse-surface": "#000000",
               "surface-container-low": "#e8f1ff",
               "primary-container": "#d1e4ff",
               "on-primary-container": "#001d36",
               "primary-fixed-dim": "#a4c9ff",
               "on-surface": "#001b3d",
-              surface: "#f4faff",
+              surface: "#ffffff",
               "on-tertiary": "#001d36",
               "on-primary": "#003258",
               "on-inverse-surface": "#e1eaff",
@@ -124,6 +124,13 @@
       html[lang="hi"] .lang-hi {
         display: inline;
       }
+      :root:not(.dark) ::-webkit-scrollbar-track { background: #f1f5f9; }
+      :root:not(.dark) ::-webkit-scrollbar-thumb { background: #2196f3; }
+      :root:not(.dark) ::-webkit-scrollbar-thumb:hover { background: #1e88e5; }
+      .dark ::-webkit-scrollbar-thumb { background: #10b981; }
+      .dark ::-webkit-scrollbar-thumb:hover { background: #34d399; }
+      :root:not(.dark) input:focus { border-color: #2196f3 !important; box-shadow: 0 0 0 2px rgba(33,150,243,0.2) !important; }
+      .dark .text-gray-400 { color: #94a3b8 !important; }
     </style>
   </head>
   <body

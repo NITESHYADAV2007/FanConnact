@@ -58,14 +58,14 @@
 
 /* Fanconnact Logo Text */
 :root:not(.dark) .text-fan {
-  color: #374151 !important;
+  color: #000000 !important;
 }
 .dark .text-fan {
   color: #ffffff !important;
 }
 /* Fanconnact Logo Text: Connect = blue in light, green in dark */
 :root:not(.dark) .text-connect {
-  color: #4648d4 !important;
+  color: #2196f3 !important;
 }
 .dark .text-connect {
   color: #10b981 !important;

@@ -53,27 +53,41 @@
             font-family: "Inter", sans-serif;
             overflow-x: hidden;
         }
-        /* Light Mode Overrides */
-        
+        /* ── Light Mode Overrides (white + blue theme) ── */
         html:not(.dark) body {
             background-color: #f8f9ff;
             color: #0f172a;
         }
-        
+
         html:not(.dark) .login-container-glow {
             background: #ffffff;
-            border-color: #e2e8f0;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+            border-color: #2196f3;
+            box-shadow: 0 10px 25px -5px rgba(33,150,243,0.08);
+        }
+        .dark .login-container-glow {
+            border-color: rgba(16,185,129,0.3);
+            box-shadow: 0 0 40px rgba(16,185,129,0.1);
         }
 
         html:not(.dark) [data-purpose="login-form-container"] {
             background: #f8f9ff;
+        }
+        .dark [data-purpose="login-form-container"] {
+            background: #000000;
         }
 
         html:not(.dark) [data-purpose="login-form-container"] input {
             background: #ffffff;
             border-color: #e2e8f0;
             color: #0f172a;
+        }
+        .dark [data-purpose="login-form-container"] input {
+            background: #ffffff !important;
+            color: #000000 !important;
+            border-color: #64748b;
+        }
+        .dark [data-purpose="login-form-container"] input::placeholder {
+            color: #94a3b8 !important;
         }
 
         html:not(.dark) [data-purpose="login-form-container"] input::placeholder {
@@ -83,6 +97,10 @@
         html:not(.dark) .glass-card {
             background: rgba(255, 255, 255, 0.7);
             border-color: rgba(0, 0, 0, 0.1);
+        }
+        .dark .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255,255,255,0.1);
         }
 
         html:not(.dark) [data-purpose="login-card"] .text-gray-400 {
@@ -97,18 +115,32 @@
             background: #ffffff;
             border-color: #e2e8f0;
         }
+        .dark [data-purpose="login-card"] [class*="bg-gray-900"] {
+            background: rgba(255,255,255,0.05);
+            border-color: rgba(255,255,255,0.1);
+        }
 
         html:not(.dark) [data-purpose="login-card"] [class*="bg-gray-900"]:hover {
             background: #f1f5f9;
+        }
+        .dark [data-purpose="login-card"] [class*="bg-gray-900"]:hover {
+            background: rgba(255,255,255,0.1);
         }
 
         html:not(.dark) [data-purpose="login-card"] .border-gray-800 {
             border-color: #e2e8f0;
         }
+        .dark [data-purpose="login-card"] .border-gray-800 {
+            border-color: rgba(255,255,255,0.1);
+        }
 
         html:not(.dark) #lang-dropdown-login {
             background: #ffffff;
             border-color: #e2e8f0;
+        }
+        .dark #lang-dropdown-login {
+            background: #111827;
+            border-color: rgba(255,255,255,0.1);
         }
 
         html:not(.dark) #lang-dropdown-login button {
@@ -118,12 +150,107 @@
         html:not(.dark) #lang-dropdown-login button:hover {
             background: #f1f5f9;
         }
+        .dark #lang-dropdown-login button {
+            color: #e2e8f0;
+        }
+        .dark #lang-dropdown-login button:hover {
+            background: rgba(255,255,255,0.05);
+        }
+
+        /* ── Theme-toggle button ── */
+        html:not(.dark) #theme-toggle {
+            background: #e2e8f0;
+            border-color: #cbd5e1;
+        }
+        html:not(.dark) #theme-toggle svg {
+            color: #2196f3;
+        }
+        .dark #theme-toggle {
+            background: rgba(255,255,255,0.05);
+            border-color: rgba(255,255,255,0.1);
+        }
+        .dark #theme-toggle svg {
+            color: #10b981;
+        }
+
+        /* ── Forgot password link: blue in light, green in dark ── */
+        html:not(.dark) a[href="forget-password.html"] {
+            color: #2196f3 !important;
+        }
+        html:not(.dark) a[href="forget-password.html"]:hover {
+            color: #1d4ed8 !important;
+        }
+        .dark a[href="forget-password.html"] {
+            color: #10b981 !important;
+        }
+        .dark a[href="forget-password.html"]:hover {
+            color: #34d399 !important;
+        }
+
+        /* ── Social login buttons light mode ── */
+        html:not(.dark) #google-login,
+        html:not(.dark) #facebook-login,
+        html:not(.dark) #apple-login,
+        html:not(.dark) #twitter-login {
+            background: #ffffff;
+            border-color: #e2e8f0;
+            color: #0f172a;
+        }
+        html:not(.dark) #google-login:hover,
+        html:not(.dark) #facebook-login:hover,
+        html:not(.dark) #apple-login:hover,
+        html:not(.dark) #twitter-login:hover {
+            background: #f1f5f9;
+        }
+
+        /* ── Divider ── */
+        html:not(.dark) .border-gray-800 {
+            border-color: #e2e8f0;
+        }
+
+        /* ── Remember me checkbox ── */
+        html:not(.dark) #remember-me {
+            background: #ffffff;
+            border-color: #cbd5e1;
+        }
+
+        /* ── Language button light ── */
+        html:not(.dark) #lang-menu-btn-login {
+            background: #e2e8f0;
+            border-color: #cbd5e1;
+            color: #0f172a;
+        }
+        html:not(.dark) #lang-menu-btn-login .material-symbols-outlined {
+            color: #0f172a;
+        }
+        html:not(.dark) #lang-menu-btn-login span:not(.material-symbols-outlined) {
+            color: #0f172a;
+        }
         /* Background image section with overlay */
         
         .bg-hero-section {
             background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.7)), url("https://lh3.googleusercontent.com/aida-public/AB6AXuDcxbaOsjFf304BRkKQRst9a1dLnhZRapxS0I9TcWra9fIe8q_2zZnHFojLV30gNRWTlSJi9zwHdW3I4hyfv8R_4LiBO2ejdbnpYOonntRQirbyf-TH3PUHsgliODvybhOgpxdD6N9X4PEqMpygvkIGDhqpwsvsh8qxqEJUDPx7SZJ9cTIKlq88qZ3TIggeM9pGPgTJhQxwnTYNDj-edPqixyodq-Fhtt3SCA2pg89a9KP90gpt1MhN9TtTcuUh7Iw0XKJpZ3-RsfQP");
             background-size: cover;
             background-position: center;
+        }
+        html:not(.dark) .bg-hero-section {
+            background-image: linear-gradient(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.85)), url("https://lh3.googleusercontent.com/aida-public/AB6AXuDcxbaOsjFf304BRkKQRst9a1dLnhZRapxS0I9TcWra9fIe8q_2zZnHFojLV30gNRWTlSJi9zwHdW3I4hyfv8R_4LiBO2ejdbnpYOonntRQirbyf-TH3PUHsgliODvybhOgpxdD6N9X4PEqMpygvkIGDhqpwsvsh8qxqEJUDPx7SZJ9cTIKlq88qZ3TIggeM9pGPgTJhQxwnTYNDj-edPqixyodq-Fhtt3SCA2pg89a9KP90gpt1MhN9TtTcuUh7Iw0XKJpZ3-RsfQP");
+        }
+        /* Left panel text colors - light mode (blue accents) */
+        html:not(.dark) .bg-hero-section .text-fan-emerald {
+            color: #2196f3 !important;
+        }
+        html:not(.dark) .bg-hero-section .text-white {
+            color: #0f172a !important;
+        }
+        html:not(.dark) .bg-hero-section .text-gray-400 {
+            color: #64748b !important;
+        }
+        html:not(.dark) .bg-hero-section .border-fan-dark {
+            border-color: #e2e8f0 !important;
+        }
+        html:not(.dark) .bg-hero-section .bg-fan-emerald {
+            background: #2196f3 !important;
         }
         /* Glassmorphism for cards */
         
@@ -133,6 +260,10 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 12px;
         }
+        html:not(.dark) .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            border-color: rgba(0, 0, 0, 0.08);
+        }
         /* Glow effect for login container border */
         
         .login-container-glow {
@@ -140,10 +271,16 @@
             border: 1px solid rgba(16, 185, 129, 0.2);
         }
         /* Custom input focus states */
-        
-        .fan-input:focus {
-            border-color: #10b981;
-            ring-color: #10b981;
+        html:not(.dark) input:focus,
+        html:not(.dark) .fan-input:focus {
+            border-color: #2196f3 !important;
+            box-shadow: 0 0 0 3px rgba(33,150,243,0.1) !important;
+            outline: none;
+        }
+        .dark input:focus,
+        .dark .fan-input:focus {
+            border-color: #10b981 !important;
+            box-shadow: 0 0 0 3px rgba(16,185,129,0.15) !important;
             outline: none;
         }
         /* Custom scrollbar if needed */
@@ -155,10 +292,16 @@
          ::-webkit-scrollbar-track {
             background: #060b13;
         }
+        html:not(.dark) ::-webkit-scrollbar-track {
+            background: #e2e8f0;
+        }
         
          ::-webkit-scrollbar-thumb {
             background: #10b981;
             border-radius: 10px;
+        }
+        html:not(.dark) ::-webkit-scrollbar-thumb {
+            background: #2196f3;
         }
         
         .sidebar-collapsed #sidebar {
@@ -302,15 +445,8 @@
             <!-- Top Actions: Theme/Language -->
             <div class="absolute top-4 right-4 sm:top-8 sm:right-8 flex items-center gap-2 sm:gap-4">
                 <button id="theme-toggle" class="w-10 h-10 rounded-xl bg-gray-800/50 flex items-center justify-center border border-gray-700 hover:bg-gray-700 transition dark:bg-gray-800/50 dark:border-gray-700 light:bg-gray-100 light:border-gray-300">
-            <svg
-              class="w-5 h-5 text-gray-300"
-              fill="currentColor"
-              viewbox="0 0 20 20"
-            >
-              <path
-                d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"
-              ></path>
-            </svg>
+            <span id="theme-toggle-light-icon" class="material-symbols-outlined hidden text-yellow-400" style="font-size:20px">light_mode</span>
+            <span id="theme-toggle-dark-icon" class="material-symbols-outlined text-gray-300" style="font-size:20px">dark_mode</span>
           </button>
                 <button id="lang-menu-btn-login" class="px-4 py-2 rounded-xl bg-gray-800/50 flex items-center gap-2 border border-gray-700 hover:bg-gray-700 transition">
             <span id="current-lang-login" class="text-sm font-medium"

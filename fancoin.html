@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/fancoin/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/fancoin/favicon-16x16.png" />
+    <meta property="og:site_name" content="Fanconnact" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="assets/fancoin/fanconnactlogo.png" />
+    <meta property="og:title" content="Fanconnact - Fan Coin Wallet" />
+    <meta property="og:description" content="Manage your Fan Coins, earn rewards and track your wallet." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Fanconnact - Fan Coin Wallet" />
+    <meta name="twitter:description" content="Manage your Fan Coins, earn rewards and track your wallet." />
+    <meta name="twitter:image" content="assets/fancoin/fanconnactlogo.png" />
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <script>
+      if (localStorage.getItem("color-theme") === "dark" || (!("color-theme" in localStorage) && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
+    </script>
+    <title>Fanconnact - Fan Coin Wallet</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/fancoin.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            fontFamily: { lexend: ["Lexend", "sans-serif"], sans: ["Inter", "sans-serif"] },
+            colors: {
+              brand: { dark: "#0B0E1E", blue: "#4154F1", green: "#10b981", card: "#12172D", secondary: "#1A213E", border: "rgba(255,255,255,0.1)" },
+              "fan-dark": "#060b13", "fan-card-bg": "rgba(16,24,39,0.6)", "fan-emerald": "#10b981", "fan-emerald-dark": "#059669",
+              "fan-border": "rgba(255,255,255,0.1)", "border-subtle": "rgba(255,255,255,0.08)",
+              "emerald-accent": "#10b981", "brand-green": "#10b981",
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body class="min-h-screen w-full transition-colors duration-300 bg-[#01091f] dark:bg-[#01091f] text-white dark:text-white">
+    <!-- Header -->
+    <header class="sticky top-0 z-50 transition-colors duration-300 bg-[#061328]/95 dark:bg-[#061328]/95 border-b border-white/10 dark:border-white/10 px-4 md:px-8 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2 cursor-pointer" onclick="window.location.href='index.html'">
+          <img src="assets/fancoin/fanconnactlogo.png" alt="Fanconnact" class="w-8 h-8" />
+          <span class="text-lg font-bold whitespace-nowrap"><span class="text-fan">Fan</span><span class="text-connect">Connact</span></span>
+        </div>
+        <nav class="hidden xl:flex items-center space-x-6 mx-6 shrink-0">
+          <a class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link" href="index.html">Home</a>
+          <a class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link" href="livematches.html">Matches</a>
+          <a class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link" href="index.html">Predictions</a>
+          <a class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link" href="index.html">Leaderboard</a>
+          <a class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link" href="news&update.html">News</a>
+        </nav>
+      </div>
+      <div class="flex items-center gap-4">
+        <button id="theme-toggle" class="w-9 h-9 rounded-full flex items-center justify-center hover:bg-white/10 dark:hover:bg-white/10 transition-all active:scale-95">
+          <span id="theme-toggle-light-icon" class="material-symbols-outlined hidden text-yellow-400">light_mode</span>
+          <span id="theme-toggle-dark-icon" class="material-symbols-outlined text-gray-400 dark:text-gray-400">dark_mode</span>
+        </button>
+        <button class="hidden sm:block p-2 rounded-full hover:bg-white/10 dark:hover:bg-white/10 transition-all shrink-0" onclick="window.location.href='setting.html'">
+          <span class="material-symbols-outlined text-gray-400 dark:text-gray-400">settings</span>
+        </button>
+        <div class="relative notification-trigger cursor-pointer">
+          <span class="material-symbols-outlined text-gray-400 dark:text-gray-400">notifications</span>
+          <span class="absolute -top-1 -right-1 w-3.5 h-3.5 bg-red-500 rounded-full text-[8px] flex items-center justify-center font-bold text-white">3</span>
+        </div>
+        <div id="profile-trigger" class="flex items-center space-x-2 cursor-pointer border-l border-white/10 dark:border-white/10 pl-4">
+          <img id="user-profile-img" alt="User" class="w-8 h-8 md:w-9 md:h-9 rounded-full border-2 border-emerald-accent" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDOdWz0yXTAfug92jAlZ-XZtnL5urTJNu8npwz7RIfeTacw2m4yeAoKNMAkf3MLOCIk0iI35_ID8tSabIp6I7MF2N_gez6RO01_i0q1DX3bj656URDlnI8A34wDvyRB5WoPOVTN1qvuyGRfskySDI-pCWAnw3raxBsKX2G6sEhrFHiweAO4TxLdxuB-4_oAPBbm9bwmrKrqSGKFEtAeXpM76OE_C1cQQSNmRYmIRT01ZVb4lT2k1tR1xDw6ujXtxiain2IWfiKxim" />
+          <div class="hidden sm:block">
+            <p id="user-name-display" class="text-sm font-bold text-white dark:text-white">NiteshY</p>
+            <p id="user-level-display" class="text-[10px] text-emerald-accent font-bold uppercase tracking-wider">Level 28</p>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Mobile Sub-Nav -->
+    <nav class="xl:hidden flex overflow-x-auto gap-1 sm:gap-2 px-2 py-1.5 sm:px-4 sm:py-2.5 bg-[#061328] dark:bg-[#061328] border-b border-white/10 dark:border-white/10 scrollbar-none whitespace-nowrap" style="-webkit-overflow-scrolling:touch;scrollbar-width:none;">
+      <a href="index.html" class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-white/10 shrink-0">Home</a>
+      <a href="livematches.html" class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-white/10 shrink-0">Matches</a>
+      <a href="index.html" class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-white/10 shrink-0">Predictions</a>
+      <a href="index.html" class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-white/10 shrink-0">Leaderboard</a>
+      <a href="news&update.html" class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-white/10 shrink-0">News</a>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="p-4 md:p-8">
+      <div class="dashboard" style="max-width:1400px;margin:auto;">
+
+        <div class="main-container">
+
+          <!-- LEFT CONTENT -->
+          <div class="content" style="display:flex;flex-direction:column;gap:20px;">
+
+            <!-- WALLET -->
+            <div class="wallet-card" style="background:#071d4a;border:1px solid #0d5ca6;border-radius:25px;padding:35px;display:flex;justify-content:space-between;align-items:center;gap:40px;">
+              <div style="flex:1;">
+                <h1 style="font-size:54px;line-height:1.1;font-weight:800;margin-bottom:15px;">FAN <span style="color:#2EF06B;">COIN</span><br>WALLET</h1>
+                <p style="font-size:18px;color:#d0d9e8;">Earn Coins. Play More. Win Big.</p>
+                <p style="font-size:18px;color:#d0d9e8;">YOUR FAN COINS</p>
+                <div class="coins" style="display:flex;align-items:center;gap:20px;margin:25px 0;">
+                  <div style="width:70px;height:70px;border-radius:50%;background:#FFC107;display:flex;justify-content:center;align-items:center;color:black;font-weight:700;font-size:22px;">FC</div>
+                  <h2 style="font-size:72px;color:#FFC107;font-weight:700;">1250</h2>
+                </div>
+                <div class="buttons" style="display:flex;gap:15px;">
+                  <button onclick="window.location.href='index.html'" style="background:#2EF06B;color:black;border:none;padding:14px 25px;border-radius:12px;font-weight:700;cursor:pointer;">Earn Coins</button>
+                  <button onclick="toggleAllTransactions()" style="background:transparent;border:1px solid #2f4f77;color:white;padding:14px 25px;border-radius:12px;cursor:pointer;">Coin History</button>
+                </div>
+              </div>
+              <div class="wallet-image" style="flex:1;display:flex;justify-content:center;align-items:center;">
+                <img src="assets/fancoin/Fanconnact_Stadium_Wallet.png" style="width:430px;max-width:100%;">
+              </div>
+            </div>
+
+            <!-- EARN -->
+            <h3 style="font-size:20px;margin-top:5px;">Ways To Earn Fan Coins</h3>
+            <div class="earn-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px;">
+              <div class="card" style="background:#07111f;border:1px solid rgba(255,255,255,.05);border-radius:18px;padding:25px;text-align:center;transition:.3s;">
+                <i class="fa-regular fa-circle-question" style="font-size:38px;margin-bottom:15px;color:#2EF06B;"></i>
+                <h4 style="margin-bottom:10px;">Daily Quiz</h4>
+                <p style="margin-bottom:12px;">Answer daily quiz</p>
+                <span style="color:#2EF06B;font-weight:700;">+100 Coins</span>
+              </div>
+              <div class="card" style="background:#07111f;border:1px solid rgba(255,255,255,.05);border-radius:18px;padding:25px;text-align:center;transition:.3s;">
+                <i class="fa-solid fa-trophy" style="font-size:38px;margin-bottom:15px;color:#d16eff;"></i>
+                <h4 style="margin-bottom:10px;">Match Prediction</h4>
+                <p style="margin-bottom:12px;">Predict matches</p>
+                <span style="color:#2EF06B;font-weight:700;">+250 Coins</span>
+              </div>
+              <div class="card" style="background:#07111f;border:1px solid rgba(255,255,255,.05);border-radius:18px;padding:25px;text-align:center;transition:.3s;">
+                <i class="fa-solid fa-users" style="font-size:38px;margin-bottom:15px;color:#45a9ff;"></i>
+                <h4 style="margin-bottom:10px;">Community Activity</h4>
+                <p style="margin-bottom:12px;">Stay active</p>
+                <span style="color:#2EF06B;font-weight:700;">+50 Coins</span>
+              </div>
+              <div class="card" style="background:#07111f;border:1px solid rgba(255,255,255,.05);border-radius:18px;padding:25px;text-align:center;transition:.3s;">
+                <i class="fa-solid fa-shield" style="font-size:38px;margin-bottom:15px;color:#ffb32d;"></i>
+                <h4 style="margin-bottom:10px;">Fan War</h4>
+                <p style="margin-bottom:12px;">Participate in battles</p>
+                <span style="color:#2EF06B;font-weight:700;">+500 Coins</span>
+              </div>
+            </div>
+
+            <!-- LEVEL -->
+            <div class="level-card" style="background:#07111f;border-radius:20px;padding:25px;display:flex;justify-content:space-between;align-items:center;">
+              <div>
+                <h2>&#x1F947; Gold Fan</h2>
+                <p>Keep going! Next level is Diamond Fan</p>
+                <div class="progress" style="width:350px;height:12px;background:#20345a;border-radius:20px;margin:15px 0;">
+                  <div class="progress-fill" style="width:75%;height:100%;background:#2EF06B;border-radius:20px;"></div>
+                </div>
+                <small>750 / 1000 XP</small>
+              </div>
+              <div>
+                <h4>LEVEL BENEFITS</h4>
+                <div class="benefit-list" style="display:flex;flex-direction:row;gap:30px;margin-top:15px;flex-wrap:wrap;">
+                  <div>&#x2B50; Exclusive Content</div>
+                  <div>&#x1F3AB; Early Access</div>
+                  <div>&#x1F6E1; Special Badges</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- FAN LEVELS -->
+            <div class="fan-levels" style="display:flex;gap:15px;">
+              <div class="fan-card" style="flex:1;background:#07111f;border-radius:18px;padding:20px;text-align:center;">
+                <div class="level-icon bronze" style="font-size:25px;margin-bottom:10px;color:#cd7f32;">&#x1F6E1;</div>
+                <h4>Bronze Fan</h4>
+                <p>0 - 500</p>
+              </div>
+              <div class="fan-card" style="flex:1;background:#07111f;border-radius:18px;padding:20px;text-align:center;">
+                <div class="level-icon silver" style="font-size:25px;margin-bottom:10px;color:silver;">&#x1F6E1;</div>
+                <h4>Silver Fan</h4>
+                <p>500 - 2000</p>
+              </div>
+              <div class="fan-card active" style="flex:1;background:#07111f;border-radius:18px;padding:20px;text-align:center;border:2px solid #FFC107;">
+                <div class="level-icon gold" style="font-size:25px;margin-bottom:10px;color:#FFC107;">&#x1F3C6;</div>
+                <h4>Gold Fan</h4>
+                <p>2000 - 5000</p>
+              </div>
+              <div class="fan-card" style="flex:1;background:#07111f;border-radius:18px;padding:20px;text-align:center;">
+                <div class="level-icon diamond" style="font-size:25px;margin-bottom:10px;color:#55e7ff;">&#x1F48E;</div>
+                <h4>Diamond Fan</h4>
+                <p>5000+</p>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- SIDEBAR - TRANSACTIONS -->
+          <div class="sidebar-panel">
+            <h3 style="margin-bottom:15px;display:flex;justify-content:space-between;align-items:center;">
+              <span>RECENT TRANSACTIONS</span>
+              <span id="tx-count" style="font-size:11px;color:#9ba7bd;">5 of 40</span>
+            </h3>
+            <div id="tx-list-sidebar" style="overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(46,240,107,0.3) transparent;"></div>
+            <div style="text-align:center;margin-top:16px;">
+              <button id="view-all-tx-btn" onclick="toggleAllTransactions()" class="view-btn" style="background:none;border:1px solid #2EF06B;color:#2EF06B;padding:12px 30px;border-radius:12px;cursor:pointer;font-weight:600;font-size:13px;width:100%;">VIEW ALL TRANSACTIONS (40)</button>
+            </div>
+          </div>
+
+        </div>
+
+        <script>
+          const TX_DATA = [
+            { label: "Daily Quiz Reward", amount: "+100", type: "plus", date: "2026-07-02" },
+            { label: "Match Prediction", amount: "+250", type: "plus", date: "2026-07-01" },
+            { label: "Fan War Victory", amount: "+500", type: "plus", date: "2026-06-30" },
+            { label: "Community Post", amount: "+50", type: "plus", date: "2026-06-29" },
+            { label: "Redeemed IPL Ticket", amount: "-1200", type: "minus", date: "2026-06-28" },
+            { label: "Daily Quiz Reward", amount: "+100", type: "plus", date: "2026-06-27" },
+            { label: "Match Prediction Win", amount: "+250", type: "plus", date: "2026-06-26" },
+            { label: "Fan War Entry", amount: "-100", type: "minus", date: "2026-06-25" },
+            { label: "Community Post", amount: "+50", type: "plus", date: "2026-06-24" },
+            { label: "Redeemed Merch", amount: "-500", type: "minus", date: "2026-06-23" },
+            { label: "Daily Quiz Reward", amount: "+100", type: "plus", date: "2026-06-22" },
+            { label: "Prediction Bonus", amount: "+300", type: "plus", date: "2026-06-21" },
+            { label: "Fan War Victory", amount: "+500", type: "plus", date: "2026-06-20" },
+            { label: "Redeemed Ticket", amount: "-800", type: "minus", date: "2026-06-19" },
+            { label: "Referral Reward", amount: "+200", type: "plus", date: "2026-06-18" },
+            { label: "Match Prediction", amount: "+250", type: "plus", date: "2026-06-17" },
+            { label: "Community Award", amount: "+150", type: "plus", date: "2026-06-16" },
+            { label: "Daily Quiz Reward", amount: "+100", type: "plus", date: "2026-06-15" },
+            { label: "Redeemed Voucher", amount: "-300", type: "minus", date: "2026-06-14" },
+            { label: "Fan War Victory", amount: "+500", type: "plus", date: "2026-06-13" },
+            { label: "Daily Quiz Reward", amount: "+100", type: "plus", date: "2026-06-12" },
+            { label: "Prediction Correct", amount: "+250", type: "plus", date: "2026-06-11" },
+            { label: "Community Post", amount: "+50", type: "plus", date: "2026-06-10" },
+            { label: "Redeemed IPL Ticket", amount: "-1200", type: "minus", date: "2026-06-09" },
+            { label: "Fan War Victory", amount: "+500", type: "plus", date: "2026-06-08" },
+            { label: "Daily Quiz Reward", amount: "+100", type: "plus", date: "2026-06-07" },
+            { label: "Match Prediction", amount: "+250", type: "plus", date: "2026-06-06" },
+            { label: "Birthday Bonus", amount: "+1000", type: "plus", date: "2026-06-05" },
+            { label: "Redeemed Cash", amount: "-2000", type: "minus", date: "2026-06-04" },
+            { label: "Community Activity", amount: "+50", type: "plus", date: "2026-06-03" },
+            { label: "Fan War Victory", amount: "+500", type: "plus", date: "2026-06-02" },
+            { label: "Daily Quiz", amount: "+100", type: "plus", date: "2026-06-01" },
+            { label: "Prediction Win", amount: "+250", type: "plus", date: "2026-05-31" },
+            { label: "Referral Bonus", amount: "+200", type: "plus", date: "2026-05-30" },
+            { label: "Redeemed Jersey", amount: "-1500", type: "minus", date: "2026-05-29" },
+            { label: "Fan War Victory", amount: "+500", type: "plus", date: "2026-05-28" },
+            { label: "Daily Quiz Reward", amount: "+100", type: "plus", date: "2026-05-27" },
+            { label: "Match Prediction", amount: "+250", type: "plus", date: "2026-05-26" },
+            { label: "Community Post", amount: "+50", type: "plus", date: "2026-05-25" },
+            { label: "Redeemed Voucher", amount: "-300", type: "minus", date: "2026-05-24" },
+          ];
+
+          function renderTxItem(t) {
+            return '<div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.07);font-size:13px;">' +
+              '<div><div style="font-weight:500;">' + t.label + '</div><div style="font-size:11px;color:#9ba7bd;margin-top:2px;">' + t.date + '</div></div>' +
+              '<span style="color:' + (t.type==='plus'?'#2EF06B':'#ff5c5c') + ';font-weight:700;white-space:nowrap;">' + t.amount + '</span>' +
+              '</div>';
+          }
+
+          let txShowAll = false;
+
+          function renderTX(showAll) {
+            const list = document.getElementById("tx-list-sidebar");
+            const count = document.getElementById("tx-count");
+            const btn = document.getElementById("view-all-tx-btn");
+            const visible = showAll ? TX_DATA.length : 5;
+            list.style.maxHeight = showAll ? "420px" : "280px";
+            list.innerHTML = TX_DATA.slice(0, visible).map(renderTxItem).join("");
+            count.textContent = visible + " of " + TX_DATA.length;
+            btn.textContent = showAll ? "SHOW LESS" : "VIEW ALL TRANSACTIONS (" + TX_DATA.length + ")";
+          }
+
+          function toggleAllTransactions() {
+            txShowAll = !txShowAll;
+            renderTX(txShowAll);
+          }
+
+          renderTX(false);
+        </script>
+
+        </div>
+      </div>
+    </main>
+    <script type="module" src="js/script.js"></script>
+    <script src="js/theme.js"></script>
+  </body>
+</html>
