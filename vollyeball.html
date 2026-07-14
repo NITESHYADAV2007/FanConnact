@@ -176,7 +176,7 @@
         <nav class="hidden xl:flex items-center space-x-6 mx-6 shrink-0">
           <a
             class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link"
-            href="index.html"
+            href="dashboard.html"
             >Home</a
           >
           <a
@@ -186,12 +186,12 @@
           >
           <a
             class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link"
-            href="index.html"
+            href="prediction.html"
             >Predictions</a
           >
           <a
             class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link"
-            href="index.html"
+            href="leaderboard.html"
             >Leaderboard</a
           >
           <a
@@ -270,10 +270,10 @@
 
     <!-- Mobile Sub-Nav -->
     <nav class="xl:hidden flex overflow-x-auto gap-1 sm:gap-2 px-2 py-1.5 sm:px-4 sm:py-2.5 bg-white dark:bg-black border-b border-gray-200 dark:border-border-subtle scrollbar-none whitespace-nowrap" style="-webkit-overflow-scrolling:touch;scrollbar-width:none;">
-      <a href="index.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Home</a>
+      <a href="dashboard.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Home</a>
       <a href="livematches.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Matches</a>
-      <a href="index.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Predictions</a>
-      <a href="index.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Leaderboard</a>
+      <a href="prediction.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Predictions</a>
+      <a href="leaderboard.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Leaderboard</a>
       <a href="news&update.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">News</a>
     </nav>
 
@@ -294,7 +294,7 @@
         <!-- Logo Container for collapsed state -->
         <div
           class="p-6 flex items-center space-x-2 logo-container cursor-pointer"
-          onclick="window.location.href = 'index.html'"
+          onclick="window.location.href = 'dashboard.html'"
         >
           <img src="assets/fancoin/fanconnactlogo.png" alt="Fanconnact" class="w-8 h-8 flex-shrink-0" />
           <span
@@ -475,38 +475,23 @@
               <div class="mb-8">
                 <h2 class="text-4xl font-bold mb-2">Volleyball Matches</h2>
                 <p class="text-gray-400 text-sm">
-                  Follow the Pro Kabaddi League, World Cup, and major international
-                  tournaments!
+                  Follow the FIVB Volleyball Nations League Finals!
                 </p>
               </div>
-              <!-- Category Filter Tabs -->
+              <!-- Tournament Filter Tabs -->
               <div
                 class="flex items-center space-x-8 border-b border-gray-800 mb-8 overflow-x-auto pb-1 whitespace-nowrap"
-                data-purpose="league-tabs"
+                data-purpose="tournament-filters"
               >
-                <a
+                <button
                   class="text-accent-green font-bold text-sm pb-4 border-b-2 border-accent-green"
-                  href="index.html"
-                  >All</a
-                ><a
+                  >All</button
+                ><button
                   class="text-gray-400 hover:text-white font-medium text-sm pb-4"
-                  href="index.html"
-                  >FIVB World Championship</a
-                ><a
-                  class="text-gray-400 hover:text-white font-medium text-sm pb-4"
-                  href="index.html"
-                  >VNL</a
-                ><a
-                  class="text-gray-400 hover:text-white font-medium text-sm pb-4"
-                  href="index.html"
-                  >Olympic Games</a
-                ><a
-                  class="text-gray-400 hover:text-white font-medium text-sm pb-4"
-                  href="index.html"
-                  >CEV Champions League</a
-                >
-              </div>
-              <!-- Action Bar -->
+                 >FIVB VNL Finals 2026</button
+                 ><button id="statsTab" class="text-gray-400 hover:text-emerald-accent font-medium text-sm pb-4 cursor-pointer" onclick="document.getElementById('statsSection').classList.toggle('hidden');document.getElementById('statsTab').classList.toggle('text-emerald-accent');document.getElementById('statsTab').classList.toggle('border-emerald-accent');document.getElementById('statsTab').style.borderBottom=document.getElementById('statsTab').classList.contains('text-emerald-accent')?'2px solid #10b981':'none'">Stats</button>
+               </div>
+               <!-- Action Bar -->
               <div
                 class="flex flex-col md:flex-row justify-between gap-4 mb-6"
                 data-purpose="status-filters"
@@ -518,7 +503,7 @@
                     <span
                       class="w-1.5 h-1.5 bg-accent-green rounded-full animate-pulse"
                     ></span>
-                    <span class="">Live (4)</span>
+                    <span class="">Live (3)</span>
                   </button>
                   <button
                     class="px-6 py-2 text-gray-400 hover:text-white transition text-sm flex items-center space-x-2"
@@ -533,7 +518,7 @@
                         d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
                       ></path>
                     </svg>
-                    <span class="">Upcoming (8)</span>
+                    <span class="">Upcoming (2)</span>
                   </button>
                   <button
                     class="px-6 py-2 text-gray-400 hover:text-white transition text-sm flex items-center space-x-2"
@@ -546,7 +531,7 @@
                     >
                       <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
-                    <span class="">Finished (15)</span>
+                    <span class="">Finished (2)</span>
                   </button>
                 </div>
                 <div class="flex items-center space-x-3">
@@ -580,11 +565,22 @@
                   </button>
                 </div>
               </div>
+            <!-- BEGIN: StatsSection -->
+            <div id="statsSection" class="hidden">
+              <div class="bg-card-bg rounded-2xl border border-border-subtle mb-8">
+                <div class="flex items-center justify-between px-6 py-4 border-b border-border-subtle">
+                  <h3 class="font-bold text-sm">Volleyball Stats & Rankings</h3>
+                  <span class="text-[10px] text-gray-500">Auto-updated from FIVB</span>
+                </div>
+                <div id="sportStatsContainer"></div>
+              </div>
+            </div>
+            <!-- END: StatsSection -->
             <!-- Matches Grid/List -->
             <div class="space-y-6" data-purpose="matches-list">
-              <!-- Match Card 1 -->
-              <div
-                class="bg-brand-surface rounded-3xl p-6 border border-gray-800/50 hover:border-gray-700 transition relative overflow-hidden group"
+              <!-- Match Card 1: VNL Finals LIVE -->
+              <div data-tournament="FIVB VNL Finals 2026" data-status="live"
+                class="bg-brand-surface rounded-2xl p-4 md:p-5 border border-gray-800/50 hover:border-gray-700 transition relative overflow-hidden group"
               >
                 <div class="flex justify-between items-start mb-8">
                   <div class="flex items-center space-x-3">
@@ -593,87 +589,49 @@
                       ><span class="w-1 h-1 bg-red-500 rounded-full mr-1"></span>
                       LIVE</span
                     >
-                    <p class="text-xs text-gray-400">
-                      VNL • Pool B • Maracanãzinho
-                    </p>
+                    <p class="text-xs text-gray-400">FIVB VNL Finals 2026 • Semifinal • Lodz, Poland</p>
                   </div>
                   <button class="text-gray-500 hover:text-white">
-                    <svg
-                      class="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-                      ></path>
-                    </svg>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
                   </button>
                 </div>
                 <div class="flex items-center justify-center space-x-12 mb-8">
                   <div class="text-center w-40">
-                    <div class="relative inline-block">
-                      <div
-                        class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden"
-                      >
-                        <img
-                          alt="Atlantic Spikers"
-                          class="w-14 h-14 object-contain"
-                          src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTn0jQAbIhcyqDUFzAfaHcu1KbTM6oHEucKbhGUgbKpv9rv8BjPWpt0n60WgQqNg7aHfasOCCenhoVMPnczqjgIT5At6l-AQbYnJX5sM80qPqJYSDt7wcUkZg_-wD9lORsje5N6wzLZhMi6yHYa2tVPdow0Rtp9LFNiwK4rfVsfWfXmvUce8FjdskhromHclXEPv98d6rv-KCUzxXO8rKO2gdWhOEOX8D3-8XxYTGgb23JPHdJtt4gliJm-BkBurY51E6_vMPwj1Q"
-                        />
-                      </div>
+                    <div class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden">
+                      <img alt="Brazil" class="w-14 h-14 object-contain" src="https://upload.wikimedia.org/wikipedia/en/thumb/0/05/Flag_of_Brazil.svg/512px-Flag_of_Brazil.svg.png" />
                     </div>
-                    <p class="text-sm font-bold mb-1">Atlantic Spikers</p>
+                    <p class="text-sm font-bold mb-1">Brazil</p>
                     <div class="flex justify-center space-x-1">
                       <span class="text-4xl font-black text-white">2</span>
                     </div>
+                    <p class="text-[10px] text-gray-500 mt-1">Sets</p>
                   </div>
                   <div class="text-center">
-                    <div class="text-gray-500 font-bold text-xl mb-1">Set 4</div>
-                    <div class="text-accent-green font-bold text-[10px] uppercase">
-                      21-19
-                    </div>
+                    <div class="text-gray-500 font-bold text-xl mb-1">Set 3</div>
+                    <div class="text-accent-green font-bold text-[10px] uppercase">25-22 • 2 pts Away</div>
                   </div>
                   <div class="text-center w-40">
-                    <div class="relative inline-block">
-                      <div
-                        class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden"
-                      >
-                        <img
-                          alt="Mountain Blockers"
-                          class="w-14 h-14 object-contain"
-                          src="https://lh3.googleusercontent.com/aida-public/AB6AXuDUu7Ga01qVeZEMZsT72aIPB0c73v3_fV2zkyDuWyUlsoIy6H-5-MaCv08mF1NAmaWb2xSnpcnPiDT2dIPsgqCtLL5cjiEjbSzl-FufpgVSIJGnwZlfvoguxyNz1jbODRnxUFi0xHDcFif6vym_-x-YJVJGVAWq679kltkUM4nZ2CI8ar3wUV6sUq2IZN1FwOlrZvhhiRAVc96FdYobyjvJldxQ6PImJkmsjMukz6tyHsWdoAZiTqNGzOWIfHIvbtaVyFf-kFOjBd8"
-                        />
-                      </div>
+                    <div class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden">
+                      <img alt="Poland" class="w-14 h-14 object-contain" src="https://upload.wikimedia.org/wikipedia/en/thumb/1/12/Flag_of_Poland.svg/512px-Flag_of_Poland.svg.png" />
                     </div>
-                    <p class="text-sm font-bold mb-1">Mountain Blockers</p>
+                    <p class="text-sm font-bold mb-1">Poland</p>
                     <div class="flex justify-center space-x-1">
                       <span class="text-4xl font-black text-white">1</span>
                     </div>
+                    <p class="text-[10px] text-gray-500 mt-1">Sets</p>
                   </div>
                 </div>
-                <div
-                  class="flex justify-between items-center pt-6 border-t border-gray-800"
-                >
-                  <p class="text-xs text-gray-500 font-medium">
-                    1.8M Fans Tracking
-                  </p>
+                <div class="flex justify-between items-center pt-6 border-t border-gray-800">
+                  <p class="text-xs text-gray-500 font-medium">3.5M Fans Watching</p>
                   <div class="flex space-x-3">
-                    <button
-                      class="px-5 py-2 rounded-lg border border-accent-green text-accent-green text-xs font-bold hover:bg-accent-green/10"
-                    >
-                      Match Stats</button
-                    ><button
-                      class="px-5 py-2 rounded-lg bg-gray-800 text-white text-xs font-bold hover:bg-gray-700"
-                    >
-                      Play-by-Play
-                    </button>
+                    <button onclick="window.location.href='match-center.html?sport=volleyball&home=Brazil&away=Poland'" class="px-5 py-2 rounded-lg border border-accent-green text-accent-green text-xs font-bold hover:bg-accent-green/10">Match Stats</button>
+                    <button onclick="window.location.href='match-center.html?sport=volleyball&home=Brazil&away=Poland'" class="px-5 py-2 rounded-lg bg-gray-800 text-white text-xs font-bold hover:bg-gray-700">Play-by-Play</button>
                   </div>
                 </div>
               </div>
-              <!-- Match Card 2 -->
-              <div
-                class="bg-brand-surface rounded-3xl p-6 border border-gray-800/50 hover:border-gray-700 transition relative"
+              <!-- Match Card 2: VNL Finals LIVE -->
+              <div data-tournament="FIVB VNL Finals 2026" data-status="live"
+                class="bg-brand-surface rounded-2xl p-4 md:p-5 border border-gray-800/50 hover:border-gray-700 transition relative overflow-hidden group"
               >
                 <div class="flex justify-between items-start mb-8">
                   <div class="flex items-center space-x-3">
@@ -682,77 +640,278 @@
                       ><span class="w-1 h-1 bg-red-500 rounded-full mr-1"></span>
                       LIVE</span
                     >
-                    <p class="text-xs text-gray-400">
-                      Olympic Games • Quarter Final • Ariake Arena
-                    </p>
+                    <p class="text-xs text-gray-400">FIVB VNL Finals 2026 • Semifinal • Lodz, Poland</p>
                   </div>
                   <button class="text-gray-500 hover:text-white">
-                    <svg
-                      class="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-                      ></path>
-                    </svg>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
                   </button>
                 </div>
                 <div class="flex items-center justify-center space-x-12 mb-8">
                   <div class="text-center w-40">
-                    <div
-                      class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden"
-                    >
-                      <img
-                        alt="Poland"
-                        class="w-14 h-14 object-contain"
-                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuBrZRbeUmxVVP9t3dPU0dsIDak_tebo-bWll-RqmbokOJ_aE9KthWgbAEpMdKbebzM4oH-yvDeJMYljvxIasHKAJw8Ql5HcK6p_rM2wLhlYQbJOmGiXhzjZUD27Dpkm2drddK4nTPLn0lHMk1ykNEkSWY5967ga8xKIMl8r03Kl6-q0r0xKTXUu1KsWytzIBqBunz9hHgHhKWSATJloEJAbo6GhcP_5x71CamqAGQh0pM9BvEs9SyF-1ntKP-ePyUl854xafaYP9Wo"
-                      />
-                    </div>
-                    <p class="text-sm font-bold mb-1">Poland</p>
-                    <div class="flex justify-center space-x-1">
-                      <span class="text-4xl font-black text-white">25</span>
-                    </div>
-                  </div>
-                  <div class="text-center">
-                    <div class="text-gray-500 font-bold text-xl mb-1">Set 3</div>
-                    <div class="text-accent-green font-bold text-[10px] uppercase">
-                      Final Score
-                    </div>
-                  </div>
-                  <div class="text-center w-40">
-                    <div
-                      class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden"
-                    >
-                      <img
-                        alt="USA"
-                        class="w-14 h-14 object-contain"
-                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuDI512OvsNiXK4Xr3e1I0mmrOlWDKlxKzwKjiGRlGrDD006WHCNJmW9evSjnz0OdTyuIDLhbkIQ6kDAt_GCgwg2hIjYHXvKcuas0Ft4HpeAXSzAQKp4Fxqnu4crRgTZ2vEaLKxwvlHaZoe_EhXqYGdRAEYcK1vXDzt0NH-XYcZPw0fVTYi2ceWfQ-_Vihx-eEDbz0xOxjClPhswtx3x9_zaXOB5zG1iaNy0PB4ee-R7uFMnEyhjwcYaAKnVuRwL_7aQB6aHCCxXKxs"
-                      />
+                    <div class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden">
+                      <img alt="USA" class="w-14 h-14 object-contain" src="https://upload.wikimedia.org/wikipedia/en/thumb/a/a4/Flag_of_the_United_States.svg/512px-Flag_of_the_United_States.svg.png" />
                     </div>
                     <p class="text-sm font-bold mb-1">USA</p>
                     <div class="flex justify-center space-x-1">
-                      <span class="text-4xl font-black text-white">23</span>
+                      <span class="text-4xl font-black text-white">1</span>
+                    </div>
+                    <p class="text-[10px] text-gray-500 mt-1">Sets</p>
+                  </div>
+                  <div class="text-center">
+                    <div class="text-gray-500 font-bold text-xl mb-1">Set 3</div>
+                    <div class="text-accent-green font-bold text-[10px] uppercase">22-20 • Side Out</div>
+                  </div>
+                  <div class="text-center w-40">
+                    <div class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden">
+                      <img alt="Italy" class="w-14 h-14 object-contain" src="https://upload.wikimedia.org/wikipedia/en/thumb/0/03/Flag_of_Italy.svg/512px-Flag_of_Italy.svg.png" />
+                    </div>
+                    <p class="text-sm font-bold mb-1">Italy</p>
+                    <div class="flex justify-center space-x-1">
+                      <span class="text-4xl font-black text-white">1</span>
+                    </div>
+                    <p class="text-[10px] text-gray-500 mt-1">Sets</p>
+                  </div>
+                </div>
+                <div class="flex justify-between items-center pt-6 border-t border-gray-800">
+                  <p class="text-xs text-gray-500 font-medium">2.9M Fans Watching</p>
+                  <div class="flex space-x-3">
+                    <button onclick="window.location.href='match-center.html?sport=volleyball&home=USA&away=Italy'" class="px-5 py-2 rounded-lg border border-accent-green text-accent-green text-xs font-bold hover:bg-accent-green/10">Match Stats</button>
+                    <button onclick="window.location.href='match-center.html?sport=volleyball&home=USA&away=Italy'" class="px-5 py-2 rounded-lg bg-gray-800 text-white text-xs font-bold hover:bg-gray-700">Play-by-Play</button>
+                  </div>
+                </div>
+              </div>
+              <!-- Match Card 3: VNL Finals LIVE -->
+              <div data-tournament="FIVB VNL Finals 2026" data-status="live"
+                class="bg-brand-surface rounded-2xl p-4 md:p-5 border border-gray-800/50 hover:border-gray-700 transition relative overflow-hidden group"
+              >
+                <div class="flex justify-between items-start mb-8">
+                  <div class="flex items-center space-x-3">
+                    <span
+                      class="bg-red-500/20 text-red-500 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-tighter flex items-center"
+                      ><span class="w-1 h-1 bg-red-500 rounded-full mr-1"></span>
+                      LIVE</span
+                    >
+                    <p class="text-xs text-gray-400">FIVB VNL Finals 2026 • 5th Place • Lodz, Poland</p>
+                  </div>
+                  <button class="text-gray-500 hover:text-white">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                  </button>
+                </div>
+                <div class="flex items-center justify-center space-x-12 mb-8">
+                  <div class="text-center w-40">
+                    <div class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden">
+                      <img alt="France" class="w-14 h-14 object-contain" src="https://upload.wikimedia.org/wikipedia/en/thumb/c/c3/Flag_of_France.svg/512px-Flag_of_France.svg.png" />
+                    </div>
+                    <p class="text-sm font-bold mb-1">France</p>
+                    <div class="flex justify-center space-x-1">
+                      <span class="text-4xl font-black text-white">2</span>
+                    </div>
+                    <p class="text-[10px] text-gray-500 mt-1">Sets</p>
+                  </div>
+                  <div class="text-center">
+                    <div class="text-gray-500 font-bold text-xl mb-1">Set 3</div>
+                    <div class="text-accent-green font-bold text-[10px] uppercase">25-18 • France Leads</div>
+                  </div>
+                  <div class="text-center w-40">
+                    <div class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden">
+                      <img alt="Japan" class="w-14 h-14 object-contain" src="https://upload.wikimedia.org/wikipedia/en/thumb/9/9e/Flag_of_Japan.svg/512px-Flag_of_Japan.svg.png" />
+                    </div>
+                    <p class="text-sm font-bold mb-1">Japan</p>
+                    <div class="flex justify-center space-x-1">
+                      <span class="text-4xl font-black text-white">0</span>
+                    </div>
+                    <p class="text-[10px] text-gray-500 mt-1">Sets</p>
+                  </div>
+                </div>
+                <div class="flex justify-between items-center pt-6 border-t border-gray-800">
+                  <p class="text-xs text-gray-500 font-medium">1.2M Fans Watching</p>
+                  <div class="flex space-x-3">
+                    <button onclick="window.location.href='match-center.html?sport=volleyball&home=France&away=Japan'" class="px-5 py-2 rounded-lg border border-accent-green text-accent-green text-xs font-bold hover:bg-accent-green/10">Match Stats</button>
+                    <button onclick="window.location.href='match-center.html?sport=volleyball&home=France&away=Japan'" class="px-5 py-2 rounded-lg bg-gray-800 text-white text-xs font-bold hover:bg-gray-700">Play-by-Play</button>
+                  </div>
+                </div>
+              </div>
+              <!-- Match Card 4: VNL Finals Upcoming -->
+              <div data-tournament="FIVB VNL Finals 2026" data-status="upcoming"
+                class="bg-brand-surface rounded-2xl p-4 md:p-5 border border-gray-800/50 hover:border-gray-700 transition relative overflow-hidden group"
+              >
+                <div class="flex justify-between items-start mb-8">
+                  <div class="flex items-center space-x-3">
+                    <span class="bg-gray-500/20 text-gray-400 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-tighter">UPCOMING</span>
+                    <p class="text-xs text-gray-400">FIVB VNL Finals 2026 • Final • Lodz, Poland</p>
+                  </div>
+                  <button class="text-gray-500 hover:text-white">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                  </button>
+                </div>
+                <div class="flex items-center justify-center space-x-12 mb-8">
+                  <div class="text-center w-40">
+                    <div class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden">
+                      <img alt="TBD" class="w-14 h-14 object-contain" src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Volleyball_%28clipart%29.svg/512px-Volleyball_%28clipart%29.svg.png" />
+                    </div>
+                    <p class="text-sm font-bold mb-1">Winner SF1</p>
+                    <div class="flex justify-center space-x-1">
+                      <span class="text-4xl font-black text-white">-</span>
+                    </div>
+                  </div>
+                  <div class="text-center">
+                    <div class="text-gray-500 font-bold text-xl mb-1">Jul 15</div>
+                    <div class="text-accent-green font-bold text-[10px] uppercase">7:00 PM CET</div>
+                  </div>
+                  <div class="text-center w-40">
+                    <div class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden">
+                      <img alt="TBD" class="w-14 h-14 object-contain" src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Volleyball_%28clipart%29.svg/512px-Volleyball_%28clipart%29.svg.png" />
+                    </div>
+                    <p class="text-sm font-bold mb-1">Winner SF2</p>
+                    <div class="flex justify-center space-x-1">
+                      <span class="text-4xl font-black text-white">-</span>
                     </div>
                   </div>
                 </div>
-                <div
-                  class="flex justify-between items-center pt-6 border-t border-gray-800"
-                >
-                  <p class="text-xs text-gray-500 font-medium">
-                    2.1M Fans Watching
-                  </p>
+                <div class="flex justify-between items-center pt-6 border-t border-gray-800">
+                  <p class="text-xs text-gray-500 font-medium">Upcoming Final</p>
                   <div class="flex space-x-3">
-                    <button
-                      class="px-5 py-2 rounded-lg border border-accent-green text-accent-green text-xs font-bold"
-                    >
-                      Match Stats</button
-                    ><button
-                      class="px-5 py-2 rounded-lg bg-gray-800 text-white text-xs font-bold"
-                    >
-                      Play-by-Play
-                    </button>
+                    <button onclick="window.location.href='match-center.html?sport=volleyball&home=Winner SF1&away=Winner SF2'" class="px-5 py-2 rounded-lg border border-accent-green text-accent-green text-xs font-bold hover:bg-accent-green/10">Set Reminder</button>
+                    <button onclick="window.location.href='match-center.html?sport=volleyball&home=Winner SF1&away=Winner SF2'" class="px-5 py-2 rounded-lg bg-gray-800 text-white text-xs font-bold hover:bg-gray-700">Preview</button>
+                  </div>
+                </div>
+              </div>
+              <!-- Match Card 5: VNL Finals Upcoming -->
+              <div data-tournament="FIVB VNL Finals 2026" data-status="upcoming"
+                class="bg-brand-surface rounded-2xl p-4 md:p-5 border border-gray-800/50 hover:border-gray-700 transition relative overflow-hidden group"
+              >
+                <div class="flex justify-between items-start mb-8">
+                  <div class="flex items-center space-x-3">
+                    <span class="bg-gray-500/20 text-gray-400 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-tighter">UPCOMING</span>
+                    <p class="text-xs text-gray-400">FIVB VNL Finals 2026 • Bronze Medal • Lodz, Poland</p>
+                  </div>
+                  <button class="text-gray-500 hover:text-white">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                  </button>
+                </div>
+                <div class="flex items-center justify-center space-x-12 mb-8">
+                  <div class="text-center w-40">
+                    <div class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden">
+                      <img alt="TBD" class="w-14 h-14 object-contain" src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Volleyball_%28clipart%29.svg/512px-Volleyball_%28clipart%29.svg.png" />
+                    </div>
+                    <p class="text-sm font-bold mb-1">Loser SF1</p>
+                    <div class="flex justify-center space-x-1">
+                      <span class="text-4xl font-black text-white">-</span>
+                    </div>
+                  </div>
+                  <div class="text-center">
+                    <div class="text-gray-500 font-bold text-xl mb-1">Jul 15</div>
+                    <div class="text-accent-green font-bold text-[10px] uppercase">4:00 PM CET</div>
+                  </div>
+                  <div class="text-center w-40">
+                    <div class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden">
+                      <img alt="TBD" class="w-14 h-14 object-contain" src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Volleyball_%28clipart%29.svg/512px-Volleyball_%28clipart%29.svg.png" />
+                    </div>
+                    <p class="text-sm font-bold mb-1">Loser SF2</p>
+                    <div class="flex justify-center space-x-1">
+                      <span class="text-4xl font-black text-white">-</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="flex justify-between items-center pt-6 border-t border-gray-800">
+                  <p class="text-xs text-gray-500 font-medium">Upcoming Bronze Match</p>
+                  <div class="flex space-x-3">
+                    <button onclick="window.location.href='match-center.html?sport=volleyball&home=Loser SF1&away=Loser SF2'" class="px-5 py-2 rounded-lg border border-accent-green text-accent-green text-xs font-bold hover:bg-accent-green/10">Set Reminder</button>
+                    <button onclick="window.location.href='match-center.html?sport=volleyball&home=Loser SF1&away=Loser SF2'" class="px-5 py-2 rounded-lg bg-gray-800 text-white text-xs font-bold hover:bg-gray-700">Preview</button>
+                  </div>
+                </div>
+              </div>
+              <!-- Match Card 6: VNL Finals Finished -->
+              <div data-tournament="FIVB VNL Finals 2026" data-status="finished"
+                class="bg-brand-surface rounded-2xl p-4 md:p-5 border border-gray-800/50 hover:border-gray-700 transition relative overflow-hidden group"
+              >
+                <div class="flex justify-between items-start mb-8">
+                  <div class="flex items-center space-x-3">
+                    <span class="bg-gray-500/20 text-gray-400 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-tighter">FINISHED</span>
+                    <p class="text-xs text-gray-400">FIVB VNL Finals 2026 • Quarterfinal • Lodz, Poland</p>
+                  </div>
+                  <button class="text-gray-500 hover:text-white">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                  </button>
+                </div>
+                <div class="flex items-center justify-center space-x-12 mb-8">
+                  <div class="text-center w-40">
+                    <div class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden">
+                      <img alt="USA" class="w-14 h-14 object-contain" src="https://upload.wikimedia.org/wikipedia/en/thumb/a/a4/Flag_of_the_United_States.svg/512px-Flag_of_the_United_States.svg.png" />
+                    </div>
+                    <p class="text-sm font-bold mb-1">USA</p>
+                    <div class="flex justify-center space-x-1">
+                      <span class="text-4xl font-black text-white">3</span>
+                    </div>
+                    <p class="text-[10px] text-gray-500 mt-1">Sets</p>
+                  </div>
+                  <div class="text-center">
+                    <div class="text-gray-500 font-bold text-xl mb-1">Final</div>
+                    <div class="text-accent-green font-bold text-[10px] uppercase">25-20, 25-22, 25-19</div>
+                  </div>
+                  <div class="text-center w-40">
+                    <div class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden">
+                      <img alt="Brazil" class="w-14 h-14 object-contain" src="https://upload.wikimedia.org/wikipedia/en/thumb/0/05/Flag_of_Brazil.svg/512px-Flag_of_Brazil.svg.png" />
+                    </div>
+                    <p class="text-sm font-bold mb-1">Brazil</p>
+                    <div class="flex justify-center space-x-1">
+                      <span class="text-4xl font-black text-white">1</span>
+                    </div>
+                    <p class="text-[10px] text-gray-500 mt-1">Sets</p>
+                  </div>
+                </div>
+                <div class="flex justify-between items-center pt-6 border-t border-gray-800">
+                  <p class="text-xs text-gray-500 font-medium">2.4M Fans Watched</p>
+                  <div class="flex space-x-3">
+                    <button onclick="window.location.href='match-center.html?sport=volleyball&home=USA&away=Brazil'" class="px-5 py-2 rounded-lg border border-accent-green text-accent-green text-xs font-bold hover:bg-accent-green/10">Match Stats</button>
+                    <button onclick="window.location.href='match-center.html?sport=volleyball&home=USA&away=Brazil'" class="px-5 py-2 rounded-lg bg-gray-800 text-white text-xs font-bold hover:bg-gray-700">Highlights</button>
+                  </div>
+                </div>
+              </div>
+              <!-- Match Card 7: VNL Finals Finished -->
+              <div data-tournament="FIVB VNL Finals 2026" data-status="finished"
+                class="bg-brand-surface rounded-2xl p-4 md:p-5 border border-gray-800/50 hover:border-gray-700 transition relative overflow-hidden group"
+              >
+                <div class="flex justify-between items-start mb-8">
+                  <div class="flex items-center space-x-3">
+                    <span class="bg-gray-500/20 text-gray-400 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-tighter">FINISHED</span>
+                    <p class="text-xs text-gray-400">FIVB VNL Finals 2026 • Quarterfinal • Lodz, Poland</p>
+                  </div>
+                  <button class="text-gray-500 hover:text-white">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                  </button>
+                </div>
+                <div class="flex items-center justify-center space-x-12 mb-8">
+                  <div class="text-center w-40">
+                    <div class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden">
+                      <img alt="Italy" class="w-14 h-14 object-contain" src="https://upload.wikimedia.org/wikipedia/en/thumb/0/03/Flag_of_Italy.svg/512px-Flag_of_Italy.svg.png" />
+                    </div>
+                    <p class="text-sm font-bold mb-1">Italy</p>
+                    <div class="flex justify-center space-x-1">
+                      <span class="text-4xl font-black text-white">3</span>
+                    </div>
+                    <p class="text-[10px] text-gray-500 mt-1">Sets</p>
+                  </div>
+                  <div class="text-center">
+                    <div class="text-gray-500 font-bold text-xl mb-1">Final</div>
+                    <div class="text-accent-green font-bold text-[10px] uppercase">21-25, 25-23, 25-20, 25-22</div>
+                  </div>
+                  <div class="text-center w-40">
+                    <div class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden">
+                      <img alt="Argentina" class="w-14 h-14 object-contain" src="https://upload.wikimedia.org/wikipedia/en/thumb/1/1a/Flag_of_Argentina.svg/512px-Flag_of_Argentina.svg.png" />
+                    </div>
+                    <p class="text-sm font-bold mb-1">Argentina</p>
+                    <div class="flex justify-center space-x-1">
+                      <span class="text-4xl font-black text-white">2</span>
+                    </div>
+                    <p class="text-[10px] text-gray-500 mt-1">Sets</p>
+                  </div>
+                </div>
+                <div class="flex justify-between items-center pt-6 border-t border-gray-800">
+                  <p class="text-xs text-gray-500 font-medium">1.9M Fans Watched</p>
+                  <div class="flex space-x-3">
+                    <button onclick="window.location.href='match-center.html?sport=volleyball&home=Italy&away=Argentina'" class="px-5 py-2 rounded-lg border border-accent-green text-accent-green text-xs font-bold hover:bg-accent-green/10">Match Stats</button>
+                    <button onclick="window.location.href='match-center.html?sport=volleyball&home=Italy&away=Argentina'" class="px-5 py-2 rounded-lg bg-gray-800 text-white text-xs font-bold hover:bg-gray-700">Highlights</button>
                   </div>
                 </div>
               </div>
@@ -764,7 +923,7 @@
             <div class="bg-card-bg rounded-2xl p-6 border border-border-subtle">
               <div class="flex items-center justify-between mb-6">
                 <h3 class="font-bold">Calendar</h3>
-                <a class="text-emerald-accent text-xs font-semibold hover:underline" href="index.html">View Full Calendar</a>
+                <a class="text-emerald-accent text-xs font-semibold hover:underline" href="calendar.html?game=volleyball">View Full Calendar</a>
               </div>
               <div class="grid grid-cols-7 gap-2 text-center">
                 <div class="space-y-2">
@@ -856,7 +1015,7 @@
                     </button>
                   </div>
                 </div>
-                <a class="text-emerald-accent text-xs font-semibold hover:underline" href="index.html">View All</a>
+                <a class="text-emerald-accent text-xs font-semibold hover:underline" href="top-players.html?game=volleyball">View All</a>
               </div>
               <div class="flex space-x-2 mb-6 bg-dark-bg p-1 rounded-lg">
                 <button class="flex-1 py-1.5 text-[10px] font-bold rounded-md bg-emerald-accent/10 border border-emerald-accent text-emerald-accent">Kills</button>
@@ -924,5 +1083,29 @@
     </div>
     <script type="module" src="js/script.js"></script>
     <script src="js/theme.js"></script>
-  </body>
+    <script src="js/sport-filters.js"></script>
+    <script src="js/sport-stats.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        if (typeof initSportStats === 'function') {
+          initSportStats('sportStatsContainer');
+        }
+      });
+    </script>
+    <script>
+    document.addEventListener('DOMContentLoaded',function(){
+      document.querySelectorAll('[onclick*="match-center.html"]').forEach(function(b){
+        var c=b.closest('[data-status]'); if(!c) return;
+        var st=c.getAttribute('data-status')||'live';
+        var se=c.querySelectorAll('.text-4xl,.sm\\:text-2xl,.text-2xl');
+        var hs='',as='';
+        if(se.length>=2){ hs=se[0].textContent.trim(); as=se[1].textContent.trim(); if(hs==='-')hs=''; if(as==='-')as=''; }
+        var oc=b.getAttribute('onclick'); if(!oc) return;
+        var m=oc.match(/'(match-center\.html\?[^']+)'/); if(!m) return;
+        var u=m[1]; if(hs)u+='&hs='+encodeURIComponent(hs); if(as)u+='&as='+encodeURIComponent(as);
+        u+='&state='+st; b.setAttribute('onclick',"window.location.href='"+u+"'");
+      });
+    });
+    </script>
+  <script src="js/notif-ws.js"></script></body>
 </html>

@@ -77,7 +77,7 @@ const handleSocialLogin = async(provider) => {
             await setDoc(doc(db, "usernames", username), { uid: user.uid });
         }
 
-        window.location.href = "index.html";
+        window.location.href = "dashboard.html";
     } catch (error) {
         console.error("Auth Error Code:", error.code);
         if (error.code === "auth/unauthorized-domain") {
@@ -129,7 +129,7 @@ loginForm?.addEventListener("submit", async(e) => {
             return;
         }
 
-        window.location.href = "index.html";
+        window.location.href = "dashboard.html";
     } catch (error) {
         if (error.code === "auth/user-not-found") {
             alert("No account found with this email. Please sign up first.");
@@ -156,7 +156,9 @@ signupForm?.addEventListener("submit", async(e) => {
     const mobile = document.getElementById("mobile").value;
     const dob = document.getElementById("dob").value;
     let dobISO = "";
-    if (/^\d{2}\/\d{2}\/\d{4}$/.test(dob)) {
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dob)) {
+        dobISO = dob;
+    } else if (/^\d{2}\/\d{2}\/\d{4}$/.test(dob)) {
         const [dd, mm, yyyy] = dob.split('/');
         dobISO = `${yyyy}-${mm}-${dd}`;
     }
@@ -203,12 +205,13 @@ signupForm?.addEventListener("submit", async(e) => {
         return;
     }
 
-    // DOB validation (DD/MM/YYYY)
+    // DOB validation (supports YYYY-MM-DD from date picker)
     if (!dob || !dobISO) {
-        alert("Please enter your date of birth in DD/MM/YYYY format.");
+        alert("Please select your date of birth.");
         return;
     }
-    const [dd, mm, yyyy] = dob.split('/').map(Number);
+    const parts = dobISO.split('-').map(Number);
+    const [yyyy, mm, dd] = parts;
     const birthDate = new Date(yyyy, mm - 1, dd);
     if (birthDate.getDate() !== dd || birthDate.getMonth() !== mm - 1) {
         alert("Invalid date.");
@@ -222,8 +225,8 @@ signupForm?.addEventListener("submit", async(e) => {
     const age = today.getFullYear() - yyyy;
     const monthDiff = today.getMonth() - (mm - 1);
     const actualAge = monthDiff < 0 || (monthDiff === 0 && today.getDate() < dd) ? age - 1 : age;
-    if (actualAge < 13) {
-        alert("You must be at least 13 years old to register.");
+    if (actualAge < 6) {
+        alert("You must be at least 6 years old to register.");
         return;
     }
 
@@ -405,19 +408,18 @@ document.getElementById('password')?.addEventListener('input', function () {
     else v(m, 'Strong password', true);
 });
 
-// DOB input mask — auto-adds / after DD and MM
-document.getElementById('dob')?.addEventListener('input', function () {
-    let v = this.value.replace(/\D/g, '').slice(0, 8);
-    if (v.length > 4) v = v.slice(0, 2) + '/' + v.slice(2, 4) + '/' + v.slice(4);
-    else if (v.length > 2) v = v.slice(0, 2) + '/' + v.slice(2);
-    this.value = v;
-});
 document.getElementById('dob')?.addEventListener('blur', function () {
     const m = valMsg('dob');
-    const val = this.value.trim();
+    let val = this.value.trim();
     if (!val) { v(m, '', true); return; }
-    if (!/^\d{2}\/\d{2}\/\d{4}$/.test(val)) { v(m, 'Use DD/MM/YYYY format', false); return; }
-    const [d, mo, y] = val.split('/').map(Number);
+    let d, mo, y;
+    if (/^\d{4}-\d{2}-\d{2}$/.test(val)) {
+        [y, mo, d] = val.split('-').map(Number);
+    } else if (/^\d{2}\/\d{2}\/\d{4}$/.test(val)) {
+        [d, mo, y] = val.split('/').map(Number);
+    } else {
+        v(m, 'Enter a valid date', false); return;
+    }
     if (mo < 1 || mo > 12) { v(m, 'Month must be 01-12', false); return; }
     if (d < 1 || d > 31) { v(m, 'Day must be 01-31', false); return; }
     const bd = new Date(y, mo - 1, d);
@@ -572,7 +574,7 @@ verifyEmailOTPBtn?.addEventListener("click", () => {
 // Monitor Auth State
 onAuthStateChanged(auth, (user) => {
     if (user && window.location.pathname.includes("login.html")) {
-        window.location.href = "index.html";
+        window.location.href = "dashboard.html";
     }
 });
 

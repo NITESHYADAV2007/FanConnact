@@ -50,15 +50,15 @@
     <!-- Header -->
     <header class="sticky top-0 z-50 transition-colors duration-300 bg-[#061328]/95 dark:bg-[#061328]/95 border-b border-white/10 dark:border-white/10 px-4 md:px-8 py-4 flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <div class="flex items-center gap-2 cursor-pointer" onclick="window.location.href='index.html'">
+        <div class="flex items-center gap-2 cursor-pointer" onclick="window.location.href='dashboard.html'">
           <img src="assets/fancoin/fanconnactlogo.png" alt="Fanconnact" class="w-8 h-8" />
           <span class="text-lg font-bold whitespace-nowrap"><span class="text-fan">Fan</span><span class="text-connect">Connact</span></span>
         </div>
         <nav class="hidden xl:flex items-center space-x-6 mx-6 shrink-0">
-          <a class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link" href="index.html">Home</a>
+          <a class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link" href="dashboard.html">Home</a>
           <a class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link" href="livematches.html">Matches</a>
-          <a class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link" href="index.html">Predictions</a>
-          <a class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link" href="index.html">Leaderboard</a>
+          <a class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link" href="prediction.html">Predictions</a>
+          <a class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link" href="leaderboard.html">Leaderboard</a>
           <a class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link" href="news&update.html">News</a>
         </nav>
       </div>
@@ -86,10 +86,10 @@
 
     <!-- Mobile Sub-Nav -->
     <nav class="xl:hidden flex overflow-x-auto gap-1 sm:gap-2 px-2 py-1.5 sm:px-4 sm:py-2.5 bg-[#061328] dark:bg-[#061328] border-b border-white/10 dark:border-white/10 scrollbar-none whitespace-nowrap" style="-webkit-overflow-scrolling:touch;scrollbar-width:none;">
-      <a href="index.html" class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-white/10 shrink-0">Home</a>
+      <a href="dashboard.html" class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-white/10 shrink-0">Home</a>
       <a href="livematches.html" class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-white/10 shrink-0">Matches</a>
-      <a href="index.html" class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-white/10 shrink-0">Predictions</a>
-      <a href="index.html" class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-white/10 shrink-0">Leaderboard</a>
+      <a href="prediction.html" class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-white/10 shrink-0">Predictions</a>
+      <a href="leaderboard.html" class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-white/10 shrink-0">Leaderboard</a>
       <a href="news&update.html" class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-white/10 shrink-0">News</a>
     </nav>
 
@@ -113,8 +113,8 @@
                   <h2>1250</h2>
                 </div>
                 <div class="buttons">
-                  <button onclick="window.location.href='index.html'" class="green-btn">Earn Coins</button>
-                  <button onclick="toggleAllTransactions()" class="dark-btn">Coin History</button>
+                  <button type="button" onclick="window.location.href='prediction.html'" class="green-btn">Earn Coins</button>
+                  <button type="button" onclick="toggleAllTransactions()" class="dark-btn">Coin History</button>
                 </div>
               </div>
               <div class="wallet-image">
@@ -288,5 +288,5 @@
     </main>
     <script type="module" src="js/script.js"></script>
     <script src="js/theme.js"></script>
-  </body>
+  <script src="js/notif-ws.js"></script></body>
 </html>

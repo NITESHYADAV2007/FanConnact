@@ -176,7 +176,7 @@
         <nav class="hidden xl:flex items-center space-x-6 mx-6 shrink-0">
           <a
             class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link"
-            href="index.html"
+            href="dashboard.html"
             >Home</a
           >
           <a
@@ -186,12 +186,12 @@
           >
           <a
             class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link"
-            href="index.html"
+            href="prediction.html"
             >Predictions</a
           >
           <a
             class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link"
-            href="index.html"
+            href="leaderboard.html"
             >Leaderboard</a
           >
           <a
@@ -270,10 +270,10 @@
 
     <!-- Mobile Sub-Nav -->
     <nav class="xl:hidden flex overflow-x-auto gap-1 sm:gap-2 px-2 py-1.5 sm:px-4 sm:py-2.5 bg-white dark:bg-black border-b border-gray-200 dark:border-border-subtle scrollbar-none whitespace-nowrap" style="-webkit-overflow-scrolling:touch;scrollbar-width:none;">
-      <a href="index.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Home</a>
+      <a href="dashboard.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Home</a>
       <a href="livematches.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Matches</a>
-      <a href="index.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Predictions</a>
-      <a href="index.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Leaderboard</a>
+      <a href="prediction.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Predictions</a>
+      <a href="leaderboard.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Leaderboard</a>
       <a href="news&update.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">News</a>
     </nav>
 
@@ -294,7 +294,7 @@
         <!-- Logo Container for collapsed state -->
         <div
           class="p-6 flex items-center space-x-2 logo-container cursor-pointer"
-          onclick="window.location.href = 'index.html'"
+          onclick="window.location.href = 'dashboard.html'"
         >
           <img src="assets/fancoin/fanconnactlogo.png" alt="Fanconnact" class="w-8 h-8 flex-shrink-0" />
           <span
@@ -475,36 +475,20 @@
               <div class="mb-8">
                 <h2 class="text-4xl font-bold mb-2">E-Sports Tournaments</h2>
                 <p class="text-gray-400 text-sm">
-                  Follow the Pro Kabaddi League, World Cup, and major international
-                  tournaments!
+                  Follow the Valorant Champions, LCS Summer 2026, ESL Pro League, and
+                  major international esports tournaments!
                 </p>
               </div>
-              <!-- Category Filter Tabs -->
+              <!-- Tournament Tabs -->
               <div
-                class="flex items-center space-x-8 border-b border-gray-800 mb-8 overflow-x-auto pb-1 whitespace-nowrap"
-                data-purpose="league-tabs"
+                class="border-b border-gray-200 dark:border-border-subtle mb-8 flex space-x-8 overflow-x-auto pb-0"
+                data-purpose="tournament-filters"
               >
-                <a
-                  class="text-accent-green font-bold text-sm pb-4 border-b-2 border-accent-green"
-                  href="index.html"
-                  >All</a
-                ><a
-                  class="text-gray-400 hover:text-white font-medium text-sm pb-4"
-                  href="index.html"
-                  >The International</a
-                ><a
-                  class="text-gray-400 hover:text-white font-medium text-sm pb-4"
-                  href="index.html"
-                  >Worlds (LoL)</a
-                ><a
-                  class="text-gray-400 hover:text-white font-medium text-sm pb-4"
-                  href="index.html"
-                  >PGL Major</a
-                ><a
-                  class="text-gray-400 hover:text-white font-medium text-sm pb-4"
-                  href="index.html"
-                  >VCT Champions</a
-                >
+                <button class="pb-4 border-b-2 border-emerald-accent text-emerald-accent font-bold text-sm px-1 shrink-0">All</button>
+                <button class="pb-4 text-slate-500 dark:text-gray-300 hover:text-emerald-accent transition-colors font-medium text-sm px-1 shrink-0">Valorant Champions 2026</button>
+                <button class="pb-4 text-slate-500 dark:text-gray-300 hover:text-emerald-accent transition-colors font-medium text-sm px-1 shrink-0">LCS Summer 2026</button>
+                <button class="pb-4 text-slate-500 dark:text-gray-300 hover:text-emerald-accent transition-colors font-medium text-sm px-1 shrink-0">ESL Pro League 2026</button>
+              <button id="statsTab" class="pb-4 text-slate-500 dark:text-gray-300 hover:text-emerald-accent transition-colors font-medium text-sm px-1 shrink-0 cursor-pointer" onclick="document.getElementById('statsSection').classList.toggle('hidden');document.getElementById('statsTab').classList.toggle('text-emerald-accent');document.getElementById('statsTab').classList.toggle('border-emerald-accent');document.getElementById('statsTab').style.borderBottom=document.getElementById('statsTab').classList.contains('text-emerald-accent')?'2px solid #10b981':'none'">Stats</button>
               </div>
               <!-- Action Bar -->
               <div
@@ -580,175 +564,268 @@
                   </button>
                 </div>
               </div>
+            <!-- BEGIN: StatsSection -->
+            <div id="statsSection" class="hidden">
+              <div class="bg-card-bg rounded-2xl border border-border-subtle mb-8">
+                <div class="flex items-center justify-between px-6 py-4 border-b border-border-subtle">
+                  <h3 class="font-bold text-sm">E-Sports Stats & Rankings</h3>
+                  <span class="text-[10px] text-gray-500">Auto-updated from ESL</span>
+                </div>
+                <div id="sportStatsContainer"></div>
+              </div>
+            </div>
+            <!-- END: StatsSection -->
             <!-- Matches Grid/List -->
             <div class="space-y-6" data-purpose="matches-list">
-              <!-- Match Card 1 -->
-              <div
-                class="bg-brand-surface rounded-3xl p-6 border border-gray-800/50 hover:border-gray-700 transition relative overflow-hidden group"
-              >
+              <!-- Match 1: Sentinels vs FNATIC - Live - Valorant Champions 2026 -->
+              <div class="bg-brand-surface rounded-3xl p-6 border border-gray-800/50 hover:border-gray-700 transition relative overflow-hidden group" data-tournament="Valorant Champions 2026" data-status="live">
                 <div class="flex justify-between items-start mb-8">
                   <div class="flex items-center space-x-3">
-                    <span
-                      class="bg-red-500/20 text-red-500 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-tighter flex items-center"
-                      ><span class="w-1 h-1 bg-red-500 rounded-full mr-1"></span>
-                      LIVE</span
-                    >
-                    <p class="text-xs text-gray-400">
-                      VCT Champions • Grand Finals • Seoul
-                    </p>
+                    <span class="bg-red-500/20 text-red-500 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-tighter flex items-center"><span class="w-1 h-1 bg-red-500 rounded-full mr-1"></span> LIVE</span>
+                    <p class="text-xs text-gray-400">Valorant Champions 2026 • Grand Finals • Seoul</p>
                   </div>
-                  <button class="text-gray-500 hover:text-white">
-                    <svg
-                      class="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-                      ></path>
-                    </svg>
-                  </button>
                 </div>
                 <div class="flex items-center justify-center space-x-12 mb-8">
                   <div class="text-center w-40">
-                    <div class="relative inline-block">
-                      <div
-                        class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden"
-                      >
-                        <img
-                          alt="Neon Dynasty"
-                          class="w-14 h-14 object-contain"
-                          src="https://lh3.googleusercontent.com/aida-public/AB6AXuCObfqr4uNT_ZKgXxVMeeQKjlPcntJeqQyW2O1uzMoHJA_DINu-O2Kip4iAP8NZQstRLZp5p-M3j0G9rWSkIg4Lqhl_IaojZfrXa-6DsW3oRuu33ZtSQnwELU1ORKmf7skTxnFeMnq8xUAxS6Ww9p4BsfK4RqPaboryJ76r4PtJF-KxcdcZHK4se1wXEW5BidDnjeG8t5oIDpJ8Sv4qT4gZk0Cv9IDp0cJDvdqulHmS3lPFTRFcIyPv7i4qRYatLF9wecAiEms-g1I"
-                        />
-                      </div>
-                    </div>
-                    <p class="text-sm font-bold mb-1">Neon Dynasty</p>
-                    <div class="flex justify-center space-x-1">
-                      <span class="text-4xl font-black text-white">1</span>
-                    </div>
+                    <div class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden"><span class="text-sm font-bold">SEN</span></div>
+                    <p class="text-sm font-bold mb-1">Sentinels</p>
+                    <div class="flex justify-center space-x-1"><span class="text-4xl font-black text-white">2</span></div>
                   </div>
                   <div class="text-center">
-                    <div class="text-gray-500 font-bold text-xl mb-1">Game 2</div>
-                    <div class="text-accent-green font-bold text-[10px] uppercase">
-                      Map: Haven
-                    </div>
+                    <div class="text-gray-500 font-bold text-xl mb-1">Map 4</div>
+                    <div class="text-accent-green font-bold text-[10px] uppercase">Map: Icebox</div>
                   </div>
                   <div class="text-center w-40">
-                    <div class="relative inline-block">
-                      <div
-                        class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden"
-                      >
-                        <img
-                          alt="Shadow Stalkers"
-                          class="w-14 h-14 object-contain"
-                          src="https://lh3.googleusercontent.com/aida-public/AB6AXuBb5Ub2-nFqHWmZHq5_lOkk1d47k6EFbYjGCtfI3AJMys9Rp70fnvx4rvUve-_P5-DWpdN-LmAnkLlPChrmxqd4WuPFMZitScpQYtK7s97fQwqGWx9vZ8F0CtppEWOAX0Ju03zVE2AWfKN4gO9v9cQsU7x8LtZrQvKzg1N1Xj1e0FThoyEUiBVhHtZ0a-yD16J1W_K-jtWvep1ppJPACwIfqQNDhz03v7HOZZNQBAAM7YO90HhBumJXbemKk-H1kEAj7PcqoHYCRAM"
-                        />
-                      </div>
-                    </div>
-                    <p class="text-sm font-bold mb-1">Shadow Stalkers</p>
-                    <div class="flex justify-center space-x-1">
-                      <span class="text-4xl font-black text-white">0</span>
-                    </div>
+                    <div class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden"><span class="text-sm font-bold">FNC</span></div>
+                    <p class="text-sm font-bold mb-1">FNATIC</p>
+                    <div class="flex justify-center space-x-1"><span class="text-4xl font-black text-white">1</span></div>
                   </div>
                 </div>
-                <div
-                  class="flex justify-between items-center pt-6 border-t border-gray-800"
-                >
-                  <p class="text-xs text-gray-500 font-medium">850K Viewers</p>
+                <div class="flex justify-between items-center pt-6 border-t border-gray-800">
+                  <p class="text-xs text-gray-500 font-medium">1.2M Viewers</p>
                   <div class="flex space-x-3">
-                    <button
-                      class="px-5 py-2 rounded-lg border border-accent-green text-accent-green text-xs font-bold hover:bg-accent-green/10"
-                    >
-                      Match Stats</button
-                    ><button
-                      class="px-5 py-2 rounded-lg bg-gray-800 text-white text-xs font-bold hover:bg-gray-700"
-                    >
-                      Watch Live
-                    </button>
+                    <button onclick="window.location.href='match-center.html?sport=e-sports&home=Sentinels&away=FNATIC'" class="px-5 py-2 rounded-lg border border-accent-green text-accent-green text-xs font-bold">Match Stats</button>
+                    <button onclick="window.location.href='match-center.html?sport=e-sports&home=Sentinels&away=FNATIC'" class="px-5 py-2 rounded-lg bg-gray-800 text-white text-xs font-bold">Watch Live</button>
                   </div>
                 </div>
               </div>
-              <!-- Match Card 2 -->
-              <div
-                class="bg-brand-surface rounded-3xl p-6 border border-gray-800/50 hover:border-gray-700 transition relative"
-              >
+              <!-- Match 2: T1 vs Cloud9 - Live - LCS Summer 2026 -->
+              <div class="bg-brand-surface rounded-3xl p-6 border border-gray-800/50 hover:border-gray-700 transition relative" data-tournament="LCS Summer 2026" data-status="live">
                 <div class="flex justify-between items-start mb-8">
                   <div class="flex items-center space-x-3">
-                    <span
-                      class="bg-red-500/20 text-red-500 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-tighter flex items-center"
-                      ><span class="w-1 h-1 bg-red-500 rounded-full mr-1"></span>
-                      LIVE</span
-                    >
-                    <p class="text-xs text-gray-400">
-                      Worlds 2024 • Quarterfinals • London
-                    </p>
+                    <span class="bg-red-500/20 text-red-500 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-tighter flex items-center"><span class="w-1 h-1 bg-red-500 rounded-full mr-1"></span> LIVE</span>
+                    <p class="text-xs text-gray-400">LCS Summer 2026 • Week 8 • Los Angeles</p>
                   </div>
-                  <button class="text-gray-500 hover:text-white">
-                    <svg
-                      class="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-                      ></path>
-                    </svg>
-                  </button>
                 </div>
                 <div class="flex items-center justify-center space-x-12 mb-8">
                   <div class="text-center w-40">
-                    <div
-                      class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden"
-                    >
-                      <img
-                        alt="T1"
-                        class="w-14 h-14 object-contain"
-                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuD6bg-E4L8L6JBTvdzjtHlJEKf4qkqXyvWeUHvnpJmFah4YqR7qUzXJP_PHDnglB5vIUYhUcNz002dMsa_nj6LdQ8CMMu8FXsplPxcLT5m5Yc67_KbhwceYcknlbR0KxA1OVaGJzrifros4u8Egsrni8wRqf6S1XdTYkAWYDcNp4mshlJCJ5GlT2FiECs6xxhCjBf3fHST24Bv6XKO2-quHSWeL2dlx5XGp7ADgcOlHphZFjO5jiVamCZ-_UHCP9Ty5T3-zype2YH8"
-                      />
-                    </div>
+                    <div class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden"><span class="text-sm font-bold">T1</span></div>
                     <p class="text-sm font-bold mb-1">T1</p>
-                    <div class="flex justify-center space-x-1">
-                      <span class="text-4xl font-black text-white">2</span>
-                    </div>
+                    <div class="flex justify-center space-x-1"><span class="text-4xl font-black text-white">1</span></div>
                   </div>
                   <div class="text-center">
-                    <div class="text-gray-500 font-bold text-xl mb-1">Game 3</div>
-                    <div class="text-accent-green font-bold text-[10px] uppercase">
-                      Gold Diff: +4.2k
-                    </div>
+                    <div class="text-gray-500 font-bold text-xl mb-1">Game 2</div>
+                    <div class="text-accent-green font-bold text-[10px] uppercase">Gold Diff: +3.8k</div>
                   </div>
                   <div class="text-center w-40">
-                    <div
-                      class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden"
-                    >
-                      <img
-                        alt="G2 Esports"
-                        class="w-14 h-14 object-contain"
-                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuA3qkCv86sTjsp5qLPt-UfQew8FS1j8FjHtc3ksaG0t24MvPkzxuBdh0NhdnvYyxfZBhU8Nc7c9jsdGPu80KyjNMOePTKQwgR7aiPLLeMSDxibNSiN0gOO8iDIAHQL4h5Dm0KoM2Qc6bbdp_VZ9OSgUJlamjLORJ80lg82GVoNYcs-MyQQc2TVu5Ky3-wtcSQbJWRErWwobhi6de-ThGfANE752OMYaxbrDHPMqESXzaKZCYrjtpLtYVxlXcpytcLjiuL3-AtbE_Pk"
-                      />
-                    </div>
-                    <p class="text-sm font-bold mb-1">G2 Esports</p>
-                    <div class="flex justify-center space-x-1">
-                      <span class="text-4xl font-black text-white">0</span>
-                    </div>
+                    <div class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden"><span class="text-sm font-bold">C9</span></div>
+                    <p class="text-sm font-bold mb-1">Cloud9</p>
+                    <div class="flex justify-center space-x-1"><span class="text-4xl font-black text-white">0</span></div>
                   </div>
                 </div>
-                <div
-                  class="flex justify-between items-center pt-6 border-t border-gray-800"
-                >
-                  <p class="text-xs text-gray-500 font-medium">1.2M Viewers</p>
+                <div class="flex justify-between items-center pt-6 border-t border-gray-800">
+                  <p class="text-xs text-gray-500 font-medium">890K Viewers</p>
                   <div class="flex space-x-3">
-                    <button
-                      class="px-5 py-2 rounded-lg border border-accent-green text-accent-green text-xs font-bold"
-                    >
-                      Match Stats</button
-                    ><button
-                      class="px-5 py-2 rounded-lg bg-gray-800 text-white text-xs font-bold"
-                    >
-                      Watch Live
-                    </button>
+                    <button onclick="window.location.href='match-center.html?sport=e-sports&home=T1&away=Cloud9'" class="px-5 py-2 rounded-lg border border-accent-green text-accent-green text-xs font-bold">Match Stats</button>
+                    <button onclick="window.location.href='match-center.html?sport=e-sports&home=T1&away=Cloud9'" class="px-5 py-2 rounded-lg bg-gray-800 text-white text-xs font-bold">Watch Live</button>
+                  </div>
+                </div>
+              </div>
+              <!-- Match 3: FNATIC vs Cloud9 - Live - ESL Pro League 2026 -->
+              <div class="bg-brand-surface rounded-3xl p-6 border border-gray-800/50 hover:border-gray-700 transition relative overflow-hidden group" data-tournament="ESL Pro League 2026" data-status="live">
+                <div class="flex justify-between items-start mb-8">
+                  <div class="flex items-center space-x-3">
+                    <span class="bg-red-500/20 text-red-500 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-tighter flex items-center"><span class="w-1 h-1 bg-red-500 rounded-full mr-1"></span> LIVE</span>
+                    <p class="text-xs text-gray-400">ESL Pro League 2026 • Group Stage • Malta</p>
+                  </div>
+                </div>
+                <div class="flex items-center justify-center space-x-12 mb-8">
+                  <div class="text-center w-40">
+                    <div class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden"><span class="text-sm font-bold">FNC</span></div>
+                    <p class="text-sm font-bold mb-1">FNATIC</p>
+                    <div class="flex justify-center space-x-1"><span class="text-4xl font-black text-white">1</span></div>
+                  </div>
+                  <div class="text-center">
+                    <div class="text-gray-500 font-bold text-xl mb-1">Map 2</div>
+                    <div class="text-accent-green font-bold text-[10px] uppercase">Map: Mirage</div>
+                  </div>
+                  <div class="text-center w-40">
+                    <div class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden"><span class="text-sm font-bold">C9</span></div>
+                    <p class="text-sm font-bold mb-1">Cloud9</p>
+                    <div class="flex justify-center space-x-1"><span class="text-4xl font-black text-white">0</span></div>
+                  </div>
+                </div>
+                <div class="flex justify-between items-center pt-6 border-t border-gray-800">
+                  <p class="text-xs text-gray-500 font-medium">650K Viewers</p>
+                  <div class="flex space-x-3">
+                    <button onclick="window.location.href='match-center.html?sport=e-sports&home=FNATIC&away=Cloud9'" class="px-5 py-2 rounded-lg border border-accent-green text-accent-green text-xs font-bold">Match Stats</button>
+                    <button onclick="window.location.href='match-center.html?sport=e-sports&home=FNATIC&away=Cloud9'" class="px-5 py-2 rounded-lg bg-gray-800 text-white text-xs font-bold">Watch Live</button>
+                  </div>
+                </div>
+              </div>
+              <!-- Match 4: T1 vs G2 Esports - Finished - Valorant Champions -->
+              <div class="bg-brand-surface rounded-3xl p-6 border border-gray-800/50 hover:border-gray-700 transition relative" data-tournament="Valorant Champions 2026" data-status="finished">
+                <div class="flex justify-between items-start mb-8">
+                  <div class="flex items-center space-x-3">
+                    <span class="bg-gray-600/20 text-gray-400 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-tighter">FINISHED</span>
+                    <p class="text-xs text-gray-400">Valorant Champions 2026 • Upper Bracket Final</p>
+                  </div>
+                </div>
+                <div class="flex items-center justify-center space-x-12 mb-8">
+                  <div class="text-center w-40">
+                    <div class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden"><span class="text-sm font-bold">T1</span></div>
+                    <p class="text-sm font-bold mb-1">T1</p>
+                    <div class="flex justify-center space-x-1"><span class="text-4xl font-black text-white">2</span></div>
+                  </div>
+                  <div class="text-center">
+                    <div class="text-gray-500 font-bold text-xl mb-1">Final</div>
+                    <div class="text-gray-600 font-bold text-[10px] uppercase">Jul 12, 2026</div>
+                  </div>
+                  <div class="text-center w-40">
+                    <div class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden"><span class="text-sm font-bold">G2</span></div>
+                    <p class="text-sm font-bold mb-1">G2 Esports</p>
+                    <div class="flex justify-center space-x-1"><span class="text-4xl font-black text-white">0</span></div>
+                  </div>
+                </div>
+                <div class="flex justify-between items-center pt-6 border-t border-gray-800">
+                  <p class="text-xs text-gray-500 font-medium">1.1M Viewers</p>
+                  <div class="flex space-x-3">
+                    <button onclick="window.location.href='match-center.html?sport=e-sports&home=T1&away=G2 Esports'" class="px-5 py-2 rounded-lg border border-accent-green text-accent-green text-xs font-bold">Match Stats</button>
+                    <button onclick="window.location.href='match-center.html?sport=e-sports&home=T1&away=G2 Esports'" class="px-5 py-2 rounded-lg bg-gray-800 text-white text-xs font-bold">VOD</button>
+                  </div>
+                </div>
+              </div>
+              <!-- Match 5: Cloud9 vs G2 - Upcoming - LCS Summer 2026 -->
+              <div class="bg-brand-surface rounded-3xl p-6 border border-gray-800/50 hover:border-gray-700 transition relative" data-tournament="LCS Summer 2026" data-status="upcoming">
+                <div class="flex justify-between items-start mb-8">
+                  <div class="flex items-center space-x-3">
+                    <span class="bg-blue-500/20 text-blue-400 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-tighter flex items-center"><span class="w-1 h-1 bg-blue-400 rounded-full mr-1"></span> UPCOMING</span>
+                    <p class="text-xs text-gray-400">LCS Summer 2026 • Week 9 • Los Angeles</p>
+                  </div>
+                </div>
+                <div class="flex items-center justify-center space-x-12 mb-8">
+                  <div class="text-center w-40">
+                    <div class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden"><span class="text-sm font-bold">C9</span></div>
+                    <p class="text-sm font-bold mb-1">Cloud9</p>
+                  </div>
+                  <div class="text-center">
+                    <div class="text-gray-500 font-bold text-xl mb-1">VS</div>
+                    <div class="text-blue-400 font-bold text-[10px] uppercase">Jul 18 • 5:00 PM PST</div>
+                  </div>
+                  <div class="text-center w-40">
+                    <div class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden"><span class="text-sm font-bold">G2</span></div>
+                    <p class="text-sm font-bold mb-1">G2 Esports</p>
+                  </div>
+                </div>
+                <div class="flex justify-between items-center pt-6 border-t border-gray-800">
+                  <p class="text-xs text-gray-500 font-medium">780K Fans Expected</p>
+                  <div class="flex space-x-3">
+                    <button onclick="window.location.href='match-center.html?sport=e-sports&home=Cloud9&away=G2 Esports'" class="px-5 py-2 rounded-lg border border-accent-green text-accent-green text-xs font-bold">Set Reminder</button>
+                    <button onclick="window.location.href='match-center.html?sport=e-sports&home=Cloud9&away=G2 Esports'" class="px-5 py-2 rounded-lg bg-gray-800 text-white text-xs font-bold">Preview</button>
+                  </div>
+                </div>
+              </div>
+              <!-- Match 6: Sentinels vs T1 - Upcoming - Valorant Champions -->
+              <div class="bg-brand-surface rounded-3xl p-6 border border-gray-800/50 hover:border-gray-700 transition relative overflow-hidden group" data-tournament="Valorant Champions 2026" data-status="upcoming">
+                <div class="flex justify-between items-start mb-8">
+                  <div class="flex items-center space-x-3">
+                    <span class="bg-blue-500/20 text-blue-400 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-tighter flex items-center"><span class="w-1 h-1 bg-blue-400 rounded-full mr-1"></span> UPCOMING</span>
+                    <p class="text-xs text-gray-400">Valorant Champions 2026 • Lower Bracket Final</p>
+                  </div>
+                </div>
+                <div class="flex items-center justify-center space-x-12 mb-8">
+                  <div class="text-center w-40">
+                    <div class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden"><span class="text-sm font-bold">SEN</span></div>
+                    <p class="text-sm font-bold mb-1">Sentinels</p>
+                  </div>
+                  <div class="text-center">
+                    <div class="text-gray-500 font-bold text-xl mb-1">VS</div>
+                    <div class="text-blue-400 font-bold text-[10px] uppercase">Jul 17 • 3:00 PM KST</div>
+                  </div>
+                  <div class="text-center w-40">
+                    <div class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden"><span class="text-sm font-bold">T1</span></div>
+                    <p class="text-sm font-bold mb-1">T1</p>
+                  </div>
+                </div>
+                <div class="flex justify-between items-center pt-6 border-t border-gray-800">
+                  <p class="text-xs text-gray-500 font-medium">920K Fans Expected</p>
+                  <div class="flex space-x-3">
+                    <button onclick="window.location.href='match-center.html?sport=e-sports&home=Sentinels&away=T1'" class="px-5 py-2 rounded-lg border border-accent-green text-accent-green text-xs font-bold">Set Reminder</button>
+                    <button onclick="window.location.href='match-center.html?sport=e-sports&home=Sentinels&away=T1'" class="px-5 py-2 rounded-lg bg-gray-800 text-white text-xs font-bold">Preview</button>
+                  </div>
+                </div>
+              </div>
+              <!-- Match 7: G2 Esports vs FNATIC - Finished - ESL Pro League -->
+              <div class="bg-brand-surface rounded-3xl p-6 border border-gray-800/50 hover:border-gray-700 transition relative" data-tournament="ESL Pro League 2026" data-status="finished">
+                <div class="flex justify-between items-start mb-8">
+                  <div class="flex items-center space-x-3">
+                    <span class="bg-gray-600/20 text-gray-400 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-tighter">FINISHED</span>
+                    <p class="text-xs text-gray-400">ESL Pro League 2026 • Semi-Final</p>
+                  </div>
+                </div>
+                <div class="flex items-center justify-center space-x-12 mb-8">
+                  <div class="text-center w-40">
+                    <div class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden"><span class="text-sm font-bold">G2</span></div>
+                    <p class="text-sm font-bold mb-1">G2 Esports</p>
+                    <div class="flex justify-center space-x-1"><span class="text-4xl font-black text-white">2</span></div>
+                  </div>
+                  <div class="text-center">
+                    <div class="text-gray-500 font-bold text-xl mb-1">Final</div>
+                    <div class="text-gray-600 font-bold text-[10px] uppercase">Jul 11, 2026</div>
+                  </div>
+                  <div class="text-center w-40">
+                    <div class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden"><span class="text-sm font-bold">FNC</span></div>
+                    <p class="text-sm font-bold mb-1">FNATIC</p>
+                    <div class="flex justify-center space-x-1"><span class="text-4xl font-black text-white">1</span></div>
+                  </div>
+                </div>
+                <div class="flex justify-between items-center pt-6 border-t border-gray-800">
+                  <p class="text-xs text-gray-500 font-medium">950K Viewers</p>
+                  <div class="flex space-x-3">
+                    <button onclick="window.location.href='match-center.html?sport=e-sports&home=G2 Esports&away=FNATIC'" class="px-5 py-2 rounded-lg border border-accent-green text-accent-green text-xs font-bold">Match Stats</button>
+                    <button onclick="window.location.href='match-center.html?sport=e-sports&home=G2 Esports&away=FNATIC'" class="px-5 py-2 rounded-lg bg-gray-800 text-white text-xs font-bold">VOD</button>
+                  </div>
+                </div>
+              </div>
+              <!-- Match 8: Sentinels vs Cloud9 - Finished - LCS Summer 2026 -->
+              <div class="bg-brand-surface rounded-3xl p-6 border border-gray-800/50 hover:border-gray-700 transition relative overflow-hidden group" data-tournament="LCS Summer 2026" data-status="finished">
+                <div class="flex justify-between items-start mb-8">
+                  <div class="flex items-center space-x-3">
+                    <span class="bg-gray-600/20 text-gray-400 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-tighter">FINISHED</span>
+                    <p class="text-xs text-gray-400">LCS Summer 2026 • Week 7</p>
+                  </div>
+                </div>
+                <div class="flex items-center justify-center space-x-12 mb-8">
+                  <div class="text-center w-40">
+                    <div class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden"><span class="text-sm font-bold">SEN</span></div>
+                    <p class="text-sm font-bold mb-1">Sentinels</p>
+                    <div class="flex justify-center space-x-1"><span class="text-4xl font-black text-white">2</span></div>
+                  </div>
+                  <div class="text-center">
+                    <div class="text-gray-500 font-bold text-xl mb-1">Final</div>
+                    <div class="text-gray-600 font-bold text-[10px] uppercase">Jul 10, 2026</div>
+                  </div>
+                  <div class="text-center w-40">
+                    <div class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden"><span class="text-sm font-bold">C9</span></div>
+                    <p class="text-sm font-bold mb-1">Cloud9</p>
+                    <div class="flex justify-center space-x-1"><span class="text-4xl font-black text-white">0</span></div>
+                  </div>
+                </div>
+                <div class="flex justify-between items-center pt-6 border-t border-gray-800">
+                  <p class="text-xs text-gray-500 font-medium">720K Viewers</p>
+                  <div class="flex space-x-3">
+                    <button onclick="window.location.href='match-center.html?sport=e-sports&home=Sentinels&away=Cloud9'" class="px-5 py-2 rounded-lg border border-accent-green text-accent-green text-xs font-bold">Match Stats</button>
+                    <button onclick="window.location.href='match-center.html?sport=e-sports&home=Sentinels&away=Cloud9'" class="px-5 py-2 rounded-lg bg-gray-800 text-white text-xs font-bold">VOD</button>
                   </div>
                 </div>
               </div>
@@ -760,7 +837,7 @@
             <div class="bg-card-bg rounded-2xl p-6 border border-border-subtle">
               <div class="flex items-center justify-between mb-6">
                 <h3 class="font-bold">Calendar</h3>
-                <a class="text-emerald-accent text-xs font-semibold hover:underline" href="index.html">View Full Calendar</a>
+                <a class="text-emerald-accent text-xs font-semibold hover:underline" href="calendar.html?game=e-sports">View Full Calendar</a>
               </div>
               <div class="grid grid-cols-7 gap-2 text-center">
                 <div class="space-y-2">
@@ -852,7 +929,7 @@
                     </button>
                   </div>
                 </div>
-                <a class="text-emerald-accent text-xs font-semibold hover:underline" href="index.html">View All</a>
+                <a class="text-emerald-accent text-xs font-semibold hover:underline" href="top-players.html?game=e-sports">View All</a>
               </div>
               <div class="flex space-x-2 mb-6 bg-dark-bg p-1 rounded-lg">
                 <button class="flex-1 py-1.5 text-[10px] font-bold rounded-md bg-emerald-accent/10 border border-emerald-accent text-emerald-accent">Prize Money</button>
@@ -920,5 +997,29 @@
     </div>
     <script type="module" src="js/script.js"></script>
     <script src="js/theme.js"></script>
-  </body>
+    <script src="js/sport-filters.js"></script>
+    <script src="js/sport-stats.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        if (typeof initSportStats === 'function') {
+          initSportStats('sportStatsContainer');
+        }
+      });
+    </script>
+    <script>
+    document.addEventListener('DOMContentLoaded',function(){
+      document.querySelectorAll('[onclick*="match-center.html"]').forEach(function(b){
+        var c=b.closest('[data-status]'); if(!c) return;
+        var st=c.getAttribute('data-status')||'live';
+        var se=c.querySelectorAll('.text-4xl,.sm\\:text-2xl,.text-2xl');
+        var hs='',as='';
+        if(se.length>=2){ hs=se[0].textContent.trim(); as=se[1].textContent.trim(); if(hs==='-')hs=''; if(as==='-')as=''; }
+        var oc=b.getAttribute('onclick'); if(!oc) return;
+        var m=oc.match(/'(match-center\.html\?[^']+)'/); if(!m) return;
+        var u=m[1]; if(hs)u+='&hs='+encodeURIComponent(hs); if(as)u+='&as='+encodeURIComponent(as);
+        u+='&state='+st; b.setAttribute('onclick',"window.location.href='"+u+"'");
+      });
+    });
+    </script>
+  <script src="js/notif-ws.js"></script></body>
 </html>

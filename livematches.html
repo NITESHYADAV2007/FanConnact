@@ -176,7 +176,7 @@
         <nav class="hidden xl:flex items-center space-x-6 mx-6 shrink-0">
           <a
             class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link"
-            href="index.html"
+            href="dashboard.html"
             >Home</a
           >
           <a
@@ -186,12 +186,12 @@
           >
           <a
             class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link"
-            href="index.html"
+            href="prediction.html"
             >Predictions</a
           >
           <a
             class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link"
-            href="index.html"
+            href="leaderboard.html"
             >Leaderboard</a
           >
           <a
@@ -270,10 +270,10 @@
 
     <!-- Mobile Sub-Nav -->
     <nav class="xl:hidden flex overflow-x-auto gap-1 sm:gap-2 px-2 py-1.5 sm:px-4 sm:py-2.5 bg-white dark:bg-black border-b border-gray-200 dark:border-border-subtle scrollbar-none whitespace-nowrap" style="-webkit-overflow-scrolling:touch;scrollbar-width:none;">
-      <a href="index.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Home</a>
+      <a href="dashboard.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Home</a>
       <a href="livematches.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Matches</a>
-      <a href="index.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Predictions</a>
-      <a href="index.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Leaderboard</a>
+      <a href="prediction.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Predictions</a>
+      <a href="leaderboard.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Leaderboard</a>
       <a href="news&update.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">News</a>
     </nav>
 
@@ -294,7 +294,7 @@
         <!-- Logo Container for collapsed state -->
         <div
           class="p-6 flex items-center space-x-2 logo-container cursor-pointer"
-          onclick="window.location.href = 'index.html'"
+          onclick="window.location.href = 'dashboard.html'"
         >
           <img src="assets/fancoin/fanconnactlogo.png" alt="Fanconnact" class="w-8 h-8 flex-shrink-0" />
           <span
@@ -488,6 +488,7 @@
               <!-- Tournament Tabs -->
               <div
                 class="border-b border-gray-200 dark:border-border-subtle mb-8 flex space-x-8 overflow-x-auto pb-0"
+                data-purpose="tournament-filters"
               >
                 <button
                   class="pb-4 border-b-2 border-emerald-accent text-emerald-accent font-bold text-sm px-1 shrink-0"
@@ -497,26 +498,36 @@
                 <button
                   class="pb-4 text-slate-500 dark:text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm px-1 shrink-0"
                 >
-                  IPL
+                  Cricket
                 </button>
                 <button
                   class="pb-4 text-slate-500 dark:text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm px-1 shrink-0"
                 >
-                  T20 World Cup
+                  Football
                 </button>
                 <button
                   class="pb-4 text-slate-500 dark:text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm px-1 shrink-0"
                 >
-                  Champions League
+                  Basketball
                 </button>
                 <button
                   class="pb-4 text-slate-500 dark:text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm px-1 shrink-0"
                 >
-                  NBA
+                  Tennis
+                </button>
+                <button
+                  class="pb-4 text-slate-500 dark:text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm px-1 shrink-0"
+                >
+                  Baseball
+                </button>
+                <button
+                  class="pb-4 text-slate-500 dark:text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm px-1 shrink-0"
+                >
+                  Hockey
                 </button>
               </div>
               <!-- Filter & Sort Bar -->
-              <div class="flex items-center justify-between mb-6">
+              <div class="flex items-center justify-between mb-6" data-purpose="status-filters">
                 <div class="flex space-x-3">
                   <button
                     class="bg-[#161d2b] border border-emerald-accent text-emerald-accent px-4 py-1.5 rounded-lg text-sm flex items-center space-x-2"
@@ -603,9 +614,11 @@
                 </div>
               </div>
               <!-- BEGIN: LiveMatchCards -->
-              <div class="space-y-6">
+              <div class="space-y-6" data-purpose="matches-list">
                 <div
                   class="bg-white dark:bg-card-bg rounded-2xl p-6 border border-gray-200 dark:border-border-subtle hover:border-gray-600 transition-all cursor-pointer group shadow-soft"
+                  data-tournament="Football"
+                  data-status="live"
                 >
                   <div class="flex items-center justify-between mb-8">
                     <div class="flex items-center space-x-3">
@@ -616,7 +629,7 @@
                         ></span>
                         LIVE</span
                       ><span class="text-xs font-semibold text-gray-400"
-                        >Premier League • Matchday 37 • Anfield</span
+                        >FIFA World Cup 2026 • Semi Final • Anfield</span
                       >
                     </div>
                     <button class="text-gray-500 hover:text-white">
@@ -675,11 +688,11 @@
                       >
                     </div>
                     <div class="flex space-x-3">
-                      <button
+                      <button onclick="window.location.href='match-center.html?sport=football&home=LIV&away=MCI'"
                         class="bg-[#161d2b] border border-emerald-accent/50 text-emerald-accent px-4 py-1.5 rounded-lg text-xs font-bold flex items-center space-x-2 hover:bg-emerald-accent hover:text-black transition-all"
                       >
                         <span class="">Live Chat</span></button
-                      ><button
+                      ><button onclick="window.location.href='match-center.html?sport=football&home=LIV&away=MCI'"
                         class="bg-gray-800/50 text-white px-4 py-1.5 rounded-lg text-xs font-bold flex items-center space-x-2 hover:bg-gray-700 transition-all"
                       >
                         <span class="">Stats</span>
@@ -689,6 +702,8 @@
                 </div>
                 <div
                   class="bg-white dark:bg-card-bg rounded-2xl p-6 border border-gray-200 dark:border-border-subtle hover:border-gray-600 transition-all cursor-pointer group shadow-soft"
+                  data-tournament="Basketball"
+                  data-status="live"
                 >
                   <div class="flex items-center justify-between mb-8">
                     <div class="flex items-center space-x-3">
@@ -699,7 +714,7 @@
                         ></span>
                         LIVE</span
                       ><span class="text-xs font-semibold text-gray-400"
-                        >NBA Regular Season • Crypto.com Arena</span
+                        >NBA Summer League • Cox Pavilion</span
                       >
                     </div>
                     <button class="text-gray-500 hover:text-white">
@@ -758,11 +773,11 @@
                       >
                     </div>
                     <div class="flex space-x-3">
-                      <button
+                      <button onclick="window.location.href='match-center.html?sport=basketball&home=LAL&away=GSW'"
                         class="bg-[#161d2b] border border-emerald-accent/50 text-emerald-accent px-4 py-1.5 rounded-lg text-xs font-bold flex items-center space-x-2 hover:bg-emerald-accent hover:text-black transition-all"
                       >
                         <span class="">Live Chat</span></button
-                      ><button
+                      ><button onclick="window.location.href='match-center.html?sport=basketball&home=LAL&away=GSW'"
                         class="bg-gray-800/50 text-white px-4 py-1.5 rounded-lg text-xs font-bold flex items-center space-x-2 hover:bg-gray-700 transition-all"
                       >
                         <span class="">Box Score</span>
@@ -774,6 +789,8 @@
                 <!-- Match Card 3 (Cricket) -->
                 <div
                   class="bg-white dark:bg-card-bg rounded-2xl p-6 border border-gray-200 dark:border-border-subtle hover:border-emerald-accent/50 transition-all cursor-pointer group shadow-soft"
+                  data-tournament="Cricket"
+                  data-status="live"
                 >
                   <div class="flex items-center justify-between mb-8">
                     <div class="flex items-center space-x-3">
@@ -786,7 +803,7 @@
                         LIVE
                       </span>
                       <span class="text-xs font-semibold text-gray-400"
-                        >IPL 2024 • MI vs CSK • Wankhede</span
+                        >The Hundred 2026 • Lord's • MI vs CSK</span
                       >
                     </div>
                   </div>
@@ -833,7 +850,7 @@
                   <div
                     class="flex justify-end pt-6 border-t border-gray-800/50"
                   >
-                    <button
+                    <button onclick="window.location.href='match-center.html?sport=cricket&home=MI&away=CSK'"
                       class="bg-[#161d2b] border border-emerald-accent/50 text-emerald-accent px-4 py-1.5 rounded-lg text-xs font-bold hover:bg-emerald-accent hover:text-black"
                     >
                       Match Center
@@ -844,6 +861,8 @@
                 <!-- Match Card 4 (Tennis) -->
                 <div
                   class="bg-white dark:bg-card-bg rounded-2xl p-6 border border-gray-200 dark:border-border-subtle hover:border-emerald-accent/50 transition-all cursor-pointer group shadow-soft"
+                  data-tournament="Tennis"
+                  data-status="live"
                 >
                   <div class="flex items-center justify-between mb-8">
                     <div class="flex items-center space-x-3">
@@ -856,7 +875,7 @@
                         LIVE
                       </span>
                       <span class="text-xs font-semibold text-gray-400"
-                        >Madrid Open • Men's Singles • Quarter Final</span
+                        >ATP Hamburg • Quarter Final • Rothenbaum</span
                       >
                     </div>
                   </div>
@@ -903,7 +922,7 @@
                   <div
                     class="flex justify-end pt-6 border-t border-gray-800/50"
                   >
-                    <button
+                    <button onclick="window.location.href='match-center.html?sport=tennis&home=Alcaraz&away=Djokovic'"
                       class="bg-[#161d2b] border border-emerald-accent/50 text-emerald-accent px-4 py-1.5 rounded-lg text-xs font-bold hover:bg-emerald-accent hover:text-black"
                     >
                       View Stats
@@ -914,6 +933,8 @@
                 <!-- Match Card 5 (Baseball) -->
                 <div
                   class="bg-white dark:bg-card-bg rounded-2xl p-6 border border-gray-200 dark:border-border-subtle hover:border-emerald-accent/50 transition-all cursor-pointer group shadow-soft"
+                  data-tournament="Baseball"
+                  data-status="live"
                 >
                   <div class="flex items-center justify-between mb-8">
                     <div class="flex items-center space-x-3">
@@ -973,17 +994,19 @@
                   <div
                     class="flex justify-end pt-6 border-t border-gray-800/50"
                   >
-                    <button
+                    <button onclick="window.location.href='match-center.html?sport=baseball&home=Dodgers&away=Yankees'"
                       class="bg-[#161d2b] border border-emerald-accent/50 text-emerald-accent px-4 py-1.5 rounded-lg text-xs font-bold hover:bg-emerald-accent hover:text-black"
                     >
                       Watch Live
                     </button>
                   </div>
                 </div>
-
+                
                 <!-- Match Card 6 (Hockey) -->
                 <div
                   class="bg-white dark:bg-card-bg rounded-2xl p-6 border border-gray-200 dark:border-border-subtle hover:border-emerald-accent/50 transition-all cursor-pointer group shadow-soft"
+                  data-tournament="Hockey"
+                  data-status="live"
                 >
                   <div class="flex items-center justify-between mb-8">
                     <div class="flex items-center space-x-3">
@@ -996,7 +1019,7 @@
                         LIVE
                       </span>
                       <span class="text-xs font-semibold text-gray-400"
-                        >NHL Stanley Cup • Period 3</span
+                        >NHL Free Agency 2026 • Summer Showcase</span
                       >
                     </div>
                   </div>
@@ -1043,7 +1066,7 @@
                   <div
                     class="flex justify-end pt-6 border-t border-gray-800/50"
                   >
-                    <button
+                    <button onclick="window.location.href='match-center.html?sport=hockey&home=Capitals&away=GoldenKnights'"
                       class="bg-[#161d2b] border border-emerald-accent/50 text-emerald-accent px-4 py-1.5 rounded-lg text-xs font-bold hover:bg-emerald-accent hover:text-black"
                     >
                       Full Stats
@@ -1063,7 +1086,7 @@
                   <h3 class="font-bold">Calendar</h3>
                   <a
                     class="text-emerald-accent text-xs font-semibold hover:underline"
-                    href="index.html"
+                    href="calendar.html?game=all"
                     >View Full Calendar</a
                   >
                 </div>
@@ -1255,207 +1278,126 @@
                 </button>
               </div>
               <!-- END: CalendarWidget -->
-              <!-- BEGIN: TopPlayersWidget -->
+              <!-- BEGIN: TrendingGamesWidget -->
               <div
                 class="bg-card-bg rounded-2xl p-6 border border-border-subtle"
               >
                 <div class="flex items-center justify-between mb-6">
                   <div class="flex items-center space-x-2">
-                    <h3 class="font-bold">Top Players</h3>
-                    <div class="flex items-center space-x-1 ml-2">
-                      <button
-                        class="p-1 rounded hover:bg-gray-800 text-gray-400 hover:text-white"
-                      >
-                        <svg
-                          class="w-4 h-4"
-                          fill="none"
-                          stroke="currentColor"
-                          viewbox="0 0 24 24"
-                        >
-                          <path
-                            d="M15 19l-7-7 7-7"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                          ></path>
-                        </svg></button
-                      ><button
-                        class="p-1 rounded hover:bg-gray-800 text-gray-400 hover:text-white"
-                      >
-                        <svg
-                          class="w-4 h-4"
-                          fill="none"
-                          stroke="currentColor"
-                          viewbox="0 0 24 24"
-                        >
-                          <path
-                            d="M9 5l7 7-7 7"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                          ></path>
-                        </svg>
-                      </button>
-                    </div>
+                    <h3 class="font-bold">Trending Games</h3>
+                    <span class="material-symbols-outlined text-red-500 text-lg">local_fire_department</span>
                   </div>
-                  <a
-                    class="text-emerald-accent text-xs font-semibold hover:underline"
-                    href="index.html"
-                    >View All</a
-                  >
-                </div>
-                <div class="flex space-x-2 mb-6 bg-dark-bg p-1 rounded-lg">
-                  <button
-                    class="flex-1 py-1.5 text-[10px] font-bold rounded-md bg-emerald-accent/10 border border-emerald-accent text-emerald-accent"
-                  >
-                    Run Scorers
-                  </button>
-                  <button
-                    class="flex-1 py-1.5 text-[10px] font-bold rounded-md text-gray-500 hover:text-white"
-                  >
-                    Wicket Takers
-                  </button>
-                  <button
-                    class="flex-1 py-1.5 text-[10px] font-bold rounded-md text-gray-500 hover:text-white"
-                  >
-                    Most Sixes
-                  </button>
                 </div>
                 <div class="space-y-4">
-                  <!-- Player 1 -->
-                  <div class="flex items-center justify-between group">
+                  <!-- Game 1 -->
+                  <div class="flex items-center justify-between group cursor-pointer">
                     <div class="flex items-center space-x-3">
-                      <span class="text-xs font-bold text-gray-500 w-3">1</span>
                       <img
-                        alt="Player"
-                        class="w-10 h-10 rounded-full border border-gray-700"
-                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuDLDPrPcqWJxv2qo9yWmwWC-ty1lnU3gcywyMoVfGrbX5Qe0_nxYx8tLFLrPWo5E70dAb7i_5lRIE2nCiBAMkEbUBH9_TniUU6nX4php6ExpRClnGnztsgdpkKLrZ81jtQoYnGo0Z526JYwmDZzfdsvkkx3hzA6FzHu2cOP5V--DcxY6ewXS4DNc9sHVlRAfLTXb74nJbEVTSX5cPtRND4iS2SKRn2KQ8oyPMhyGL8v2lepI4p9ogmBASf1tfBke4is3CTn21ru-66x"
+                        class="w-8 h-8 rounded object-contain dark:bg-gray-800 light:bg-gray-100 p-1"
+                        src="https://upload.wikimedia.org/wikipedia/en/thumb/c/cd/Mumbai_Indians_Logo.svg/512px-Mumbai_Indians_Logo.svg.png"
                       />
                       <div>
-                        <p class="text-sm font-bold">
-                          Virat Kohli
-                          <span class="text-[10px] text-gray-500 font-normal"
-                            >(RCB)</span
-                          >
+                        <p class="text-[10px] text-gray-500 font-bold leading-none mb-1">
+                          IPL 2024 • Match 56
+                        </p>
+                        <p class="text-xs font-bold dark:text-white light:text-slate-800">
+                          MI vs CSK
                         </p>
                       </div>
                     </div>
-                    <span class="text-sm font-bold"
-                      >687
-                      <span class="text-[10px] text-gray-500 font-normal"
-                        >Runs</span
-                      ></span
-                    >
+                    <span class="text-[10px] bg-red-500/10 text-red-500 px-1.5 py-0.5 rounded font-bold uppercase flex items-center">
+                      <span class="w-1 h-1 bg-red-500 rounded-full mr-1"></span>
+                      LIVE
+                    </span>
                   </div>
-                  <!-- Player 2 -->
-                  <div class="flex items-center justify-between group">
+                  <!-- Game 2 -->
+                  <div class="flex items-center justify-between group cursor-pointer">
                     <div class="flex items-center space-x-3">
-                      <span class="text-xs font-bold text-gray-500 w-3">2</span>
                       <img
-                        alt="Player"
-                        class="w-10 h-10 rounded-full border border-gray-700"
-                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuARoeVfdmCB0gmB_7GZiGJEHq7GWlZhNqExPDSBPKGIh_MhSiQ58Iv9x5syL2EGN05s-_FRnyasjTjuSmu7SCi9rb7UxDprcxw9-n87GpCqDDNQ7tsoo3pEfre-F3V14PLbn8c3l3PZarZy8uq-vcFyKeddhqff00ltBhZra007NodLBwe1daNCicoSZZ1gZW19PoIdXNeIO5t95OYrQ8-ZUnIrsRWATC1R-qbofVug36c_aig3hTHIfNrf-4kFTgpVXg-oH8z9HNJI"
+                        class="w-8 h-8 rounded object-contain dark:bg-gray-800 light:bg-gray-100 p-1"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuD5F4IAkw1Tcq3s82q-6HXUUCMtiuOErKPjyhaUcdL-37MM8XeziLK_571FCMPnzLlHNvGzsWYgaXyVqH4L9Q5lxN_naZ3vna4ipayFNEW1kfZ0uL5mn9XUSTWC5_EfV_RiBYched_rJOEcjRPpiAm_HTCu44QjjNt7WNRiuCq1L8EyYcGkt-UxwWBAUNWxKedZJ4jqpvxGILKeuu2QtBpWiUnmzufAFGe3ThGPCmL09CdD_vq_A5oBbFaOVv5vsKVsdUgu18eRoTAD"
                       />
                       <div>
-                        <p class="text-sm font-bold">
-                          Ruturaj Gaikwad
-                          <span class="text-[10px] text-gray-500 font-normal"
-                            >(CSK)</span
-                          >
+                        <p class="text-[10px] text-gray-500 font-bold leading-none mb-1">
+                          Premier League • Matchday 37
+                        </p>
+                        <p class="text-xs font-bold dark:text-white light:text-slate-800">
+                          LIV vs MCI
                         </p>
                       </div>
                     </div>
-                    <span class="text-sm font-bold"
-                      >583
-                      <span class="text-[10px] text-gray-500 font-normal"
-                        >Runs</span
-                      ></span
-                    >
+                    <span class="text-[10px] bg-red-500/10 text-red-500 px-1.5 py-0.5 rounded font-bold uppercase flex items-center">
+                      <span class="w-1 h-1 bg-red-500 rounded-full mr-1"></span>
+                      LIVE
+                    </span>
                   </div>
-                  <!-- Player 3 -->
-                  <div class="flex items-center justify-between group">
+                  <!-- Game 3 -->
+                  <div class="flex items-center justify-between group cursor-pointer">
                     <div class="flex items-center space-x-3">
-                      <span class="text-xs font-bold text-gray-500 w-3">3</span>
                       <img
-                        alt="Player"
-                        class="w-10 h-10 rounded-full border border-gray-700"
-                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuAfg2qyUACeD4MlfftLeMU8ztnPquy1ELU9zVM2SIZitnTbqPI8ixKG73GIzciPbIdyLQ8O0oTkBMn_UA2oSHMe2GKhdqEC2GinFn9Cj-CbyLEoyuXNnOCeuI3GUst_dzGoGceNytjJWxJXiy-RdODDmeG-Ax2cCYOWfzNmrjDbjjBPX6ZhQy097T3YaG4y1mQ9U5OBEosTC3tQTgs6IONjfy_djp9lR_IE0xLRDUIJvi4dWOwvR98uCmjHMVNVBzqWZkONB7EvL8qJ"
+                        class="w-8 h-8 rounded object-contain dark:bg-gray-800 light:bg-gray-100 p-1"
+                        src="https://upload.wikimedia.org/wikipedia/en/thumb/a/ad/New_York_Yankees_logo.svg/512px-New_York_Yankees_logo.svg.png"
                       />
                       <div>
-                        <p class="text-sm font-bold">
-                          Rohit Sharma
-                          <span class="text-[10px] text-gray-500 font-normal"
-                            >(MI)</span
-                          >
+                        <p class="text-[10px] text-gray-500 font-bold leading-none mb-1">
+                          MLB • Dodger Stadium
+                        </p>
+                        <p class="text-xs font-bold dark:text-white light:text-slate-800">
+                          LAD vs NYY
                         </p>
                       </div>
                     </div>
-                    <span class="text-sm font-bold"
-                      >535
-                      <span class="text-[10px] text-gray-500 font-normal"
-                        >Runs</span
-                      ></span
-                    >
+                    <span class="text-[10px] bg-red-500/10 text-red-500 px-1.5 py-0.5 rounded font-bold uppercase flex items-center">
+                      <span class="w-1 h-1 bg-red-500 rounded-full mr-1"></span>
+                      LIVE
+                    </span>
                   </div>
-                  <!-- Player 4 -->
-                  <div class="flex items-center justify-between group">
+                  <!-- Game 4 -->
+                  <div class="flex items-center justify-between group cursor-pointer">
                     <div class="flex items-center space-x-3">
-                      <span class="text-xs font-bold text-gray-500 w-3">4</span>
                       <img
-                        alt="Player"
-                        class="w-10 h-10 rounded-full border border-gray-700"
-                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuCzN12hLyukBpAhgiTDVCYyC3JOohsyEsDmKKpiBasPkvLfXYhltpiVi-8Y7YOkRc7txBeEdhWWRiFkiFpqG12UdFGIDjy2Js447FWl8t4CCcd7uHBSMMw2ewq6Qyw6dgCX3gvMqmsi4Lf3sINgVbp5_Syf15qnaK-Bu8-Kq2czUIKboXuHpCGsmXZhzR-A3KaPypso6uerUOca6OJt29ypfGrvx8iPmVr3SJ961sGXAubFJmz73kP1R6Nmfsbygn4n3yb8p9Bif0nW"
+                        class="w-8 h-8 rounded object-contain dark:bg-gray-800 light:bg-gray-100 p-1"
+                        src="https://upload.wikimedia.org/wikipedia/en/thumb/2/2b/Chennai_Super_Kings_Logo.svg/512px-Chennai_Super_Kings_Logo.svg.png"
                       />
                       <div>
-                        <p class="text-sm font-bold">
-                          Shubman Gill
-                          <span class="text-[10px] text-gray-500 font-normal"
-                            >(GT)</span
-                          >
+                        <p class="text-[10px] text-gray-500 font-bold leading-none mb-1">
+                          IPL 2025 • Qualifier 1
+                        </p>
+                        <p class="text-xs font-bold dark:text-white light:text-slate-800">
+                          CSK vs RCB
                         </p>
                       </div>
                     </div>
-                    <span class="text-sm font-bold"
-                      >508
-                      <span class="text-[10px] text-gray-500 font-normal"
-                        >Runs</span
-                      ></span
-                    >
-                  </div>
-                  <!-- Player 5 -->
-                  <div class="flex items-center justify-between group">
-                    <div class="flex items-center space-x-3">
-                      <span class="text-xs font-bold text-gray-500 w-3">5</span>
-                      <img
-                        alt="Player"
-                        class="w-10 h-10 rounded-full border border-gray-700"
-                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuDIbZAWgJFUi3axi4bstHaedS2KOC-Pp79ULxYAL6s3thZIfNYVZxG2wNk9QMAqSbuTAGG68vDkOEAtOCHNXJaHLNqWXqdyAaXr9digtML9E6nt2GyXylG1kJT7jX4ddl0eTWCFCjT9xrsBS4IuqIyVTOdGvixL53HGY0D84qG5KbbCdsyOnMwkBAILU7V6r5AKGY49sq_pxGMOMlB8c0VqEvNPAS6aItcXVqHxRJ6saRJF2WgpDr-Rvh-Kp1huUvCi5AqdeBg3VhCy"
-                      />
-                      <div>
-                        <p class="text-sm font-bold">
-                          KL Rahul
-                          <span class="text-[10px] text-gray-500 font-normal"
-                            >(LSG)</span
-                          >
-                        </p>
-                      </div>
-                    </div>
-                    <span class="text-sm font-bold"
-                      >496
-                      <span class="text-[10px] text-gray-500 font-normal"
-                        >Runs</span
-                      ></span
-                    >
+                    <span class="text-[10px] text-gray-500 font-bold">
+                      Upcoming
+                    </span>
                   </div>
                 </div>
               </div>
-              <!-- END: TopPlayersWidget -->
+              <!-- END: TrendingGamesWidget -->
             </div>
           </div>
+          <!-- All Games Section Removed -->
         </div>
       </main>
     </div>
     <script type="module" src="js/script.js"></script>
     <script src="js/theme.js"></script>
-  </body>
+    <script src="js/sport-filters.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded',function(){
+      document.querySelectorAll('[onclick*="match-center.html"]').forEach(function(b){
+        var c=b.closest('[data-status]'); if(!c) return;
+        var st=c.getAttribute('data-status')||'live';
+        var se=c.querySelectorAll('.text-4xl,.sm\\:text-2xl,.text-2xl');
+        var hs='',as='';
+        if(se.length>=2){ hs=se[0].textContent.trim(); as=se[1].textContent.trim(); if(hs==='-')hs=''; if(as==='-')as=''; }
+        var oc=b.getAttribute('onclick'); if(!oc) return;
+        var m=oc.match(/'(match-center\.html\?[^']+)'/); if(!m) return;
+        var u=m[1]; if(hs)u+='&hs='+encodeURIComponent(hs); if(as)u+='&as='+encodeURIComponent(as);
+        u+='&state='+st; b.setAttribute('onclick',"window.location.href='"+u+"'");
+      });
+    });
+    </script>
+  <script src="js/notif-ws.js"></script></body>
 </html>

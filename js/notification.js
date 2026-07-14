@@ -352,6 +352,52 @@ ${notification.time}
   attachPinEvents();
 }
 
+/* Connect to notification WebSocket for real-time updates */
+(function() {
+  var notifWs = null;
+  function connectNotif() {
+    try {
+      notifWs = new WebSocket('ws://localhost:3001/ws/notifications');
+      notifWs.onmessage = function(ev) {
+        try {
+          var data = JSON.parse(ev.data);
+          if (data.type === 'new_notification') {
+            var n = data.notification;
+            if (n && !notifications.find(function(ex) { return ex.id === n.id; })) {
+              var entry = {
+                id: n.id,
+                type: n.type || 'match',
+                sport: n.sport || 'general',
+                team: n.sport || 'general',
+                title: n.title || '',
+                message: n.message || '',
+                time: formatTimeAgo(n.time),
+                icon: n.icon || '🔔'
+              };
+              notifications.unshift(entry);
+              renderNotifications();
+            }
+          }
+        } catch(e) {}
+      };
+      notifWs.onclose = function() {
+        setTimeout(connectNotif, 10000);
+      };
+      notifWs.onerror = function() { notifWs.close(); };
+    } catch(e) {}
+  }
+  function formatTimeAgo(ts) {
+    var sec = Math.floor((Date.now() - ts) / 1000);
+    if (sec < 60) return 'just now';
+    var min = Math.floor(sec / 60);
+    if (min < 60) return min + 'm';
+    var hr = Math.floor(min / 60);
+    if (hr < 24) return hr + 'h';
+    return Math.floor(hr / 24) + 'd';
+  }
+  connectNotif();
+})();
+
 /* first render */
 
 renderNotifications();

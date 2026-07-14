@@ -1,0 +1,1667 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/fancoin/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/fancoin/favicon-16x16.png" />
+    <meta property="og:site_name" content="Fanconnact" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="assets/fancoin/fanconnactlogo.png" />
+    <meta property="og:title" content="Fanconnact Dashboard" />
+    <meta property="og:description" content="Join Fanconnact for fantasy sports, predictions, and live matches." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Fanconnact Dashboard" />
+    <meta name="twitter:description" content="Join Fanconnact for fantasy sports, predictions, and live matches." />
+    <meta name="twitter:image" content="assets/fancoin/fanconnactlogo.png" />
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <script>
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+    <title>Fanconnact Dashboard</title>
+    <!-- Tailwind CSS v3 with plugins -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Google Fonts: Lexend for headlines, Hanken Grotesk for body as per Design System -->
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;family=Hanken+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="css/style.css" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-dim": "#cbdbf5",
+                        "on-secondary-container": "#fffbff",
+                        "on-primary-fixed-variant": "#005236",
+                        "surface-container-highest": "#d3e4fe",
+                        "primary-container": "#10b981",
+                        "on-surface-variant": "#3c4a42",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-container": "#2e394c",
+                        "surface-container-high": "#dce9ff",
+                        "on-secondary": "#ffffff",
+                        "primary-fixed": "#6ffbbe",
+                        secondary: "#4648d4",
+                        "surface-container": "#e5eeff",
+                        "on-tertiary-fixed": "#111c2d",
+                        "secondary-container": "#6063ee",
+                        "on-secondary-fixed-variant": "#2f2ebe",
+                        "surface-bright": "#f8f9ff",
+                        "on-background": "#0b1c30",
+                        "secondary-fixed": "#e1e0ff",
+                        "on-surface": "#0b1c30",
+                        "outline-variant": "#bbcabf",
+                        primary: "#006c49",
+                        "tertiary-fixed": "#d8e3fb",
+                        error: "#ba1a1a",
+                        surface: "#f8f9ff",
+                        "inverse-on-surface": "#eaf1ff",
+                        "tertiary-fixed-dim": "#bcc7de",
+                        "primary-fixed-dim": "#4edea3",
+                        "on-primary-fixed": "#002113",
+                        background: "#f8f9ff",
+                        outline: "#6c7a71",
+                        "surface-variant": "#d3e4fe",
+                        "on-tertiary-fixed-variant": "#3c475a",
+                        "on-tertiary": "#ffffff",
+                        tertiary: "#545f73",
+                        "secondary-fixed-dim": "#c0c1ff",
+                        "on-secondary-fixed": "#07006c",
+                        "on-primary-container": "#00422b",
+                        "surface-container-low": "#eff4ff",
+                        "error-container": "#ffdad6",
+                        "on-error-container": "#93000a",
+                        "tertiary-container": "#98a3ba",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-primary": "#4edea3",
+                        "surface-tint": "#006c49",
+                        "inverse-surface": "#213145",
+                        "on-error": "#ffffff",
+                        brand: {
+                            green: "#10b981",
+                            dark: "#0B0E11",
+                            card: "#16191E",
+                            border: "#2A2E35",
+                        },
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.25rem",
+                        lg: "0.5rem",
+                        xl: "0.75rem",
+                        full: "9999px",
+                    },
+                    fontFamily: {
+                        headline: ["Lexend", "sans-serif"],
+                        body: ["Hanken Grotesk", "sans-serif"],
+                    },
+                    boxShadow: {
+                        soft: "0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05)",
+                    },
+                },
+            },
+        };
+    </script>
+    <style data-purpose="custom-layout-styles">
+        body {
+            transition: color 0.3s, background-color 0.3s, border-color 0.3s;
+            font-family: 'Hanken Grotesk', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .dark body {
+            background-color: #0B0E11;
+            color: white;
+        }
+        
+        .light body {
+            background-color: #F8F9FF;
+            color: #0f172a;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            border-radius: 0.25rem;
+        }
+        
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #2A2E35;
+        }
+        
+        .light .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #d1d5db;
+        }
+        
+        .glow-green {
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
+        }
+        
+        .hero-gradient {
+            background-image: linear-gradient(rgba(11, 14, 17, 0.3), rgba(11, 14, 17, 0.6));
+            background-size: cover;
+            background-position: center;
+        }
+        
+         :root:not(.dark) .hero-gradient {
+            border-color: #e2e8f0;
+            background-size: cover;
+            background-position: center;
+        }
+        
+         :root:not(.dark) .hero-gradient,
+         :root:not(.dark) .hero-gradient * {
+            color: #f1f5f9 !important;
+        }
+        
+         :root:not(.dark) .hero-gradient .text-brand-green,
+         :root:not(.dark) .hero-gradient .text-emerald-600 {
+            color: #34d399 !important;
+        }
+        
+         :root:not(.dark) .hero-gradient button,
+         :root:not(.dark) .hero-gradient button * {
+            color: #000 !important;
+        }
+        
+        .fan-war-bg {
+            background: linear-gradient(rgba(15, 23, 42, 0.7), rgba(30, 27, 75, 0.8)), url("https://lh3.googleusercontent.com/aida-public/AB6AXuDwCuhhgmpq4ax-2MoOqwW680LvqXJYLB7BSTP9ByZYzcWclRelEC6d-CAoLsKJVL4pEo44viJDoj1Nybp5b8UEUzO1uF-AQsmorzyBa_GhGwev3TKjQUAESIovARJWAUTdiVJii8YxP3eVgsHcoBXLfE5lDEKt5ZuNPeFahTYSFovGMAI4nOAY-A2GljKuEtF5T3Wqtla0m8ClWUwd2p5cnTBGe5nsoT3kxhb_NoZZgLWE9DQUi3ap8FAsXGv28cDJJUT8SSG-_Cfa");
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+         :root:not(.dark) .fan-war-bg {
+            background-image: linear-gradient(rgba(240, 249, 255, 0.5), rgba(224, 242, 254, 0.7)), url("https://lh3.googleusercontent.com/aida-public/AB6AXuDwCuhhgmpq4ax-2MoOqwW680LvqXJYLB7BSTP9ByZYzcWclRelEC6d-CAoLsKJVL4pEo44viJDoj1Nybp5b8UEUzO1uF-AQsmorzyBa_GhGwev3TKjQUAESIovARJWAUTdiVJii8YxP3eVgsHcoBXLfE5lDEKt5ZuNPeFahTYSFovGMAI4nOAY-A2GljKuEtF5T3Wqtla0m8ClWUwd2p5cnTBGe5nsoT3kxhb_NoZZgLWE9DQUi3ap8FAsXGv28cDJJUT8SSG-_Cfa");
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .nav-link-active {
+            font-weight: 500 !important;
+        }
+        
+        .dark .nav-link-active {
+            background-color: rgba(16, 185, 129, 0.2) !important;
+            color: #10b981 !important;
+            border-right: 4px solid #10b981 !important;
+        }
+        
+        .dark .nav-link-active span,
+        .dark .nav-link-active .nav-text {
+            color: #10b981 !important;
+        }
+        
+         :root:not(.dark) .nav-link-active {
+            background-color: #eff6ff !important;
+            color: #1d4ed8 !important;
+            border-right: 4px solid #3b82f6 !important;
+        }
+        /* Profile Frames */
+        
+        .frame-gold {
+            border: 3px solid #eab308 !important;
+            box-shadow: 0 0 10px rgba(234, 179, 8, 0.5);
+        }
+        
+        .frame-emerald {
+            border: 3px solid #10b981 !important;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+        }
+        
+        .frame-diamond {
+            border: 3px solid #22d3ee !important;
+            box-shadow: 0 0 10px rgba(34, 211, 238, 0.5);
+        }
+        
+        #sidebar.sidebar-collapsed {
+            width: 0 !important;
+            min-width: 0 !important;
+            border: 0 !important;
+            padding: 0 !important;
+            overflow: hidden !important;
+        }
+    </style>
+</head>
+
+    <body class="h-screen w-full flex flex-row overflow-hidden transition-colors duration-300 bg-[#F8F9FF] dark:bg-[#0B0E11]">
+        <!-- BEGIN: Sidebar -->
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z-[60] w-64 flex-shrink-0 flex flex-col h-screen transition-all duration-300 bg-white dark:bg-brand-dark border-r border-gray-200 dark:border-brand-border shadow-xl lg:shadow-none -translate-x-full lg:translate-x-0 lg:static overflow-y-auto custom-scrollbar"
+            data-purpose="sidebar-navigation">
+            <!-- Mobile Close Button -->
+            <button id="close-sidebar-btn" class="lg:hidden p-2 absolute top-4 right-4 text-slate-500 dark:text-gray-400">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+
+            <div class="p-6 flex items-center space-x-2 logo-container">
+                <img src="assets/fancoin/fanconnactlogo.png" alt="Fanconnact" class="w-8 h-8 flex-shrink-0" />
+                <span class="text-xl font-bold tracking-tight font-headline logo-text"><span class="text-fan">Fan</span><span class="text-connect">Connact</span></span>
+            </div>
+            <nav class="flex-1 px-4 space-y-1 mt-2 transition-all">
+                <h3 class="text-xs font-bold text-slate-500 dark:text-gray-400 uppercase tracking-widest mb-4 px-3 opacity-60">Global</h3>
+                <a class="flex items-center space-x-3 px-3 py-3 rounded-lg nav-link transition-colors text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:bg-gray-100" href="dashboard.html">
+                    <span class="material-symbols-outlined text-xl">home</span>
+                    <span class="text-sm nav-text">Home</span>
+                </a>
+                <a class="flex items-center space-x-3 px-3 py-3 rounded-lg nav-link transition-colors text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:bg-gray-100" href="livematches.html">
+                    <span class="material-symbols-outlined text-xl">live_tv</span>
+                    <span class="text-sm nav-text">Live Matches</span>
+                </a>
+                <a class="flex items-center space-x-3 px-3 py-3 rounded-lg nav-link transition-colors text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:bg-gray-100" href="news&update.html">
+                    <span class="material-symbols-outlined text-xl">newspaper</span>
+                    <span class="text-sm nav-text">News & Updates</span>
+                </a>
+                <div class="h-px bg-gray-200 dark:bg-brand-border my-4 mx-2"></div>
+
+                <a class="flex items-center space-x-3 px-3 py-3 rounded-lg nav-link transition-colors text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:bg-gray-100" href="top-players.html">
+                    <span class="material-symbols-outlined text-xl">person_pin</span>
+                    <span class="text-sm nav-text">Player Zone</span>
+                </a>
+                <a class="flex items-center space-x-3 px-3 py-3 rounded-lg nav-link transition-colors text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:bg-gray-100" href="prediction.html">
+                    <span class="material-symbols-outlined text-xl">psychology</span>
+                    <span class="text-sm nav-text">Predictions</span>
+                </a>
+                <a class="flex items-center space-x-3 px-3 py-3 rounded-lg nav-link transition-colors text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:bg-gray-100" href="leaderboard.html">
+                    <span class="material-symbols-outlined text-xl">leaderboard</span>
+                    <span class="text-sm nav-text">Leaderboard</span>
+                </a>
+            </nav>
+            <!-- Side Promo Card: Fan War -->
+            <div class="p-4 mt-6 promo-card pb-6 md:pb-6">
+                <div class="fan-war-bg rounded-2xl p-5 relative group border dark:border-white/10 border-emerald-100 shadow-soft overflow-hidden cursor-pointer" onclick="window.open('https://play.google.com/store/apps','_blank')">
+                    <div class="relative z-10">
+                        <p class="text-[10px] font-black uppercase tracking-widest mb-1 drop-shadow-md text-emerald-600 dark:text-brand-green">
+                            Fan War
+                        </p>
+                        <h4 class="text-xl font-bold font-headline leading-tight mb-1 drop-shadow-lg text-slate-900 dark:text-white">
+                            RCB vs CSK
+                        </h4>
+                        <p class="text-[11px] font-medium max-w-[120px] mb-4 drop-shadow-sm text-slate-600 dark:text-white/90">
+                            Join the ultimate fan battle
+                        </p>
+                        <button class="w-full bg-brand-green text-black font-bold py-2.5 rounded-lg text-sm transition-all active:scale-95 hover:bg-emerald-400 shadow-lg shadow-emerald-500/20 dark:shadow-emerald-500/40">
+              Join Now
+            </button>
+                    </div>
+                    <div class="absolute -right-4 -bottom-4 opacity-30 group-hover:opacity-50 transition-opacity duration-500 w-36 h-36">
+                        <img alt="Trophy" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCyoPG8fC8OtWBHcek3eIADBuDd3Np6gULZynELuZ7pPlKPOvdDgadQilZ4NfFjhSLU7lCBGKDWED-M5SFPsDrv8_LjVBezdu54XHLdbq0TOzs5Utw94juYlgZVjcdiDakU5HzApwMzI7nb7wmdy30hrCqwMIFwbTdvXWwadYvbQzkRBDzersvlj-TXlr7PpbbZAf-TX0lRI1vf3byQ_rAoIR5mQFrb-xpUqEy6NSMtl5FcuESAg3MgpigcW0jUnDqRWhgLqpm2Qbse"
+                        />
+                    </div>
+                </div>
+            </div>
+        </aside>
+        <!-- END: Sidebar -->
+        <!-- Main Content Area -->
+        <main class="flex-1 flex flex-col h-screen overflow-hidden transition-colors duration-300 bg-[#F8F9FF] dark:bg-[#0B0E11]">
+            <!-- BEGIN: Header -->
+            <header class="min-h-16 md:min-h-20 flex items-center justify-between px-3 md:px-8 border-b transition-colors duration-300 bg-white dark:bg-brand-dark border-gray-200 dark:border-brand-border shrink-0 z-50 sticky top-0" data-purpose="top-navigation">
+                <div class="flex items-center gap-2 md:gap-4 flex-1 min-w-0">
+                    <button id="mobile-menu-btn" class="p-2 text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 rounded-lg transition-colors shrink-0">
+            <span class="material-symbols-outlined">menu</span>
+          </button>
+
+                    <div id="header-logo" class="lg:hidden flex items-center gap-1 sm:gap-2 ml-1 sm:ml-2">
+                        <img src="assets/fancoin/fanconnactlogo.png" alt="Fanconnact" class="w-6 h-6 sm:w-7 sm:h-7" />
+                        <span class="text-sm sm:text-base font-bold whitespace-nowrap"><span class="text-fan">Fan</span><span class="text-connect">Connact</span></span>
+                    </div>
+
+                    <!-- Desktop Search -->
+                    <div class="relative max-w-md w-full hidden md:block mx-4">
+                        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-gray-500">search</span>
+                        <input type="text" placeholder="Search matches, players..." class="w-full bg-gray-100 dark:bg-[#1A1D23] border-none rounded-xl py-2.5 pl-10 pr-4 text-sm focus:ring-2 focus:ring-brand-green/50 text-slate-800 dark:text-white transition-all">
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-1 sm:gap-2 md:gap-3 shrink-0">
+                    <!-- Mobile Search Trigger -->
+                    <button class="md:hidden p-1.5 sm:p-2 text-slate-500 dark:text-gray-400"> 
+            <span class="material-symbols-outlined">search</span>
+          </button>
+
+                    <!-- Theme Toggle Button -->
+                    <button id="theme-toggle" class="p-1.5 sm:p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-all active:scale-95">
+            <span id="theme-toggle-light-icon" class="material-symbols-outlined hidden text-yellow-400">light_mode</span>
+            <span id="theme-toggle-dark-icon" class="material-symbols-outlined text-slate-600 dark:text-slate-400">dark_mode</span>
+          </button>
+
+                    <!-- Wallet / FanCoins -->
+                    <div onclick="window.location.href='fancoin.html'" class="flex items-center gap-1 bg-gray-100 dark:bg-[#1A1D23] px-1.5 sm:px-3 py-1.5 rounded-full border border-gray-200 dark:border-white/5 cursor-pointer hover:opacity-80 transition">
+                        <div class="w-5 h-5 bg-yellow-500 rounded-full flex items-center justify-center text-[10px] text-black font-bold">
+                            F
+                        </div>
+                        <span class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white hidden sm:inline">4,250</span>
+                    </div>
+
+                    <button class="hidden sm:block p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-all shrink-0" onclick="window.location.href='setting.html'">
+            <span class="material-symbols-outlined text-slate-500 dark:text-gray-400">settings</span>
+          </button>
+                    <div class="relative shrink-0 notification-trigger cursor-pointer">
+                        <span class="material-symbols-outlined text-slate-500 dark:text-gray-400 text-xl sm:text-2xl">notifications</span>
+                        <span class="absolute -top-1 -right-1 w-3.5 h-3.5 sm:w-4 sm:h-4 bg-red-500 rounded-full text-[8px] sm:text-[10px] flex items-center justify-center font-bold text-white shadow-sm">3</span>
+                    </div>
+
+                    <div id="profile-trigger" class="flex items-center space-x-2 md:border-l md:pl-4 border-gray-200 dark:border-brand-border group relative cursor-pointer shrink-0">
+                        <div class="text-right hidden md:block">
+                            <p id="user-name-display" class="text-sm font-bold font-headline text-slate-900 dark:text-white"></p>
+                            <p id="user-level-display" class="text-[10px] text-slate-500 uppercase tracking-wider"></p>
+                        </div>
+                        <img id="user-profile-img" alt="User" class="w-6 h-6 sm:w-7 sm:h-7 md:w-10 md:h-10 rounded-full border-2 border-brand-green" src="https://lh3.googleusercontent.com/aida-public/AB6AXuARZ0xVBU1KvcLOf_ZliOHitD78PVSiDr1qlcai6kvG_jn6epDDtgIDvdS6ua2TZqciXhMqDw6mk2eq9wvTp7-B6CfJDv4ojxPvR6jrB2qbta__ofGg1moSqgOm0kQa-hSS3UJMmhiNzN0ATFdKJqevDzCZBACLb1Ku-BrA29W3Oi1vhMGxeiyb4AXGw-ByXo2Tan25gBOd1JgP8rK_7LsKzczbNyat9sSGsL_OhzKBtupfCW9XrnwK6BPAZg3XGBBtd4Ry7pdyfBFG"
+                        />
+                    </div>
+                </div>
+            </header>
+            <!-- Scrollable Content -->
+            <div class="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-8">
+                <div class="grid grid-cols-12 gap-6 md:gap-8">
+                    <!-- BEGIN: Left Column (Main Feed) -->
+                    <div class="col-span-12 lg:col-span-8 space-y-6 md:space-y-8">
+                        <!-- Welcome Section -->
+                        <div>
+                            <h1 id="welcome-message" class="text-2xl md:text-3xl font-bold flex items-center font-headline dark:text-white light:text-slate-900"></h1>
+                            <p class="mt-1 text-sm md:text-base dark:text-gray-400 light:text-slate-500">
+                                Stay connected with the game. Predict. Chat. Win!
+                            </p>
+                        </div>
+                        <!-- BEGIN: Hero Carousel -->
+                        <div class="relative">
+                            <div id="hero-carousel" class="flex overflow-x-scroll snap-x snap-mandatory scroll-smooth hide-scrollbar rounded-3xl bg-white dark:bg-brand-card shadow-soft">
+                                <!-- Slide 1: Cricket -->
+                                <div class="hero-gradient min-w-full rounded-3xl p-6 md:p-8 relative overflow-hidden border border-gray-200 dark:border-white/5 shadow-soft transition-all duration-300 snap-center" style="background-image: linear-gradient(rgba(11, 14, 17, 0.3), rgba(11, 14, 17, 0.6)), url('https://images.unsplash.com/photo-1531415074968-036ba1b575da?auto=format&fit=crop&q=80&w=1536');"
+                                    data-purpose="hero-match-center">
+                                    <div class="flex justify-between items-start mb-8 md:mb-10">
+                                        <div class="flex items-center space-x-3">
+                                            <span class="bg-red-600 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider flex items-center text-white">
+                        <span
+                          class="w-1.5 h-1.5 bg-white rounded-full mr-1.5 animate-pulse"
+                        ></span> LIVE NOW
+                                            </span>
+                                            <span class="text-xs font-medium dark:text-gray-300 light:text-slate-500">IPL 2024</span
+                      >
+                    </div>
+                    <div
+                      class="flex items-center space-x-2 backdrop-blur-md px-3 py-1.5 rounded-full border dark:bg-black/40 dark:border-white/10 light:bg-white/40 light:border-slate-200"
+                    >
+                      <span
+                        class="material-symbols-outlined text-brand-green text-sm"
+                        >visibility</span
+                      >
+                      <span
+                        class="text-xs font-bold dark:text-white light:text-slate-700"
+                        >8.4K Watching</span
+                      >
+                    </div>
+                  </div>
+                  <div
+                    class="flex items-center justify-between px-2 md:px-8 relative"
+                  >
+                    <!-- Team 1 -->
+                    <div class="text-center">
+                      <img
+                        alt="MI"
+                        class="w-16 h-16 md:w-24 md:h-24 mx-auto drop-shadow-2xl"
+                        src="https://upload.wikimedia.org/wikipedia/en/thumb/c/cd/Mumbai_Indians_Logo.svg/512px-Mumbai_Indians_Logo.svg.png"
+                      />
+                      <div class="mt-4">
+                        <p
+                          class="text-[10px] md:text-sm font-bold text-slate-500 dark:text-gray-300"
+                        >
+                          MI
+                        </p>
+                        <h3
+                          class="text-2xl md:text-4xl font-black font-headline text-slate-900 dark:text-white"
+                        >
+                          185/4
+                        </h3>
+                        <p
+                          class="text-[10px] md:text-xs font-medium text-slate-400 dark:text-gray-400"
+                        >
+                          18.2 Overs
+                        </p>
+                      </div>
+                    </div>
+                    <div
+                      class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-black text-xl md:text-2xl font-headline text-slate-300 dark:text-gray-600/50"
+                    >
+                      VS
+                    </div>
+                    <!-- Team 2 -->
+                    <div class="text-center">
+                      <img
+                        alt="CSK"
+                        class="w-16 h-16 md:w-24 md:h-24 mx-auto drop-shadow-2xl"
+                    src="https://upload.wikimedia.org/wikipedia/en/thumb/2/2b/Chennai_Super_Kings_Logo.svg/512px-Chennai_Super_Kings_Logo.svg.png"
+                      />
+                      <div class="mt-4">
+                        <p
+                          class="text-[10px] md:text-sm font-bold text-slate-500 dark:text-gray-300"
+                        >
+                          CSK
+                        </p>
+                        <h3
+                          class="text-2xl md:text-4xl font-black font-headline text-slate-900 dark:text-white"
+                        >
+                          165/7
+                        </h3>
+                        <p
+                          class="text-[10px] md:text-xs font-medium text-slate-400 dark:text-gray-400"
+                        >
+                          20 Overs
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="mt-8 md:mt-10 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0"
+                  >
+                    <div class="space-y-3 text-center sm:text-left">
+                      <p
+                        class="font-bold text-sm text-emerald-600 dark:text-brand-green"
+                      >
+                        MI need
+                        <span class="text-slate-900 dark:text-white"
+                          >20 runs in 10 balls</span
+                        >
+                      </p>
+                      <div class="flex justify-center sm:justify-start space-x-1.5">
+                        <div class="w-2.5 h-2.5 rounded-full bg-brand-green"></div>
+                        <div
+                          class="w-2.5 h-2.5 rounded-full bg-slate-200 dark:bg-white/20"
+                        ></div>
+                        <div
+                          class="w-2.5 h-2.5 rounded-full bg-slate-200 dark:bg-white/20"
+                        ></div>
+                        <div
+                          class="w-2.5 h-2.5 rounded-full bg-slate-200 dark:bg-white/20"
+                        ></div>
+                      </div>
+                    </div>
+                    <a
+                      href="match-center.html?sport=cricket&home=MI&away=CSK&hs=185%2F4&as=165%2F7&state=live"
+                      class="w-full sm:w-auto bg-brand-green text-black font-bold px-6 py-3 rounded-xl flex items-center justify-center space-x-3 glow-green hover:scale-105 transition-transform shadow-lg shadow-emerald-500/20"
+                    >
+                      <span class="font-headline text-sm uppercase tracking-wider"
+                        >View Match Center</span
+                      >
+                      <span class="material-symbols-outlined text-lg"
+                        >arrow_forward</span
+                      >
+                    </a>
+                  </div>
+                </div>
+
+                <!-- Slide 2: Football -->
+                <div
+                  class="hero-gradient min-w-full rounded-3xl p-6 md:p-8 relative overflow-hidden border dark:border-white/5 light:border-gray-200 light:shadow-soft transition-all duration-300 snap-center"
+                  style="background-image: linear-gradient(rgba(11, 14, 17, 0.3), rgba(11, 14, 17, 0.6)), url('https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&q=80&w=1536');"
+                >
+                  <div class="flex justify-between items-start mb-8 md:mb-10">
+                    <div class="flex items-center space-x-3">
+                      <span
+                        class="bg-red-600 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider flex items-center text-white"
+                      >
+                        <span
+                          class="w-1.5 h-1.5 bg-white rounded-full mr-1.5 animate-pulse"
+                        ></span> LIVE NOW
+                                            </span>
+                                            <span class="text-xs font-medium dark:text-gray-300 light:text-slate-500">Premier League</span
+                      >
+                    </div>
+                    <div
+                      class="flex items-center space-x-2 backdrop-blur-md px-3 py-1.5 rounded-full border dark:bg-black/40 dark:border-white/10 light:bg-white/40 light:border-slate-200"
+                    >
+                      <span
+                        class="material-symbols-outlined text-brand-green text-sm"
+                        >visibility</span
+                      >
+                      <span
+                        class="text-xs font-bold dark:text-white light:text-slate-700"
+                        >12.1K Watching</span
+                      >
+                    </div>
+                  </div>
+                  <div
+                    class="flex items-center justify-between px-2 md:px-8 relative"
+                  >
+                    <!-- Team 1 -->
+                    <div class="text-center">
+                      <img
+                        alt="Man City"
+                        class="w-16 h-16 md:w-24 md:h-24 mx-auto drop-shadow-2xl"
+                        src="https://upload.wikimedia.org/wikipedia/en/thumb/e/eb/Manchester_City_FC_badge.svg/512px-Manchester_City_FC_badge.svg.png"
+                      />
+                      <div class="mt-4">
+                        <p
+                          class="text-[10px] md:text-sm font-bold dark:text-gray-300 light:text-slate-500"
+                        >
+                          MCI
+                        </p>
+                        <h3
+                          class="text-2xl md:text-4xl font-black font-headline dark:text-white light:text-slate-900"
+                        >
+                          2
+                        </h3>
+                        <p
+                          class="text-[10px] md:text-xs font-medium dark:text-gray-400 light:text-slate-400"
+                        >
+                          75'
+                        </p>
+                      </div>
+                    </div>
+                    <div
+                      class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-black text-xl md:text-2xl font-headline dark:text-gray-600/50 light:text-slate-300"
+                    >
+                      VS
+                    </div>
+                    <!-- Team 2 -->
+                    <div class="text-center">
+                      <img
+                        alt="Liverpool"
+                        class="w-16 h-16 md:w-24 md:h-24 mx-auto drop-shadow-2xl"
+                    src="https://upload.wikimedia.org/wikipedia/en/thumb/0/0c/Liverpool_FC.svg/512px-Liverpool_FC.svg.png"
+                      />
+                      <div class="mt-4">
+                        <p
+                          class="text-[10px] md:text-sm font-bold dark:text-gray-300 light:text-slate-500"
+                        >
+                          LIV
+                        </p>
+                        <h3
+                          class="text-2xl md:text-4xl font-black font-headline dark:text-white light:text-slate-900"
+                        >
+                          1
+                        </h3>
+                        <p
+                          class="text-[10px] md:text-xs font-medium dark:text-gray-400 light:text-slate-400"
+                        >
+                          Full Time
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="mt-8 md:mt-10 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0"
+                  >
+                    <div class="space-y-3 text-center sm:text-left">
+                      <p
+                        class="font-bold text-sm dark:text-brand-green light:text-emerald-600"
+                      >
+                        Man City
+                        <span class="dark:text-white light:text-slate-900"
+                          >leading by 1 goal</span
+                        >
+                      </p>
+                      <div class="flex justify-center sm:justify-start space-x-1.5">
+                        <div class="w-2.5 h-2.5 rounded-full bg-brand-green"></div>
+                        <div
+                          class="w-2.5 h-2.5 rounded-full dark:bg-white/20 light:bg-slate-200"
+                        ></div>
+                        <div
+                          class="w-2.5 h-2.5 rounded-full dark:bg-white/20 light:bg-slate-200"
+                        ></div>
+                        <div
+                          class="w-2.5 h-2.5 rounded-full dark:bg-white/20 light:bg-slate-200"
+                        ></div>
+                      </div>
+                    </div>
+                    <a
+                      href="match-center.html?sport=football&home=MCI&away=LIV&hs=2&as=1&state=live"
+                      class="w-full sm:w-auto bg-brand-green text-black font-bold px-6 py-3 rounded-xl flex items-center justify-center space-x-3 glow-green hover:scale-105 transition-transform shadow-lg shadow-emerald-500/20"
+                    >
+                      <span class="font-headline text-sm uppercase tracking-wider"
+                        >View Match Center</span
+                      >
+                      <span class="material-symbols-outlined text-lg"
+                        >arrow_forward</span
+                      >
+                    </a>
+                  </div>
+                </div>
+
+                <!-- Slide 3: Basketball -->
+                <div
+                  class="hero-gradient min-w-full rounded-3xl p-6 md:p-8 relative overflow-hidden border dark:border-white/5 light:border-gray-200 light:shadow-soft transition-all duration-300 snap-center"
+                  style="background-image: linear-gradient(rgba(11, 14, 17, 0.3), rgba(11, 14, 17, 0.6)), url('https://images.unsplash.com/photo-1504450758481-7338eba7524a?auto=format&fit=crop&q=80&w=1536');"
+                >
+                  <div class="flex justify-between items-start mb-8 md:mb-10">
+                    <div class="flex items-center space-x-3">
+                      <span
+                        class="bg-red-600 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider flex items-center text-white"
+                      >
+                        <span
+                          class="w-1.5 h-1.5 bg-white rounded-full mr-1.5 animate-pulse"
+                        ></span> LIVE NOW
+                                            </span>
+                                            <span class="text-xs font-medium dark:text-gray-300 light:text-slate-500">NBA Playoffs</span
+                      >
+                    </div>
+                    <div
+                      class="flex items-center space-x-2 backdrop-blur-md px-3 py-1.5 rounded-full border dark:bg-black/40 dark:border-white/10 light:bg-white/40 light:border-slate-200"
+                    >
+                      <span
+                        class="material-symbols-outlined text-brand-green text-sm"
+                        >visibility</span
+                      >
+                      <span
+                        class="text-xs font-bold dark:text-white light:text-slate-700"
+                        >6.8K Watching</span
+                      >
+                    </div>
+                  </div>
+                  <div
+                    class="flex items-center justify-between px-2 md:px-8 relative"
+                  >
+                    <!-- Team 1 -->
+                    <div class="text-center">
+                      <img
+                        alt="Lakers"
+                        class="w-16 h-16 md:w-24 md:h-24 mx-auto drop-shadow-2xl"
+                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Los_Angeles_Lakers_logo.svg/512px-Los_Angeles_Lakers_logo.svg.png"
+                      />
+                      <div class="mt-4">
+                        <p
+                          class="text-[10px] md:text-sm font-bold dark:text-gray-300 light:text-slate-500"
+                        >
+                          LAL
+                        </p>
+                        <h3
+                          class="text-2xl md:text-4xl font-black font-headline dark:text-white light:text-slate-900"
+                        >
+                          98
+                        </h3>
+                        <p
+                          class="text-[10px] md:text-xs font-medium dark:text-gray-400 light:text-slate-400"
+                        >
+                          Q3 04:30
+                        </p>
+                      </div>
+                    </div>
+                    <div
+                      class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-black text-xl md:text-2xl font-headline dark:text-gray-600/50 light:text-slate-300"
+                    >
+                      VS
+                    </div>
+                    <!-- Team 2 -->
+                    <div class="text-center">
+                      <img
+                        alt="Warriors"
+                        class="w-16 h-16 md:w-24 md:h-24 mx-auto drop-shadow-2xl"
+                    src="https://upload.wikimedia.org/wikipedia/en/thumb/0/01/Golden_State_Warriors_logo.svg/512px-Golden_State_Warriors_logo.svg.png"
+                      />
+                      <div class="mt-4">
+                        <p
+                          class="text-[10px] md:text-sm font-bold dark:text-gray-300 light:text-slate-500"
+                        >
+                          GSW
+                        </p>
+                        <h3
+                          class="text-2xl md:text-4xl font-black font-headline dark:text-white light:text-slate-900"
+                        >
+                          95
+                        </h3>
+                        <p
+                          class="text-[10px] md:text-xs font-medium dark:text-gray-400 light:text-slate-400"
+                        >
+                          Q3 04:30
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="mt-8 md:mt-10 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0"
+                  >
+                    <div class="space-y-3 text-center sm:text-left">
+                      <p
+                        class="font-bold text-sm dark:text-brand-green light:text-emerald-600"
+                      >
+                        Lakers
+                        <span class="dark:text-white light:text-slate-900"
+                          >leading by 3 points</span
+                        >
+                      </p>
+                      <div class="flex justify-center sm:justify-start space-x-1.5">
+                        <div class="w-2.5 h-2.5 rounded-full bg-brand-green"></div>
+                        <div
+                          class="w-2.5 h-2.5 rounded-full dark:bg-white/20 light:bg-slate-200"
+                        ></div>
+                        <div
+                          class="w-2.5 h-2.5 rounded-full dark:bg-white/20 light:bg-slate-200"
+                        ></div>
+                        <div
+                          class="w-2.5 h-2.5 rounded-full dark:bg-white/20 light:bg-slate-200"
+                        ></div>
+                      </div>
+                    </div>
+                    <a
+                      href="match-center.html?sport=basketball&home=Lakers&away=Warriors&hs=98&as=95&state=live"
+                      class="w-full sm:w-auto bg-brand-green text-black font-bold px-6 py-3 rounded-xl flex items-center justify-center space-x-3 glow-green hover:scale-105 transition-transform shadow-lg shadow-emerald-500/20"
+                    >
+                      <span class="font-headline text-sm uppercase tracking-wider"
+                        >View Match Center</span
+                      >
+                      <span class="material-symbols-outlined text-lg"
+                        >arrow_forward</span
+                      >
+                    </a>
+                  </div>
+                </div>
+
+                <!-- Slide 4: Tennis -->
+                <div
+                  class="hero-gradient min-w-full rounded-3xl p-6 md:p-8 relative overflow-hidden border dark:border-white/5 light:border-gray-200 light:shadow-soft transition-all duration-300 snap-center"
+                  style="background-image: linear-gradient(rgba(11, 14, 17, 0.3), rgba(11, 14, 17, 0.6)), url('https://images.unsplash.com/photo-1777761267146-ba0515a124cd?auto=format&fit=crop&q=80&w=1536');"
+                >
+                  <div class="flex justify-between items-start mb-8 md:mb-10">
+                    <div class="flex items-center space-x-3">
+                      <span class="bg-red-600 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider flex items-center text-white">
+                        <span class="w-1.5 h-1.5 bg-white rounded-full mr-1.5 animate-pulse"></span> LIVE NOW
+                                            </span>
+                                            <span class="text-xs font-medium dark:text-gray-300 light:text-slate-500">Madrid Open</span>
+                                        </div>
+                                        <div class="flex items-center space-x-2 backdrop-blur-md px-3 py-1.5 rounded-full border dark:bg-black/40 dark:border-white/10 light:bg-white/40 light:border-slate-200">
+                                            <span class="material-symbols-outlined text-brand-green text-sm">visibility</span>
+                                            <span class="text-xs font-bold dark:text-white light:text-slate-700">5.2K Watching</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-between px-2 md:px-8 relative">
+                                        <div class="text-center">
+                                            <img alt="Alcaraz" class="w-16 h-16 md:w-24 md:h-24 mx-auto rounded-full border-2 border-brand-green shadow-2xl object-cover" src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Carlos_Alcaraz_2023_US_Open.jpg/512px-Carlos_Alcaraz_2023_US_Open.jpg"
+                                            />
+                                            <div class="mt-4">
+                                                <p class="text-[10px] md:text-sm font-bold dark:text-gray-300 light:text-slate-500">ALC</p>
+                                                <h3 class="text-2xl md:text-4xl font-black font-headline dark:text-white light:text-slate-900">1</h3>
+                                                <p class="text-[10px] md:text-xs font-medium dark:text-gray-400 light:text-slate-400">Sets</p>
+                                            </div>
+                                        </div>
+                                        <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-black text-xl md:text-2xl font-headline dark:text-gray-600/50 light:text-slate-300">VS</div>
+                                        <div class="text-center">
+                                            <img alt="Djokovic" class="w-16 h-16 md:w-24 md:h-24 mx-auto rounded-full border-2 border-white/20 shadow-2xl object-cover" src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Novak_Djokovic_2023_US_Open.jpg/512px-Novak_Djokovic_2023_US_Open.jpg"
+                                            />
+                                            <div class="mt-4">
+                                                <p class="text-[10px] md:text-sm font-bold dark:text-gray-300 light:text-slate-500">DJO</p>
+                                                <h3 class="text-2xl md:text-4xl font-black font-headline dark:text-white light:text-slate-900">0</h3>
+                                                <p class="text-[10px] md:text-xs font-medium dark:text-gray-400 light:text-slate-400">Sets</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mt-8 md:mt-10 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
+                                        <div class="space-y-3 text-center sm:text-left">
+                                            <p class="font-bold text-sm dark:text-brand-green light:text-emerald-600">Alcaraz leads <span class="dark:text-white light:text-slate-900">Set 2: 4-2</span></p>
+                                            <div class="flex justify-center sm:justify-start space-x-1.5">
+                                                <div class="w-2.5 h-2.5 rounded-full bg-brand-green"></div>
+                                                <div class="w-2.5 h-2.5 rounded-full bg-brand-green"></div>
+                                                <div class="w-2.5 h-2.5 rounded-full dark:bg-white/20 light:bg-slate-200"></div>
+                                                <div class="w-2.5 h-2.5 rounded-full dark:bg-white/20 light:bg-slate-200"></div>
+                                            </div>
+                                        </div>
+                                        <a href="match-center.html?sport=tennis&home=Alcaraz&away=Djokovic&hs=1&as=0&state=live" class="w-full sm:w-auto bg-brand-green text-black font-bold px-6 py-3 rounded-xl flex items-center justify-center space-x-3 glow-green hover:scale-105 transition-transform shadow-lg shadow-emerald-500/20">
+                                            <span class="font-headline text-sm uppercase tracking-wider">View Match Center</span>
+                                            <span class="material-symbols-outlined text-lg">arrow_forward</span>
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <!-- Slide 5: Baseball -->
+                                <div class="hero-gradient min-w-full rounded-3xl p-6 md:p-8 relative overflow-hidden border dark:border-white/5 light:border-gray-200 light:shadow-soft transition-all duration-300 snap-center" style="background-image: linear-gradient(rgba(11, 14, 17, 0.3), rgba(11, 14, 17, 0.6)), url('https://images.unsplash.com/photo-1764570422378-15544d67e49b?auto=format&fit=crop&q=80&w=1536');">
+                                    <div class="flex justify-between items-start mb-8 md:mb-10">
+                                        <div class="flex items-center space-x-3">
+                                            <span class="bg-red-600 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider flex items-center text-white">
+                        <span class="w-1.5 h-1.5 bg-white rounded-full mr-1.5 animate-pulse"></span> LIVE NOW
+                                            </span>
+                                            <span class="text-xs font-medium dark:text-gray-300 light:text-slate-500">MLB Regular Season</span>
+                                        </div>
+                                        <div class="flex items-center space-x-2 backdrop-blur-md px-3 py-1.5 rounded-full border dark:bg-black/40 dark:border-white/10 light:bg-white/40 light:border-slate-200">
+                                            <span class="material-symbols-outlined text-brand-green text-sm">visibility</span>
+                                            <span class="text-xs font-bold dark:text-white light:text-slate-700">15.4K Watching</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-between px-2 md:px-8 relative">
+                                        <div class="text-center">
+                                            <img alt="Dodgers" class="w-16 h-16 md:w-24 md:h-24 mx-auto drop-shadow-2xl" src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Los_Angeles_Dodgers_Logo.svg/512px-Los_Angeles_Dodgers_Logo.svg.png" />
+                                            <div class="mt-4">
+                                                <p class="text-[10px] md:text-sm font-bold dark:text-gray-300 light:text-slate-500">LAD</p>
+                                                <h3 class="text-2xl md:text-4xl font-black font-headline dark:text-white light:text-slate-900">4</h3>
+                                                <p class="text-[10px] md:text-xs font-medium dark:text-gray-400 light:text-slate-400">Runs</p>
+                                            </div>
+                                        </div>
+                                        <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-black text-xl md:text-2xl font-headline dark:text-gray-600/50 light:text-slate-300">VS</div>
+                                        <div class="text-center">
+                                            <img alt="Yankees" class="w-16 h-16 md:w-24 md:h-24 mx-auto drop-shadow-2xl" src="https://upload.wikimedia.org/wikipedia/en/thumb/a/ad/New_York_Yankees_logo.svg/512px-New_York_Yankees_logo.svg.png" />
+                                            <div class="mt-4">
+                                                <p class="text-[10px] md:text-sm font-bold dark:text-gray-300 light:text-slate-500">NYY</p>
+                                                <h3 class="text-2xl md:text-4xl font-black font-headline dark:text-white light:text-slate-900">2</h3>
+                                                <p class="text-[10px] md:text-xs font-medium dark:text-gray-400 light:text-slate-400">Runs</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mt-8 md:mt-10 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
+                                        <div class="space-y-3 text-center sm:text-left">
+                                            <p class="font-bold text-sm dark:text-brand-green light:text-emerald-600">Top 5th <span class="dark:text-white light:text-slate-900">• 2 Outs</span></p>
+                                            <div class="flex justify-center sm:justify-start space-x-1.5">
+                                                <div class="w-2.5 h-2.5 rounded-full bg-brand-green"></div>
+                                                <div class="w-2.5 h-2.5 rounded-full bg-brand-green"></div>
+                                                <div class="w-2.5 h-2.5 rounded-full dark:bg-white/20 light:bg-slate-200"></div>
+                                            </div>
+                                        </div>
+                                        <a href="match-center.html?sport=baseball&home=Los%20Angeles%20Dodgers&away=New%20York%20Yankees&hs=4&as=2&state=live" class="w-full sm:w-auto bg-brand-green text-black font-bold px-6 py-3 rounded-xl flex items-center justify-center space-x-3 glow-green hover:scale-105 transition-transform shadow-lg shadow-emerald-500/20">
+                                            <span class="font-headline text-sm uppercase tracking-wider">View Match Center</span>
+                                            <span class="material-symbols-outlined text-lg">arrow_forward</span>
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <!-- Slide 6: Hockey -->
+                                <div class="hero-gradient min-w-full rounded-3xl p-6 md:p-8 relative overflow-hidden border dark:border-white/5 light:border-gray-200 light:shadow-soft transition-all duration-300 snap-center" style="background-image: linear-gradient(rgba(11, 14, 17, 0.3), rgba(11, 14, 17, 0.6)), url('https://images.unsplash.com/photo-1674571579456-62fdb093589f?auto=format&fit=crop&q=80&w=1536');">
+                                    <div class="flex justify-between items-start mb-8 md:mb-10">
+                                        <div class="flex items-center space-x-3">
+                                            <span class="bg-red-600 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider flex items-center text-white">
+                        <span class="w-1.5 h-1.5 bg-white rounded-full mr-1.5 animate-pulse"></span> LIVE NOW
+                                            </span>
+                                            <span class="text-xs font-medium dark:text-gray-300 light:text-slate-500">NHL Stanley Cup</span>
+                                        </div>
+                                        <div class="flex items-center space-x-2 backdrop-blur-md px-3 py-1.5 rounded-full border dark:bg-black/40 dark:border-white/10 light:bg-white/40 light:border-slate-200">
+                                            <span class="material-symbols-outlined text-brand-green text-sm">visibility</span>
+                                            <span class="text-xs font-bold dark:text-white light:text-slate-700">9.1K Watching</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-between px-2 md:px-8 relative">
+                                        <div class="text-center">
+                                            <img alt="Capitals" class="w-16 h-16 md:w-24 md:h-24 mx-auto drop-shadow-2xl" src="https://upload.wikimedia.org/wikipedia/en/thumb/2/2d/Washington_Capitals.svg/512px-Washington_Capitals.svg.png" />
+                                            <div class="mt-4">
+                                                <p class="text-[10px] md:text-sm font-bold dark:text-gray-300 light:text-slate-500">WSH</p>
+                                                <h3 class="text-2xl md:text-4xl font-black font-headline dark:text-white light:text-slate-900">3</h3>
+                                                <p class="text-[10px] md:text-xs font-medium dark:text-gray-400 light:text-slate-400">Goals</p>
+                                            </div>
+                                        </div>
+                                        <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-black text-xl md:text-2xl font-headline dark:text-gray-600/50 light:text-slate-300">VS</div>
+                                        <div class="text-center">
+                                            <img alt="Golden Knights" class="w-16 h-16 md:w-24 md:h-24 mx-auto drop-shadow-2xl" src="https://upload.wikimedia.org/wikipedia/en/thumb/a/ac/Vegas_Golden_Knights_logo.svg/512px-Vegas_Golden_Knights_logo.svg.png" />
+                                            <div class="mt-4">
+                                                <p class="text-[10px] md:text-sm font-bold dark:text-gray-300 light:text-slate-500">VGK</p>
+                                                <h3 class="text-2xl md:text-4xl font-black font-headline dark:text-white light:text-slate-900">3</h3>
+                                                <p class="text-[10px] md:text-xs font-medium dark:text-gray-400 light:text-slate-400">Goals</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mt-8 md:mt-10 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
+                                        <div class="space-y-3 text-center sm:text-left">
+                                            <p class="font-bold text-sm dark:text-brand-green light:text-emerald-600">Period 3 <span class="dark:text-white light:text-slate-900">• 04:12 Left</span></p>
+                                            <div class="flex justify-center sm:justify-start space-x-1.5">
+                                                <div class="w-2.5 h-2.5 rounded-full bg-brand-green"></div>
+                                                <div class="w-2.5 h-2.5 rounded-full bg-brand-green"></div>
+                                                <div class="w-2.5 h-2.5 rounded-full bg-brand-green"></div>
+                                                <div class="w-2.5 h-2.5 rounded-full dark:bg-white/20 light:bg-slate-200"></div>
+                                            </div>
+                                        </div>
+                                        <a href="match-center.html?sport=hockey&home=Washington%20Capitals&away=Golden%20Knights&hs=3&as=3&state=live" class="w-full sm:w-auto bg-brand-green text-black font-bold px-6 py-3 rounded-xl flex items-center justify-center space-x-3 glow-green hover:scale-105 transition-transform shadow-lg shadow-emerald-500/20">
+                      <span class="font-headline text-sm uppercase tracking-wider">View Match Center</span>
+                      <span class="material-symbols-outlined text-lg">arrow_forward</span>
+                    </a>
+                                    </div>
+                                </div>
+                                
+                                <!-- Slide 7: Kabaddi -->
+                                <div class="hero-gradient min-w-full rounded-3xl p-6 md:p-8 relative overflow-hidden border dark:border-white/5 light:border-gray-200 light:shadow-soft transition-all duration-300 snap-center" style="background-image: linear-gradient(rgba(11, 14, 17, 0.3), rgba(11, 14, 17, 0.6)), url('https://upload.wikimedia.org/wikipedia/commons/c/c7/Kabaddi_Game_play(2273574).jpg');">
+                                    <div class="flex justify-between items-start mb-8 md:mb-10">
+                                        <div class="flex items-center space-x-3">
+                                            <span class="bg-red-600 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider flex items-center text-white">
+                        <span class="w-1.5 h-1.5 bg-white rounded-full mr-1.5 animate-pulse"></span> LIVE NOW
+                                            </span>
+                                            <span class="text-xs font-medium dark:text-gray-300 light:text-slate-500">Pro Kabaddi 2024</span>
+                                        </div>
+                                        <div class="flex items-center space-x-2 backdrop-blur-md px-3 py-1.5 rounded-full border dark:bg-black/40 dark:border-white/10 light:bg-white/40 light:border-slate-200">
+                                            <span class="material-symbols-outlined text-brand-green text-sm">visibility</span>
+                                            <span class="text-xs font-bold dark:text-white light:text-slate-700">4.2K Watching</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-between px-2 md:px-8 relative">
+                                        <div class="text-center">
+                                            <img alt="Bengaluru Bulls" class="w-16 h-16 md:w-24 md:h-24 mx-auto drop-shadow-2xl" src="https://upload.wikimedia.org/wikipedia/en/thumb/8/88/Bengaluru_Bulls_logo.svg/512px-Bengaluru_Bulls_logo.svg.png" />
+                                            <div class="mt-4">
+                                                <p class="text-[10px] md:text-sm font-bold text-slate-500 dark:text-gray-300">BULLS</p>
+                                                <h3 class="text-2xl md:text-4xl font-black font-headline text-slate-900 dark:text-white">34</h3>
+                                                <p class="text-[10px] md:text-xs font-medium text-slate-400 dark:text-gray-400">Full Time</p>
+                                            </div>
+                                        </div>
+                                        <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-black text-xl md:text-2xl font-headline text-slate-300 dark:text-gray-600/50">VS</div>
+                                        <div class="text-center">
+                                            <img alt="Patna Pirates" class="w-16 h-16 md:w-24 md:h-24 mx-auto drop-shadow-2xl" src="https://upload.wikimedia.org/wikipedia/en/thumb/2/2d/Patna_Pirates_logo.svg/512px-Patna_Pirates_logo.svg.png" />
+                                            <div class="mt-4">
+                                                <p class="text-[10px] md:text-sm font-bold text-slate-500 dark:text-gray-300">PIRATES</p>
+                                                <h3 class="text-2xl md:text-4xl font-black font-headline text-slate-900 dark:text-white">28</h3>
+                                                <p class="text-[10px] md:text-xs font-medium text-slate-400 dark:text-gray-400">Full Time</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mt-8 md:mt-10 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
+                                        <div class="space-y-3 text-center sm:text-left">
+                                            <p class="font-bold text-sm text-emerald-600 dark:text-brand-green">Bengaluru Bulls win by <span class="text-slate-900 dark:text-white">6 points</span></p>
+                                        </div>
+                                        <a href="match-center.html?sport=kabaddi&home=Bengaluru%20Bulls&away=Patna%20Pirates&hs=34&as=28&state=live" class="w-full sm:w-auto bg-brand-green text-black font-bold px-6 py-3 rounded-xl flex items-center justify-center space-x-3 glow-green hover:scale-105 transition-transform shadow-lg shadow-emerald-500/20">
+                      <span class="font-headline text-sm uppercase tracking-wider">View Match Center</span>
+                      <span class="material-symbols-outlined text-lg">arrow_forward</span>
+                    </a>
+                                    </div>
+                                </div>
+                                
+                                <!-- Slide 8: Volleyball -->
+                                <div class="hero-gradient min-w-full rounded-3xl p-6 md:p-8 relative overflow-hidden border dark:border-white/5 light:border-gray-200 light:shadow-soft transition-all duration-300 snap-center" style="background-image: linear-gradient(rgba(11, 14, 17, 0.3), rgba(11, 14, 17, 0.6)), url('https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?auto=format&fit=crop&q=80&w=1536');">
+                                    <div class="flex justify-between items-start mb-8 md:mb-10">
+                                        <div class="flex items-center space-x-3">
+                                            <span class="bg-red-600 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider flex items-center text-white">
+                        <span class="w-1.5 h-1.5 bg-white rounded-full mr-1.5 animate-pulse"></span> LIVE NOW
+                                            </span>
+                                            <span class="text-xs font-medium dark:text-gray-300 light:text-slate-500">VNL 2024</span>
+                                        </div>
+                                        <div class="flex items-center space-x-2 backdrop-blur-md px-3 py-1.5 rounded-full border dark:bg-black/40 dark:border-white/10 light:bg-white/40 light:border-slate-200">
+                                            <span class="material-symbols-outlined text-brand-green text-sm">visibility</span>
+                                            <span class="text-xs font-bold dark:text-white light:text-slate-700">3.8K Watching</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-between px-2 md:px-8 relative">
+                                        <div class="text-center">
+                                            <img alt="Brazil" class="w-16 h-16 md:w-24 md:h-24 mx-auto drop-shadow-2xl" src="https://upload.wikimedia.org/wikipedia/en/thumb/0/05/Flag_of_Brazil.svg/512px-Flag_of_Brazil.svg.png" />
+                                            <div class="mt-4">
+                                                <p class="text-[10px] md:text-sm font-bold text-slate-500 dark:text-gray-300">BRA</p>
+                                                <h3 class="text-2xl md:text-4xl font-black font-headline text-slate-900 dark:text-white">2</h3>
+                                                <p class="text-[10px] md:text-xs font-medium text-slate-400 dark:text-gray-400">Sets</p>
+                                            </div>
+                                        </div>
+                                        <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-black text-xl md:text-2xl font-headline text-slate-300 dark:text-gray-600/50">VS</div>
+                                        <div class="text-center">
+                                            <img alt="USA" class="w-16 h-16 md:w-24 md:h-24 mx-auto drop-shadow-2xl" src="https://upload.wikimedia.org/wikipedia/en/thumb/a/a4/Flag_of_the_United_States.svg/512px-Flag_of_the_United_States.svg.png" />
+                                            <div class="mt-4">
+                                                <p class="text-[10px] md:text-sm font-bold text-slate-500 dark:text-gray-300">USA</p>
+                                                <h3 class="text-2xl md:text-4xl font-black font-headline text-slate-900 dark:text-white">1</h3>
+                                                <p class="text-[10px] md:text-xs font-medium text-slate-400 dark:text-gray-400">Set 3: 18-14</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mt-8 md:mt-10 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
+                                        <div class="space-y-3 text-center sm:text-left">
+                                            <p class="font-bold text-sm text-emerald-600 dark:text-brand-green">Brazil leading <span class="text-slate-900 dark:text-white">2-1 in sets</span></p>
+                                        </div>
+                                        <a href="vollyeball.html" class="w-full sm:w-auto bg-brand-green text-black font-bold px-6 py-3 rounded-xl flex items-center justify-center space-x-3 glow-green hover:scale-105 transition-transform shadow-lg shadow-emerald-500/20">
+                      <span class="font-headline text-sm uppercase tracking-wider">View Match Center</span>
+                      <span class="material-symbols-outlined text-lg">arrow_forward</span>
+                    </a>
+                                    </div>
+                                </div>
+                                
+                                <!-- Slide 9: E-Sports -->
+                                <div class="hero-gradient min-w-full rounded-3xl p-6 md:p-8 relative overflow-hidden border dark:border-white/5 light:border-gray-200 light:shadow-soft transition-all duration-300 snap-center" style="background-image: linear-gradient(rgba(11, 14, 17, 0.3), rgba(11, 14, 17, 0.6)), url('https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=1536');">
+                                    <div class="flex justify-between items-start mb-8 md:mb-10">
+                                        <div class="flex items-center space-x-3">
+                                            <span class="bg-red-600 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider flex items-center text-white">
+                        <span class="w-1.5 h-1.5 bg-white rounded-full mr-1.5 animate-pulse"></span> LIVE NOW
+                                            </span>
+                                            <span class="text-xs font-medium dark:text-gray-300 light:text-slate-500">BGMI Pro Series</span>
+                                        </div>
+                                        <div class="flex items-center space-x-2 backdrop-blur-md px-3 py-1.5 rounded-full border dark:bg-black/40 dark:border-white/10 light:bg-white/40 light:border-slate-200">
+                                            <span class="material-symbols-outlined text-brand-green text-sm">visibility</span>
+                                            <span class="text-xs font-bold dark:text-white light:text-slate-700">18.5K Watching</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-between px-2 md:px-8 relative">
+                                        <div class="text-center">
+                                            <img alt="Team XSpark" class="w-16 h-16 md:w-24 md:h-24 mx-auto drop-shadow-2xl" src="https://upload.wikimedia.org/wikipedia/en/thumb/6/6e/XSpark_logo.svg/512px-XSpark_logo.svg.png" onerror="this.src='https://ui-avatars.com/api/?name=XS&background=ff4444&color=fff&size=96'"
+                                            />
+                                            <div class="mt-4">
+                                                <p class="text-[10px] md:text-sm font-bold text-slate-500 dark:text-gray-300">XSpark</p>
+                                                <h3 class="text-2xl md:text-4xl font-black font-headline text-slate-900 dark:text-white">48</h3>
+                                                <p class="text-[10px] md:text-xs font-medium text-slate-400 dark:text-gray-400">Points</p>
+                                            </div>
+                                        </div>
+                                        <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-black text-xl md:text-2xl font-headline text-slate-300 dark:text-gray-600/50">VS</div>
+                                        <div class="text-center">
+                                            <img alt="Team Soul" class="w-16 h-16 md:w-24 md:h-24 mx-auto drop-shadow-2xl" src="https://upload.wikimedia.org/wikipedia/en/thumb/9/9a/Soul_Esports_logo.svg/512px-Soul_Esports_logo.svg.png" onerror="this.src='https://ui-avatars.com/api/?name=SL&background=8b5cf6&color=fff&size=96'"
+                                            />
+                                            <div class="mt-4">
+                                                <p class="text-[10px] md:text-sm font-bold text-slate-500 dark:text-gray-300">Soul</p>
+                                                <h3 class="text-2xl md:text-4xl font-black font-headline text-slate-900 dark:text-white">42</h3>
+                                                <p class="text-[10px] md:text-xs font-medium text-slate-400 dark:text-gray-400">Round 4</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mt-8 md:mt-10 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
+                                        <div class="space-y-3 text-center sm:text-left">
+                                            <p class="font-bold text-sm text-emerald-600 dark:text-brand-green">XSpark leading <span class="text-slate-900 dark:text-white">by 6 points</span></p>
+                                        </div>
+                                        <a href="match-center.html?sport=e-sports&home=XSpark&away=Soul&hs=48&as=42&state=live" class="w-full sm:w-auto bg-brand-green text-black font-bold px-6 py-3 rounded-xl flex items-center justify-center space-x-3 glow-green hover:scale-105 transition-transform shadow-lg shadow-emerald-500/20">
+                      <span class="font-headline text-sm uppercase tracking-wider">View Match Center</span>
+                      <span class="material-symbols-outlined text-lg">arrow_forward</span>
+                    </a>
+                                    </div>
+                                </div>
+                                
+                                <!-- Slide 10: Table Tennis -->
+                                <div class="hero-gradient min-w-full rounded-3xl p-6 md:p-8 relative overflow-hidden border dark:border-white/5 light:border-gray-200 light:shadow-soft transition-all duration-300 snap-center" style="background-image: linear-gradient(rgba(11, 14, 17, 0.3), rgba(11, 14, 17, 0.6)), url('https://images.unsplash.com/photo-1534158914592-062992fbe900?auto=format&fit=crop&q=80&w=1536');">
+                                    <div class="flex justify-between items-start mb-8 md:mb-10">
+                                        <div class="flex items-center space-x-3">
+                                            <span class="bg-red-600 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider flex items-center text-white">
+                        <span class="w-1.5 h-1.5 bg-white rounded-full mr-1.5 animate-pulse"></span> LIVE NOW
+                                            </span>
+                                            <span class="text-xs font-medium dark:text-gray-300 light:text-slate-500">WTT Champions</span>
+                                        </div>
+                                        <div class="flex items-center space-x-2 backdrop-blur-md px-3 py-1.5 rounded-full border dark:bg-black/40 dark:border-white/10 light:bg-white/40 light:border-slate-200">
+                                            <span class="material-symbols-outlined text-brand-green text-sm">visibility</span>
+                                            <span class="text-xs font-bold dark:text-white light:text-slate-700">2.1K Watching</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-between px-2 md:px-8 relative">
+                                        <div class="text-center">
+                                            <img alt="Fan Zhendong" class="w-16 h-16 md:w-24 md:h-24 mx-auto drop-shadow-2xl rounded-full" src="https://ui-avatars.com/api/?name=FZ&background=dc2626&color=fff&size=96" />
+                                            <div class="mt-4">
+                                                <p class="text-[10px] md:text-sm font-bold text-slate-500 dark:text-gray-300">Fan ZD</p>
+                                                <h3 class="text-2xl md:text-4xl font-black font-headline text-slate-900 dark:text-white">3</h3>
+                                                <p class="text-[10px] md:text-xs font-medium text-slate-400 dark:text-gray-400">Games</p>
+                                            </div>
+                                        </div>
+                                        <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-black text-xl md:text-2xl font-headline text-slate-300 dark:text-gray-600/50">VS</div>
+                                        <div class="text-center">
+                                            <img alt="Ma Long" class="w-16 h-16 md:w-24 md:h-24 mx-auto drop-shadow-2xl rounded-full" src="https://ui-avatars.com/api/?name=ML&background=2563eb&color=fff&size=96" />
+                                            <div class="mt-4">
+                                                <p class="text-[10px] md:text-sm font-bold text-slate-500 dark:text-gray-300">Ma Long</p>
+                                                <h3 class="text-2xl md:text-4xl font-black font-headline text-slate-900 dark:text-white">1</h3>
+                                                <p class="text-[10px] md:text-xs font-medium text-slate-400 dark:text-gray-400">Game 4: 9-5</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mt-8 md:mt-10 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
+                                        <div class="space-y-3 text-center sm:text-left">
+                                            <p class="font-bold text-sm text-emerald-600 dark:text-brand-green">Fan Zhendong leading <span class="text-slate-900 dark:text-white">3-1 in games</span></p>
+                                        </div>
+                                        <a href="match-center.html?sport=tabletennis&home=Fan%20Zhendong&away=Ma%20Long&hs=3&as=1&state=live" class="w-full sm:w-auto bg-brand-green text-black font-bold px-6 py-3 rounded-xl flex items-center justify-center space-x-3 glow-green hover:scale-105 transition-transform shadow-lg shadow-emerald-500/20">
+                      <span class="font-headline text-sm uppercase tracking-wider">View Match Center</span>
+                      <span class="material-symbols-outlined text-lg">arrow_forward</span>
+                    </a>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <!-- Carousel Navigation -->
+                            <button id="prev-slide" class="absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-full dark:bg-black/50 light:bg-white/70 shadow-lg dark:text-white light:text-slate-800 hover:scale-110 transition-transform z-20">
+                <span class="material-symbols-outlined">chevron_left</span>
+              </button>
+                            <button id="next-slide" class="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-full dark:bg-black/50 light:bg-white/70 shadow-lg dark:text-white light:text-slate-800 hover:scale-110 transition-transform z-20">
+                <span class="material-symbols-outlined">chevron_right</span>
+              </button>
+                            <!-- Carousel Dots -->
+                            <div class="flex justify-center space-x-2 mt-4">
+                                <div class="hero-dot w-2 h-2 rounded-full bg-brand-green cursor-pointer"></div>
+                                <div class="hero-dot w-2 h-2 rounded-full bg-gray-600 cursor-pointer"></div>
+                                <div class="hero-dot w-2 h-2 rounded-full bg-gray-600 cursor-pointer"></div>
+                                <div class="hero-dot w-2 h-2 rounded-full bg-gray-600 cursor-pointer"></div>
+                                <div class="hero-dot w-2 h-2 rounded-full bg-gray-600 cursor-pointer"></div>
+                                <div class="hero-dot w-2 h-2 rounded-full bg-gray-600 cursor-pointer"></div>
+                                <div class="hero-dot w-2 h-2 rounded-full bg-gray-600 cursor-pointer"></div>
+                                <div class="hero-dot w-2 h-2 rounded-full bg-gray-600 cursor-pointer"></div>
+                                <div class="hero-dot w-2 h-2 rounded-full bg-gray-600 cursor-pointer"></div>
+                                <div class="hero-dot w-2 h-2 rounded-full bg-gray-600 cursor-pointer"></div>
+                                <div class="hero-dot w-2 h-2 rounded-full bg-gray-600 cursor-pointer"></div>
+                            </div>
+                        </div>
+                        <!-- BEGIN: Upcoming Matches -->
+                        <section>
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="font-bold text-lg md:text-xl font-headline dark:text-white light:text-slate-900">
+                                    Upcoming Matches
+                                </h3>
+                                <a class="dark:text-brand-green light:text-emerald-600 text-xs font-bold uppercase hover:underline" href="livematches.html">View All</a
+                >
+              </div>
+              <div
+                class="flex space-x-4 overflow-x-auto pb-4 custom-scrollbar snap-x"
+              >
+                <div
+                  class="min-w-[160px] md:min-w-[180px] rounded-2xl p-4 md:p-5 border snap-start flex flex-col items-center transition-all duration-300 dark:bg-brand-card dark:border-brand-border light:bg-white light:border-gray-200 light:shadow-soft"
+                >
+                  <p
+                    class="text-[9px] md:text-[10px] text-gray-500 font-bold uppercase mb-4 tracking-wider"
+                  >
+                    IPL 2024
+                  </p>
+                  <div class="flex items-center justify-center space-x-3 mb-4">
+                    <img
+                      class="w-8 h-8 md:w-10 md:h-10 object-contain"
+                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuCQnrruH7Nz7Vo2euqaxBuhWJgtCGT3Qr17ozvq9ePSa8iheK1y0OlIpyP0qp2oRJWNiSo3iTBlXEFBfKI4jqgneqMd19Tg65fEjN9wj4V-Mzih6BuBQ2P2AkEDiT9CsiMCYalEq-nyIbyO09C0SggowYdG5LJn9EIxK5oN2UE7wV-rRNKOcxwd08YMN354hoEPErNBgXwJk9e0r8GxvXwZYu4MsP20N6mWmYPHBwxN7XPN47fqhGlVq58C1BZCJzqOgjDRojp2pDu-"
+                    />
+                    <span class="text-xs font-black text-gray-400">VS</span>
+                    <img
+                      class="w-8 h-8 md:w-10 md:h-10 object-contain"
+                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuCccFwaP67sRzzTAAytYCHc6GDn0o1O4KduttzF68pl2Tuy8iJ_BS8xziZQJ4mn1zOih8uKQLwxvbKLcsFWzN7tW3BJnp02MgOX5woAECWHmH9EQ7ov9Td9Q2i_Cw51eodZVNnXDq_7SH8OAe8wp3PAwjifFb6wMfu29psyMMDAjHCXCQfymmPY00TJ1x_7Uv2i6HzrH0ABy4VT7Aj7gpPG0iTSygN9QTIGvYV_hvfmLLZzsCVunRB8u5ROW5iaF6C_jQQGpVqoTUJy"
+                    />
+                  </div>
+                  <p
+                    class="text-xs font-bold mb-1 dark:text-white light:text-slate-800"
+                  >
+                    KKR vs RR
+                  </p>
+                  <p class="text-[10px] text-gray-500">Today, 7:30 PM</p>
+                </div>
+                <div
+                  class="min-w-[160px] md:min-w-[180px] rounded-2xl p-4 md:p-5 border snap-start flex flex-col items-center transition-all duration-300 dark:bg-brand-card dark:border-brand-border light:bg-white light:border-gray-200 light:shadow-soft"
+                >
+                  <p
+                    class="text-[9px] md:text-[10px] text-gray-500 font-bold uppercase mb-4 tracking-wider"
+                  >
+                    IPL 2024
+                  </p>
+                  <div class="flex items-center justify-center space-x-3 mb-4">
+                    <img
+                      class="w-8 h-8 md:w-10 md:h-10 object-contain"
+                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuC1k40I_WbL0oor4AHCknVe0d33ysHNXH70cz6a2f9vsbTcJx0mJLoX8ZB19ucS60xTzrVraao_lW0dO4MqQ6BPRWVAuhcJAAMOoGlAFeCnwP4cc7NhqhXBGyjVtTWY5XSoA7OlM7wNZGf7Owv3AKM_WuEYmHGDCTLy55lyTMsmMmGLynOby57xnGzRHxTMhbdLyghIP7aDGt9R-9TrxIhHlZplyvBN6sFLbIEmlQlraXPv9x-M5LdWM-a3_Uo6A5WD-OkWRcQN9UOj"
+                    />
+                    <span class="text-xs font-black text-gray-400">VS</span>
+                    <img
+                      class="w-8 h-8 md:w-10 md:h-10 object-contain"
+                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuDBPslsQaXB3oLhBF6Cd2UU4YhvJhEdezwTzxO6klHPNKKusqZZWtvgpHXRc_WnkX4-LfFCzIruAJNvbSIvERfi7idxYUGPEcGYAj3GKc1_wSO1x2za37FZUYywz9B9VzVk6URMMrdl800MVAeUkpHMANVjrTfRZjLyon87f7eF7RVvOL5_4B0sEZCq28IMo6tcRtGijIiXxh5GHn3gkYi_XrSBCXWX479qmlODUcj7ngEaJS1_2mrIVfwtINaRZ1jeRpIn4meqv1u6"
+                    />
+                  </div>
+                  <p
+                    class="text-xs font-bold mb-1 dark:text-white light:text-slate-800"
+                  >
+                    RCB vs PBKS
+                  </p>
+                  <p class="text-[10px] text-gray-500">Tomorrow, 7:30 PM</p>
+                </div>
+                <div
+                  class="min-w-[160px] md:min-w-[180px] rounded-2xl p-4 md:p-5 border snap-start flex flex-col items-center transition-all duration-300 dark:bg-brand-card dark:border-brand-border light:bg-white light:border-gray-200 light:shadow-soft"
+                >
+                  <p
+                    class="text-[9px] md:text-[10px] text-gray-500 font-bold uppercase mb-4 tracking-wider"
+                  >
+                    IPL 2024
+                  </p>
+                  <div class="flex items-center justify-center space-x-3 mb-4">
+                    <img
+                      class="w-8 h-8 md:w-10 md:h-10 object-contain"
+                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuDBPslsQaXB3oLhBF6Cd2UU4YhvJhEdezwTzxO6klHPNKKusqZZWtvgpHXRc_WnkX4-LfFCzIruAJNvbSIvERfi7idxYUGPEcGYAj3GKc1_wSO1x2za37FZUYywz9B9VzVk6URMMrdl800MVAeUkpHMANVjrTfRZjLyon87f7eF7RVvOL5_4B0sEZCq28IMo6tcRtGijIiXxh5GHn3gkYi_XrSBCXWX479qmlODUcj7ngEaJS1_2mrIVfwtINaRZ1jeRpIn4meqv1u6"
+                    />
+                    <span class="text-xs font-black text-gray-400">VS</span>
+                    <img
+                      class="w-8 h-8 md:w-10 md:h-10 object-contain"
+                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuCQnrruH7Nz7Vo2euqaxBuhWJgtCGT3Qr17ozvq9ePSa8iheK1y0OlIpyP0qp2oRJWNiSo3iTBlXEFBfKI4jqgneqMd19Tg65fEjN9wj4V-Mzih6BuBQ2P2AkEDiT9CsiMCYalEq-nyIbyO09C0SggowYdG5LJn9EIxK5oN2UE7wV-rRNKOcxwd08YMN354hoEPErNBgXwJk9e0r8GxvXwZYu4MsP20N6mWmYPHBwxN7XPN47fqhGlVq58C1BZCJzqOgjDRojp2pDu-"
+                    />
+                  </div>
+                  <p
+                    class="text-xs font-bold mb-1 dark:text-white light:text-slate-800"
+                  >
+                    DC vs SRH
+                  </p>
+                  <p class="text-[10px] text-gray-500">25 May, 7:30 PM</p>
+                </div>
+                <!-- Card 4: Football -->
+                <div class="min-w-[160px] md:min-w-[180px] rounded-2xl p-4 md:p-5 border snap-start flex flex-col items-center transition-all duration-300 dark:bg-brand-card dark:border-brand-border light:bg-white light:border-gray-200 light:shadow-soft">
+                  <p class="text-[9px] md:text-[10px] text-gray-500 font-bold uppercase mb-4 tracking-wider">Premier League</p>
+                  <div class="flex items-center justify-center space-x-3 mb-4">
+                    <img class="w-8 h-8 md:w-10 md:h-10 object-contain" src="https://upload.wikimedia.org/wikipedia/en/thumb/c/cf/Arsenal_FC.svg/512px-Arsenal_FC.svg.png" />
+                    <span class="text-xs font-black text-gray-400">VS</span>
+                    <img class="w-8 h-8 md:w-10 md:h-10 object-contain" src="https://upload.wikimedia.org/wikipedia/en/thumb/b/b4/Chelsea_FC.svg/512px-Chelsea_FC.svg.png" />
+                  </div>
+                  <p class="text-xs font-bold mb-1 dark:text-white light:text-slate-800">Arsenal vs Chelsea</p>
+                  <p class="text-[10px] text-gray-500">26 May, 5:00 PM</p>
+                </div>
+                <!-- Card 5: Basketball -->
+                <div class="min-w-[160px] md:min-w-[180px] rounded-2xl p-4 md:p-5 border snap-start flex flex-col items-center transition-all duration-300 dark:bg-brand-card dark:border-brand-border light:bg-white light:border-gray-200 light:shadow-soft">
+                  <p class="text-[9px] md:text-[10px] text-gray-500 font-bold uppercase mb-4 tracking-wider">NBA Playoffs</p>
+                  <div class="flex items-center justify-center space-x-3 mb-4">
+                    <img class="w-8 h-8 md:w-10 md:h-10 object-contain" src="https://upload.wikimedia.org/wikipedia/en/thumb/6/67/Los_Angeles_Lakers_logo.svg/512px-Los_Angeles_Lakers_logo.svg.png" />
+                    <span class="text-xs font-black text-gray-400">VS</span>
+                    <img class="w-8 h-8 md:w-10 md:h-10 object-contain" src="https://upload.wikimedia.org/wikipedia/en/thumb/0/01/Golden_State_Warriors_logo.svg/512px-Golden_State_Warriors_logo.svg.png" />
+                  </div>
+                  <p class="text-xs font-bold mb-1 dark:text-white light:text-slate-800">Lakers vs Warriors</p>
+                  <p class="text-[10px] text-gray-500">27 May, 8:30 AM</p>
+                </div>
+                <!-- Card 6: Kabaddi -->
+                <div class="min-w-[160px] md:min-w-[180px] rounded-2xl p-4 md:p-5 border snap-start flex flex-col items-center transition-all duration-300 dark:bg-brand-card dark:border-brand-border light:bg-white light:border-gray-200 light:shadow-soft">
+                  <p class="text-[9px] md:text-[10px] text-gray-500 font-bold uppercase mb-4 tracking-wider">Pro Kabaddi</p>
+                  <div class="flex items-center justify-center space-x-3 mb-4">
+                    <img class="w-8 h-8 md:w-10 md:h-10 object-contain" src="https://upload.wikimedia.org/wikipedia/en/thumb/8/88/Bengaluru_Bulls_logo.svg/512px-Bengaluru_Bulls_logo.svg.png" />
+                    <span class="text-xs font-black text-gray-400">VS</span>
+                    <img class="w-8 h-8 md:w-10 md:h-10 object-contain" src="https://upload.wikimedia.org/wikipedia/en/thumb/3/39/U_Mumba_Logo.svg/512px-U_Mumba_Logo.svg.png" />
+                  </div>
+                  <p class="text-xs font-bold mb-1 dark:text-white light:text-slate-800">Bulls vs U Mumba</p>
+                  <p class="text-[10px] text-gray-500">28 May, 7:00 PM</p>
+                </div>
+                <!-- Card 7: Tennis -->
+                <div class="min-w-[160px] md:min-w-[180px] rounded-2xl p-4 md:p-5 border snap-start flex flex-col items-center transition-all duration-300 dark:bg-brand-card dark:border-brand-border light:bg-white light:border-gray-200 light:shadow-soft">
+                  <p class="text-[9px] md:text-[10px] text-gray-500 font-bold uppercase mb-4 tracking-wider">French Open</p>
+                  <div class="flex items-center justify-center space-x-3 mb-4">
+                    <img class="w-8 h-8 md:w-10 md:h-10 object-contain rounded-full" src="https://ui-avatars.com/api/?name=CD&background=dc2626&color=fff&size=64" />
+                    <span class="text-xs font-black text-gray-400">VS</span>
+                    <img class="w-8 h-8 md:w-10 md:h-10 object-contain rounded-full" src="https://ui-avatars.com/api/?name=ND&background=2563eb&color=fff&size=64" />
+                  </div>
+                  <p class="text-xs font-bold mb-1 dark:text-white light:text-slate-800">Djokovic vs Nadal</p>
+                  <p class="text-[10px] text-gray-500">29 May, 3:00 PM</p>
+                </div>
+                <!-- Card 8: E-Sports -->
+                <div class="min-w-[160px] md:min-w-[180px] rounded-2xl p-4 md:p-5 border snap-start flex flex-col items-center transition-all duration-300 dark:bg-brand-card dark:border-brand-border light:bg-white light:border-gray-200 light:shadow-soft">
+                  <p class="text-[9px] md:text-[10px] text-gray-500 font-bold uppercase mb-4 tracking-wider">VALORANT Champions</p>
+                  <div class="flex items-center justify-center space-x-3 mb-4">
+                    <img class="w-8 h-8 md:w-10 md:h-10 object-contain rounded-full" src="https://ui-avatars.com/api/?name=SN&background=ff4444&color=fff&size=64" />
+                    <span class="text-xs font-black text-gray-400">VS</span>
+                    <img class="w-8 h-8 md:w-10 md:h-10 object-contain rounded-full" src="https://ui-avatars.com/api/?name=NV&background=8b5cf6&color=fff&size=64" />
+                  </div>
+                  <p class="text-xs font-bold mb-1 dark:text-white light:text-slate-800">Sentinels vs Navi</p>
+                  <p class="text-[10px] text-gray-500">30 May, 6:30 PM</p>
+                </div>
+              </div>
+            </section>
+            <!-- BEGIN: Mid Section Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+              <!-- Fan Communities -->
+              <div
+                class="rounded-3xl p-5 md:p-6 border transition-all duration-300 dark:bg-brand-card dark:border-brand-border light:bg-white light:border-gray-200 light:shadow-soft relative overflow-hidden"
+              >
+                <div class="flex justify-between items-center mb-6">
+                  <h3
+                    class="font-bold text-lg font-headline dark:text-white light:text-slate-900"
+                  >
+                    Fan Communities
+                  </h3>
+                  <a
+                    class="dark:text-brand-green light:text-emerald-600 text-xs font-bold uppercase hover:underline"
+                    href="dashboard.html"
+                    >View All</a
+                  >
+                </div>
+                <div class="space-y-4">
+                  <div
+                    class="flex items-center justify-between p-3.5 border border-transparent transition-all rounded-2xl dark:bg-[#1A1D23] dark:hover:border-brand-green/30 light:bg-gray-50 light:hover:border-emerald-300"
+                  >
+                    <div class="flex items-center space-x-4">
+                      <img
+                        class="w-11 h-11 rounded-xl"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuCQnrruH7Nz7Vo2euqaxBuhWJgtCGT3Qr17ozvq9ePSa8iheK1y0OlIpyP0qp2oRJWNiSo3iTBlXEFBfKI4jqgneqMd19Tg65fEjN9wj4V-Mzih6BuBQ2P2AkEDiT9CsiMCYalEq-nyIbyO09C0SggowYdG5LJn9EIxK5oN2UE7wV-rRNKOcxwd08YMN354hoEPErNBgXwJk9e0r8GxvXwZYu4MsP20N6mWmYPHBwxN7XPN47fqhGlVq58C1BZCJzqOgjDRojp2pDu-"
+                      />
+                      <div>
+                        <p
+                          class="text-sm font-bold dark:text-white light:text-slate-800"
+                        >
+                          RCB Army
+                        </p>
+                        <p class="text-[10px] text-gray-400">125K Members</p>
+                      </div>
+                    </div>
+                    <div class="flex items-center space-x-1.5">
+                      <span
+                        class="w-2 h-2 bg-brand-green rounded-full animate-pulse"
+                      ></span>
+                      <span
+                        class="text-[10px] font-bold dark:text-brand-green light:text-emerald-600"
+                        >Live</span
+                      >
+                    </div>
+                  </div>
+                  <div
+                    class="flex items-center justify-between p-3.5 border border-transparent rounded-2xl dark:bg-[#1A1D23] light:bg-gray-50"
+                  >
+                    <div class="flex items-center space-x-4">
+                      <img
+                        class="w-11 h-11 rounded-xl"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuDBPslsQaXB3oLhBF6Cd2UU4YhvJhEdezwTzxO6klHPNKKusqZZWtvgpHXRc_WnkX4-LfFCzIruAJNvbSIvERfi7idxYUGPEcGYAj3GKc1_wSO1x2za37FZUYywz9B9VzVk6URMMrdl800MVAeUkpHMANVjrTfRZjLyon87f7eF7RVvOL5_4B0sEZCq28IMo6tcRtGijIiXxh5GHn3gkYi_XrSBCXWX479qmlODUcj7ngEaJS1_2mrIVfwtINaRZ1jeRpIn4meqv1u6"
+                      />
+                      <div>
+                        <p
+                          class="text-sm font-bold dark:text-white light:text-slate-800"
+                        >
+                          CSK Super Fans
+                        </p>
+                        <p class="text-[10px] text-gray-400">98K Members</p>
+                      </div>
+                    </div>
+                    <div class="flex items-center space-x-1.5">
+                      <span
+                        class="w-2 h-2 bg-brand-green rounded-full animate-pulse"
+                      ></span>
+                      <span
+                        class="text-[10px] font-bold dark:text-brand-green light:text-emerald-600"
+                        >Live</span
+                      >
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="absolute inset-0 backdrop-blur-[2px] bg-white/10 dark:bg-black/10 flex items-center justify-center cursor-pointer z-10 rounded-3xl"
+                  onclick="window.open('https://play.google.com/store/apps','_blank')"
+                >
+                  <div class="flex flex-col items-center space-y-1">
+                    <span class="material-symbols-outlined text-3xl text-white drop-shadow-lg">lock</span>
+                    <span class="text-[10px] font-bold text-white drop-shadow-lg uppercase tracking-wider">Unlock with App</span>
+                  </div>
+                </div>
+              </div>
+              <!-- Quiz Challenge -->
+              <div
+                class="rounded-3xl p-5 md:p-6 border transition-all duration-300 dark:bg-brand-card dark:border-brand-border light:bg-white light:border-gray-200 light:shadow-soft relative overflow-hidden"
+              >
+                <div class="flex justify-between items-center mb-6">
+                  <h3
+                    class="font-bold text-lg font-headline dark:text-white light:text-slate-900"
+                  >
+                    Quiz Challenge
+                  </h3>
+                  <a
+                    class="dark:text-brand-green light:text-emerald-600 text-xs font-bold uppercase hover:underline"
+                    href="dashboard.html"
+                    >View All</a
+                  >
+                </div>
+                <div
+                  class="border rounded-2xl p-4 md:p-5 mb-4 dark:bg-indigo-900/20 dark:border-indigo-500/10 light:bg-indigo-50 light:border-indigo-100"
+                >
+                  <div class="flex items-center space-x-4 mb-4">
+                    <div
+                      class="w-10 h-10 md:w-12 md:h-12 bg-indigo-600 rounded-xl flex items-center justify-center text-xl shadow-lg text-white font-bold"
+                    >
+                      ?
+                    </div>
+                    <div class="flex-1">
+                      <div class="flex justify-between items-center">
+                        <p
+                          class="text-sm font-bold dark:text-white light:text-slate-800"
+                        >
+                          Daily Cricket Quiz
+                        </p>
+                        <p
+                          class="text-xs text-yellow-600 dark:text-yellow-500 font-bold flex items-center"
+                        >
+                          Win
+                          <span
+                            class="w-3 h-3 bg-yellow-500 rounded-full flex items-center justify-center text-[6px] text-black font-bold mx-1"
+                            >F</span
+                          >
+                          100
+                        </p>
+                      </div>
+                      <p class="text-[10px] text-gray-400 mt-0.5">
+                        Test your cricket knowledge
+                      </p>
+                    </div>
+                  </div>
+                  <div class="space-y-3">
+                    <div class="flex justify-between text-[10px] text-gray-400">
+                      <span>5 / 10 Questions</span>
+                      <span>50%</span>
+                    </div>
+                    <div
+                      class="w-full h-2 rounded-full overflow-hidden dark:bg-white/5 light:bg-indigo-200/30"
+                    >
+                      <div class="bg-brand-green h-full w-1/2"></div>
+                    </div>
+                    <button
+                      class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl text-sm transition-colors mt-2"
+                    >
+                      Play Now
+                    </button>
+                  </div>
+                </div>
+                <div
+                  class="absolute inset-0 backdrop-blur-[2px] bg-white/10 dark:bg-black/10 flex items-center justify-center cursor-pointer z-10 rounded-3xl"
+                  onclick="window.open('https://play.google.com/store/apps','_blank')"
+                >
+                  <div class="flex flex-col items-center space-y-1">
+                    <span class="material-symbols-outlined text-3xl text-white drop-shadow-lg">lock</span>
+                    <span class="text-[10px] font-bold text-white drop-shadow-lg uppercase tracking-wider">Unlock with App</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- BEGIN: Right Column (Sidebar Stats) -->
+          <div class="col-span-12 lg:col-span-4 space-y-6 md:space-y-8">
+            <!-- FanCoins & Streak -->
+            <div
+              onclick="window.location.href='fancoin.html'"
+              class="rounded-3xl p-6 md:p-7 border transition-all duration-300 dark:bg-brand-card dark:border-brand-border light:bg-white light:border-gray-200 light:shadow-soft cursor-pointer hover:opacity-90"
+            >
+              <div class="flex justify-between items-start mb-8">
+                <div>
+                  <div
+                    class="flex items-center space-x-2 text-yellow-600 dark:text-yellow-500 mb-2"
+                  >
+                    <div
+                      class="w-5 h-5 bg-yellow-500 rounded-full flex items-center justify-center text-[10px] text-black font-bold"
+                    >
+                      F
+                    </div>
+                    <span
+                      class="text-xs font-bold uppercase tracking-widest font-headline"
+                      >FanCoins</span
+                    >
+                  </div>
+                  <div class="flex items-center space-x-2">
+                    <h2
+                      class="text-3xl md:text-4xl font-black font-headline tracking-tight dark:text-white light:text-slate-900"
+                    >
+                      4,250
+                    </h2>
+                    <span class="text-gray-400 dark:text-gray-600 text-xl"
+                      >✦</span
+                    >
+                  </div>
+                  <p
+                    class="text-xs mt-1 font-medium dark:text-gray-400 light:text-slate-500"
+                  >
+                    Total Balance
+                  </p>
+                </div>
+                <div
+                  class="p-3 md:p-4 rounded-2xl border text-center relative transition-colors duration-300 dark:bg-[#1A1D23] dark:border-white/5 light:bg-gray-50 light:border-gray-200"
+                >
+                  <div
+                    class="relative w-10 h-10 md:w-12 md:h-12 flex items-center justify-center mx-auto mb-1"
+                  >
+                    <div
+                      class="absolute inset-0 border-4 rounded-xl rotate-45 dark:border-indigo-600 light:border-indigo-400"
+                    ></div>
+                    <span
+                      class="text-xl md:text-2xl font-black font-headline relative z-10 dark:text-white light:text-slate-900"
+                      >12</span
+                    >
+                  </div>
+                  <p
+                    class="text-[9px] uppercase font-bold text-gray-500 tracking-wider"
+                  >
+                    Day Streak
+                  </p>
+                </div>
+              </div>
+              <button
+                onclick="window.location.href='fancoin.html'"
+                class="w-full border py-3.5 rounded-2xl text-sm font-bold flex items-center justify-center space-x-2 transition-colors dark:bg-[#1A1D23] dark:border-indigo-500/30 dark:text-indigo-400 dark:hover:bg-indigo-500/10 light:bg-indigo-50 light:border-indigo-100 light:text-indigo-600 light:hover:bg-indigo-100/50"
+              >
+                <span class="font-headline tracking-wide uppercase text-[11px]"
+                  >View Wallet</span
+                >
+                <span class="material-symbols-outlined text-lg"
+                  >arrow_forward</span
+                >
+              </button>
+            </div>
+            <!-- Trending Predictions -->
+            <div
+              class="rounded-3xl p-6 md:p-7 border transition-all duration-300 dark:bg-brand-card dark:border-brand-border light:bg-white light:border-gray-200 light:shadow-soft"
+            >
+              <div class="flex justify-between items-center mb-6">
+                <h3
+                  class="font-bold font-headline text-lg dark:text-white light:text-slate-900"
+                >
+                  Trending Predictions
+                </h3>
+                <a
+                  class="dark:text-brand-green light:text-emerald-600 text-xs font-bold uppercase hover:underline"
+                  href="prediction.html"
+                  >View All</a
+                >
+              </div>
+              <div class="space-y-4">
+                <div
+                  class="flex items-center p-4 rounded-2xl cursor-pointer transition-all group border border-transparent dark:hover:bg-white/5 dark:hover:border-white/5 light:hover:bg-gray-50 light:hover:border-gray-100"
+                >
+                  <div
+                    class="w-10 h-10 md:w-11 md:h-11 rounded-2xl flex items-center justify-center mr-4 border dark:bg-yellow-500/10 dark:text-yellow-500 dark:border-yellow-500/20 light:bg-yellow-50 light:text-yellow-600 light:border-yellow-100"
+                  >
+                    <span class="material-symbols-outlined">emoji_events</span>
+                  </div>
+                  <div class="flex-1">
+                    <p
+                      class="text-xs font-bold leading-snug dark:text-white light:text-slate-800"
+                    >
+                      Who will win this match?
+                    </p>
+                    <div
+                      class="flex items-center space-x-4 mt-1.5 text-[10px] text-gray-400"
+                    >
+                      <span class="flex items-center"
+                        ><div
+                          class="w-3 h-3 bg-yellow-500 rounded-full flex items-center justify-center text-[6px] text-black font-bold mr-1.5"
+                        >
+                          F
+                        </div>
+                        2,450</span
+                      >
+                      <span class="flex items-center"
+                        ><span
+                          class="material-symbols-outlined text-[12px] mr-1"
+                          >groups</span
+                        >
+                        8.1K</span
+                      >
+                    </div>
+                  </div>
+                  <span
+                    class="material-symbols-outlined text-gray-600 group-hover:text-brand-green transition-colors"
+                    >chevron_right</span
+                  >
+                </div>
+                <div
+                  class="flex items-center p-4 rounded-2xl cursor-pointer transition-all group border border-transparent dark:hover:bg-white/5 dark:hover:border-white/5 light:hover:bg-gray-50 light:hover:border-gray-100"
+                >
+                  <div
+                    class="w-10 h-10 md:w-11 md:h-11 rounded-2xl flex items-center justify-center mr-4 border dark:bg-red-500/10 dark:text-red-500 dark:border-red-500/20 light:bg-red-50 light:text-red-600 light:border-red-100"
+                  >
+                    <span class="material-symbols-outlined">handshake</span>
+                  </div>
+                  <div class="flex-1">
+                    <p
+                      class="text-xs font-bold leading-snug dark:text-white light:text-slate-800"
+                    >
+                      Will there be a 100+ partnership?
+                    </p>
+                    <div
+                      class="flex items-center space-x-4 mt-1.5 text-[10px] text-gray-400"
+                    >
+                      <span class="flex items-center"
+                        ><div
+                          class="w-3 h-3 bg-yellow-500 rounded-full flex items-center justify-center text-[6px] text-black font-bold mr-1.5"
+                        >
+                          F
+                        </div>
+                        1,850</span
+                      >
+                      <span class="flex items-center"
+                        ><span
+                          class="material-symbols-outlined text-[12px] mr-1"
+                          >groups</span
+                        >
+                        5.6K</span
+                      >
+                    </div>
+                  </div>
+                  <span
+                    class="material-symbols-outlined text-gray-600 group-hover:text-brand-green transition-colors"
+                    >chevron_right</span
+                  >
+                </div>
+              </div>
+            </div>
+            <!-- Top Fans Leaderboard -->
+            <div
+              class="rounded-3xl p-6 md:p-7 border transition-all duration-300 dark:bg-brand-card dark:border-brand-border light:bg-white light:border-gray-200 light:shadow-soft"
+            >
+              <div class="flex justify-between items-center mb-7">
+                <h3
+                  class="font-bold font-headline text-lg dark:text-white light:text-slate-900"
+                >
+                  Top Fans
+                </h3>
+                <div
+                  class="flex items-center space-x-1 text-[11px] font-bold text-gray-500 cursor-pointer"
+                >
+                  <span>This Week</span>
+                  <span class="material-symbols-outlined text-sm"
+                    >expand_more</span
+                  >
+                </div>
+              </div>
+              <div class="space-y-5 mb-8">
+                <!-- Rank 1 -->
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center space-x-4">
+                    <span class="text-xs font-bold dark:text-brand-green text-emerald-600 w-6">1</span>
+                    <img class="w-10 h-10 rounded-full border-2 border-brand-green" src="https://i.pravatar.cc/150?u=11" alt="Fan">
+                    <div>
+                      <p class="text-sm font-bold dark:text-white text-slate-900">Vikram Malhotra</p>
+                      <p class="text-[10px] text-gray-500">Level 48 • Super Fan</p>
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <p class="text-xs font-bold dark:text-brand-green text-emerald-600">12,450</p>
+                    <p class="text-[9px] text-gray-500 uppercase">Earned</p>
+                  </div>
+                </div>
+                <!-- Rank 2 -->
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center space-x-4">
+                    <span class="text-xs font-bold text-gray-500 w-6">2</span>
+                    <img class="w-10 h-10 rounded-full border dark:border-brand-border border-gray-200" src="https://i.pravatar.cc/150?u=12" alt="Fan">
+                    <div>
+                      <p class="text-sm font-bold dark:text-white text-slate-900">Sneha Reddy</p>
+                      <p class="text-[10px] text-gray-500">Level 42 • Predictor</p>
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <p class="text-xs font-bold dark:text-white text-slate-900">10,200</p>
+                    <p class="text-[9px] text-gray-500 uppercase">Earned</p>
+                  </div>
+                </div>
+                <!-- Rank 3 -->
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center space-x-4">
+                    <span class="text-xs font-bold text-gray-500 w-6">3</span>
+                    <img class="w-10 h-10 rounded-full border dark:border-brand-border border-gray-200" src="https://i.pravatar.cc/150?u=13" alt="Fan">
+                    <div>
+                      <p class="text-sm font-bold dark:text-white text-slate-900">Arnav Mehra</p>
+                      <p class="text-[10px] text-gray-500">Level 35 • Rookie</p>
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <p class="text-xs font-bold dark:text-white text-slate-900">8,900</p>
+                    <p class="text-[9px] text-gray-500 uppercase">Earned</p>
+                  </div>
+                </div>
+              </div>
+          <button onclick="window.location.href='leaderboard.html'"
+  class="w-full border py-3 rounded-2xl text-[11px] font-bold uppercase tracking-widest dark:bg-[#1A1D23] dark:border-brand-border dark:text-gray-400 dark:hover:text-white bg-gray-50 border-gray-200 text-slate-600 hover:bg-gray-100 transition-all font-headline"
+>
+  Full Leaderboard
+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <script type="module" src="js/script.js"></script>
+    <script src="js/theme.js"></script>
+<script src="js/notif-ws.js"></script></body>
+</html>

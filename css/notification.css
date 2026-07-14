@@ -327,6 +327,13 @@ NOTIFICATION CARDS
   margin-top: 2px;
 }
 
+@media (max-width: 480px) {
+  .time {
+    white-space: normal;
+    word-break: break-word;
+  }
+}
+
 .reward {
   display: inline-flex;
   align-items: center;

@@ -79,3 +79,27 @@
   border: 0 !important;
   padding: 0 !important;
 }
+
+/* ==========================
+   GLOBAL RESPONSIVE
+   ========================== */
+@media (max-width: 768px) {
+  body { overflow-x: hidden; }
+  img { max-width: 100%; height: auto; }
+  table { display: block; overflow-x: auto; }
+  .hide-mobile { display: none !important; }
+  .show-mobile { display: block !important; }
+  [class*="flex"][class*="gap"] { gap: 12px; }
+  h1 { font-size: clamp(22px, 6vw, 32px) !important; }
+  h2 { font-size: clamp(18px, 5vw, 26px) !important; }
+  h3 { font-size: clamp(16px, 4vw, 22px) !important; }
+}
+
+@media (max-width: 480px) {
+  body { overflow-x: hidden; }
+  h1 { font-size: clamp(18px, 5vw, 26px) !important; }
+  h2 { font-size: clamp(16px, 4.5vw, 22px) !important; }
+  h3 { font-size: clamp(14px, 3.5vw, 18px) !important; }
+  .hide-xs { display: none !important; }
+  .show-xs { display: block !important; }
+}

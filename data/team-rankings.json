@@ -74,7 +74,7 @@
           "wins": 24,
           "losses": 13,
           "draws": 3,
-          "winPct": 60.0,
+          "winPct": 60,
           "rating": 104,
           "trend": "down",
           "trendVal": 2
@@ -200,7 +200,7 @@
           "wins": 3,
           "losses": 8,
           "draws": 1,
-          "winPct": 25.0,
+          "winPct": 25,
           "rating": 35,
           "trend": "down",
           "trendVal": 1
@@ -214,7 +214,7 @@
           "wins": 2,
           "losses": 7,
           "draws": 1,
-          "winPct": 20.0,
+          "winPct": 20,
           "rating": 28,
           "trend": "up",
           "trendVal": 1
@@ -286,7 +286,7 @@
           "wins": 63,
           "losses": 37,
           "draws": 5,
-          "winPct": 60.0,
+          "winPct": 60,
           "rating": 10250,
           "trend": "down",
           "trendVal": 2
@@ -638,7 +638,7 @@
           "wins": 18,
           "losses": 25,
           "draws": 2,
-          "winPct": 40.0,
+          "winPct": 40,
           "rating": 142,
           "trend": "up",
           "trendVal": 1
@@ -749,7 +749,7 @@
           "wins": 19,
           "losses": 11,
           "draws": 8,
-          "winPct": 50.0,
+          "winPct": 50,
           "rating": 67,
           "trend": "up",
           "trendVal": 1
@@ -1003,7 +1003,7 @@
           "wins": 19,
           "losses": 12,
           "draws": 7,
-          "winPct": 50.0,
+          "winPct": 50,
           "rating": 67,
           "trend": "down",
           "trendVal": 1
@@ -1229,7 +1229,7 @@
           "wins": 36,
           "losses": 5,
           "draws": 7,
-          "winPct": 75.0,
+          "winPct": 75,
           "rating": 1867,
           "trend": "up",
           "trendVal": 1
@@ -1285,7 +1285,7 @@
           "wins": 26,
           "losses": 9,
           "draws": 5,
-          "winPct": 65.0,
+          "winPct": 65,
           "rating": 1728,
           "trend": "up",
           "trendVal": 1
@@ -1341,7 +1341,7 @@
           "wins": 24,
           "losses": 11,
           "draws": 5,
-          "winPct": 60.0,
+          "winPct": 60,
           "rating": 1650,
           "trend": "down",
           "trendVal": 1
@@ -1425,7 +1425,7 @@
           "wins": 16,
           "losses": 11,
           "draws": 5,
-          "winPct": 50.0,
+          "winPct": 50,
           "rating": 1510,
           "trend": "neutral",
           "trendVal": 0
@@ -1439,7 +1439,7 @@
           "wins": 15,
           "losses": 10,
           "draws": 5,
-          "winPct": 50.0,
+          "winPct": 50,
           "rating": 1485,
           "trend": "up",
           "trendVal": 1
@@ -1817,7 +1817,7 @@
           "wins": 17,
           "losses": 17,
           "draws": 0,
-          "winPct": 50.0,
+          "winPct": 50,
           "rating": 98.5,
           "trend": "up",
           "trendVal": 1
@@ -1983,7 +1983,7 @@
           "wins": 52,
           "losses": 13,
           "draws": 0,
-          "winPct": 80.0,
+          "winPct": 80,
           "rating": 9860,
           "trend": "down",
           "trendVal": 1
@@ -2067,7 +2067,7 @@
           "wins": 32,
           "losses": 18,
           "draws": 0,
-          "winPct": 64.0,
+          "winPct": 64,
           "rating": 5650,
           "trend": "down",
           "trendVal": 1
@@ -2151,7 +2151,7 @@
           "wins": 31,
           "losses": 19,
           "draws": 0,
-          "winPct": 62.0,
+          "winPct": 62,
           "rating": 3860,
           "trend": "neutral",
           "trendVal": 0
@@ -2293,7 +2293,7 @@
           "wins": 35,
           "losses": 15,
           "draws": 0,
-          "winPct": 70.0,
+          "winPct": 70,
           "rating": 6520,
           "trend": "neutral",
           "trendVal": 0
@@ -2475,7 +2475,7 @@
           "wins": 24,
           "losses": 16,
           "draws": 0,
-          "winPct": 60.0,
+          "winPct": 60,
           "rating": 2360,
           "trend": "up",
           "trendVal": 1
@@ -2570,7 +2570,7 @@
           "wins": 30,
           "losses": 10,
           "draws": 0,
-          "winPct": 75.0,
+          "winPct": 75,
           "rating": 81200,
           "trend": "up",
           "trendVal": 2
@@ -2696,7 +2696,7 @@
           "wins": 18,
           "losses": 12,
           "draws": 0,
-          "winPct": 60.0,
+          "winPct": 60,
           "rating": 40500,
           "trend": "up",
           "trendVal": 1
@@ -2764,7 +2764,7 @@
           "wins": 18,
           "losses": 4,
           "draws": 2,
-          "winPct": 75.0,
+          "winPct": 75,
           "rating": 3620,
           "trend": "neutral",
           "trendVal": 0
@@ -2834,7 +2834,7 @@
           "wins": 12,
           "losses": 9,
           "draws": 3,
-          "winPct": 50.0,
+          "winPct": 50,
           "rating": 2850,
           "trend": "down",
           "trendVal": 1
@@ -2918,7 +2918,7 @@
           "wins": 6,
           "losses": 15,
           "draws": 3,
-          "winPct": 25.0,
+          "winPct": 25,
           "rating": 2050,
           "trend": "down",
           "trendVal": 1
@@ -2976,7 +2976,7 @@
           "wins": 6,
           "losses": 2,
           "draws": 0,
-          "winPct": 75.0,
+          "winPct": 75,
           "rating": 1320,
           "trend": "down",
           "trendVal": 1
@@ -3004,7 +3004,7 @@
           "wins": 4,
           "losses": 4,
           "draws": 0,
-          "winPct": 50.0,
+          "winPct": 50,
           "rating": 1050,
           "trend": "up",
           "trendVal": 1
@@ -3018,7 +3018,7 @@
           "wins": 4,
           "losses": 4,
           "draws": 0,
-          "winPct": 50.0,
+          "winPct": 50,
           "rating": 1020,
           "trend": "down",
           "trendVal": 1
@@ -3074,7 +3074,7 @@
           "wins": 2,
           "losses": 6,
           "draws": 0,
-          "winPct": 25.0,
+          "winPct": 25,
           "rating": 875,
           "trend": "neutral",
           "trendVal": 0
@@ -3088,7 +3088,7 @@
           "wins": 2,
           "losses": 6,
           "draws": 0,
-          "winPct": 25.0,
+          "winPct": 25,
           "rating": 840,
           "trend": "up",
           "trendVal": 1
@@ -3102,7 +3102,7 @@
           "wins": 2,
           "losses": 6,
           "draws": 0,
-          "winPct": 25.0,
+          "winPct": 25,
           "rating": 805,
           "trend": "down",
           "trendVal": 1
@@ -3158,7 +3158,7 @@
           "wins": 0,
           "losses": 8,
           "draws": 0,
-          "winPct": 0.0,
+          "winPct": 0,
           "rating": 665,
           "trend": "neutral",
           "trendVal": 0
@@ -3197,7 +3197,7 @@
           "wins": 24,
           "losses": 6,
           "draws": 0,
-          "winPct": 80.0,
+          "winPct": 80,
           "rating": 368,
           "trend": "neutral",
           "trendVal": 0
@@ -3225,7 +3225,7 @@
           "wins": 21,
           "losses": 9,
           "draws": 0,
-          "winPct": 70.0,
+          "winPct": 70,
           "rating": 340,
           "trend": "up",
           "trendVal": 2
@@ -3253,7 +3253,7 @@
           "wins": 18,
           "losses": 12,
           "draws": 0,
-          "winPct": 60.0,
+          "winPct": 60,
           "rating": 312,
           "trend": "up",
           "trendVal": 1
@@ -3267,7 +3267,7 @@
           "wins": 15,
           "losses": 15,
           "draws": 0,
-          "winPct": 50.0,
+          "winPct": 50,
           "rating": 295,
           "trend": "down",
           "trendVal": 1
@@ -3281,7 +3281,7 @@
           "wins": 12,
           "losses": 18,
           "draws": 0,
-          "winPct": 40.0,
+          "winPct": 40,
           "rating": 275,
           "trend": "neutral",
           "trendVal": 0
@@ -3323,7 +3323,7 @@
           "wins": 12,
           "losses": 18,
           "draws": 0,
-          "winPct": 40.0,
+          "winPct": 40,
           "rating": 255,
           "trend": "neutral",
           "trendVal": 0
@@ -3379,7 +3379,7 @@
           "wins": 6,
           "losses": 24,
           "draws": 0,
-          "winPct": 20.0,
+          "winPct": 20,
           "rating": 200,
           "trend": "up",
           "trendVal": 1
@@ -3404,7 +3404,7 @@
           "wins": 18,
           "losses": 5,
           "draws": 1,
-          "winPct": 75.0,
+          "winPct": 75,
           "rating": 128,
           "trend": "up",
           "trendVal": 1
@@ -3474,7 +3474,7 @@
           "wins": 12,
           "losses": 10,
           "draws": 2,
-          "winPct": 50.0,
+          "winPct": 50,
           "rating": 102,
           "trend": "up",
           "trendVal": 1
@@ -3586,7 +3586,7 @@
           "wins": 6,
           "losses": 16,
           "draws": 2,
-          "winPct": 25.0,
+          "winPct": 25,
           "rating": 65,
           "trend": "neutral",
           "trendVal": 0
@@ -3639,7 +3639,7 @@
           "wins": 12,
           "losses": 3,
           "draws": 0,
-          "winPct": 80.0,
+          "winPct": 80,
           "rating": 89.8,
           "trend": "neutral",
           "trendVal": 0
@@ -3681,7 +3681,7 @@
           "wins": 6,
           "losses": 9,
           "draws": 0,
-          "winPct": 40.0,
+          "winPct": 40,
           "rating": 72.4,
           "trend": "neutral",
           "trendVal": 0
@@ -3695,7 +3695,7 @@
           "wins": 3,
           "losses": 12,
           "draws": 0,
-          "winPct": 20.0,
+          "winPct": 20,
           "rating": 62.8,
           "trend": "down",
           "trendVal": 1
@@ -3723,7 +3723,7 @@
           "wins": 12,
           "losses": 3,
           "draws": 0,
-          "winPct": 80.0,
+          "winPct": 80,
           "rating": 88.5,
           "trend": "neutral",
           "trendVal": 0
@@ -3737,8 +3737,8 @@
           "wins": 9,
           "losses": 6,
           "draws": 0,
-          "winPct": 60.0,
-          "rating": 82.0,
+          "winPct": 60,
+          "rating": 82,
           "trend": "down",
           "trendVal": 1
         },
@@ -3765,7 +3765,7 @@
           "wins": 6,
           "losses": 9,
           "draws": 0,
-          "winPct": 40.0,
+          "winPct": 40,
           "rating": 71.8,
           "trend": "neutral",
           "trendVal": 0
@@ -3807,7 +3807,7 @@
           "wins": 3,
           "losses": 12,
           "draws": 0,
-          "winPct": 20.0,
+          "winPct": 20,
           "rating": 60.5,
           "trend": "neutral",
           "trendVal": 0
@@ -3861,7 +3861,7 @@
           "wins": 30,
           "losses": 10,
           "draws": 0,
-          "winPct": 75.0,
+          "winPct": 75,
           "rating": 1790,
           "trend": "neutral",
           "trendVal": 0
@@ -3959,7 +3959,7 @@
           "wins": 18,
           "losses": 12,
           "draws": 0,
-          "winPct": 60.0,
+          "winPct": 60,
           "rating": 1360,
           "trend": "up",
           "trendVal": 2
@@ -4015,7 +4015,7 @@
           "wins": 14,
           "losses": 14,
           "draws": 0,
-          "winPct": 50.0,
+          "winPct": 50,
           "rating": 1150,
           "trend": "down",
           "trendVal": 1
@@ -4029,7 +4029,7 @@
           "wins": 13,
           "losses": 13,
           "draws": 0,
-          "winPct": 50.0,
+          "winPct": 50,
           "rating": 1100,
           "trend": "neutral",
           "trendVal": 0
@@ -4101,7 +4101,7 @@
           "wins": 34,
           "losses": 16,
           "draws": 0,
-          "winPct": 68.0,
+          "winPct": 68,
           "rating": 1700,
           "trend": "down",
           "trendVal": 1
@@ -4199,7 +4199,7 @@
           "wins": 22,
           "losses": 18,
           "draws": 0,
-          "winPct": 55.0,
+          "winPct": 55,
           "rating": 1300,
           "trend": "neutral",
           "trendVal": 0
@@ -4241,7 +4241,7 @@
           "wins": 18,
           "losses": 18,
           "draws": 0,
-          "winPct": 50.0,
+          "winPct": 50,
           "rating": 1150,
           "trend": "neutral",
           "trendVal": 0
@@ -4420,7 +4420,7 @@
           "wins": 81,
           "losses": 81,
           "draws": 0,
-          "winPct": 50.0,
+          "winPct": 50,
           "rating": 0.5,
           "trend": "neutral",
           "trendVal": 0

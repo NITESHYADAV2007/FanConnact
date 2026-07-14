@@ -182,7 +182,7 @@
         <nav class="hidden xl:flex items-center space-x-6 mx-6 shrink-0">
           <a
             class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link"
-            href="index.html"
+            href="dashboard.html"
             >Home</a
           >
           <a
@@ -192,12 +192,12 @@
           >
           <a
             class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link"
-            href="index.html"
+            href="prediction.html"
             >Predictions</a
           >
           <a
             class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link"
-            href="index.html"
+            href="leaderboard.html"
             >Leaderboard</a
           >
           <a
@@ -276,10 +276,10 @@
 
     <!-- Mobile Sub-Nav -->
     <nav class="xl:hidden flex overflow-x-auto gap-1 sm:gap-2 px-2 py-1.5 sm:px-4 sm:py-2.5 bg-white dark:bg-black border-b border-gray-200 dark:border-border-subtle scrollbar-none whitespace-nowrap" style="-webkit-overflow-scrolling:touch;scrollbar-width:none;">
-      <a href="index.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Home</a>
+      <a href="dashboard.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Home</a>
       <a href="livematches.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Matches</a>
-      <a href="index.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Predictions</a>
-      <a href="index.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Leaderboard</a>
+      <a href="prediction.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Predictions</a>
+      <a href="leaderboard.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Leaderboard</a>
       <a href="news&update.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">News</a>
     </nav>
 
@@ -300,7 +300,7 @@
         <!-- Logo Container for collapsed state -->
         <div
           class="p-6 flex items-center space-x-2 logo-container cursor-pointer"
-          onclick="window.location.href = 'index.html'"
+          onclick="window.location.href = 'dashboard.html'"
         >
           <img src="assets/fancoin/fanconnactlogo.png" alt="Fanconnact" class="w-8 h-8 flex-shrink-0" />
           <span
@@ -481,66 +481,30 @@
               <div class="mb-8">
                 <h2 class="text-4xl font-bold mb-2">Tennis Matches</h2>
                 <p class="text-gray-400 text-sm">
-                  Follow the ATP Tour, WTA, Grand Slams, and major international
-                  tennis tournaments!
+                  Follow the ATP Hamburg and WTA Budapest tournaments!
                 </p>
               </div>
-              <!-- Sport Filter Buttons -->
-              <div class="flex flex-wrap gap-3 mb-8" data-purpose="sport-filters">
-                <button
-                  class="flex items-center space-x-2 bg-gray-800/40 text-white px-5 py-2.5 rounded-lg font-medium text-sm border border-gray-700"
-                >
-                  <span class="">🏆</span><span class="">All Sports</span></button
-                ><button
-                  class="flex items-center space-x-2 bg-accent-green text-brand-dark px-5 py-2.5 rounded-lg font-bold text-sm"
-                >
-                  <span class="">🎾</span><span class="">Tennis</span></button
-                ><button
-                  class="flex items-center space-x-2 bg-gray-800/40 text-white px-5 py-2.5 rounded-lg font-medium text-sm border border-gray-700"
-                >
-                  <span class="">🏏</span><span class="">Cricket</span></button
-                ><button
-                  class="flex items-center space-x-2 bg-gray-800/40 text-white px-5 py-2.5 rounded-lg font-medium text-sm border border-gray-700"
-                >
-                  <span class="">⚽</span><span class="">Football</span></button
-                ><button
-                  class="flex items-center space-x-2 bg-gray-800/40 text-white px-5 py-2.5 rounded-lg font-medium text-sm border border-gray-700"
-                >
-                  <span class="">🏀</span><span class="">Basketball</span></button
-                ><button
-                  class="w-10 h-10 flex items-center justify-center bg-gray-800/40 rounded-lg border border-gray-700"
-                >
-                  <svg class="w-4 h-4" fill="currentColor" viewbox="0 0 20 20">
-                    <path
-                      d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"
-                    ></path>
-                  </svg>
-                </button>
-              </div>
+
               <!-- Category Filter Tabs -->
               <div
                 class="flex items-center space-x-8 border-b border-gray-800 mb-8 overflow-x-auto pb-1 whitespace-nowrap"
-                data-purpose="league-tabs"
+                data-purpose="tournament-filters"
               >
                 <a
                   class="text-accent-green font-bold text-sm pb-4 border-b-2 border-accent-green"
-                  href="index.html"
+                  href="dashboard.html"
                   >All</a
                 ><a
                   class="text-gray-400 hover:text-white font-medium text-sm pb-4"
-                  href="index.html"
-                  >Wimbledon</a
+                  href="dashboard.html"
+                  >ATP Hamburg 2026</a
                 ><a
                   class="text-gray-400 hover:text-white font-medium text-sm pb-4"
-                  href="index.html"
-                  >US Open</a
-                ><a
-                  class="text-gray-400 hover:text-white font-medium text-sm pb-4"
-                  href="index.html"
-                  >ATP Finals</a
-                >
-              </div>
-              <!-- Action Bar -->
+                  href="dashboard.html"
+                 >WTA Budapest 2026</a
+                 ><button id="statsTab" class="text-gray-400 hover:text-emerald-accent font-medium text-sm pb-4 cursor-pointer" onclick="document.getElementById('statsSection').classList.toggle('hidden');document.getElementById('statsTab').classList.toggle('text-emerald-accent');document.getElementById('statsTab').classList.toggle('border-emerald-accent');document.getElementById('statsTab').style.borderBottom=document.getElementById('statsTab').classList.contains('text-emerald-accent')?'2px solid #10b981':'none'">Stats</button>
+               </div>
+               <!-- Action Bar -->
               <div
                 class="flex flex-col md:flex-row justify-between gap-4 mb-6"
                 data-purpose="status-filters"
@@ -614,101 +578,321 @@
                   </button>
                 </div>
               </div>
+            <!-- BEGIN: StatsSection -->
+            <div id="statsSection" class="hidden">
+              <div class="bg-card-bg rounded-2xl border border-border-subtle mb-8">
+                <div class="flex items-center justify-between px-6 py-4 border-b border-border-subtle">
+                  <h3 class="font-bold text-sm">Tennis Stats & Rankings</h3>
+                  <span class="text-[10px] text-gray-500">Auto-updated from ATP</span>
+                </div>
+                <div id="sportStatsContainer"></div>
+              </div>
+            </div>
+            <!-- END: StatsSection -->
             <!-- Matches Grid/List -->
             <div class="space-y-6" data-purpose="matches-list">
-              <div
-                class="bg-brand-surface rounded-2xl p-4 md:p-5 border border-gray-800/50 hover:border-gray-700 transition relative overflow-hidden group"
-              >
-                <div class="flex justify-between items-start mb-8">
-                  <div class="flex items-center space-x-3">
-                    <span
-                      class="bg-red-500/20 text-red-500 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-tighter flex items-center"
-                      ><span class="w-1 h-1 bg-red-500 rounded-full mr-1"></span>
-                      LIVE</span
-                    >
-                    <p class="text-xs text-gray-400">
-                      Wimbledon • Men's Singles • Centre Court
+               <div
+                 class="bg-brand-surface rounded-2xl p-4 md:p-5 border border-gray-800/50 hover:border-gray-700 transition relative overflow-hidden group"
+                 data-tournament="ATP Hamburg 2026"
+                 data-status="live"
+               >
+                 <div class="flex justify-between items-start mb-8">
+                   <div class="flex items-center space-x-3">
+                     <span
+                       class="bg-red-500/20 text-red-500 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-tighter flex items-center"
+                       ><span class="w-1 h-1 bg-red-500 rounded-full mr-1"></span>
+                       LIVE</span
+                     >
+                     <p class="text-xs text-gray-400">
+                       ATP Hamburg 2026 • Men's Singles • Rothenbaum
+                     </p>
+                   </div>
+                   <button class="text-gray-500 hover:text-white">
+                     <svg
+                       class="w-5 h-5"
+                       fill="none"
+                       stroke="currentColor"
+                       viewbox="0 0 24 24"
+                     >
+                       <path
+                         d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                       ></path>
+                     </svg>
+                   </button>
+                 </div>
+                 <div class="flex items-center justify-center space-x-12 mb-8">
+                   <div class="text-center w-40">
+                     <div
+                       class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden"
+                     >
+                       <img
+                         alt="Djokovic"
+                         class="w-14 h-14 object-contain"
+                         src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-Novak-Djokovic-Placeholder"
+                       />
+                     </div>
+                     <p class="text-sm font-bold mb-1">N. Djokovic</p>
+                     <div class="flex justify-center space-x-1">
+                       <span class="text-4xl font-black text-white">2</span>
+                     </div>
+                   </div>
+                   <div class="text-center">
+                     <div class="text-gray-500 font-bold text-xl mb-1">Set 3</div>
+                     <div class="text-accent-green font-bold text-[10px] uppercase">
+                       40 - 15
+                     </div>
+                   </div>
+                   <div class="text-center w-40">
+                     <div
+                       class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden"
+                     >
+                       <img
+                         alt="Alcaraz"
+                         class="w-14 h-14 object-contain"
+                         src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-Carlos-Alcaraz-Placeholder"
+                       />
+                     </div>
+                     <p class="text-sm font-bold mb-1">C. Alcaraz</p>
+                     <div class="flex justify-center space-x-1">
+                       <span class="text-4xl font-black text-white">0</span>
+                     </div>
+                   </div>
+                 </div>
+                 <div
+                   class="flex justify-between items-center pt-6 border-t border-gray-800"
+                 >
+                    <p class="text-xs text-gray-500 font-medium">
+                      4.2M Fans Watching
                     </p>
-                  </div>
-                  <button class="text-gray-500 hover:text-white">
-                    <svg
-                      class="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewbox="0 0 24 24"
-                    >
-                      <path
-                        d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-                      ></path>
-                    </svg>
-                  </button>
-                </div>
-                <div class="flex items-center justify-center space-x-12 mb-8">
-                  <div class="text-center w-40">
-                    <div
-                      class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden"
-                    >
-                      <img
-                        alt="Djokovic"
-                        class="w-14 h-14 object-contain"
-                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-Novak-Djokovic-Placeholder"
-                      />
-                    </div>
-                    <p class="text-sm font-bold mb-1">N. Djokovic</p>
-                    <div class="flex justify-center space-x-1">
-                      <span class="text-4xl font-black text-white">2</span>
-                    </div>
-                  </div>
-                  <div class="text-center">
-                    <div class="text-gray-500 font-bold text-xl mb-1">Set 3</div>
-                    <div class="text-accent-green font-bold text-[10px] uppercase">
-                      40 - 15
-                    </div>
-                  </div>
-                  <div class="text-center w-40">
-                    <div
-                      class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden"
-                    >
-                      <img
-                        alt="Alcaraz"
-                        class="w-14 h-14 object-contain"
-                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-Carlos-Alcaraz-Placeholder"
-                      />
-                    </div>
-                    <p class="text-sm font-bold mb-1">C. Alcaraz</p>
-                    <div class="flex justify-center space-x-1">
-                      <span class="text-4xl font-black text-white">0</span>
+                    <div class="flex space-x-3">
+                      <button
+                        onclick="window.location.href='match-center.html?sport=tennis&home=Djokovic&away=Alcaraz'"
+                        class="px-5 py-2 rounded-lg border border-accent-green text-accent-green text-xs font-bold"
+                      >
+                        Match Stats</button
+                      ><button
+                        onclick="window.location.href='match-center.html?sport=tennis&home=Djokovic&away=Alcaraz'"
+                        class="px-5 py-2 rounded-lg bg-gray-800 text-white text-xs font-bold"
+                      >
+                        Point-by-Point
+                      </button>
                     </div>
                   </div>
                 </div>
-                <div
-                  class="flex justify-between items-center pt-6 border-t border-gray-800"
-                >
-                  <p class="text-xs text-gray-500 font-medium">
-                    4.2M Fans Watching
-                  </p>
-                  <div class="flex space-x-3">
-                    <button
-                      class="px-5 py-2 rounded-lg border border-accent-green text-accent-green text-xs font-bold"
-                    >
-                      Match Stats</button
-                    ><button
-                      class="px-5 py-2 rounded-lg bg-gray-800 text-white text-xs font-bold"
-                    >
-                      Point-by-Point
-                    </button>
+                <!-- Match Card 2: WTA Budapest 2026 - Live -->
+               <div
+                 class="bg-brand-surface rounded-2xl p-4 md:p-5 border border-gray-800/50 hover:border-gray-700 transition relative overflow-hidden group"
+                 data-tournament="WTA Budapest 2026"
+                 data-status="live"
+               >
+                 <div class="flex justify-between items-start mb-8">
+                   <div class="flex items-center space-x-3">
+                     <span class="bg-red-500/20 text-red-500 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-tighter flex items-center"><span class="w-1 h-1 bg-red-500 rounded-full mr-1"></span> LIVE</span>
+                     <p class="text-xs text-gray-400">WTA Budapest 2026 • Women's Singles • Centre Court</p>
+                   </div>
+                   <button class="text-gray-500 hover:text-white">
+                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+                   </button>
+                 </div>
+                 <div class="flex items-center justify-center space-x-12 mb-8">
+                   <div class="text-center w-40">
+                     <p class="text-sm font-bold mb-1">I. Swiatek</p>
+                     <div class="flex justify-center space-x-1"><span class="text-3xl font-black text-white">6-4, 3-2</span></div>
+                   </div>
+                   <div class="text-center">
+                     <div class="text-gray-500 font-bold text-lg mb-1">Set 2 • On Serve</div>
+                     <div class="text-accent-green font-bold text-[10px] uppercase">15 - 30</div>
+                   </div>
+                   <div class="text-center w-40">
+                     <p class="text-sm font-bold mb-1">E. Rybakina</p>
+                     <div class="flex justify-center space-x-1"><span class="text-3xl font-black text-white">4-6, 2-3</span></div>
+                   </div>
+                 </div>
+                 <div class="flex justify-between items-center pt-6 border-t border-gray-800">
+                    <p class="text-xs text-gray-500 font-medium">3.8M Fans Watching</p>
+                    <div class="flex space-x-3">
+                      <button onclick="window.location.href='match-center.html?sport=tennis&home=Swiatek&away=Rybakina'" class="px-5 py-2 rounded-lg border border-accent-green text-accent-green text-xs font-bold">Match Stats</button>
+                      <button onclick="window.location.href='match-center.html?sport=tennis&home=Swiatek&away=Rybakina'" class="px-5 py-2 rounded-lg bg-gray-800 text-white text-xs font-bold">Point-by-Point</button>
+                    </div>
+                  </div>
+                </div>
+                <!-- Match Card 3: ATP Hamburg 2026 - Upcoming -->
+               <div
+                 class="bg-brand-surface rounded-2xl p-4 md:p-5 border border-gray-800/50 hover:border-gray-700 transition relative overflow-hidden group"
+                 data-tournament="ATP Hamburg 2026"
+                 data-status="upcoming"
+               >
+                 <div class="flex justify-between items-start mb-8">
+                   <div class="flex items-center space-x-3">
+                     <span class="bg-yellow-500/20 text-yellow-500 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-tighter">Upcoming</span>
+                     <p class="text-xs text-gray-400">ATP Hamburg 2026 • Men's Singles • Rothenbaum</p>
+                   </div>
+                   <button class="text-gray-500 hover:text-white">
+                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+                   </button>
+                 </div>
+                 <div class="flex items-center justify-center space-x-12 mb-8">
+                    <div class="text-center w-40">
+                      <p class="text-sm font-bold mb-1">N. Djokovic</p>
+                      <div class="flex justify-center space-x-1"><span class="text-4xl font-black text-white">-</span></div>
+                    </div>
+                    <div class="text-center">
+                      <div class="text-gray-500 font-bold text-xl mb-1">25 Jul, 2026</div>
+                      <div class="text-accent-green font-bold text-[10px] uppercase">4:00 PM</div>
+                    </div>
+                    <div class="text-center w-40">
+                      <p class="text-sm font-bold mb-1">R. Nadal</p>
+                      <div class="flex justify-center space-x-1"><span class="text-4xl font-black text-white">-</span></div>
+                    </div>
+                  </div>
+                  <div class="flex justify-between items-center pt-6 border-t border-gray-800">
+                    <button onclick="window.location.href='match-center.html?sport=tennis&home=Djokovic&away=Nadal'" class="px-5 py-2 rounded-lg border border-gray-700 text-gray-300 text-xs font-bold">Set Reminder</button>
+                    <button onclick="window.location.href='match-center.html?sport=tennis&home=Djokovic&away=Nadal'" class="text-gray-400 text-xs font-bold flex items-center space-x-1">View Details<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></button>
+                  </div>
+                </div>
+                <!-- Match Card 4: WTA Budapest 2026 - Upcoming -->
+               <div
+                 class="bg-brand-surface rounded-2xl p-4 md:p-5 border border-gray-800/50 hover:border-gray-700 transition relative overflow-hidden group"
+                 data-tournament="WTA Budapest 2026"
+                 data-status="upcoming"
+               >
+                 <div class="flex justify-between items-start mb-8">
+                   <div class="flex items-center space-x-3">
+                     <span class="bg-yellow-500/20 text-yellow-500 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-tighter">Upcoming</span>
+                     <p class="text-xs text-gray-400">WTA Budapest 2026 • Women's Singles • Centre Court</p>
+                   </div>
+                   <button class="text-gray-500 hover:text-white">
+                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+                   </button>
+                 </div>
+                 <div class="flex items-center justify-center space-x-12 mb-8">
+                    <div class="text-center w-40">
+                      <p class="text-sm font-bold mb-1">C. Alcaraz</p>
+                      <div class="flex justify-center space-x-1"><span class="text-4xl font-black text-white">-</span></div>
+                    </div>
+                    <div class="text-center">
+                      <div class="text-gray-500 font-bold text-xl mb-1">26 Jul, 2026</div>
+                      <div class="text-accent-green font-bold text-[10px] uppercase">7:30 PM</div>
+                    </div>
+                    <div class="text-center w-40">
+                      <p class="text-sm font-bold mb-1">J. Sinner</p>
+                      <div class="flex justify-center space-x-1"><span class="text-4xl font-black text-white">-</span></div>
+                    </div>
+                  </div>
+                  <div class="flex justify-between items-center pt-6 border-t border-gray-800">
+                    <button onclick="window.location.href='match-center.html?sport=tennis&home=Alcaraz&away=Sinner'" class="px-5 py-2 rounded-lg border border-gray-700 text-gray-300 text-xs font-bold">Set Reminder</button>
+                    <button onclick="window.location.href='match-center.html?sport=tennis&home=Alcaraz&away=Sinner'" class="text-gray-400 text-xs font-bold flex items-center space-x-1">View Details<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></button>
+                  </div>
+                </div>
+                <!-- Match Card 5: WTA Budapest 2026 - Finished -->
+               <div
+                 class="bg-brand-surface rounded-2xl p-4 md:p-5 border border-gray-800/50 hover:border-gray-700 transition relative overflow-hidden group"
+                 data-tournament="WTA Budapest 2026"
+                 data-status="finished"
+               >
+                 <div class="flex justify-between items-start mb-8">
+                   <div class="flex items-center space-x-3">
+                     <span class="bg-gray-600/20 text-gray-400 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-tighter">Finished</span>
+                     <p class="text-xs text-gray-400">WTA Budapest 2026 • Women's Singles • Centre Court</p>
+                   </div>
+                   <button class="text-gray-500 hover:text-white">
+                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+                   </button>
+                 </div>
+                 <div class="flex items-center justify-center space-x-12 mb-8">
+                   <div class="text-center w-40">
+                     <p class="text-sm font-bold mb-1">I. Swiatek</p>
+                     <div class="flex justify-center space-x-1"><span class="text-3xl font-black text-white">6-4, 6-3</span></div>
+                   </div>
+                   <div class="text-center">
+                     <div class="text-accent-green font-bold text-[10px] uppercase">Swiatek won in straight sets</div>
+                   </div>
+                   <div class="text-center w-40">
+                     <p class="text-sm font-bold mb-1">A. Sabalenka</p>
+                     <div class="flex justify-center space-x-1"><span class="text-3xl font-black text-white">4-6, 3-6</span></div>
+                   </div>
+                 </div>
+                  <div class="flex justify-between items-center pt-6 border-t border-gray-800">
+                    <p class="text-xs text-gray-500 font-medium">3.2M Fans Watched</p>
+                    <button onclick="window.location.href='match-center.html?sport=tennis&home=Swiatek&away=Sabalenka'" class="px-5 py-2 rounded-lg border border-accent-green text-accent-green text-xs font-bold">Match Stats</button>
+                  </div>
+                </div>
+                <!-- Match Card 6: ATP Hamburg 2026 - Finished -->
+               <div
+                 class="bg-brand-surface rounded-2xl p-4 md:p-5 border border-gray-800/50 hover:border-gray-700 transition relative overflow-hidden group"
+                 data-tournament="ATP Hamburg 2026"
+                 data-status="finished"
+               >
+                 <div class="flex justify-between items-start mb-8">
+                   <div class="flex items-center space-x-3">
+                     <span class="bg-gray-600/20 text-gray-400 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-tighter">Finished</span>
+                     <p class="text-xs text-gray-400">ATP Hamburg 2026 • Men's Singles • Rothenbaum</p>
+                   </div>
+                   <button class="text-gray-500 hover:text-white">
+                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+                   </button>
+                 </div>
+                 <div class="flex items-center justify-center space-x-12 mb-8">
+                   <div class="text-center w-40">
+                     <p class="text-sm font-bold mb-1">D. Medvedev</p>
+                     <div class="flex justify-center space-x-1"><span class="text-3xl font-black text-white">6-3, 6-4</span></div>
+                   </div>
+                   <div class="text-center">
+                     <div class="text-accent-green font-bold text-[10px] uppercase">Medvedev won in straight sets</div>
+                   </div>
+                   <div class="text-center w-40">
+                     <p class="text-sm font-bold mb-1">A. Rublev</p>
+                     <div class="flex justify-center space-x-1"><span class="text-3xl font-black text-white">3-6, 4-6</span></div>
+                   </div>
+                 </div>
+                  <div class="flex justify-between items-center pt-6 border-t border-gray-800">
+                    <p class="text-xs text-gray-500 font-medium">2.1M Fans Watched</p>
+                    <button onclick="window.location.href='match-center.html?sport=tennis&home=Medvedev&away=Rublev'" class="px-5 py-2 rounded-lg border border-accent-green text-accent-green text-xs font-bold">Match Stats</button>
+                  </div>
+                </div>
+                <!-- Match Card 7: ATP Hamburg 2026 - Finished -->
+               <div
+                 class="bg-brand-surface rounded-2xl p-4 md:p-5 border border-gray-800/50 hover:border-gray-700 transition relative overflow-hidden group"
+                 data-tournament="ATP Hamburg 2026"
+                 data-status="finished"
+               >
+                 <div class="flex justify-between items-start mb-8">
+                   <div class="flex items-center space-x-3">
+                     <span class="bg-gray-600/20 text-gray-400 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-tighter">Finished</span>
+                     <p class="text-xs text-gray-400">ATP Hamburg 2026 • Men's Singles • Rothenbaum</p>
+                   </div>
+                   <button class="text-gray-500 hover:text-white">
+                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+                   </button>
+                 </div>
+                 <div class="flex items-center justify-center space-x-12 mb-8">
+                   <div class="text-center w-40">
+                     <p class="text-sm font-bold mb-1">C. Alcaraz</p>
+                     <div class="flex justify-center space-x-1"><span class="text-3xl font-black text-white">6-7, 6-4, 6-2</span></div>
+                   </div>
+                   <div class="text-center">
+                     <div class="text-accent-green font-bold text-[10px] uppercase">Alcaraz won in 3 sets</div>
+                   </div>
+                   <div class="text-center w-40">
+                     <p class="text-sm font-bold mb-1">J. Sinner</p>
+                     <div class="flex justify-center space-x-1"><span class="text-3xl font-black text-white">7-6, 4-6, 2-6</span></div>
+                   </div>
+                 </div>
+                  <div class="flex justify-between items-center pt-6 border-t border-gray-800">
+                    <p class="text-xs text-gray-500 font-medium">2.8M Fans Watched</p>
+                    <button onclick="window.location.href='match-center.html?sport=tennis&home=Alcaraz&away=Sinner'" class="px-5 py-2 rounded-lg border border-accent-green text-accent-green text-xs font-bold">Match Stats</button>
                   </div>
                 </div>
               </div>
-            </div>
-            </div>
-          <!-- Right Sidebar: Calendar & Top Players -->
+              </div>
+              </div>
+            <!-- Right Sidebar: Calendar & Top Players -->
           <div class="lg:col-span-3 space-y-8">
             <!-- BEGIN: CalendarWidget -->
             <div class="bg-card-bg rounded-2xl p-6 border border-border-subtle">
               <div class="flex items-center justify-between mb-6">
                 <h3 class="font-bold">Calendar</h3>
-                <a class="text-emerald-accent text-xs font-semibold hover:underline" href="index.html">View Full Calendar</a>
+                <a class="text-emerald-accent text-xs font-semibold hover:underline" href="calendar.html?game=tennis">View Full Calendar</a>
               </div>
               <div class="grid grid-cols-7 gap-2 text-center">
                 <div class="space-y-2">
@@ -756,7 +940,7 @@
                   <div class="flex items-center space-x-3">
                     <img class="w-8 h-8 rounded object-contain dark:bg-gray-800 light:bg-gray-100 p-1" src="https://upload.wikimedia.org/wikipedia/en/thumb/e/eb/Manchester_City_FC_badge.svg/512px-Manchester_City_FC_badge.svg.png" />
                     <div>
-                      <p class="text-[10px] text-gray-500 font-bold leading-none mb-1">US Open • Quarter Final</p>
+                      <p class="text-[10px] text-gray-500 font-bold leading-none mb-1">ATP Hamburg • Quarter Final</p>
                       <p class="text-xs font-bold dark:text-white light:text-slate-800">SIN vs MED</p>
                     </div>
                   </div>
@@ -800,7 +984,7 @@
                     </button>
                   </div>
                 </div>
-                <a class="text-emerald-accent text-xs font-semibold hover:underline" href="index.html">View All</a>
+                <a class="text-emerald-accent text-xs font-semibold hover:underline" href="top-players.html?game=tennis">View All</a>
               </div>
               <div class="flex space-x-2 mb-6 bg-dark-bg p-1 rounded-lg">
                 <button class="flex-1 py-1.5 text-[10px] font-bold rounded-md bg-emerald-accent/10 border border-emerald-accent text-emerald-accent">ATP Points</button>
@@ -868,5 +1052,29 @@
     </div>
     <script type="module" src="js/script.js"></script>
     <script src="js/theme.js"></script>
-  </body>
+    <script src="js/sport-filters.js"></script>
+    <script src="js/sport-stats.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        if (typeof initSportStats === 'function') {
+          initSportStats('sportStatsContainer');
+        }
+      });
+    </script>
+    <script>
+    document.addEventListener('DOMContentLoaded',function(){
+      document.querySelectorAll('[onclick*="match-center.html"]').forEach(function(b){
+        var c=b.closest('[data-status]'); if(!c) return;
+        var st=c.getAttribute('data-status')||'live';
+        var se=c.querySelectorAll('.text-4xl,.sm\\:text-2xl,.text-2xl');
+        var hs='',as='';
+        if(se.length>=2){ hs=se[0].textContent.trim(); as=se[1].textContent.trim(); if(hs==='-')hs=''; if(as==='-')as=''; }
+        var oc=b.getAttribute('onclick'); if(!oc) return;
+        var m=oc.match(/'(match-center\.html\?[^']+)'/); if(!m) return;
+        var u=m[1]; if(hs)u+='&hs='+encodeURIComponent(hs); if(as)u+='&as='+encodeURIComponent(as);
+        u+='&state='+st; b.setAttribute('onclick',"window.location.href='"+u+"'");
+      });
+    });
+    </script>
+  <script src="js/notif-ws.js"></script></body>
 </html>

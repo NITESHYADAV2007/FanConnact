@@ -123,10 +123,10 @@
         </div>
 
         <nav class="hidden xl:flex items-center space-x-6 mx-6 shrink-0">
-          <a class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link" href="index.html">Home</a>
+          <a class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link" href="dashboard.html">Home</a>
           <a class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link" href="livematches.html">Matches</a>
-          <a class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link" href="index.html">Predictions</a>
-          <a class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link" href="index.html">Leaderboard</a>
+          <a class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link" href="prediction.html">Predictions</a>
+          <a class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link" href="leaderboard.html">Leaderboard</a>
           <a class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link" href="news&update.html">News</a>
         </nav>
       </div>
@@ -155,10 +155,10 @@
 
     <!-- Mobile Sub-Nav -->
     <nav class="xl:hidden flex overflow-x-auto gap-1 sm:gap-2 px-2 py-1.5 sm:px-4 sm:py-2.5 bg-white dark:bg-black border-b border-gray-200 dark:border-border-subtle scrollbar-none whitespace-nowrap" style="-webkit-overflow-scrolling:touch;scrollbar-width:none;">
-      <a href="index.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Home</a>
+      <a href="dashboard.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Home</a>
       <a href="livematches.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Matches</a>
-      <a href="index.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Predictions</a>
-      <a href="index.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Leaderboard</a>
+      <a href="prediction.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Predictions</a>
+      <a href="leaderboard.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Leaderboard</a>
       <a href="news&update.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">News</a>
     </nav>
 
@@ -202,9 +202,16 @@
             </div>
 
             <!-- Title -->
-            <div id="page-title">
-              <h1 id="title-text" class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">Loading...</h1>
-              <p id="subtitle-text" class="text-gray-500 dark:text-gray-400 text-sm md:text-base mt-1">Fetching rankings data...</p>
+            <div id="page-title" class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2">
+              <div>
+                <h1 id="title-text" class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">Loading...</h1>
+                <p id="subtitle-text" class="text-gray-500 dark:text-gray-400 text-sm md:text-base mt-1">Fetching rankings data...</p>
+              </div>
+              <a id="team-link-header" href="leaderboard.html" class="hidden shrink-0 self-start sm:self-auto px-3 py-2 rounded-xl text-xs font-bold bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:border-emerald-500/50 transition-all flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-sm">groups</span>
+                <span>View Team Rankings</span>
+                <span class="material-symbols-outlined text-xs">arrow_outward</span>
+              </a>
             </div>
 
             <!-- Dynamic Filter Bar -->
@@ -215,7 +222,13 @@
             <!-- Result Info -->
             <div id="result-info" class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 px-1">
               <span id="result-count">Loading...</span>
-              <span id="result-updated" class="text-gray-400 dark:text-gray-500"></span>
+              <div class="flex items-center gap-3">
+                <span id="result-badge" class="hidden px-2 py-0.5 rounded-full text-[9px] font-bold uppercase"></span>
+                <span id="result-updated" class="text-gray-400 dark:text-gray-500"></span>
+                <button id="refresh-btn" class="p-1 rounded hover:bg-gray-100 dark:hover:bg-white/10 transition-colors" title="Refresh data">
+                  <span class="material-symbols-outlined text-sm">refresh</span>
+                </button>
+              </div>
             </div>
 
             <!-- Rankings Table -->
@@ -247,6 +260,7 @@
 
     <script type="module" src="js/script.js"></script>
     <script src="js/theme.js"></script>
+    <script src="js/top-players-fallback.js"></script>
 
     <script>
       const API_BASE = 'http://localhost:3001';
@@ -255,6 +269,7 @@
       let players = [];
       let columns = [];
       let activeFilters = {};
+      let usingServer = true;
 
       const COUNTRY_FLAGS = {
         "India":"in","Australia":"au","England":"gb-eng","New Zealand":"nz","South Africa":"za",
@@ -278,6 +293,7 @@
       function showLoading() {
         document.getElementById('result-count').textContent = 'Loading...';
         document.getElementById('result-updated').textContent = '';
+        document.getElementById('result-badge').classList.add('hidden');
         document.getElementById('table-body').innerHTML =
           '<tr><td colspan="10" class="px-4 py-12 text-center"><div class="inline-block w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div><p class="text-gray-400 mt-2 text-sm">Fetching rankings data...</p></td></tr>';
       }
@@ -297,10 +313,17 @@
         document.getElementById('subtitle-text').textContent = 'Fetching rankings data...';
         showLoading();
 
+        // Show team rankings link for this sport
+        var teamHeader = document.getElementById('team-link-header');
+        var sportMap = { 'e-sports': 'esports', 'kabbaddi': 'kabaddi', 'table-tennis': 'table-tennis' };
+        var href = 'leaderboard.html?game=' + (sportMap[sid] || sid);
+        if (teamHeader) { teamHeader.classList.remove('hidden'); teamHeader.href = href; }
+
         try {
           const cfgRes = await fetch(API_BASE + '/api/sports/' + sid, { signal: AbortSignal.timeout(4000) });
           if (!cfgRes.ok) throw new Error('Config fetch failed');
           sportConfig = await cfgRes.json();
+          usingServer = true;
 
           document.getElementById('title-text').textContent = sportConfig.title;
           document.getElementById('subtitle-text').textContent = sportConfig.subtitle + ' \u2014 click any row for full profile';
@@ -311,7 +334,20 @@
           renderFilters();
           await fetchRankings();
         } catch (e) {
-          showError('Could not load data \u2014 server unreachable. Please try again later.');
+          usingServer = false;
+          var fb = FALLBACK.getConfig(sid);
+          if (fb) {
+            sportConfig = fb;
+            document.getElementById('title-text').textContent = sportConfig.title;
+            document.getElementById('subtitle-text').textContent = sportConfig.subtitle + ' \u2014 click any row for full profile (offline mode)';
+            activeFilters = {};
+            sportConfig.filters.forEach(function(f) { activeFilters[f.group] = f.options[0].value; });
+            columns = sportConfig.columns;
+            renderFilters();
+            await fetchRankings();
+          } else {
+            showError('Could not load data \u2014 server unreachable.');
+          }
         }
       }
 
@@ -320,24 +356,78 @@
         return sportConfig.filters.map(f => activeFilters[f.group] || f.options[0].value).join('_');
       }
 
+      function setSourceBadge(source) {
+        var badge = document.getElementById('result-badge');
+        if (!badge) return;
+        badge.classList.remove('hidden');
+        var classes = {
+          'icc': 'bg-blue-500/20 text-blue-400 border-blue-500/30',
+          'espn': 'bg-red-500/20 text-red-400 border-red-500/30',
+          'fifa': 'bg-purple-500/20 text-purple-400 border-purple-500/30',
+          'sportscore': 'bg-green-500/20 text-green-400 border-green-500/30',
+          'api-sports': 'bg-orange-500/20 text-orange-400 border-orange-500/30',
+          'database': 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
+          'generated': 'bg-gray-500/20 text-gray-400 border-gray-500/30',
+        };
+        var cls = classes[source] || classes['generated'];
+        badge.className = 'px-2 py-0.5 rounded-full text-[9px] font-bold uppercase border ' + cls;
+        var labels = {
+          'icc': 'ICC Official',
+          'espn': 'ESPN',
+          'fifa': 'FIFA',
+          'sportscore': 'SportScore',
+          'api-sports': 'API-Sports',
+          'database': 'Database',
+          'generated': 'Estimated',
+        };
+        badge.textContent = labels[source] || source;
+      }
+
       async function fetchRankings() {
         showLoading();
+        if (!usingServer) {
+          var fbPlayers = FALLBACK.getPlayers(currentSport, buildKey());
+          if (fbPlayers && fbPlayers.length) {
+            players = fbPlayers;
+            document.getElementById('result-count').textContent = players.length + ' players';
+            document.getElementById('result-updated').textContent = 'Estimated data (offline mode)';
+            setSourceBadge('generated');
+            renderTable();
+          } else {
+            showError('No data available for this category.');
+          }
+          return;
+        }
         try {
+          var now = Date.now();
           const res = await fetch(API_BASE + '/api/rankings/' + currentSport + '/' + buildKey(), { signal: AbortSignal.timeout(5000) });
           if (!res.ok) throw new Error('Rankings fetch failed');
           const data = await res.json();
           players = data.players || [];
           document.getElementById('result-count').textContent = players.length + ' players';
-          if (data.source === 'sportscore') {
-            document.getElementById('result-updated').innerHTML = 'English Premier League &middot; <a href="https://sportscore.com/" rel="dofollow" target="_blank" class="text-emerald-400 hover:text-emerald-300 underline">Data from SportScore</a>';
+          setSourceBadge(data.source || 'generated');
+          if (data._lastSync) {
+            document.getElementById('result-updated').textContent = 'Updated: ' + new Date(data._lastSync).toLocaleString();
+          } else if (data.source === 'sportscore') {
+            document.getElementById('result-updated').innerHTML = 'English Premier League &middot; <a href="https://sportscore.com/" rel="dofollow" target="_blank" class="text-emerald-400 hover:text-emerald-300 underline">SportScore</a>';
           } else if (data.source === 'espn') {
-            document.getElementById('result-updated').innerHTML = '<a href="https://www.espn.com/" rel="dofollow" target="_blank" class="text-emerald-400 hover:text-emerald-300 underline">Data from ESPN</a>';
+            document.getElementById('result-updated').innerHTML = '<a href="https://www.espn.com/" rel="dofollow" target="_blank" class="text-emerald-400 hover:text-emerald-300 underline">ESPN</a>';
           } else {
-            document.getElementById('result-updated').textContent = 'Estimated data';
+            document.getElementById('result-updated').textContent = 'Data loaded';
           }
           renderTable();
         } catch (e) {
-          showError('Could not load rankings \u2014 server unreachable.');
+          usingServer = false;
+          var fbPlayers = FALLBACK.getPlayers(currentSport, buildKey());
+          if (fbPlayers && fbPlayers.length) {
+            players = fbPlayers;
+            document.getElementById('result-count').textContent = players.length + ' players';
+            document.getElementById('result-updated').textContent = 'Estimated data (offline mode)';
+            setSourceBadge('generated');
+            renderTable();
+          } else {
+            showError('Could not load rankings \u2014 server unreachable.');
+          }
         }
       }
 
@@ -418,7 +508,17 @@
           el.addEventListener('click', function() {
             var idx = parseInt(el.dataset.idx);
             var p = players[idx];
-            if (p) showProfile(p);
+            if (p) {
+              var activeBtn = document.querySelector('.sport-btn.active-sport');
+              var rawSport = activeBtn ? (activeBtn.getAttribute('data-sport') || activeBtn.textContent.trim()) : 'Cricket';
+              var sportName = rawSport.charAt(0).toUpperCase() + rawSport.slice(1).toLowerCase();
+              if (sportName === "E-sports") sportName = "E-Sports";
+              if (sportName === "Table-tennis") sportName = "Table Tennis";
+              if (sportName === "Kabbaddi") sportName = "Kabaddi";
+              sessionStorage.setItem('playerSport', sportName);
+              sessionStorage.setItem('playerView', JSON.stringify({ player: p, sport: sportName }));
+              window.location.href = 'player.html';
+            }
           });
         });
       }
@@ -443,8 +543,32 @@
       document.getElementById('cm').addEventListener('click', () => document.getElementById('pm').classList.add('hidden'));
       document.getElementById('pm').addEventListener('click', e => { if (e.target === document.getElementById('pm')) document.getElementById('pm').classList.add('hidden'); });
 
-      switchSport('cricket');
+      // Refresh button
+      document.getElementById('refresh-btn').addEventListener('click', function() {
+        var btn = this;
+        btn.classList.add('animate-spin');
+        switchSport(currentSport).finally(function() {
+          setTimeout(function() { btn.classList.remove('animate-spin'); }, 500);
+        });
+      });
+
+      // Fetch and display last-updated time
+      fetch(API_BASE + '/api/sync/last-updated', { signal: AbortSignal.timeout(3000) })
+        .then(function(r) { return r.ok ? r.json() : null; })
+        .then(function(d) {
+          if (d && d.lastSync) {
+            var el = document.getElementById('result-updated');
+            if (el && !el.textContent) el.textContent = 'Last sync: ' + d.humanReadable;
+          }
+        })
+        .catch(function() {});
+
+      FALLBACK.loadStaticData().then(function() {
+        const urlSport = new URLSearchParams(window.location.search).get('game');
+        const sportMap = { 'kabaddi': 'kabbaddi' };
+        switchSport(urlSport ? (sportMap[urlSport] || urlSport) : 'cricket');
+      });
     </script>
 
-  </body>
+  <script src="js/notif-ws.js"></script></body>
 </html>

@@ -1,712 +1,2473 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <link rel="icon" type="image/png" sizes="32x32" href="assets/fancoin/favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="assets/fancoin/favicon-16x16.png" />
-    <meta property="og:site_name" content="Fanconnact" />
-    <meta property="og:type" content="website" />
-    <meta property="og:image" content="assets/fancoin/fanconnactlogo.png" />
-    <meta property="og:title" content="Match Center | Fanconnact" />
-    <meta property="og:description" content="Join Fanconnact for fantasy sports, predictions, and live matches." />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Match Center | Fanconnact" />
-    <meta name="twitter:description" content="Join Fanconnact for fantasy sports, predictions, and live matches." />
-    <meta name="twitter:image" content="assets/fancoin/fanconnactlogo.png" />
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/fancoin/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/fancoin/favicon-16x16.png" />
+  <meta property="og:site_name" content="Fanconnact" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="assets/fancoin/fanconnactlogo.png" />
+  <meta property="og:title" content="Match Center | Fanconnact" />
+  <meta property="og:description" content="Join Fanconnact for fantasy sports, predictions, and live matches." />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Match Center | Fanconnact" />
+  <meta name="twitter:description" content="Join Fanconnact for fantasy sports, predictions, and live matches." />
+  <meta name="twitter:image" content="assets/fancoin/fanconnactlogo.png" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Match Center | Fanconnact</title>
+  <script>
+    if (localStorage.getItem("color-theme") === "dark" || (!("color-theme" in localStorage) && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  </script>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/matchcenter.css" />
+  <style>
+    :root:not(.dark) .text-fan { color: #374151 !important; }
+    :root:not(.dark) .text-connect { color: #2196f3 !important; }
+    .dark .text-connect { color: #10b981 !important; }
+    .dark .text-fan { color: #ffffff !important; }
+    .chat-msg-row:hover .quick-reacts { display: inline-flex !important; }
+  </style>
+</head>
+<body class="h-screen w-full flex flex-col overflow-hidden">
+  <!-- Simple Crex-style Header -->
+  <header class="match-app-header">
+    <div class="header-left">
+      <a href="livematches.html" class="back-link"><span class="material-symbols-outlined">arrow_back</span></a>
+      <img src="assets/fancoin/fanconnactlogo.png" alt="" class="header-logo" />
+      <span class="header-brand"><span class="text-fan">Fan</span><span class="text-connect">Connact</span></span>
+      <span class="header-badge">Match Center</span>
+    </div>
+    <div class="header-right">
+      <button id="theme-toggle" class="theme-btn">
+        <span id="theme-toggle-light-icon" class="material-symbols-outlined hidden">light_mode</span>
+        <span id="theme-toggle-dark-icon" class="material-symbols-outlined">dark_mode</span>
+      </button>
+    </div>
+  </header>
 
-    <title>Match Center | Fanconnact</title>
-    <script>
-      if (
-        localStorage.getItem("color-theme") === "dark" ||
-        (!("color-theme" in localStorage) &&
-          window.matchMedia("(prefers-color-scheme: dark)").matches)
-      ) {
-        document.documentElement.classList.add("dark");
-      } else {
-        document.documentElement.classList.remove("dark");
+  <div class="match-page-layout">
+        <!-- MATCH EVENT BANNER -->
+        <div id="matchEventBanner" class="match-event-banner">
+          <div id="eventAnimation" class="event-animation"></div>
+          <div id="eventText" class="event-text">FOUR!</div>
+        </div>
+
+        <div class="match-main-content">
+            <!-- MATCH HEADER -->
+            <div class="card match-header" id="matchHeaderCard">
+              <div class="match-series-tag" id="matchSeries">IPL 2026</div>
+              <div class="match-title-row" id="matchVenue">Match 22 • Wankhede Stadium</div>
+              <div class="match-scores">
+                <div class="team-block home-block">
+                  <img id="homeTeamLogo" class="team-logo" src="assets/teams/rcb.png" alt="" onerror="teamLogoFallback(this,'RCB')" />
+                  <div class="team-name" id="homeTeamName">RCB</div>
+                  <div class="team-full-name" id="homeTeamFull">Royal Challengers Bangalore</div>
+                  <div class="team-score" id="homeTeamScore">186/4</div>
+                  <div class="team-overs" id="homeTeamOvers">(18.2 ov)</div>
+                </div>
+                <div class="match-result">
+                  <div class="match-vs">
+                    <div class="vs-text">VS</div>
+                    <div class="status-text" id="matchStatus">Match Completed</div>
+                    <div class="result-text" id="matchNeed">RCB won by 10 runs</div>
+                  </div>
+                </div>
+                <div class="team-block away-block">
+                  <img id="awayTeamLogo" class="team-logo" src="assets/teams/csk.png" alt="" onerror="teamLogoFallback(this,'CSK')" />
+                  <div class="team-name" id="awayTeamName">CSK</div>
+                  <div class="team-full-name" id="awayTeamFull">Chennai Super Kings</div>
+                  <div class="team-score" id="awayTeamScore">226/5</div>
+                  <div class="team-overs" id="awayTeamOvers">(20.0 ov)</div>
+                </div>
+              </div>
+              <div id="floatEvents" class="float-events-container"></div>
+            </div>
+
+            <!-- TABS -->
+            <div class="match-tabs" id="matchTabs">
+              <button class="tab active" data-tab="info">Info</button>
+              <button class="tab" data-tab="live">Live</button>
+              <button class="tab" data-tab="scorecard">Scorecard</button>
+              <button class="tab" data-tab="commentary">Commentary</button>
+              <button class="tab" data-tab="squads">Squads</button>
+              <button class="tab" data-tab="overs">Overs</button>
+          <button class="tab" data-tab="graphs">Graphs</button>
+          <button class="tab" data-tab="chat">Chat</button>
+        </div>
+
+            <!-- TAB: INFO (match details + summary when completed) -->
+            <div id="tab-info" class="tab-content active-content">
+              <div id="summaryContent"></div>
+            </div>
+
+            <!-- TAB: LIVE (team score + batters) -->
+            <div id="tab-live" class="tab-content">
+              <div id="liveCurrentStatus" class="live-current-status">
+                <div class="lcs-section">
+                  <span class="lcs-label">Over</span>
+                  <span class="lcs-value" id="lcsOver">0.0</span>
+                </div>
+                <div class="lcs-section">
+                  <span class="lcs-label">Striker</span>
+                  <span class="lcs-value" id="lcsBatter">—</span>
+                </div>
+                <div class="lcs-section">
+                  <span class="lcs-label">Bowler</span>
+                  <span class="lcs-value" id="lcsBowler">—</span>
+                </div>
+                <div class="lcs-section lcs-wide">
+                  <span class="lcs-label">Ball</span>
+                  <span class="lcs-value" id="lcsResult" style="font-size:16px">—</span>
+                </div>
+              </div>
+              <div id="lcsCommentary" class="live-commentary-line">⏳ Match about to begin...</div>
+              <div id="liveContent"></div>
+              <div id="liveFinished" style="display:none;text-align:center;padding:24px;background:#f0fdf4;border-radius:12px;margin:12px 0">
+                <div style="font-size:20px;font-weight:800;color:#10b981">🏁 Match Complete</div>
+                <div style="font-size:14px;color:#64748b;margin-top:6px" id="liveFinishedResult"></div>
+                <div style="margin-top:12px" id="liveFinishedTopPlayers"></div>
+              </div>
+            </div>
+
+            <!-- TAB: CHAT (separate tab with score + player updates) -->
+            <div id="tab-chat" class="tab-content">
+              <div class="card" style="margin-bottom:10px">
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:linear-gradient(135deg,#2196f3,#1565c0);border-radius:8px;color:#fff">
+                  <div>
+                    <div style="font-size:12px;font-weight:600" id="chatScoreHeader">🏏 Match Score</div>
+                    <div style="font-size:10px;opacity:0.9" id="chatScoreDetail">Waiting for updates...</div>
+                  </div>
+                  <div style="text-align:right">
+                    <div style="font-size:10px;opacity:0.8">Playing</div>
+                    <div style="font-size:11px;font-weight:700" id="chatPlayingNow">—</div>
+                  </div>
+                </div>
+              </div>
+              <!-- Online users bar -->
+              <div style="display:flex;align-items:center;gap:6px;padding:6px 12px;margin-bottom:6px;font-size:11px;color:#64748b">
+                <span style="width:6px;height:6px;border-radius:50%;background:#10b981"></span>
+                <span id="chatOnlineCount">0 online</span>
+                <span style="flex:1"></span>
+                <span id="chatMatchStatus" style="font-weight:600">—</span>
+              </div>
+              <div class="card inline-chat">
+                <div class="chat-header">
+                  <div style="display:flex;align-items:center;gap:8px">
+                    <span style="font-size:16px">💬</span>
+                    <h3 style="font-size:13px;font-weight:700;margin:0">Match Chat</h3>
+                    <span style="font-size:10px;color:#64748b;background:#f1f5f9;padding:1px 6px;border-radius:8px" id="chatCount">Live</span>
+                  </div>
+                  <button onclick="addSportPrompt()" style="border:none;background:#f1f5f9;border-radius:4px;padding:2px 8px;font-size:10px;cursor:pointer;color:#64748b;font-weight:600">⚡ Prompt</button>
+                </div>
+                <div class="chat-messages-box" id="chatMessages"></div>
+                <div id="typingIndicator" style="display:none;font-size:10px;color:#94a3b8;padding:2px 10px;font-style:italic"></div>
+                <div id="emojiPicker" style="display:none;padding:4px 8px;border-top:1px solid #e2e8f0;background:#f8fafc;flex-wrap:wrap;gap:3px"></div>
+                <div class="chat-input-row" style="padding:4px 8px">
+                  <button id="emojiToggle" style="border:none;background:none;cursor:pointer;font-size:16px;padding:0 4px">😀</button>
+                  <input id="chatInput" type="text" placeholder="Type a message..." style="font-size:12px" />
+                  <button id="chatSend" style="font-size:14px">➤</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- TAB: SCORECARD -->
+            <div id="tab-scorecard" class="tab-content">
+              <h2 class="section-title">Scorecard</h2>
+              <div id="scorecardLiveBar" class="scorecard-live-bar">
+                <span id="scBarHome"><strong>RCB</strong> <span id="scBarHomeScore">0/0</span></span>
+                <span id="scBarOver" style="color:#2196f3;font-weight:700">(0.0 ov)</span>
+                <span id="scBarAway"><strong>CSK</strong> <span id="scBarAwayScore">226/5</span></span>
+              </div>
+              <div id="scorecardContent"></div>
+            </div>
+
+            <!-- TAB: COMMENTARY -->
+            <div id="tab-commentary" class="tab-content">
+              <h2 class="section-title">Commentary</h2>
+              <div id="matchEvent" class="match-event"><span id="eventTextSpan"></span></div>
+              <div class="commentary-wrapper" id="commentaryContent"></div>
+            </div>
+
+            <!-- TAB: SQUADS -->
+            <div id="tab-squads" class="tab-content">
+              <h2 class="section-title">Squads</h2>
+              <div id="squadsContent" class="squads-grid"></div>
+            </div>
+
+            <!-- TAB: OVERS -->
+            <div id="tab-overs" class="tab-content">
+              <h2 class="section-title">Over Breakdown</h2>
+              <div id="oversContent"></div>
+            </div>
+
+            <!-- TAB: GRAPHS -->
+            <div id="tab-graphs" class="tab-content">
+              <h2 class="section-title">Match Graphs</h2>
+              <div id="graphsContent"></div>
+            </div>
+    </div>
+
+  </div>
+
+  <script src="js/theme.js"></script>
+  <script>
+    // ============================================
+    // TEAM MAP + URL PARAM ROUTING
+    // ============================================
+    const DEF_LOGO = 'assets/teams/rcb.png';
+    const TEAMS_MAP = {
+      // === Cricket - IPL ===
+      RCB: { name:'Royal Challengers Bangalore', short:'RCB', logo:'assets/teams/rcb.png', squad:'rcb' },
+      CSK: { name:'Chennai Super Kings', short:'CSK', logo:'assets/teams/csk.png', squad:'csk' },
+      MI: { name:'Mumbai Indians', short:'MI', logo:'assets/teams/mi.png', squad:'mi' },
+      KKR: { name:'Kolkata Knight Riders', short:'KKR', logo:'assets/teams/kkr.png', squad:'kkr' },
+      SRH: { name:'Sunrisers Hyderabad', short:'SRH', logo:'assets/teams/srh.png', squad:'srh' },
+      DC: { name:'Delhi Capitals', short:'DC', logo:'assets/teams/dc.png', squad:'dc' },
+      PBKS: { name:'Punjab Kings', short:'PBKS', logo:'assets/teams/pbks.png', squad:'pbks' },
+      RR: { name:'Rajasthan Royals', short:'RR', logo:'assets/teams/rr.png', squad:'rr' },
+      GT: { name:'Gujarat Titans', short:'GT', logo:'assets/teams/gt.png', squad:'gt' },
+      LSG: { name:'Lucknow Super Giants', short:'LSG', logo:'assets/teams/lsg.png', squad:'lsg' },
+      // === Cricket - International ===
+      IND: { name:'India', short:'IND', logo:'assets/teams/india.png', squad:'ind' },
+      AUS: { name:'Australia', short:'AUS', logo:'assets/teams/australia.png', squad:'aus' },
+      PAK: { name:'Pakistan', short:'PAK', logo:DEF_LOGO, squad:'pak' },
+      ENG: { name:'England', short:'ENG', logo:DEF_LOGO, squad:'eng' },
+      // === Cricket - BBL ===
+      Sixers: { name:'Sydney Sixers', short:'SIX', logo:DEF_LOGO, squad:'sixers' },
+      Stars: { name:'Melbourne Stars', short:'STA', logo:DEF_LOGO, squad:'stars' },
+      Scorchers: { name:'Perth Scorchers', short:'SCO', logo:DEF_LOGO, squad:'scorchers' },
+      Heat: { name:'Brisbane Heat', short:'HEA', logo:DEF_LOGO, squad:'heat' },
+      // === Football ===
+      England: { name:'England', short:'ENG', logo:DEF_LOGO, squad:'' },
+      Argentina: { name:'Argentina', short:'ARG', logo:DEF_LOGO, squad:'' },
+      Portugal: { name:'Portugal', short:'POR', logo:DEF_LOGO, squad:'' },
+      Netherlands: { name:'Netherlands', short:'NED', logo:DEF_LOGO, squad:'' },
+      France: { name:'France', short:'FRA', logo:DEF_LOGO, squad:'' },
+      Brazil: { name:'Brazil', short:'BRA', logo:DEF_LOGO, squad:'' },
+      'USA': { name:'United States', short:'USA', logo:DEF_LOGO, squad:'' },
+      Germany: { name:'Germany', short:'GER', logo:DEF_LOGO, squad:'' },
+      Spain: { name:'Spain', short:'ESP', logo:DEF_LOGO, squad:'' },
+      Japan: { name:'Japan', short:'JPN', logo:DEF_LOGO, squad:'' },
+      Morocco: { name:'Morocco', short:'MAR', logo:DEF_LOGO, squad:'' },
+      Senegal: { name:'Senegal', short:'SEN', logo:DEF_LOGO, squad:'' },
+      Croatia: { name:'Croatia', short:'CRO', logo:DEF_LOGO, squad:'' },
+      Italy: { name:'Italy', short:'ITA', logo:DEF_LOGO, squad:'' },
+      Mexico: { name:'Mexico', short:'MEX', logo:DEF_LOGO, squad:'' },
+      Bayern: { name:'Bayern Munich', short:'BAY', logo:DEF_LOGO, squad:'' },
+      'UP Yoddha': { name:'UP Yoddha', short:'UP', logo:DEF_LOGO, squad:'' },
+      Australia: { name:'Australia', short:'AUS', logo:'assets/teams/australia.png', squad:'' },
+      // === Basketball ===
+      Lakers: { name:'Los Angeles Lakers', short:'LAL', logo:DEF_LOGO, squad:'' },
+      Celtics: { name:'Boston Celtics', short:'BOS', logo:DEF_LOGO, squad:'' },
+      Bucks: { name:'Milwaukee Bucks', short:'MIL', logo:DEF_LOGO, squad:'' },
+      Warriors: { name:'Golden State Warriors', short:'GSW', logo:DEF_LOGO, squad:'' },
+      Heat: { name:'Miami Heat', short:'MIA', logo:DEF_LOGO, squad:'' },
+      Nuggets: { name:'Denver Nuggets', short:'DEN', logo:DEF_LOGO, squad:'' },
+      RealMadrid: { name:'Real Madrid', short:'RMA', logo:DEF_LOGO, squad:'' },
+      Barcelona: { name:'FC Barcelona', short:'BAR', logo:DEF_LOGO, squad:'' },
+      Fenerbahce: { name:'Fenerbahce', short:'FEN', logo:DEF_LOGO, squad:'' },
+      Olympiacos: { name:'Olympiacos', short:'OLY', logo:DEF_LOGO, squad:'' },
+      Thunder: { name:'Oklahoma City Thunder', short:'OKC', logo:DEF_LOGO, squad:'' },
+      Mavericks: { name:'Dallas Mavericks', short:'DAL', logo:DEF_LOGO, squad:'' },
+      Canada: { name:'Canada', short:'CAN', logo:DEF_LOGO, squad:'' },
+      // Spain already defined above (football)
+      // === Tennis ===
+      Djokovic: { name:'Novak Djokovic', short:'DJOK', logo:DEF_LOGO, squad:'' },
+      Alcaraz: { name:'Carlos Alcaraz', short:'ALCA', logo:DEF_LOGO, squad:'' },
+      Swiatek: { name:'Iga Swiatek', short:'SWIA', logo:DEF_LOGO, squad:'' },
+      Rybakina: { name:'Elena Rybakina', short:'RYBA', logo:DEF_LOGO, squad:'' },
+      Nadal: { name:'Rafael Nadal', short:'NADA', logo:DEF_LOGO, squad:'' },
+      Sinner: { name:'Jannik Sinner', short:'SINN', logo:DEF_LOGO, squad:'' },
+      Sabalenka: { name:'Aryna Sabalenka', short:'SABA', logo:DEF_LOGO, squad:'' },
+      Medvedev: { name:'Daniil Medvedev', short:'MEDV', logo:DEF_LOGO, squad:'' },
+      Rublev: { name:'Andrey Rublev', short:'RUBL', logo:DEF_LOGO, squad:'' },
+      // === Baseball ===
+      'New York Yankees': { name:'New York Yankees', short:'NYY', logo:DEF_LOGO, squad:'' },
+      'Boston Red Sox': { name:'Boston Red Sox', short:'BOS', logo:DEF_LOGO, squad:'' },
+      'Los Angeles Dodgers': { name:'Los Angeles Dodgers', short:'LAD', logo:DEF_LOGO, squad:'' },
+      'San Francisco Giants': { name:'San Francisco Giants', short:'SFG', logo:DEF_LOGO, squad:'' },
+      'American League': { name:'American League', short:'AL', logo:DEF_LOGO, squad:'' },
+      'National League': { name:'National League', short:'NL', logo:DEF_LOGO, squad:'' },
+      'Chicago Cubs': { name:'Chicago Cubs', short:'CHC', logo:DEF_LOGO, squad:'' },
+      'St. Louis Cardinals': { name:'St. Louis Cardinals', short:'STL', logo:DEF_LOGO, squad:'' },
+      'Home Run Derby': { name:'Home Run Derby', short:'HRD', logo:DEF_LOGO, squad:'' },
+      'All-Star Festivities': { name:'All-Star Festivities', short:'ASF', logo:DEF_LOGO, squad:'' },
+      'Houston Astros': { name:'Houston Astros', short:'HOU', logo:DEF_LOGO, squad:'' },
+      'Texas Rangers': { name:'Texas Rangers', short:'TEX', logo:DEF_LOGO, squad:'' },
+      'Atlanta Braves': { name:'Atlanta Braves', short:'ATL', logo:DEF_LOGO, squad:'' },
+      'New York Mets': { name:'New York Mets', short:'NYM', logo:DEF_LOGO, squad:'' },
+      // === Hockey ===
+      'Maple Leafs': { name:'Toronto Maple Leafs', short:'TOR', logo:DEF_LOGO, squad:'' },
+      Senators: { name:'Ottawa Senators', short:'OTT', logo:DEF_LOGO, squad:'' },
+      Oilers: { name:'Edmonton Oilers', short:'EDM', logo:DEF_LOGO, squad:'' },
+      Canucks: { name:'Vancouver Canucks', short:'VAN', logo:DEF_LOGO, squad:'' },
+      'Sweden U20': { name:'Sweden U20', short:'SWE', logo:DEF_LOGO, squad:'' },
+      'Finland U20': { name:'Finland U20', short:'FIN', logo:DEF_LOGO, squad:'' },
+      Bruins: { name:'Boston Bruins', short:'BOS', logo:DEF_LOGO, squad:'' },
+      Panthers: { name:'Florida Panthers', short:'FLA', logo:DEF_LOGO, squad:'' },
+      'Canada U20': { name:'Canada U20', short:'CAN', logo:DEF_LOGO, squad:'' },
+      'USA U20': { name:'USA U20', short:'USA', logo:DEF_LOGO, squad:'' },
+      'Golden Knights': { name:'Vegas Golden Knights', short:'VGK', logo:DEF_LOGO, squad:'' },
+      Kings: { name:'Los Angeles Kings', short:'LAK', logo:DEF_LOGO, squad:'' },
+      'Washington Capitals': { name:'Washington Capitals', short:'WSH', logo:DEF_LOGO, squad:'' },
+      // === Kabaddi ===
+      India: { name:'India', short:'IND', logo:DEF_LOGO, squad:'' },
+      Iran: { name:'Iran', short:'IRN', logo:DEF_LOGO, squad:'' },
+      'Patna Pirates': { name:'Patna Pirates', short:'PAT', logo:DEF_LOGO, squad:'' },
+      'Bengal Warriors': { name:'Bengal Warriors', short:'BEN', logo:DEF_LOGO, squad:'' },
+      Pakistan: { name:'Pakistan', short:'PAK', logo:DEF_LOGO, squad:'' },
+      'South Korea': { name:'South Korea', short:'KOR', logo:DEF_LOGO, squad:'' },
+      'U Mumba': { name:'U Mumba', short:'UMB', logo:DEF_LOGO, squad:'' },
+      'Bengaluru Bulls': { name:'Bengaluru Bulls', short:'BUL', logo:DEF_LOGO, squad:'' },
+      // === Volleyball ===
+      BRA: { name:'Brazil', short:'BRA', logo:DEF_LOGO, squad:'' },
+      'USA': { name:'United States', short:'USA', logo:DEF_LOGO, squad:'' },
+      // === E-Sports ===
+      Sentinels: { name:'Sentinels', short:'SEN', logo:DEF_LOGO, squad:'' },
+      FNATIC: { name:'FNATIC', short:'FNC', logo:DEF_LOGO, squad:'' },
+      T1: { name:'T1', short:'T1', logo:DEF_LOGO, squad:'' },
+      Cloud9: { name:'Cloud9', short:'C9', logo:DEF_LOGO, squad:'' },
+      'G2 Esports': { name:'G2 Esports', short:'G2', logo:DEF_LOGO, squad:'' },
+      XSpark: { name:'XSpark', short:'XSP', logo:DEF_LOGO, squad:'' },
+      Soul: { name:'Soul Esports', short:'SOL', logo:DEF_LOGO, squad:'' },
+      // === Table Tennis ===
+      'Fan Zhendong': { name:'Fan Zhendong', short:'FAN', logo:DEF_LOGO, squad:'' },
+      'Ma Long': { name:'Ma Long', short:'MAL', logo:DEF_LOGO, squad:'' },
+      'Sun Yingsha': { name:'Sun Yingsha', short:'SUN', logo:DEF_LOGO, squad:'' },
+      'Chen Meng': { name:'Chen Meng', short:'CHE', logo:DEF_LOGO, squad:'' },
+      'T. Harimoto': { name:'Tomokazu Harimoto', short:'HAR', logo:DEF_LOGO, squad:'' },
+      'Wang Chuqin': { name:'Wang Chuqin', short:'WAN', logo:DEF_LOGO, squad:'' },
+      'Miu Hirano': { name:'Miu Hirano', short:'HIR', logo:DEF_LOGO, squad:'' },
+      // === Legacy football (already in TEAMS_MAP use cases) ===
+      LIV: { name:'Liverpool', short:'LIV', logo:DEF_LOGO, squad:'' },
+      MCI: { name:'Manchester City', short:'MCI', logo:DEF_LOGO, squad:'' },
+    };
+
+    function getUrlParam(name) {
+      const p = new URLSearchParams(window.location.search);
+      return p.get(name) || '';
+    }
+    let URL_HOME = getUrlParam('home') || 'RCB';
+    let URL_AWAY = getUrlParam('away') || '';
+    let URL_SPORT = getUrlParam('sport') || 'cricket';
+    let URL_HOME_SCORE = getUrlParam('hs');
+    let URL_AWAY_SCORE = getUrlParam('as');
+    let URL_STATE = getUrlParam('state');
+
+    function getTeamInfo(code) {
+      return TEAMS_MAP[code] || { name: code, short: code, logo: 'assets/fancoin/fanconnactlogo.png', squad: '' };
+    }
+
+    function teamLogoFallback(img, teamCode) {
+      if (!img || img.getAttribute('data-fallback-done')) return;
+      img.setAttribute('data-fallback-done', '1');
+      var initials = teamCode || '?';
+      if (initials.length > 4) initials = initials.split(' ').map(function(w){return w[0]}).join('').substring(0,4);
+      var hue = Math.abs(teamCode.split('').reduce(function(a,c){return a+c.charCodeAt(0)},0)) % 360;
+      var parent = img.parentNode;
+      var div = document.createElement('div');
+      div.className = img.className || 'team-logo';
+      div.style.cssText = 'display:inline-flex;align-items:center;justify-content:center;background:hsl('+hue+',60%,45%);color:#fff;font-weight:800;font-size:18px;border-radius:8px;width:'+(img.offsetWidth||48)+'px;height:'+(img.offsetHeight||48)+'px;';
+      div.textContent = initials.toUpperCase();
+      parent.replaceChild(div, img);
+    }
+
+    // ============================================
+    // REAL DATABASE LOADER
+    // ============================================
+    let DB = null;
+    let currentSport = URL_SPORT;
+
+    async function loadDatabase() {
+      try {
+        const res = await fetch('data/player-stats.json');
+        DB = await res.json();
+      } catch (e) {
+        console.warn('Could not load player database, using fallback');
       }
-    </script>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
-
-    <link rel="stylesheet" href="css/match-center.css" />
-    <style>
-      body { background: #ffffff; color: #0f172a; transition: background 0.3s, color 0.3s; }
-      .dark body, .dark .match-center-container { background: #000000; color: #f1f5f9; }
-      :root:not(.dark) ::-webkit-scrollbar-track { background: #f1f5f9; }
-      :root:not(.dark) ::-webkit-scrollbar-thumb { background: #2196f3; }
-      :root:not(.dark) ::-webkit-scrollbar-thumb:hover { background: #1e88e5; }
-      .dark ::-webkit-scrollbar-thumb { background: #10b981; }
-      .dark ::-webkit-scrollbar-thumb:hover { background: #34d399; }
-      :root:not(.dark) input:focus { border-color: #2196f3 !important; box-shadow: 0 0 0 2px rgba(33,150,243,0.2) !important; }
-    </style>
-  </head>
-
-  <body>
-    <!-- MATCH EVENT BANNER -->
-
-    <div id="matchEventBanner" class="match-event-banner">
-      <!-- LEFT ANIMATION -->
-      <div id="eventAnimation" class="event-animation"></div>
-
-      <!-- TEXT -->
-      <div id="eventText" class="event-text">FOUR!</div>
-    </div>
-    <div class="match-center-container">
-      <!-- LEFT SIDE -->
-      <div class="match-main-content">
-        <!-- TOP LIVE MATCH CARD -->
-        <div class="top-live-card">
-          <div class="match-top-bar">
-            <div>
-              <h2>Live Match Center</h2>
-              <p>IPL 2026 • Match 22 • Wankhede Stadium</p>
-            </div>
-
-            <div class="live-badge">🔴 LIVE</div>
-          </div>
-
-          <div class="match-score-section">
-            <div class="team-card">
-              <img src="assets/images/rcb.png" alt="" />
-
-              <h3>RCB</h3>
-
-              <span>186/4</span>
-            </div>
-
-            <div class="center-section">
-              <h1>VS</h1>
-
-              <p>18.2 Overs</p>
-
-              <div class="match-need">Need 41 Runs in 12 Balls</div>
-            </div>
-
-            <div class="team-card">
-              <img src="assets/images/csk.png" alt="" />
-
-              <h3>CSK</h3>
-
-              <span>226/5</span>
-            </div>
-          </div>
-
-          <div class="match-stats">
-            <div>CRR: 10.09</div>
-
-            <div>Required RR: 20.50</div>
-
-            <div>Target: 227</div>
-          </div>
-        </div>
-
-        <!-- CURRENT OVER -->
-        <div class="current-over-card">
-          <div class="over-left">
-            <span>Current Over 18</span>
-          </div>
-
-          <div class="balls-track">
-            <div class="ball normal">1</div>
-            <div class="ball four">4</div>
-            <div class="ball normal">0</div>
-            <div class="ball wicket">W</div>
-            <div class="ball six">6</div>
-            <div class="ball normal">2</div>
-
-            <div class="ball dot"></div>
-            <div class="ball dot"></div>
-            <div class="ball dot"></div>
-          </div>
-
-          <div class="over-right">CSK 18.2 Overs</div>
-        </div>
-
-        <!-- NAVIGATION -->
-        <div class="match-tabs">
-          <button class="tab active" id="infoTab">Info</button>
-          <button class="tab" id="liveTab">Live</button>
-          <button class="tab" id="scorecardTab">Scorecard</button>
-          <button class="tab" id="commentaryTab">Commentary</button>
-          <button class="tab" id="squadsTab">Squads</button>
-          <button class="tab" id="oversTab">Overs</button>
-          <button class="tab" id="graphsTab">Graphs</button>
-        </div>
-
-        <!-- INFO TAB -->
-        <div id="infoContent" class="tab-content active-content">
-          <h2 class="section-title">Match Info</h2>
-
-          <div class="info-card">
-            <div class="info-row">
-              <span>Series</span>
-              <p>IPL 2026</p>
-            </div>
-
-            <div class="info-row">
-              <span>Match</span>
-              <p>RCB vs CSK, Match 22</p>
-            </div>
-
-            <div class="info-row">
-              <span>Date</span>
-              <p>25 May 2026</p>
-            </div>
-
-            <div class="info-row">
-              <span>Time</span>
-              <p>7:30 PM</p>
-            </div>
-
-            <div class="info-row">
-              <span>Venue</span>
-              <p>Wankhede Stadium</p>
-            </div>
-
-            <div class="info-row">
-              <span>Toss</span>
-              <p>RCB won toss & chose batting</p>
-            </div>
-
-            <div class="info-row">
-              <span>Umpires</span>
-              <p>Nitin Menon, Chris Gaffaney</p>
-            </div>
-
-            <div class="info-row">
-              <span>3rd Umpire</span>
-              <p>Rod Tucker</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- LIVE TAB -->
-        <div id="liveContent" class="tab-content">
-          <h2>Live Match</h2>
-        </div>
-
-        <!-- SCORECARD TAB -->
-        <div id="scorecardContent" class="tab-content">
-          <h2>Scorecard</h2>
-        </div>
-
-        <!-- COMMENTARY TAB -->
-        <div id="commentaryContent" class="tab-content">
-          <h2>Commentary</h2>
-
-          <div id="matchEvent" class="match-event">
-            <span id="eventText"></span>
-          </div>
-
-          <div class="commentary-wrapper">
-            <div class="new-batter-event">
-              <h2 class="new-batter-title">Jacob Bethell is in at 3.</h2>
-
-              <div class="new-batter-card">
-                <div class="new-batter-top">
-                  <div class="crease-text">🏏 New batter on crease</div>
-
-                  <div class="career-text">Career</div>
-                </div>
-
-                <div class="new-batter-body">
-                  <div class="batter-left">
-                    <img src="assets/images/player.png" />
-
-                    <div class="batter-info">
-                      <h2>Jacob Bethell</h2>
-                      <p>22 yrs • #49 (Batter)</p>
-                    </div>
-                  </div>
-
-                  <div class="best-score-box">
-                    <span>Best</span>
-                    <h1>154</h1>
-                  </div>
-                </div>
-
-                <div class="batter-stats">
-                  <div>
-                    <span>INNINGS</span>
-                    <h3>12</h3>
-                  </div>
-
-                  <div>
-                    <span>RUNS</span>
-                    <h3>476</h3>
-                  </div>
-
-                  <div>
-                    <span>SR</span>
-                    <h3>65.21</h3>
-                  </div>
-
-                  <div>
-                    <span>AVG</span>
-                    <h3>43.00</h3>
-                  </div>
-                </div>
-              </div>
-              <div class="wicket-card">
-                <div class="wicket-left">
-                  <img src="assets/images/player2.png" />
-
-                  <div class="out-badge">OUT</div>
-                </div>
-
-                <div class="wicket-center">
-                  <h2>
-                    B Duckett
-                    <span>33(46)</span>
-                  </h2>
-
-                  <p>c G Phillips b W O'Rourke</p>
-                </div>
-
-                <div class="wicket-right">
-                  <div>
-                    <span>4s/6s</span>
-                    <h3>6/0</h3>
-                  </div>
-
-                  <div>
-                    <span>SR</span>
-                    <h3>71.74</h3>
-                  </div>
-                </div>
-              </div>
-
-              <div class="wicket-description">
-                <h3>And gone!</h3>
-
-                <p>
-                  Will O'Rourke provides a much-needed breakthrough for the
-                  Kiwis at the stroke of lunch. Good, low catch from Glenn
-                  Phillips at gully.
-                </p>
-              </div>
-            </div>
-            <!-- BALL 8.6 -->
-            <div class="commentary-item">
-              <div class="commentary-top">
-                <span class="over-no"> 8.6 </span>
-
-                <span class="bowler-text"> Vedant Gore to Chinmay Sutar </span>
-              </div>
-
-              <div class="commentary-body">
-                <div class="ball-result two">2</div>
-
-                <p class="commentary-text">
-                  Full outside off, Sutar lofts it over covers. Long off moves
-                  to his left and stops it with a slide. Keeps it to two.
-                </p>
-              </div>
-            </div>
-
-            <!-- BALL 8.5 -->
-            <div class="commentary-item">
-              <div class="commentary-top">
-                <span class="over-no"> 8.5 </span>
-
-                <span class="bowler-text"> Vedant Gore to Chinmay Sutar </span>
-              </div>
-
-              <div class="commentary-body">
-                <div class="ball-result dot">0</div>
-
-                <p class="commentary-text">
-                  Flighted delivery around off, Sutar looks to flick it but gets
-                  a leading edge to the left of the bowler.
-                </p>
-              </div>
-            </div>
-            <div class="commentary-item">
-              <div class="commentary-top">
-                <span class="over-no">8.4</span>
-
-                <span class="bowler-text"> Vedant Gore to Sahil Jadhav </span>
-              </div>
-
-              <div class="commentary-body">
-                <div class="ball-result four">4</div>
-
-                <p class="commentary-text">
-                  <strong>FOUR!</strong>
-                  Beautiful cover drive.
-                </p>
-              </div>
-            </div>
-
-            <div class="commentary-item">
-              <div class="commentary-top">
-                <span class="over-no">8.3</span>
-
-                <span class="bowler-text"> Vedant Gore to Sahil Jadhav </span>
-              </div>
-
-              <div class="commentary-body">
-                <div class="ball-result six">6</div>
-
-                <p class="commentary-text">
-                  <strong>SIX!</strong>
-                  Beautiful Six.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- SQUADS TAB -->
-        <div id="squadsContent" class="tab-content">
-          <h2>Squads</h2>
-        </div>
-
-        <!-- OVERS TAB -->
-        <div id="oversContent" class="tab-content">
-          <h2>Overs</h2>
-        </div>
-
-        <!-- GRAPHS TAB -->
-        <div id="graphsContent" class="tab-content">
-          <h2>Graphs</h2>
-        </div>
-      </div>
-      <!-- LEFT SIDE CLOSED HERE -->
-
-      <!-- RIGHT SIDE -->
-      <div class="right-sidebar">
-        <div class="live-chat-card">
-          <div class="chat-top">
-            <h3>Live Chat</h3>
-
-            <span>👥 8.2K</span>
-          </div>
-
-          <!-- CHAT BODY -->
-          <div class="chat-messages">
-            <div class="download-app-inline">
-              <span> For Better Experience </span>
-
-              <a
-                href="https://play.google.com/store/apps"
-                target="_blank"
-                class="download-btn"
-              >
-                Download App
-              </a>
-            </div>
-
-            <div class="chat-message">
-              <img src="assets/images/user.png" alt="" />
-
-              <div class="message-content">
-                <h4>MI_Army</h4>
-                <p>What a over! Come on MI 💙</p>
-              </div>
-
-              <span class="chat-time">Just now</span>
-            </div>
-
-            <div class="chat-message">
-              <img src="assets/images/user.png" alt="" />
-
-              <div class="message-content">
-                <h4>CSK_Rider</h4>
-                <p>Thala for a reason! 🔥</p>
-              </div>
-
-              <span class="chat-time">Just now</span>
-            </div>
-
-            <div class="chat-message">
-              <img src="assets/images/user.png" alt="" />
-
-              <div class="message-content">
-                <h4>Virat18</h4>
-                <p>Big 12 balls! Let's gooo 🔥</p>
-              </div>
-
-              <span class="chat-time">Just now</span>
-            </div>
-
-            <div class="chat-message">
-              <img src="assets/images/user.png" alt="" />
-
-              <div class="message-content">
-                <h4>CricketKing</h4>
-                <p>Jadeja is here, game changes now!</p>
-              </div>
-
-              <span class="chat-time">Just now</span>
-            </div>
-          </div>
-
-          <!-- INPUT -->
-          <div class="chat-input-box">
-            <input type="text" placeholder="Type a message..." />
-
-            <button class="send-btn">➤</button>
-          </div>
-        </div>
-
-        <div class="small-widget probability-card">
-          <h3>Win Probability</h3>
-
-          <div class="probability-header">
-            <div>
-              <span>RCB</span>
-              <h2>48%</h2>
-            </div>
-
-            <div class="right-team">
-              <span>CSK</span>
-              <h2>52%</h2>
-            </div>
-          </div>
-
-          <div class="graph-box">
-            <div class="y-axis">
-              <span>100%</span>
-              <span>50%</span>
-              <span>0%</span>
-            </div>
-
-            <div class="graph-area">
-              <svg viewBox="0 0 400 180">
-                <!-- Blue line -->
-                <path
-                  d="
-                M10 90
-                C40 60,70 70,90 55
-                C120 45,140 85,170 80
-                C200 60,220 90,250 85
-                C280 70,300 60,330 95
-                C360 120,380 115,395 110"
-                  stroke="#5a7cff"
-                  stroke-width="4"
-                  fill="none"
-                />
-
-                <!-- Yellow line -->
-                <path
-                  d="
-                M10 100
-                C40 80,70 100,90 90
-                C120 110,140 60,170 75
-                C200 95,230 80,260 70
-                C290 40,320 55,350 35
-                C370 25,385 30,395 28"
-                  stroke="#ffc107"
-                  stroke-width="4"
-                  fill="none"
-                />
-              </svg>
-
-              <div class="x-axis">
-                <span>1</span>
-                <span>5</span>
-                <span>10</span>
-                <span>15</span>
-                <span>20</span>
-              </div>
-
-              <p class="overs-text">Overs</p>
-            </div>
-          </div>
-        </div>
-        <div class="small-widget fan-card">
-          <h3>Fan Prediction</h3>
-
-          <p class="prediction-question">Who will win?</p>
-
-          <div class="vote-buttons">
-            <button class="vote-btn rcb-btn">RCB</button>
-
-            <button class="vote-btn csk-btn">CSK</button>
-          </div>
-
-          <div class="prediction-percent">
-            <span>48%</span>
-            <span>52%</span>
-          </div>
-
-          <div class="progress-bar">
-            <div class="progress-left"></div>
-            <div class="progress-right"></div>
-          </div>
-
-          <p class="vote-count">8.1K Votes</p>
-
-          <button class="vote-now-btn">Vote Now →</button>
-        </div>
-
-        <div class="small-widget predictor-card">
-          <h3>Top Predictor</h3>
-
-          <div class="predictor-list">
-            <div class="predictor-item">
-              <div class="predictor-left">
-                <span class="rank">1</span>
-
-                <img src="assets/images/user1.png" alt="" />
-
-                <span class="username"> Virat18 </span>
-              </div>
-
-              <span class="points"> 2,450 </span>
-            </div>
-
-            <div class="predictor-item">
-              <div class="predictor-left">
-                <span class="rank">2</span>
-
-                <img src="assets/images/user2.png" alt="" />
-
-                <span class="username"> CricketKing </span>
-              </div>
-
-              <span class="points"> 2,150 </span>
-            </div>
-
-            <div class="predictor-item">
-              <div class="predictor-left">
-                <span class="rank">3</span>
-
-                <img src="assets/images/user3.png" alt="" />
-
-                <span class="username"> MI_Legend </span>
-              </div>
-
-              <span class="points"> 1,890 </span>
-            </div>
-          </div>
-
-          <button class="view-all-btn">View All →</button>
-        </div>
-      </div>
-      <!-- RIGHT SIDE CLOSED -->
-    </div>
-    <!-- MAIN CONTAINER CLOSED -->
-    <script>
-      const tabs = document.querySelectorAll(".tab");
-      const contents = document.querySelectorAll(".tab-content");
-
-      tabs.forEach((tab) => {
-        tab.addEventListener("click", () => {
-          tabs.forEach((btn) => btn.classList.remove("active"));
-
-          contents.forEach((content) =>
-            content.classList.remove("active-content"),
-          );
-
-          tab.classList.add("active");
-
-          const tabId = tab.id.replace("Tab", "Content");
-
-          document.getElementById(tabId).classList.add("active-content");
+      initMatchData();
+    }
+
+    function pickRandom(arr, count) {
+      const shuffled = [...arr].sort(() => Math.random() - 0.5);
+      return shuffled.slice(0, count);
+    }
+
+    function getRealPlayers(category, count) {
+      if (!DB || !DB.cricket || !DB.cricket[category]) return [];
+      const players = DB.cricket[category];
+      return pickRandom(players, Math.min(count, players.length));
+    }
+
+    const RCB_SQUAD = [
+      { name: 'Virat Kohli', role: 'Batter', img: 'assets/community/avatar1.jpg' },
+      { name: 'Faf du Plessis', role: 'Batter', img: 'assets/community/avatar2.jpg' },
+      { name: 'Glenn Maxwell', role: 'All-rounder', img: 'assets/community/avatar1.jpg' },
+      { name: 'Rajat Patidar', role: 'Batter', img: 'assets/community/avatar2.jpg' },
+      { name: 'Cameron Green', role: 'All-rounder', img: 'assets/community/avatar1.jpg' },
+      { name: 'Dinesh Karthik', role: 'Wicket-keeper', img: 'assets/community/avatar2.jpg' },
+      { name: 'Wanindu Hasaranga', role: 'All-rounder', img: 'assets/community/avatar1.jpg' },
+      { name: 'Mohammed Siraj', role: 'Bowler', img: 'assets/community/avatar2.jpg' },
+      { name: 'Josh Hazlewood', role: 'Bowler', img: 'assets/community/avatar1.jpg' },
+      { name: 'Karn Sharma', role: 'Bowler', img: 'assets/community/avatar2.jpg' },
+      { name: 'Harshal Patel', role: 'Bowler', img: 'assets/community/avatar1.jpg' },
+    ];
+    const CSK_SQUAD = [
+      { name: 'Ruturaj Gaikwad', role: 'Batter', img: 'assets/community/avatar2.jpg' },
+      { name: 'Devon Conway', role: 'Batter', img: 'assets/community/avatar1.jpg' },
+      { name: 'Ajinkya Rahane', role: 'Batter', img: 'assets/community/avatar2.jpg' },
+      { name: 'Shivam Dube', role: 'All-rounder', img: 'assets/community/avatar1.jpg' },
+      { name: 'MS Dhoni', role: 'Wicket-keeper', img: 'assets/community/avatar2.jpg' },
+      { name: 'Ravindra Jadeja', role: 'All-rounder', img: 'assets/community/avatar1.jpg' },
+      { name: 'Moeen Ali', role: 'All-rounder', img: 'assets/community/avatar2.jpg' },
+      { name: 'Deepak Chahar', role: 'Bowler', img: 'assets/community/avatar1.jpg' },
+      { name: 'Tushar Deshpande', role: 'Bowler', img: 'assets/community/avatar2.jpg' },
+      { name: 'Maheesh Theekshana', role: 'Bowler', img: 'assets/community/avatar1.jpg' },
+      { name: 'Matheesha Pathirana', role: 'Bowler', img: 'assets/community/avatar2.jpg' },
+    ];
+
+    function makeSquad(names, roles) {
+      return names.map(function(n,i){return {name:n,role:roles[i]||'Player',img:'assets/community/avatar'+(i%2+1)+'.jpg'};});
+    }
+    var MI_SQUAD = makeSquad(['Rohit Sharma','Ishan Kishan','Suryakumar Yadav','Tilak Varma','Tim David','Hardik Pandya','Kieron Pollard','Jasprit Bumrah','Trent Boult','Piyush Chawla','Akash Madhwal'],['Batter','Wicket-keeper','Batter','Batter','All-rounder','All-rounder','All-rounder','Bowler','Bowler','Bowler','Bowler']);
+    var KKR_SQUAD = makeSquad(['Shubman Gill','Venkatesh Iyer','Nitish Rana','Rinku Singh','Andre Russell','Sunil Narine','Shardul Thakur','Pat Cummins','Varun Chakravarthy','Kuldeep Yadav','Harshit Rana'],['Batter','Batter','Batter','Batter','All-rounder','All-rounder','All-rounder','Bowler','Bowler','Bowler','Bowler']);
+    var SRH_SQUAD = makeSquad(['David Warner','KL Rahul','Kane Williamson','Manish Pandey','Abdul Samad','Rashid Khan','Bhuvneshwar Kumar','T Natarajan','Siddarth Kaul','Shahbaz Nadeem','K Khaleel'],['Batter','Wicket-keeper','Batter','Batter','Batter','All-rounder','Bowler','Bowler','Bowler','Bowler','Bowler']);
+    var DC_SQUAD = makeSquad(['David Warner','Prithvi Shaw','Shreyas Iyer','Rishabh Pant','Marcus Stoinis','Axar Patel','Ravichandran Ashwin','Kagiso Rabada','Anrich Nortje','Avesh Khan','Ishant Sharma'],['Batter','Batter','Batter','Wicket-keeper','All-rounder','All-rounder','All-rounder','Bowler','Bowler','Bowler','Bowler']);
+    var PBKS_SQUAD = makeSquad(['KL Rahul','Mayank Agarwal','Chris Gayle','Nicholas Pooran','Deepak Hooda','Shahrukh Khan','Moises Henriques','Mohammed Shami','Arshdeep Singh','Ravi Bishnoi','Mujeeb Ur Rahman'],['Wicket-keeper','Batter','Batter','Wicket-keeper','All-rounder','Batter','All-rounder','Bowler','Bowler','Bowler','Bowler']);
+    var RR_SQUAD = makeSquad(['Sanju Samson','Jos Buttler','Steve Smith','Ben Stokes','Riyan Parag','Ravindra Jadeja','Jofra Archer','Sandeep Sharma','Jaydev Unadkat','Shreyas Gopal','Varun Aaron'],['Wicket-keeper','Wicket-keeper','Batter','All-rounder','All-rounder','All-rounder','Bowler','Bowler','Bowler','Bowler','Bowler']);
+    var GT_SQUAD = makeSquad(['Shubman Gill','Wriddhiman Saha','David Miller','Abhinav Manohar','Rahul Tewatia','Rashid Khan','Mohammed Shami','Yash Dayal','Noor Ahmad','Joshua Little','Alzarri Joseph'],['Batter','Wicket-keeper','Batter','Batter','All-rounder','All-rounder','Bowler','Bowler','Bowler','Bowler','Bowler']);
+    var LSG_SQUAD = makeSquad(['KL Rahul','Quinton de Kock','Deepak Hooda','Marcus Stoinis','Krunal Pandya','Jason Holder','Ravi Bishnoi','Avesh Khan','Mark Wood','Mohan Singh','Ayush Badoni'],['Wicket-keeper','Wicket-keeper','Batter','All-rounder','All-rounder','All-rounder','Bowler','Bowler','Bowler','Bowler','Batter']);
+    var IND_SQUAD = makeSquad(['Rohit Sharma','Shubman Gill','Virat Kohli','Shreyas Iyer','KL Rahul','Hardik Pandya','Ravindra Jadeja','R Ashwin','Jasprit Bumrah','Mohammed Siraj','Kuldeep Yadav'],['Batter','Batter','Batter','Batter','Wicket-keeper','All-rounder','All-rounder','All-rounder','Bowler','Bowler','Bowler']);
+    var AUS_SQUAD = makeSquad(['David Warner','Travis Head','Steve Smith','Marnus Labuschagne','Alex Carey','Mitchell Marsh','Pat Cummins','Mitchell Starc','Josh Hazlewood','Nathan Lyon','Adam Zampa'],['Batter','Batter','Batter','Batter','Wicket-keeper','All-rounder','Bowler','Bowler','Bowler','Bowler','Bowler']);
+    var PAK_SQUAD = makeSquad(['Babar Azam','Mohammad Rizwan','Fakhar Zaman','Shan Masood','Saud Shakeel','Iftikhar Ahmed','Shadab Khan','Shaheen Afridi','Naseem Shah','Haris Rauf','Shahnawaz Dahani'],['Batter','Wicket-keeper','Batter','Batter','Batter','All-rounder','All-rounder','Bowler','Bowler','Bowler','Bowler']);
+    var ENG_SQUAD = makeSquad(['Jos Buttler','Jonny Bairstow','Joe Root','Ben Stokes','Harry Brook','Moeen Ali','Sam Curran','Chris Woakes','Jofra Archer','Adil Rashid','Mark Wood'],['Wicket-keeper','Wicket-keeper','Batter','All-rounder','Batter','All-rounder','All-rounder','All-rounder','Bowler','Bowler','Bowler']);
+    var SIXERS_SQUAD = makeSquad(['Josh Philippe','James Vince','Moises Henriques','Jordan Silk','Dan Christian','Tom Curran','Sean Abbott','Ben Dwarshuis','Steve O\'Keefe','Jackson Bird','Lloyd Pope'],['Wicket-keeper','Batter','Batter','Batter','All-rounder','All-rounder','All-rounder','Bowler','Bowler','Bowler','Bowler']);
+    var STARS_SQUAD = makeSquad(['Marcus Stoinis','Glenn Maxwell','Hilton Cartwright','Nic Maddinson','Peter Handscomb','Nathan Coulter-Nile','Adam Zampa','Trent Boult','Liam Hatcher','Brody Couch','Sam Rainbird'],['All-rounder','All-rounder','Batter','Batter','Wicket-keeper','All-rounder','Bowler','Bowler','Bowler','Bowler','Bowler']);
+    var SCORCHERS_SQUAD = makeSquad(['Cameron Bancroft','Colin Munro','Aaron Hardie','Josh Inglis','Ashton Turner','Ashton Agar','Jhye Richardson','Andrew Tye','Jason Behrendorff','Matthew Kelly','Peter Hatzoglou'],['Wicket-keeper','Batter','All-rounder','Wicket-keeper','Batter','All-rounder','Bowler','Bowler','Bowler','Bowler','Bowler']);
+    var HEAT_SQUAD = makeSquad(['Chris Lynn','Max Bryant','Sam Hain','Matt Renshaw','Jimmy Peirson','Michael Neser','James Bazley','Xavier Bartlett','Mark Steketee','Mujeeb Ur Rahman','Mitchell Swepson'],['Batter','Batter','Batter','Batter','Wicket-keeper','All-rounder','All-rounder','Bowler','Bowler','Bowler','Bowler']);
+    const ALL_SQUADS = { rcb: RCB_SQUAD, csk: CSK_SQUAD, mi: MI_SQUAD, kkr: KKR_SQUAD, srh: SRH_SQUAD, dc: DC_SQUAD, pbks: PBKS_SQUAD, rr: RR_SQUAD, gt: GT_SQUAD, lsg: LSG_SQUAD, ind: IND_SQUAD, aus: AUS_SQUAD, pak: PAK_SQUAD, eng: ENG_SQUAD, sixers: SIXERS_SQUAD, stars: STARS_SQUAD, scorchers: SCORCHERS_SQUAD, heat: HEAT_SQUAD };
+
+    function buildSquadFromDB(key) {
+      const sq = ALL_SQUADS[key];
+      return sq ? sq.map(p => ({...p})) : [...RCB_SQUAD];
+    }
+
+    function buildBattingFromDB(side) {
+      if (!DB || !DB.cricket) return [
+        { name: 'Ruturaj Gaikwad', runs: 68, balls: 45, fours: 8, sixes: 2, sr: 151.11, out: 'c Kohli b Siraj' },
+        { name: 'Devon Conway', runs: 42, balls: 31, fours: 5, sixes: 1, sr: 135.48, out: 'b Hazlewood' },
+        { name: 'Ajinkya Rahane', runs: 24, balls: 18, fours: 3, sixes: 1, sr: 133.33, out: 'c Maxwell b Harshal' },
+        { name: 'Shivam Dube', runs: 36, balls: 22, fours: 2, sixes: 3, sr: 163.64, out: 'run out' },
+        { name: 'MS Dhoni', runs: 28, balls: 14, fours: 1, sixes: 2, sr: 200.00, out: 'not out' },
+        { name: 'Ravindra Jadeja', runs: 22, balls: 12, fours: 2, sixes: 1, sr: 183.33, out: 'not out' },
+      ];
+      const bats = getRealPlayers(side === 'home' ? 'odi_bat_men' : 't20_bat_men', 6);
+      return bats.map((p, i) => ({
+        name: p.name,
+        runs: Math.floor(p.runs / p.matches * (0.5 + Math.random())),
+        balls: Math.floor(20 + Math.random() * 40),
+        fours: Math.floor(2 + Math.random() * 8),
+        sixes: Math.floor(Math.random() * 4),
+        sr: Math.floor((p.avg || 40) + Math.random() * 40),
+        out: i < 4 ? 'c & b ' + (['Bumrah','Siraj','Hazlewood','Harshal','Maxwell'][Math.floor(Math.random()*5)]) : 'not out',
+      }));
+    }
+
+    function buildBowlingFromDB(side) {
+      if (!DB || !DB.cricket) return [
+        { name: 'Mohammed Siraj', overs: 4, maidens: 0, runs: 42, wickets: 1, economy: 10.50 },
+        { name: 'Josh Hazlewood', overs: 4, maidens: 0, runs: 38, wickets: 1, economy: 9.50 },
+        { name: 'Jasprit Bumrah', overs: 4, maidens: 0, runs: 35, wickets: 1, economy: 8.75 },
+        { name: 'Harshal Patel', overs: 4, maidens: 0, runs: 52, wickets: 1, economy: 13.00 },
+        { name: 'Glenn Maxwell', overs: 2, maidens: 0, runs: 28, wickets: 0, economy: 14.00 },
+        { name: 'Wanindu Hasaranga', overs: 2, maidens: 0, runs: 24, wickets: 0, economy: 12.00 },
+      ];
+      const bowlers = getRealPlayers('odi_bowl_men', 6);
+      return bowlers.map(p => ({
+        name: p.name,
+        overs: Math.floor(2 + Math.random() * 3),
+        maidens: Math.floor(Math.random() * 2),
+        runs: Math.floor(20 + Math.random() * 40),
+        wickets: Math.floor(Math.random() * 3),
+        economy: Math.round((p.econ || 5) + Math.random() * 3),
+      }));
+    }
+
+    let MATCH_DATA = {};
+
+    // ============================================
+    // REAL IPL DATA — pre-defined ball arrays for each matchup
+    var REAL_BALLS = {
+      'RCB-CSK':{away:[[0,4,1,0,4,0],[0,2,4,1,0,1],[6,4,0,1,1,0],[0,4,1,2,0,1],['W',0,6,4,1,0],[0,2,6,0,'W',0],[4,1,1,0,2,'W'],[6,1,4,2,0,0],[1,6,4,0,1,1],[0,1,0,'W',4,1],[0,6,1,0,2,1],[0,4,1,0,1,0],[1,0,0,0,'W',0],[1,1,4,1,'W',0],[1,0,0,1,0,'W'],[1,4,0,1,1,2],[1,6,0,1,4,1],[0,1,6,0,4,1]],home:[[0,4,1,0,4,0],[0,1,2,0,1,4],[0,1,6,4,2,1],[0,1,4,0,1,0],['W',0,6,4,1,0],[0,2,6,0,'W',0],[4,1,0,2,1,0],[1,'W',0,1,0,1],[0,1,0,1,4,1],[0,1,4,1,0,1],[0,1,6,0,'W',1],[6,4,1,0,1,0],[6,1,0,'W',0,1],[0,4,1,1,0,'W'],[0,1,1,0,1,0],[0,1,'W',0,1,1],[1,0,1,1,0,1],[2,1,0,1,1,0],[6,0,4,1,0,2]]},
+    };
+    function bakeInnings(batNames, bowlNames, balls) {
+      var bL=[], tR=0, tW=0, bS={}, bwS={};
+      batNames.forEach(function(n){ bS[n]={runs:0,balls:0,fours:0,sixes:0,out:false,outDesc:'not out'}; });
+      bowlNames.forEach(function(n){ bwS[n]={balls:0,runs:0,wickets:0}; });
+      var bats=[batNames[0], batNames[1]], bi=-1;
+      balls.forEach(function(ov, oi){
+        if(tW>=10) return;
+        bi=(bi+1)%bowlNames.length;
+        var bowl=bowlNames[bi];
+        ov.forEach(function(res, ballIdx){
+          if(tW>=10) return;
+          var striker=bats[0];
+          bS[striker].balls++;
+          if(res===4||res===6){tR+=res;bS[striker].runs+=res;if(res===4)bS[striker].fours++;else bS[striker].sixes++}
+          else if(res==='W'){tW++;bS[striker].out=true;bS[striker].outDesc='c & b '+bowl.split(' ').pop();bwS[bowl].wickets++;var ni=Math.min(2+tW,batNames.length-1);if(ni<batNames.length)bats[0]=batNames[ni]}
+          else if(res>0){tR+=res;bS[striker].runs+=res;if(res===1)bats=[bats[1],bats[0]]}
+          bwS[bowl].runs+=typeof res==='number'?res:0;
+          bwS[bowl].balls++;
+          bL.push({over:(oi+1)+'.'+(ballIdx+1),batter:striker.split(' ').pop(),bowler:bowl.split(' ').pop(),result:res.toString(),text:res===4?'FOUR! Crunched!':res===6?'SIX! Massive!':res==='W'?'WICKET!':'Dot ball.'});
         });
       });
-    </script>
-
-    <script>
-      function showEvent(type) {
-        const eventBox = document.getElementById("matchEvent");
-
-        const text = document.getElementById("eventText");
-
-        text.className = "";
-
-        if (type === "four") {
-          text.innerHTML = "🔥 SOLID FOUR";
-          text.classList.add("event-four");
-        } else if (type === "six") {
-          text.innerHTML = "🚀 MASSIVE SIX";
-          text.classList.add("event-six");
-        } else if (type === "wicket") {
-          text.innerHTML = "🔴 WICKET! 🏏🙌";
-          text.classList.add("event-wicket");
+      var fs=tR+'/'+tW, fo=balls.length+'.0';
+      var ba=batNames.map(function(n){var s=bS[n];return{name:n,runs:s.runs,balls:s.balls,fours:s.fours,sixes:s.sixes,sr:s.balls>0?Math.round((s.runs/s.balls)*100):0,out:s.out?s.outDesc:'not out'};});
+      var boa=bowlNames.map(function(n){var s=bwS[n];return{name:n,overs:Math.floor(s.balls/6)+'.'+(s.balls%6),maidens:0,runs:s.runs,wickets:s.wickets,economy:s.balls>0?parseFloat(((s.runs/s.balls)*6).toFixed(2)):0};});
+      return {finalScore:fs,finalOvers:fo,ballByBall:bL,batting:ba,bowling:boa,totalRuns:tR,totalWickets:tW};
+    }
+    // Sport match lookup: maps team pairs to match data for non-cricket sports
+    var SPORT_MATCHES = {
+      football: {
+        'England-Argentina': { homeScore:'3', awayScore:'1', homePlayers:['Harry Kane','Bukayo Saka','Jude Bellingham'], awayPlayers:['Lionel Messi','Angel Di Maria'], events:[{over:"89'",result:'⚽',text:'GOAL! Kane scores from the penalty spot! 3-1!'},{over:"76'",result:'⚽',text:'GOAL! Saka doubles England lead!'},{over:"68'",result:'0',text:'Messi free-kick just wide of the post.'},{over:"55'",result:'⚽',text:'GOAL! Kane header! England take the lead!'},{over:"42'",result:'⚽',text:'GOAL! Di Maria equalizes for Argentina!'},{over:"22'",result:'0',text:'Bellingham shot saved by Martinez.'},{over:"7'",result:'0',text:'England dominate early possession.'}], },
+        'Portugal-Netherlands': { homeScore:'2', awayScore:'2', homePlayers:['Cristiano Ronaldo','Bruno Fernandes','Bernardo Silva'], awayPlayers:['Memphis Depay','Frenkie de Jong','Virgil van Dijk'], events:[{over:"90+3'",result:'⚽',text:'GOAL! Depay equalizes in stoppage time! 2-2!'},{over:"82'",result:'⚽',text:'GOAL! Ronaldo heads home! Portugal lead!'},{over:"65'",result:'⚽',text:'GOAL! De Jong with a stunning volley! 1-1!'},{over:"38'",result:'⚽',text:'GOAL! Fernandes free-kick finds the net!'},{over:"20'",result:'0',text:'Ronaldo shot saved by the keeper.'}], },
+        'France-Brazil': { homeScore:'1', awayScore:'3', homePlayers:['Kylian Mbappe','Antoine Griezmann'], awayPlayers:['Neymar','Vinícius Jr','Rodrygo'], events:[{over:"78'",result:'0',text:'Mbappe shoots over the bar.'},{over:"65'",result:'⚽',text:'GOAL! Neymar penalty! Brazil 3-1!'},{over:"52'",result:'⚽',text:'GOAL! Vinícius Jr doubles Brazil lead!'},{over:"41'",result:'⚽',text:'GOAL! Rodrygo puts Brazil ahead!'},{over:"28'",result:'⚽',text:'GOAL! Mbappe equalizes for France!'},{over:"12'",result:'0',text:'Griezmann corner cleared by Brazilian defense.'}], },
+        'USA-Germany': { homeScore:'0', awayScore:'4', homePlayers:['Christian Pulisic','Weston McKennie'], awayPlayers:['Jamal Musiala','Florian Wirtz','Leroy Sane'], events:[{over:"88'",result:'⚽',text:'GOAL! Wirtz adds a fourth! Dominant Germany!'},{over:"72'",result:'⚽',text:'GOAL! Musiala scores his second!'},{over:"55'",result:'⚽',text:'GOAL! Sane scores with a deflected shot!'},{over:"34'",result:'⚽',text:'GOAL! Musiala opens the scoring!'}], },
+        'Spain-Japan': { homeScore:'2', awayScore:'2', homePlayers:['Pedri','Lamine Yamal','Rodri'], awayPlayers:['Takefusa Kubo','Takehiro Tomiyasu'], events:[{over:"90'",result:'⚽',text:'GOAL! Rodri penalty! Spain equalize!'},{over:"81'",result:'⚽',text:'GOAL! Yamal with a brilliant solo goal!'},{over:"63'",result:'⚽',text:'GOAL! Kubo finishes a counterattack!'},{over:"44'",result:'⚽',text:'GOAL! Japan takes the lead through a set-piece!'}], },
+        'Morocco-Senegal': { homeScore:'1', awayScore:'0', homePlayers:['Achraf Hakimi','Sofyan Amrabat','Hakim Ziyech'], awayPlayers:['Sadio Mane'], events:[{over:"73'",result:'⚽',text:'GOAL! Ziyech scores! Morocco lead!'},{over:"55'",result:'0',text:'Mane header saved brilliantly.'},{over:"30'",result:'0',text:'Hakimi long-range shot just wide.'}], },
+        'Brazil-Croatia': { homeScore:'2', awayScore:'1', homePlayers:['Neymar','Vinícius Jr','Raphinha'], awayPlayers:['Luka Modric','Ivan Perisic','Josko Gvardiol'], events:[{over:"85'",result:'⚽',text:'GOAL! Neymar scores the winner! 2-1!'},{over:"68'",result:'⚽',text:'GOAL! Perisic equalizes for Croatia!'},{over:"42'",result:'⚽',text:'GOAL! Vinícius Jr puts Brazil ahead!'}], },
+        'Italy-Mexico': { homeScore:'1', awayScore:'1', homePlayers:['Lorenzo Insigne','Gianluigi Donnarumma'], awayPlayers:['Raul Jimenez','Hirving Lozano'], events:[{over:"79'",result:'⚽',text:'GOAL! Jimenez equalizes with a header!'},{over:"15'",result:'⚽',text:'GOAL! Insigne with a lovely left-footed finish!'}], },
+        'RealMadrid-Bayern': { homeScore:'2', awayScore:'1', homePlayers:['Karim Benzema','Vinicius Jr','Luka Modric'], awayPlayers:['Harry Kane','Joshua Kimmich','Jamal Musiala'], events:[{over:"82'",result:'⚽',text:'GOAL! Benzema with a header! Real Madrid take the lead!'},{over:"67'",result:'⚽',text:'GOAL! Kane equalizes from the penalty spot!'},{over:"38'",result:'⚽',text:'GOAL! Vinicius Jr opens the scoring for Real Madrid!'},{over:"22'",result:'0',text:'Kimmich free-kick saved by Courtois!'}], },
+      },
+      basketball: {
+        'Lakers-Celtics': { homeScore:'112', awayScore:'108', events:[{over:'Q4 1:30',result:'2',text:'Davis scores in the paint! Lakers lead 112-108!'},{over:'Q4 2:15',result:'3',text:'Tatum hits a clutch three! Celtics within 2!'},{over:'Q4 3:00',result:'2',text:'LeBron drives and finishes through contact!'},{over:'Q3 End',result:'0',text:'Lakers lead 86-82 going into the final quarter.'},{over:'Q2 Mid',result:'3',text:'Reaves hits a step-back three at the buzzer!'}] },
+        'Bucks-Warriors': { homeScore:'98', awayScore:'104', events:[{over:'Q4 0:45',result:'3',text:'Curry dagger three! Warriors lead by 6!'},{over:'Q4 2:30',result:'2',text:'Antetokounmpo slam dunk! Bucks trail by 3!'},{over:'Q3 8:00',result:'3',text:'Thompson catches fire from downtown!'},{over:'Q1 End',result:'2',text:'Warriors lead 30-25 after the first.'}] },
+        'Heat-Nuggets': { homeScore:'95', awayScore:'101', events:[{over:'Q4 0:30',result:'0',text:'Herro misses a game-tying three!'},{over:'Q4 1:00',result:'2',text:'Jokic scores inside! Nuggets lead by 6!'},{over:'Q3 5:00',result:'2',text:'Butler drives hard to the basket!'}] },
+        'RealMadrid-Barcelona': { homeScore:'88', awayScore:'92', events:[{over:'Q4 1:15',result:'3',text:'Laprovittola three! Barcelona lead!'},{over:'Q4 3:00',result:'2',text:'Campazzo ties the game!'},{over:'Q2 4:00',result:'0',text:'Mirotic blocks a shot at the rim!'}] },
+        'USA-Spain': { homeScore:'110', awayScore:'97', events:[{over:'Q4 2:00',result:'2',text:'Edwards poster dunk! USA cruising!'},{over:'Q3 6:00',result:'3',text:'Brunson hits a three to extend the lead!'},{over:'Q1 8:00',result:'2',text:'Brown opens the scoring for USA!'}] },
+        'Fenerbahce-Olympiacos': { homeScore:'78', awayScore:'82', events:[{over:'Q4 0:10',result:'3',text:'Sloukas free throws seal it!'},{over:'Q4 2:00',result:'2',text:'Motley scores inside for Fener!'},{over:'Q3 Start',result:'0',text:'Olympiacos start the second half strong!'}] },
+        'Thunder-Mavericks': { homeScore:'105', awayScore:'99', events:[{over:'Q4 1:00',result:'2',text:'SGA step-back jumper! Thunder lead!'},{over:'Q3 4:00',result:'3',text:'Doncic step-back three!'},{over:'Q1 10:00',result:'2',text:'Holmgren blocks at the rim!'}] },
+        'Canada-Australia': { homeScore:'91', awayScore:'85', events:[{over:'Q4 1:30',result:'2',text:'Murray hits a clutch mid-range!'},{over:'Q3 5:00',result:'3',text:'Brooks three gives Canada breathing room!'},{over:'Q2 2:00',result:'2',text:'Delly drives hard for the score!'}] },
+      },
+      tennis: {
+        'Djokovic-Alcaraz': { homeScore:'1', awayScore:'2', events:[{over:'Set 3 - 6-4',result:'A',text:'Alcaraz wins the match! 4-6, 7-5, 6-4!'},{over:'Set 3 - 5-4',result:'0',text:'Djokovic holds serve to stay in the match.'},{over:'Set 2 - 7-5',result:'0',text:'Alcaraz breaks to take the second set!'},{over:'Set 1 - 6-4',result:'0',text:'Djokovic takes the first set with a single break.'}] },
+        'Swiatek-Rybakina': { homeScore:'2', awayScore:'0', events:[{over:'Set 2 - 6-3',result:'A',text:'Swiatek wins the championship point!'},{over:'Set 1 - 6-4',result:'0',text:'Swiatek breaks to take the first set!'}] },
+        'Djokovic-Nadal': { homeScore:'2', awayScore:'1', events:[{over:'Set 3 - 7-6',result:'A',text:'Djokovic wins the tiebreak! Epic match!'},{over:'Set 2 - 6-3',result:'0',text:'Nadal takes the second set!'},{over:'Set 1 - 7-5',result:'0',text:'Djokovic breaks late to win the first set!'}] },
+        'Alcaraz-Sinner': { homeScore:'2', awayScore:'1', events:[{over:'Set 3 - 6-2',result:'A',text:'Alcaraz with a forehand winner! Match!'},{over:'Set 2 - 6-4',result:'0',text:'Sinner levels the match!'},{over:'Set 1 - 6-3',result:'0',text:'Alcaraz breaks early to take the first!'}] },
+        'Swiatek-Sabalenka': { homeScore:'2', awayScore:'1', events:[{over:'Set 3 - 6-4',result:'A',text:'Swiatek wins with a backhand down the line!'},{over:'Set 2 - 6-2',result:'0',text:'Sabalenka dominates the second set!'},{over:'Set 1 - 6-3',result:'0',text:'Swiatek takes the first set with aggressive play!'}] },
+        'Medvedev-Rublev': { homeScore:'0', awayScore:'2', events:[{over:'Set 2 - 6-4',result:'A',text:'Rublev wins! Upset victory!'},{over:'Set 1 - 7-5',result:'0',text:'Rublev takes the first set with powerful groundstrokes!'}] },
+      },
+      baseball: {
+        'New York Yankees-Boston Red Sox': { homeScore:'3', awayScore:'2', events:[{over:'Bot 9th',result:'HR',text:'WALK OFF! Stanton crushes one into the bleachers! 3-2!'},{over:'Top 8th',result:'2',text:'Devers doubles to give Red Sox the lead!'},{over:'Bot 6th',result:'2',text:'Judge lines an RBI double to tie the game!'},{over:'Top 4th',result:'HR',text:'Solo home run for Rafael Devers!'}] },
+        'Los Angeles Dodgers-San Francisco Giants': { homeScore:'4', awayScore:'2', events:[{over:'Bot 4th',result:'HR',text:'HOME RUN! Betts goes deep to left field!'},{over:'Top 3rd',result:'0',text:'Giants stranded two runners.'},{over:'Bot 2nd',result:'2',text:'Freeman doubles to drive in two runs!'},{over:'Top 1st',result:'1',text:'Giants get an early run on a sacrifice fly.'}] },
+        'American League-National League': { homeScore:'5', awayScore:'3', events:[{over:'Bot 7th',result:'HR',text:'All-Star MVP candidate crushes a 3-run homer!'},{over:'Top 5th',result:'2',text:'Corbin Carroll triples in a run for the NL!'},{over:'Bot 3rd',result:'HR',text:'Soto hits a solo shot to left field!'},{over:'Top 2nd',result:'1',text:'Acuna singles to drive in the first run!'}] },
+        'Chicago Cubs-St. Louis Cardinals': { homeScore:'2', awayScore:'1', events:[{over:'Bot 8th',result:'HR',text:'Bellinger solo homer! Cubs take the lead!'},{over:'Top 6th',result:'0',text:'Arenado grounds into a double play.'},{over:'Bot 4th',result:'SB',text:'Swanson steals second!'},{over:'Top 2nd',result:'2',text:'Goldschmidt doubles to score Arenado!'},{over:'Bot 1st',result:'0',text:'Hoerner reaches on an infield single.'}] },
+        'Home Run Derby-All-Star Festivities': { homeScore:'0', awayScore:'0', events:[{over:'Final',result:'HR',text:'Vladimir Guerrero Jr. wins the Home Run Derby!'},{over:'Round 3',result:'HR',text:'J-Rod hits 28 homers to advance!'},{over:'Round 2',result:'HR',text:'Alonso ties the record with 24 homers!'},{over:'Round 1',result:'HR',text:'Ohtani crushes 22 home runs!'}] },
+        'Houston Astros-Texas Rangers': { homeScore:'6', awayScore:'4', events:[{over:'Bot 8th',result:'HR',text:'Alvarez 3-run homer! Astros take control!'},{over:'Top 6th',result:'2',text:'Semien RBI double for the Rangers!'},{over:'Bot 4th',result:'HR',text:'Tucker solo shot! Astros extend the lead!'},{over:'Top 2nd',result:'HR',text:'Garcia 2-run homer! Rangers strike first!'}] },
+        'Atlanta Braves-New York Mets': { homeScore:'5', awayScore:'3', events:[{over:'Bot 9th',result:'2',text:'Albies walk-off double! Braves win!'},{over:'Top 8th',result:'HR',text:'Lindor solo shot, Mets tie the game!'},{over:'Bot 6th',result:'HR',text:'Olson massive homer to center field!'},{over:'Top 4th',result:'2',text:'McNeil RBI double for the Mets!'},{over:'Bot 2nd',result:'1',text:'Acuna infield single brings in a run!'}] },
+      },
+      hockey: {
+        'Maple Leafs-Senators': { homeScore:'4', awayScore:'2', events:[{over:'P3 14:00',result:'⚽',text:'Marner empty net goal! Toronto wins!'},{over:'P2 18:30',result:'⚽',text:'Matthews one-timer on the power play!'},{over:'P1 12:45',result:'⚽',text:'Stutzle ties it for Ottawa!'},{over:'P1 08:20',result:'⚽',text:'Tavares opens the scoring for Toronto!'}] },
+        'Oilers-Canucks': { homeScore:'3', awayScore:'2', events:[{over:'P3 02:15',result:'⚽',text:'McDavid scores the game winner! Oilers win!'},{over:'P2 15:30',result:'⚽',text:'Pettersson ties it for Vancouver!'},{over:'P1 08:00',result:'⚽',text:'Hyman opens the scoring for Edmonton!'}] },
+        'Sweden U20-Finland U20': { homeScore:'2', awayScore:'3', events:[{over:'P3 05:45',result:'⚽',text:'Finland scores the game-winner in OT!'},{over:'P2 18:00',result:'⚽',text:'Sweden ties the game on the PP!'},{over:'P1 14:30',result:'⚽',text:'Finland scores a short-handed goal!'},{over:'P1 06:00',result:'⚽',text:'Sweden strikes first with a wrist shot!'}] },
+        'Bruins-Panthers': { homeScore:'1', awayScore:'0', events:[{over:'OT 03:20',result:'⚽',text:'MARCHAND SCORES IN OVERTIME! BRUINS WIN!'},{over:'P3 10:00',result:'0',text:'Bobrovsky robs Pastrnak with a pad save!'},{over:'P2 15:00',result:'0',text:'Barkov hits the crossbar!'},{over:'P1 12:00',result:'0',text:'Fast start from both sides, no score.'}] },
+        'Canada U20-USA U20': { homeScore:'4', awayScore:'3', events:[{over:'P3 19:00',result:'⚽',text:'Canada scores the game-winner! What a back-and-forth!'},{over:'P2 10:30',result:'⚽',text:'USA ties it with a beautiful tic-tac-toe!'},{over:'P1 16:00',result:'⚽',text:'Canada takes the lead on a breakaway!'},{over:'P1 04:00',result:'⚽',text:'USA opens the scoring off a faceoff!'}] },
+        'Canada U20-Finland U20': { homeScore:'5', awayScore:'2', events:[{over:'P3 08:00',result:'⚽',text:'Canada scores on the power play! Dominant!'},{over:'P2 12:00',result:'⚽',text:'Finland cuts the lead with a deflection!'},{over:'P1 18:00',result:'⚽',text:'Connor Bedard scores a highlight-reel goal!'},{over:'P1 10:00',result:'⚽',text:'Canada strikes twice in 30 seconds!'},{over:'P1 02:00',result:'⚽',text:'Canada opens the scoring early!'}] },
+        'Golden Knights-Kings': { homeScore:'2', awayScore:'0', events:[{over:'P3 12:30',result:'⚽',text:'Golden Knights score the insurance goal!'},{over:'P2 04:15',result:'⚽',text:'Vegas scores on a deflection in front!'},{over:'P1 15:00',result:'0',text:'Quick excellent save to keep it scoreless.'}] },
+      },
+      kabaddi: {
+        'India-Iran': { homeScore:'38', awayScore:'32', events:[{over:'Last Raid',result:'★',text:'Pawan Sehrawat does a bonus point raid! India wins!'},{over:'Min 35',result:'★',text:'ALL OUT! India inflicts an all out on Iran!'},{over:'Min 28',result:'★',text:'Fazel Atrachali ankle hold! Iran fighting back!'},{over:'Min 20',result:'★',text:'Naveen Kumar scores 5 raid points in a row!'},{over:'Min 12',result:'★',text:'Mohammad Nabibakhsh executes a perfect toe touch!'},{over:'Min 5',result:'★',text:'Manjeet Chhillar with a diving ankle hold!'}] },
+        'Patna Pirates-Bengal Warriors': { homeScore:'42', awayScore:'36', events:[{over:'Last Raid',result:'★',text:'Prashant Rai successful raid! Patna wins!'},{over:'Min 32',result:'★',text:'ALL OUT! Patna Pirates inflict an all out!'},{over:'Min 24',result:'★',text:'Maninder Singh tackle! Warriors fighting back!'},{over:'Min 15',result:'★',text:'Sachin blocks a raid point for Patna!'},{over:'Min 8',result:'★',text:'Mohit Goyat with a running hand touch!'}] },
+        'Pakistan-South Korea': { homeScore:'29', awayScore:'26', events:[{over:'Last Raid',result:'★',text:'Pakistan holds on for a thrilling victory!'},{over:'Min 30',result:'★',text:'ALL OUT! Pakistan clears the Korean defense!'},{over:'Min 22',result:'★',text:'Jung Soo-kyung scores a crucial raid point!'},{over:'Min 14',result:'★',text:'Tahir Ali with a powerful tackle!'},{over:'Min 6',result:'★',text:'Pakistan starts with a bonus point raid!'}] },
+        'Iran-South Korea': { homeScore:'35', awayScore:'28', events:[{over:'Last Raid',result:'★',text:'Fazel Atrachali tackle! Iran secures the win!'},{over:'Min 33',result:'★',text:'Iran with a super tackle to stop the Korean raid!'},{over:'Min 25',result:'★',text:'ALL OUT! Iran dominates the Korean defense!'},{over:'Min 16',result:'★',text:'Kim Seong-ryeol scores with a toe touch!'},{over:'Min 8',result:'★',text:'Mohammad Reza Shadloui with a diving tackle!'}] },
+        'India-Pakistan': { homeScore:'41', awayScore:'34', events:[{over:'Last Raid',result:'★',text:'Pawan Sehrawat final raid! India wins the classic!'},{over:'Min 34',result:'★',text:'ALL OUT! India inflicts a massive all out!'},{over:'Min 26',result:'★',text:'Pakistan fights back with a 3-point super raid!'},{over:'Min 18',result:'★',text:'Naveen Kumar with a brilliant running hand touch!'},{over:'Min 10',result:'★',text:'Pakistan starts with a bonus point!'}] },
+        'U Mumba-Patna Pirates': { homeScore:'37', awayScore:'39', events:[{over:'Last Raid',result:'★',text:'Patna scores on the final raid! Narrow win!'},{over:'Min 31',result:'★',text:'Patna inflicts an all out to take the lead!'},{over:'Min 23',result:'★',text:'U Mumba fighting back with super tackles!'},{over:'Min 14',result:'★',text:'Patna Pirates with a super raid!'},{over:'Min 6',result:'★',text:'U Mumba opens with a tackle point!'}] },
+        'Bengal Warriors-U Mumba': { homeScore:'40', awayScore:'35', events:[{over:'Last Raid',result:'★',text:'Bengal Warriors secure a home victory!'},{over:'Min 32',result:'★',text:'Maninder Singh with a powerful raid!'},{over:'Min 24',result:'★',text:'ALL OUT! Bengal Warriors clean sweep of U Mumba!'},{over:'Min 15',result:'★',text:'Fazel Atrachali tackle denies a raid point!'},{over:'Min 8',result:'★',text:'Bengal starts with a multi-point raid!'}] },
+        'India-South Korea': { homeScore:'44', awayScore:'30', events:[{over:'Last Raid',result:'★',text:'Deepak Niwas Hooda raid! India dominates!'},{over:'Min 36',result:'★',text:'ALL OUT! India shows their class!'},{over:'Min 28',result:'★',text:'South Korea struggling to contain the Indian raiders!'},{over:'Min 20',result:'★',text:'Pardeep Narwal with a superb running hand touch!'},{over:'Min 12',result:'★',text:'India\'s defense is rock solid!'},{over:'Min 4',result:'★',text:'India opens with a bonus point!'}] },
+        'UP Yoddha-Patna Pirates': { homeScore:'18', awayScore:'20', events:[{over:'Last Raid',result:'★',text:'Patna Pirates hold on for a narrow win!'},{over:'Min 32',result:'★',text:'ALL OUT! Patna clears the UP defense!'},{over:'Min 22',result:'★',text:'UP Yoddha fighting back with super tackles!'},{over:'Min 14',result:'★',text:'Patna Pirates with a crucial raid point!'},{over:'Min 6',result:'★',text:'UP Yoddha starts with a tackle!'}] },
+      },
+      'e-sports': {
+        'Sentinels-FNATIC': { homeScore:'3', awayScore:'2', events:[{over:'Map 3 - Split',result:'★',text:'Sentinels clutch the final round to win the series!'},{over:'Map 3 - 11-10',result:'★',text:'FNATIC force overtime with a heroic play!'},{over:'Map 2',result:'★',text:'FNATIC takes map 2 on Pearl!'},{over:'Map 1',result:'★',text:'Sentinels dominate on Haven!'}] },
+        'T1-Cloud9': { homeScore:'3', awayScore:'1', events:[{over:'Map 4',result:'★',text:'T1 wins the series with a flawless performance!'},{over:'Map 3',result:'★',text:'Cloud9 claw one back on Icebox!'},{over:'Map 2',result:'★',text:'T1 dominates on Lotus!'},{over:'Map 1',result:'★',text:'T1 takes the opener on Bind!'}] },
+        'FNATIC-Cloud9': { homeScore:'2', awayScore:'3', events:[{over:'Map 5',result:'★',text:'Cloud9 complete the reverse sweep!'},{over:'Map 4',result:'★',text:'Cloud9 force a decisive game 5!'},{over:'Map 3',result:'★',text:'FNATIC take the lead with a map win!'},{over:'Map 2',result:'★',text:'Cloud9 equalize on Fracture!'},{over:'Map 1',result:'★',text:'FNATIC win a close opener!'}] },
+        'T1-G2 Esports': { homeScore:'3', awayScore:'0', events:[{over:'Map 3',result:'★',text:'T1 completes the sweep!'},{over:'Map 2',result:'★',text:'T1 dominant on Split!'},{over:'Map 1',result:'★',text:'T1 takes Lotus in a one-sided affair!'}] },
+        'Cloud9-G2 Esports': { homeScore:'3', awayScore:'2', events:[{over:'Map 5',result:'★',text:'Cloud9 win the decider in overtime!'},{over:'Map 4',result:'★',text:'Cloud9 even the series!'},{over:'Map 3',result:'★',text:'G2 take the lead!'},{over:'Map 2',result:'★',text:'Cloud9 respond on Haven!'},{over:'Map 1',result:'★',text:'G2 start strong on Pearl!'}] },
+        'Sentinels-T1': { homeScore:'2', awayScore:'3', events:[{over:'Map 5',result:'★',text:'T1 clutch the final round! Series win!'},{over:'Map 4',result:'★',text:'Sentinels force a game 5!'},{over:'Map 3',result:'★',text:'T1 edge ahead on Fracture!'},{over:'Map 2',result:'★',text:'Sentinels equalize on Bind!'},{over:'Map 1',result:'★',text:'T1 take the opener!'}] },
+        'G2 Esports-FNATIC': { homeScore:'3', awayScore:'1', events:[{over:'Map 4',result:'★',text:'G2 close out the series in style!'},{over:'Map 3',result:'★',text:'FNATIC avoid the sweep with a map win!'},{over:'Map 2',result:'★',text:'G2 clean win on Split!'},{over:'Map 1',result:'★',text:'G2 start strong on Lotus!'}] },
+        'Sentinels-Cloud9': { homeScore:'3', awayScore:'0', events:[{over:'Map 3',result:'★',text:'Sentinels complete the dominant sweep!'},{over:'Map 2',result:'★',text:'Sentinels unstoppable on Bind!'},{over:'Map 1',result:'★',text:'Sentinels take Haven decisively!'}] },
+      },
+      tabletennis: {
+        'Fan Zhendong-Ma Long': { homeScore:'4', awayScore:'2', events:[{over:'Game 6 - 11-8',result:'★',text:'Fan Zhendong wins the match with a backhand winner!'},{over:'Game 5 - 11-6',result:'★',text:'Ma Long extends the match with a brilliant rally!'},{over:'Game 4 - 11-9',result:'★',text:'Fan takes control with powerful forehands!'},{over:'Game 2 - 11-7',result:'★',text:'Ma Long fights back to level the match!'},{over:'Game 1 - 11-5',result:'★',text:'Fan Zhendong dominates the opening game!'}] },
+        'Sun Yingsha-Chen Meng': { homeScore:'4', awayScore:'1', events:[{over:'Game 5 - 11-7',result:'★',text:'Sun Yingsha wins the championship point!'},{over:'Game 3 - 11-9',result:'★',text:'Sun edges ahead with a crucial game win!'},{over:'Game 2 - 12-10',result:'★',text:'Chen Meng snatches a close game!'},{over:'Game 1 - 11-6',result:'★',text:'Sun starts with aggressive attacking play!'}] },
+        'T. Harimoto-Wang Chuqin': { homeScore:'2', awayScore:'4', events:[{over:'Game 6 - 11-9',result:'★',text:'Wang Chuqin wins with a powerful smash!'},{over:'Game 4 - 11-7',result:'★',text:'Harimoto levels the match!'},{over:'Game 3 - 11-5',result:'★',text:'Wang Chuqin takes the lead!'},{over:'Game 1 - 11-8',result:'★',text:'Harimoto starts with a quick win!'}] },
+        'Ma Long-T. Harimoto': { homeScore:'4', awayScore:'0', events:[{over:'Game 4 - 11-6',result:'★',text:'Ma Long completes a dominant sweep!'},{over:'Game 3 - 11-4',result:'★',text:'Ma Long relentless with his powerful loops!'},{over:'Game 2 - 11-7',result:'★',text:'Ma Long extends the lead!'},{over:'Game 1 - 11-3',result:'★',text:'Ma Long starts in emphatic fashion!'}] },
+        'Sun Yingsha-Miu Hirano': { homeScore:'4', awayScore:'0', events:[{over:'Game 4 - 11-5',result:'★',text:'Sun Yingsha cruises to victory!'},{over:'Game 3 - 11-8',result:'★',text:'Sun controls the pace perfectly!'},{over:'Game 2 - 11-6',result:'★',text:'Sun dominates with quick attacks!'},{over:'Game 1 - 11-4',result:'★',text:'Sun starts with a commanding performance!'}] },
+        'Fan Zhendong-Wang Chuqin': { homeScore:'4', awayScore:'3', events:[{over:'Game 7 - 11-9',result:'★',text:'Fan Zhendong wins an epic 7-game thriller!'},{over:'Game 6 - 11-7',result:'★',text:'Wang Chuqin forces a decider!'},{over:'Game 5 - 11-8',result:'★',text:'Fan Zhendong inches ahead!'},{over:'Game 4 - 11-6',result:'★',text:'Wang Chuqin levels the match!'},{over:'Game 2 - 11-9',result:'★',text:'Fan takes a close game!'},{over:'Game 1 - 11-7',result:'★',text:'Wang Chuqin starts strong!'}] },
+        'Chen Meng-Miu Hirano': { homeScore:'4', awayScore:'1', events:[{over:'Game 5 - 11-6',result:'★',text:'Chen Meng seals the victory!'},{over:'Game 3 - 11-8',result:'★',text:'Chen Meng takes control of the match!'},{over:'Game 2 - 13-11',result:'★',text:'Chen Meng wins a thrilling game!'},{over:'Game 1 - 11-5',result:'★',text:'Chen Meng starts with confidence!'}] },
+        'Wang Chuqin-Ma Long': { homeScore:'3', awayScore:'4', events:[{over:'Game 7 - 12-10',result:'★',text:'Ma Long wins a sensational 7-game battle!'},{over:'Game 6 - 11-8',result:'★',text:'Wang Chuqin forces game 7!'},{over:'Game 5 - 11-6',result:'★',text:'Ma Long shows his experience!'},{over:'Game 4 - 11-9',result:'★',text:'Wang Chuqin fights back!'},{over:'Game 3 - 11-7',result:'★',text:'Ma Long edges ahead!'},{over:'Game 1 - 11-8',result:'★',text:'Wang Chuqin takes the first game!'}] },
+      },
+    };
+    // Auto-find away team if not provided in URL
+    if (!URL_AWAY) {
+      var sm = SPORT_MATCHES[URL_SPORT];
+      if (sm) {
+        var keys = Object.keys(sm);
+        for (var i = 0; i < keys.length; i++) {
+          var parts = keys[i].split('-');
+          if (parts[0] === URL_HOME) { URL_AWAY = parts[1]; break; }
+          if (parts[1] === URL_HOME) { URL_AWAY = parts[0]; break; }
         }
+      }
+      if (!URL_AWAY) {
+        var FALLBACK_AWAY = {
+          cricket: URL_HOME === 'RCB' ? 'CSK' : 'RCB',
+          football: 'LIV',
+          basketball: 'Warriors',
+          tennis: 'Djokovic',
+          baseball: 'New York Yankees',
+          hockey: 'Golden Knights',
+          kabaddi: 'Patna Pirates',
+          'e-sports': 'Soul',
+          tabletennis: 'Ma Long',
+          volleyball: 'USA'
+        };
+        URL_AWAY = FALLBACK_AWAY[URL_SPORT] || 'TBD';
+      }
+    }
 
-        eventBox.classList.add("show");
+    function getDefaultSportData(sport) {
+      return MATCH_DATA[sport] || null;
+    }
 
-        setTimeout(() => {
-          eventBox.classList.remove("show");
-        }, 2500);
+    function buildSportMatch(sport, hI, aI) {
+      var key = URL_HOME + '-' + URL_AWAY;
+      var lookup = SPORT_MATCHES[sport];
+      var match = lookup ? lookup[key] : null;
+      if (!match) return null;
+
+      var def = MATCH_DATA[sport];
+      if (!def) return null;
+
+      var names = match.homePlayers || [hI.short + ' Player 1', hI.short + ' Player 2'];
+      var aNames = match.awayPlayers || [aI.short + ' Player 1', aI.short + ' Player 2'];
+      var batting = names.map(function(n, i) {
+        return { name: n, runs: Math.floor(10 + Math.random() * 50), balls: Math.floor(10 + Math.random() * 40), fours: Math.floor(1 + Math.random() * 6), sixes: Math.floor(Math.random() * 3), sr: Math.round(80 + Math.random() * 80), out: i > 0 ? 'not out' : ('c ' + aNames[0] + ' b ' + aNames[1] || 'bowled') };
+      });
+      var events = match.events || [];
+      var homeScore = match.homeScore || '0';
+      var awayScore = match.awayScore || '0';
+      var homeFull = hI.name;
+      var awayFull = aI.name;
+      var hN = parseInt(homeScore) || 0, aN = parseInt(awayScore) || 0;
+      var resultStr = hN === aN ? 'Match Drawn' : hN > aN ? hI.short + ' won' : aI.short + ' won';
+      if (sport === 'football') resultStr += hN > aN ? ' by ' + (hN - aN) + ' goal' + ((hN - aN) > 1 ? 's' : '') : aN > hN ? ' by ' + (aN - hN) + ' goal' + ((aN - hN) > 1 ? 's' : '') : '';
+      else if (sport === 'basketball') resultStr += hN > aN ? ' by ' + (hN - aN) + ' pts' : aN > hN ? ' by ' + (aN - hN) + ' pts' : '';
+      else if (sport === 'tennis') resultStr += hN > aN ? ' ' + homeScore + '-' + awayScore + ' in sets' : aN > hN ? ' ' + awayScore + '-' + homeScore + ' in sets' : '';
+      else if (sport === 'baseball') resultStr += hN > aN ? ' by ' + (hN - aN) + ' runs' : aN > hN ? ' by ' + (aN - hN) + ' runs' : '';
+      else if (sport === 'hockey' || sport === 'kabaddi') resultStr += hN > aN ? ' by ' + (hN - aN) + (sport === 'hockey' ? ' goals' : ' pts') : aN > hN ? ' by ' + (aN - hN) + (sport === 'hockey' ? ' goals' : ' pts') : '';
+      else if (sport === 'e-sports') resultStr += hN > aN ? ' ' + homeScore + '-' + awayScore : aN > hN ? ' ' + awayScore + '-' + homeScore : '';
+
+      return {
+        home: { name: homeFull, short: hI.short, logo: hI.logo, score: homeScore, overs: def.home.overs || '', flag: '' },
+        away: { name: awayFull, short: aI.short, logo: aI.logo, score: awayScore, overs: def.away.overs || '', flag: '' },
+        venue: def.venue, series: def.series, match: hI.short + ' vs ' + aI.short, date: def.date, time: def.time,
+        toss: hI.short + ' won toss', umpires: def.umpires || '', thirdUmpire: def.thirdUmpire || '',
+        status: def.status || 'Match Completed', need: resultStr, target: '',
+        crr: '', rrr: '',
+        probHome: 50, probAway: 50, probXLabel: def.probXLabel || 'Period',
+        ballByBall: events,
+        commentary: events,
+        batting: batting,
+        bowling: [],
+        squad: def.squad || { home: [], away: [] },
+        overs: def.overs || [],
+      };
+    }
+
+    function randBall(){var r=Math.random();return r<0.3?0:r<0.45?1:r<0.55?2:r<0.7?4:r<0.85?6:'W';}
+    function genOver(){var ov=[];for(var i=0;i<6;i++)ov.push(randBall());return ov;}
+    function genInnings(ovCount){var inn=[];for(var i=0;i<ovCount;i++)inn.push(genOver());return inn;}
+    function genMatchBalls(){return{home:genInnings(15+Math.floor(Math.random()*6)),away:genInnings(15+Math.floor(Math.random()*6))};}
+    function initMatchData(){
+      var hI=getTeamInfo(URL_HOME),aI=getTeamInfo(URL_AWAY);var hSq=buildSquadFromDB(hI.squad||'rcb'),aSq=buildSquadFromDB(aI.squad||'csk');var key=URL_HOME+'-'+URL_AWAY;var bKey=REAL_BALLS[key]||genMatchBalls();var aBat=aSq.slice(0,6).map(function(p){return p.name}),hBat=hSq.slice(0,6).map(function(p){return p.name});var aBowl=aSq.slice(5).map(function(p){return p.name}),hBowl=hSq.slice(5).map(function(p){return p.name});var awayI=bakeInnings(aBat,hBowl,bKey.away),homeI=bakeInnings(hBat,aBowl,bKey.home);var hR=homeI.totalRuns,aR=awayI.totalRuns;var res=hR===aR?'Match Tied':hR>aR?hI.short+' won by '+(hR-aR)+' runs':aI.short+' won by '+(aR-hR)+' runs';
+      function makeC(balls){var by={};balls.forEach(function(b){var ok=b.over.split('.')[0];if(!by[ok])by[ok]={balls:[],runs:0,w:0};by[ok].balls.push(b);var v=parseInt(b.result);if(v>=1&&v<=6)by[ok].runs+=v;else if(b.result==='W')by[ok].w++});return Object.keys(by).map(function(k){var o=by[k];return{over:k+'.0',bowler:o.balls[0]?o.balls[0].bowler:'',batter:o.balls[o.balls.length-1]?o.balls[o.balls.length-1].batter:'',result:o.runs.toString(),text:'Over '+k+': '+o.balls.map(function(b){return b.result==='0'?'●':b.result}).join(' ')+' — '+o.runs+' run'+(o.runs!==1?'s':'')+(o.w>0?', '+o.w+' wkt':'')}})}
+      MATCH_DATA={cricket:{
+        home:{name:hI.name,short:hI.short,logo:hI.logo,score:homeI.finalScore,overs:homeI.finalOvers,flag:''},
+        away:{name:aI.name,short:aI.short,logo:aI.logo,score:awayI.finalScore,overs:awayI.finalOvers,flag:''},
+        venue:'Wankhede Stadium',series:'IPL 2026',match:'Match 22',date:'25 May 2026',time:'7:30 PM',
+        toss:hI.short+' won toss & chose to field',umpires:'Nitin Menon, Chris Gaffaney',thirdUmpire:'Rod Tucker',
+        status:'Live - '+hI.short+' Innings',need:'',target:aR.toString(),_result:res,
+        crr:'',rrr:'',probHome:50,probAway:50,probXLabel:'Overs',
+        allBallByBall:{home:homeI.ballByBall,away:awayI.ballByBall},
+        allCommentary:{home:makeC(homeI.ballByBall),away:makeC(awayI.ballByBall)},
+        ballByBall:homeI.ballByBall,
+        commentary:[].concat(makeC(awayI.ballByBall),[{over:'---',bowler:'',batter:'',result:'',text:'🏏 INNINGS BREAK — '+awayI.finalScore+' ('+awayI.finalOvers+' ov)'}],makeC(homeI.ballByBall)),
+        batting:homeI.batting,awayBatting:awayI.batting,bowling:awayI.bowling,
+        squad:{home:hSq,away:aSq},overs:homeI.overs,innings:{away:awayI,home:homeI},
+      },
+      football: {
+          home: { name: 'Liverpool', short: 'LIV', logo: 'https://upload.wikimedia.org/wikipedia/en/thumb/0/0c/Liverpool_FC.svg/512px-Liverpool_FC.svg.png', score: '2', overs: '', flag: '' },
+          away: { name: 'Manchester City', short: 'MCI', logo: 'https://upload.wikimedia.org/wikipedia/en/thumb/e/eb/Manchester_City_FC_badge.svg/512px-Manchester_City_FC_badge.svg.png', score: '1', overs: '', flag: '' },
+          venue: 'Anfield', series: 'Premier League', match: 'Matchday 37', date: '26 May 2026', time: '8:00 PM',
+          toss: 'Liverpool won toss', umpires: 'Michael Oliver, Anthony Taylor', thirdUmpire: 'Stuart Attwell',
+          status: "85' Minutes Played", need: 'MCI needs 1 goal to draw', target: '',
+          crr: '', rrr: '',
+          probHome: 62, probAway: 38, probXLabel: 'Minutes',
+          probSvgHome: 'M10 80 C40 50,70 40,90 35 C120 30,150 45,180 40 C210 35,240 50,270 55 C300 45,330 60,360 50 C380 45,390 42,395 40',
+          probSvgAway: 'M10 110 C40 90,70 100,90 95 C120 100,150 85,180 90 C210 95,240 80,270 85 C300 95,330 80,360 90 C380 85,390 88,395 90',
+          ballByBall: [
+            { over: "85'", batter: 'Salah', bowler: '', result: '⚽', text: 'GOAL! Salah scores! Liverpool 2-1 Manchester City!' },
+            { over: "78'", batter: 'De Bruyne', bowler: '', result: '⚽', text: 'GOAL! De Bruyne equalizes! 1-1!' },
+            { over: "65'", batter: 'Nunez', bowler: '', result: '⚽', text: 'GOAL! Darwin Nunez puts Liverpool ahead!' },
+            { over: "42'", batter: 'Haaland', bowler: '', result: '0', text: 'Haaland heads wide from a corner kick.' },
+            { over: "30'", batter: 'Salah', bowler: '', result: '0', text: 'Salah cuts inside but his shot is blocked by Dias.' },
+            { over: "15'", batter: 'Foden', bowler: '', result: '0', text: 'Foden tries a long ranger but Van Dijk blocks.' },
+          ],
+          commentary: [
+            { over: "85'", bowler: 'De Bruyne', batter: 'Salah', result: '⚽', text: 'GOAL! Mo Salah scores the winner! A brilliant counter-attack!' },
+            { over: "78'", bowler: 'Rodri', batter: 'De Bruyne', result: '⚽', text: 'GOAL! De Bruyne with a stunning strike from outside the box!' },
+            { over: "65'", bowler: 'Ake', batter: 'Nunez', result: '⚽', text: 'GOAL! Nunez heads home from a Robertson cross!' },
+          ],
+          batting: [
+            { name: 'Mohamed Salah', runs: 1, balls: 4, fours: 0, sixes: 0, sr: 0 },
+            { name: 'Darwin Nunez', runs: 1, balls: 5, fours: 0, sixes: 0, sr: 0 },
+            { name: 'Cody Gakpo', runs: 0, balls: 3, fours: 0, sixes: 0, sr: 0 },
+          ],
+          bowling: [
+            { name: 'Rodri', overs: 90, maidens: 0, runs: 0, wickets: 0, economy: 0 },
+            { name: 'Ruben Dias', overs: 90, maidens: 0, runs: 0, wickets: 0, economy: 0 },
+            { name: 'Ederson', overs: 90, maidens: 0, runs: 2, wickets: 0, economy: 0 },
+          ],
+          squad: {
+            home: [
+              { name: 'Alisson Becker', role: 'Goalkeeper', img: 'assets/community/avatar1.jpg' },
+              { name: 'Trent Alexander-Arnold', role: 'Defender', img: 'assets/community/avatar2.jpg' },
+              { name: 'Virgil van Dijk', role: 'Defender', img: 'assets/community/avatar1.jpg' },
+              { name: 'Andrew Robertson', role: 'Defender', img: 'assets/community/avatar2.jpg' },
+              { name: 'Dominik Szoboszlai', role: 'Midfielder', img: 'assets/community/avatar1.jpg' },
+              { name: 'Alexis Mac Allister', role: 'Midfielder', img: 'assets/community/avatar2.jpg' },
+              { name: 'Mohamed Salah', role: 'Forward', img: 'assets/community/avatar1.jpg' },
+              { name: 'Darwin Nunez', role: 'Forward', img: 'assets/community/avatar2.jpg' },
+              { name: 'Luis Diaz', role: 'Forward', img: 'assets/community/avatar1.jpg' },
+              { name: 'Cody Gakpo', role: 'Forward', img: 'assets/community/avatar2.jpg' },
+              { name: 'Wataru Endo', role: 'Midfielder', img: 'assets/community/avatar1.jpg' },
+            ],
+            away: [
+              { name: 'Ederson', role: 'Goalkeeper', img: 'assets/community/avatar2.jpg' },
+              { name: 'Ruben Dias', role: 'Defender', img: 'assets/community/avatar1.jpg' },
+              { name: 'John Stones', role: 'Defender', img: 'assets/community/avatar2.jpg' },
+              { name: 'Kyle Walker', role: 'Defender', img: 'assets/community/avatar1.jpg' },
+              { name: 'Rodri', role: 'Midfielder', img: 'assets/community/avatar2.jpg' },
+              { name: 'Kevin De Bruyne', role: 'Midfielder', img: 'assets/community/avatar1.jpg' },
+              { name: 'Phil Foden', role: 'Midfielder', img: 'assets/community/avatar2.jpg' },
+              { name: 'Bernardo Silva', role: 'Midfielder', img: 'assets/community/avatar1.jpg' },
+              { name: 'Erling Haaland', role: 'Forward', img: 'assets/community/avatar2.jpg' },
+              { name: 'Jack Grealish', role: 'Forward', img: 'assets/community/avatar1.jpg' },
+              { name: 'Jeremy Doku', role: 'Forward', img: 'assets/community/avatar2.jpg' },
+            ]
+          },
+          overs: [
+            { over: 15, runs: 0, wickets: 0, rr: 0 },
+            { over: 30, runs: 1, wickets: 0, rr: 0 },
+            { over: 45, runs: 0, wickets: 0, rr: 0 },
+            { over: 60, runs: 0, wickets: 0, rr: 0 },
+            { over: 75, runs: 1, wickets: 0, rr: 0 },
+            { over: 85, runs: 1, wickets: 0, rr: 0 },
+          ],
+        },
+        basketball: {
+          home: { name: 'Los Angeles Lakers', short: 'LAL', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Los_Angeles_Lakers_logo.svg/512px-Los_Angeles_Lakers_logo.svg.png', score: '102', overs: '', flag: '' },
+          away: { name: 'Golden State Warriors', short: 'GSW', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/01/Golden_State_Warriors_logo.svg/512px-Golden_State_Warriors_logo.svg.png', score: '98', overs: '', flag: '' },
+          venue: 'Crypto.com Arena', series: 'NBA Regular Season', match: 'Western Conference', date: '25 May 2026', time: '10:00 PM',
+          toss: 'Lakers won tip-off', umpires: 'Scott Foster, Tony Brothers', thirdUmpire: 'Mark Davis',
+          status: 'Q4 - 2:45 Remaining', need: 'GSW trail by 4', target: '',
+          crr: '', rrr: '',
+          probHome: 68, probAway: 32, probXLabel: 'Quarter',
+          probSvgHome: 'M10 70 C40 50,80 40,120 35 C160 30,200 40,240 38 C280 35,320 45,360 40 C380 38,390 36,395 35',
+          probSvgAway: 'M10 120 C40 100,80 110,120 105 C160 110,200 95,240 100 C280 105,320 95,360 100 C380 98,390 102,395 100',
+          ballByBall: [
+            { over: 'Q4 2:45', batter: 'LeBron', bowler: '', result: '2', text: 'LeBron James drives to the basket and scores! Lakers lead by 6!' },
+            { over: 'Q4 3:15', batter: 'Curry', bowler: '', result: '3', text: 'Stephen Curry hits a three-pointer! Warriors within 4!' },
+            { over: 'Q4 4:30', batter: 'Davis', bowler: '', result: '2', text: 'Anthony Davis with a mid-range jumper. Lakers extend lead.' },
+            { over: 'Q4 5:00', batter: 'Thompson', bowler: '', result: '0', text: 'Klay Thompson misses a three-point attempt.' },
+            { over: 'Q4 6:10', batter: 'Reaves', bowler: '', result: '1', text: 'Austin Reaves makes 1 of 2 free throws.' },
+          ],
+          batting: [
+            { name: 'LeBron James', runs: 28, balls: 22, fours: 10, sixes: 4, sr: 0 },
+            { name: 'Anthony Davis', runs: 24, balls: 18, fours: 8, sixes: 2, sr: 0 },
+            { name: 'Austin Reaves', runs: 18, balls: 12, fours: 4, sixes: 1, sr: 0 },
+            { name: 'D\'Angelo Russell', runs: 15, balls: 10, fours: 3, sixes: 2, sr: 0 },
+            { name: 'Rui Hachimura', runs: 12, balls: 8, fours: 2, sixes: 1, sr: 0 },
+          ],
+          squad: {
+            home: [
+              { name: 'LeBron James', role: 'Forward', img: 'assets/community/avatar1.jpg' },
+              { name: 'Anthony Davis', role: 'Center', img: 'assets/community/avatar2.jpg' },
+              { name: 'Austin Reaves', role: 'Guard', img: 'assets/community/avatar1.jpg' },
+              { name: 'D\'Angelo Russell', role: 'Guard', img: 'assets/community/avatar2.jpg' },
+              { name: 'Rui Hachimura', role: 'Forward', img: 'assets/community/avatar1.jpg' },
+              { name: 'Jarred Vanderbilt', role: 'Forward', img: 'assets/community/avatar2.jpg' },
+              { name: 'Taurean Prince', role: 'Forward', img: 'assets/community/avatar1.jpg' },
+              { name: 'Christian Wood', role: 'Center', img: 'assets/community/avatar2.jpg' },
+              { name: 'Jaxson Hayes', role: 'Center', img: 'assets/community/avatar1.jpg' },
+              { name: 'Gabe Vincent', role: 'Guard', img: 'assets/community/avatar2.jpg' },
+              { name: 'Max Christie', role: 'Guard', img: 'assets/community/avatar1.jpg' },
+            ],
+            away: [
+              { name: 'Stephen Curry', role: 'Guard', img: 'assets/community/avatar2.jpg' },
+              { name: 'Klay Thompson', role: 'Guard', img: 'assets/community/avatar1.jpg' },
+              { name: 'Draymond Green', role: 'Forward', img: 'assets/community/avatar2.jpg' },
+              { name: 'Andrew Wiggins', role: 'Forward', img: 'assets/community/avatar1.jpg' },
+              { name: 'Kevon Looney', role: 'Center', img: 'assets/community/avatar2.jpg' },
+              { name: 'Chris Paul', role: 'Guard', img: 'assets/community/avatar1.jpg' },
+              { name: 'Jonathan Kuminga', role: 'Forward', img: 'assets/community/avatar2.jpg' },
+              { name: 'Moses Moody', role: 'Guard', img: 'assets/community/avatar1.jpg' },
+              { name: 'Trayce Jackson-Davis', role: 'Center', img: 'assets/community/avatar2.jpg' },
+              { name: 'Gary Payton II', role: 'Guard', img: 'assets/community/avatar1.jpg' },
+              { name: 'Brandin Podziemski', role: 'Guard', img: 'assets/community/avatar2.jpg' },
+            ]
+          },
+          overs: [
+            { over: 1, runs: 24, wickets: 0, rr: 24 },
+            { over: 2, runs: 28, wickets: 0, rr: 26 },
+            { over: 3, runs: 22, wickets: 0, rr: 24.67 },
+            { over: 4, runs: 30, wickets: 0, rr: 26 },
+          ],
+        },
+        tennis: {
+          home: { name: 'Carlos Alcaraz', short: 'Alcaraz', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Carlos_Alcaraz_2023_US_Open.jpg/512px-Carlos_Alcaraz_2023_US_Open.jpg', score: '1', overs: 'Set', flag: '' },
+          away: { name: 'Novak Djokovic', short: 'Djokovic', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Novak_Djokovic_2023_US_Open.jpg/512px-Novak_Djokovic_2023_US_Open.jpg', score: '0', overs: 'Set', flag: '' },
+          venue: 'Centre Court', series: 'Madrid Open', match: 'Quarter Final', date: '26 May 2026', time: '6:00 PM',
+          toss: 'Alcaraz won toss', umpires: '', thirdUmpire: '',
+          status: 'Set 2: 4-2', need: 'Djokovic needs break back', target: '',
+          probHome: 55, probAway: 45, probXLabel: 'Set',
+          probSvgHome: 'M10 85 C40 65,80 55,120 50 C160 45,200 60,240 55 C280 50,320 60,360 55 C380 52,390 50,395 48',
+          probSvgAway: 'M10 105 C40 85,80 95,120 90 C160 95,200 80,240 85 C280 90,320 80,360 85 C380 82,390 88,395 85',
+          ballByBall: [
+            { over: 'Set 2 - 4-2', batter: 'Alcaraz', result: 'A', text: 'Alcaraz holds serve with an ace down the T.' },
+            { over: 'Set 2 - 3-2', batter: 'Djokovic', result: '0', text: 'Djokovic holds serve with a powerful forehand winner.' },
+            { over: 'Set 2 - 3-1', batter: 'Alcaraz', result: '0', text: 'Alcaraz breaks! He takes the lead in the second set.' },
+            { over: 'Set 1 - 6-4', batter: 'Alcaraz', result: 'A', text: 'Alcaraz wins the first set 6-4 with a stunning backhand pass!' },
+          ],
+          batting: [],
+          squad: { home: [{ name: 'Carlos Alcaraz', role: 'Player', img: '' }], away: [{ name: 'Novak Djokovic', role: 'Player', img: '' }] },
+          overs: [{ over: 1, runs: 6, wickets: 4 }, { over: 2, runs: 4, wickets: 6 }],
+        },
+        baseball: {
+          home: { name: 'Los Angeles Dodgers', short: 'LAD', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Los_Angeles_Dodgers_Logo.svg/512px-Los_Angeles_Dodgers_Logo.svg.png', score: '4', overs: '', flag: '' },
+          away: { name: 'New York Yankees', short: 'NYY', logo: 'https://upload.wikimedia.org/wikipedia/en/thumb/a/ad/New_York_Yankees_logo.svg/512px-New_York_Yankees_logo.svg.png', score: '2', overs: '', flag: '' },
+          venue: 'Dodger Stadium', series: 'MLB Regular Season', match: 'Interleague', date: '25 May 2026', time: '7:00 PM',
+          toss: 'Dodgers won toss', umpires: '', thirdUmpire: '',
+          status: 'Top 5th • 2 Outs', need: 'Yankees batting', target: '',
+          probHome: 60, probAway: 40, probXLabel: 'Innings',
+          probSvgHome: 'M10 80 C40 60,80 50,120 45 C160 40,200 55,240 50 C280 45,320 55,360 50 C380 48,390 45,395 43',
+          probSvgAway: 'M10 110 C40 90,80 100,120 95 C160 100,200 85,240 90 C280 95,320 85,360 90 C380 88,390 92,395 90',
+          ballByBall: [
+            { over: 'Top 5th - 2 Outs', batter: 'Judge', result: '0', text: 'Aaron Judge strikes out swinging.' },
+            { over: 'Top 5th - 1 Out', batter: 'Stanton', result: '1', text: 'Giancarlo Stanton singles to center field.' },
+            { over: 'Bottom 4th', batter: 'Betts', result: 'HR', text: 'HOME RUN! Mookie Betts goes deep!' },
+          ],
+          batting: [
+            { name: 'Mookie Betts', runs: 2, balls: 3, fours: 0, sixes: 1, sr: 0 },
+            { name: 'Shohei Ohtani', runs: 1, balls: 2, fours: 0, sixes: 0, sr: 0 },
+            { name: 'Freddie Freeman', runs: 1, balls: 3, fours: 1, sixes: 0, sr: 0 },
+          ],
+          squad: { home: [{ name: 'Mookie Betts', role: 'Outfielder', img: '' }, { name: 'Shohei Ohtani', role: 'DH/Pitcher', img: '' }, { name: 'Freddie Freeman', role: 'First Base', img: '' }], away: [{ name: 'Aaron Judge', role: 'Outfielder', img: '' }, { name: 'Giancarlo Stanton', role: 'DH', img: '' }, { name: 'Anthony Rizzo', role: 'First Base', img: '' }] },
+          overs: [{ over: 1, runs: 0, wickets: 0 }, { over: 2, runs: 2, wickets: 0 }, { over: 3, runs: 0, wickets: 0 }, { over: 4, runs: 2, wickets: 0 }],
+        },
+        hockey: {
+          home: { name: 'Washington Capitals', short: 'WSH', logo: 'https://upload.wikimedia.org/wikipedia/en/thumb/2/2d/Washington_Capitals.svg/512px-Washington_Capitals.svg.png', score: '3', overs: 'Goals', flag: '' },
+          away: { name: 'Vegas Golden Knights', short: 'VGK', logo: 'https://upload.wikimedia.org/wikipedia/en/thumb/a/ac/Vegas_Golden_Knights_logo.svg/512px-Vegas_Golden_Knights_logo.svg.png', score: '3', overs: 'Goals', flag: '' },
+          venue: 'Capital One Arena', series: 'NHL Stanley Cup', match: 'Game 4', date: '25 May 2026', time: '8:30 PM',
+          status: 'Period 3 - 04:12 Left', need: 'Tied game', target: '',
+          probHome: 50, probAway: 50, probXLabel: 'Period',
+          probSvgHome: 'M10 90 C40 80,80 70,120 75 C160 65,200 85,240 75 C280 70,320 80,360 75 C380 73,390 75,395 75',
+          probSvgAway: 'M10 90 C40 80,80 70,120 75 C160 65,200 85,240 75 C280 70,320 80,360 75 C380 73,390 75,395 75',
+          ballByBall: [
+            { over: 'P3 - 04:12', batter: 'Ovechkin', result: '⚽', text: 'OVECHKIN SCORES! Power-play goal! Game tied 3-3!' },
+            { over: 'P3 - 06:30', batter: 'Eichel', result: '⚽', text: 'Eichel scores for Vegas! Golden Knights take the lead!' },
+            { over: 'P2 - 12:00', batter: 'Backstrom', result: '⚽', text: 'Backstrom ties it up for Washington!' },
+            { over: 'P1 - 08:15', batter: 'Stone', result: '⚽', text: 'Mark Stone opens the scoring for Vegas!' },
+          ],
+          batting: [],
+          squad: { home: [{ name: 'Alex Ovechkin', role: 'Forward', img: '' }, { name: 'Nicklas Backstrom', role: 'Forward', img: '' }, { name: 'John Carlson', role: 'Defenseman', img: '' }], away: [{ name: 'Jack Eichel', role: 'Forward', img: '' }, { name: 'Mark Stone', role: 'Forward', img: '' }, { name: 'Alex Pietrangelo', role: 'Defenseman', img: '' }] },
+          overs: [{ over: 1, runs: 1, wickets: 0 }, { over: 2, runs: 1, wickets: 0 }, { over: 3, runs: 1, wickets: 0 }],
+        },
+        kabaddi: {
+          home: { name: 'India', short: 'IND', logo: '', score: '0', overs: '', flag: '' },
+          away: { name: 'Iran', short: 'IRN', logo: '', score: '0', overs: '', flag: '' },
+          venue: 'Sports Complex', series: 'Pro Kabaddi', match: 'League Stage', date: '26 May 2026', time: '7:00 PM',
+          status: 'Match in Progress', need: '', target: '',
+          probHome: 50, probAway: 50, probXLabel: 'Minute',
+          ballByBall: [], commentary: [], batting: [], bowling: [],
+          squad: { home: [], away: [] }, overs: [],
+        },
+        'e-sports': {
+          home: { name: 'Team A', short: 'TA', logo: '', score: '0', overs: '', flag: '' },
+          away: { name: 'Team B', short: 'TB', logo: '', score: '0', overs: '', flag: '' },
+          venue: 'Arena', series: 'VALORANT Champions', match: 'Grand Final', date: '26 May 2026', time: '5:00 PM',
+          status: 'Match in Progress', need: '', target: '',
+          probHome: 50, probAway: 50, probXLabel: 'Map',
+          ballByBall: [], commentary: [], batting: [], bowling: [],
+          squad: { home: [], away: [] }, overs: [],
+        },
+        tabletennis: {
+          home: { name: 'Player A', short: 'PA', logo: '', score: '0', overs: '', flag: '' },
+          away: { name: 'Player B', short: 'PB', logo: '', score: '0', overs: '', flag: '' },
+          venue: 'Table 1', series: 'World TT Cup', match: 'Final', date: '26 May 2026', time: '6:00 PM',
+          status: 'Match in Progress', need: '', target: '',
+          probHome: 50, probAway: 50, probXLabel: 'Game',
+          ballByBall: [], commentary: [], batting: [], bowling: [],
+          squad: { home: [], away: [] }, overs: [],
+        },
+      };
+      renderAll();
+    }
+
+    // ============================================
+    // RENDER FUNCTIONS
+    // ============================================
+
+    function getData() {
+      var d;
+      if (currentSport === 'cricket') d = MATCH_DATA.cricket;
+      else {
+        var cached = window._sportMatchData && window._sportMatchData[currentSport];
+        if (cached) d = cached;
+        else {
+          var hI = getTeamInfo(URL_HOME), aI = getTeamInfo(URL_AWAY);
+          var built = buildSportMatch(currentSport, hI, aI);
+          if (built) {
+            if (!window._sportMatchData) window._sportMatchData = {};
+            window._sportMatchData[currentSport] = built;
+            d = built;
+          } else d = MATCH_DATA[currentSport];
+        }
+      }
+      // Apply URL team overrides for all sports
+      if (URL_HOME && d && d.home) {
+        var hInfo = getTeamInfo(URL_HOME);
+        if (hInfo) { d.home.name = hInfo.name; d.home.short = hInfo.short; d.home.logo = hInfo.logo; }
+      }
+      if (URL_AWAY && d && d.away) {
+        var aInfo = getTeamInfo(URL_AWAY);
+        if (aInfo) { d.away.name = aInfo.name; d.away.short = aInfo.short; d.away.logo = aInfo.logo; }
+      }
+      // Apply URL score overrides
+      if (URL_HOME_SCORE) { if (!d.home) d.home = {}; d.home.score = URL_HOME_SCORE; }
+      if (URL_AWAY_SCORE) { if (!d.away) d.away = {}; d.away.score = URL_AWAY_SCORE; }
+      if (URL_STATE === 'upcoming') { d.status = 'Upcoming'; d._upcoming = true; }
+      else if (URL_STATE === 'finished') { d.status = 'Match Completed'; d._finished = true; }
+      else if (URL_STATE === 'live') { d._finished = false; d._upcoming = false; }
+      return d;
+    }
+
+    function getSportIcon(sport) {
+      var icons = { cricket:'🏏', football:'⚽', basketball:'🏀', tennis:'🎾', baseball:'⚾', hockey:'🏒', kabaddi:'🤼', 'e-sports':'🎮', tabletennis:'🏓', volleyball:'🏐' };
+      return icons[sport] || '🏏';
+    }
+    function renderMatchInfo() {
+      const d = getData();
+      MATCH_STATE = getMatchState();
+      document.getElementById('matchSeries').textContent = getSportIcon(currentSport) + ' ' + d.series;
+      document.getElementById('matchVenue').textContent = `${d.match} • ${d.venue}`;
+      document.getElementById('homeTeamLogo').src = d.home.logo;
+      document.getElementById('homeTeamName').textContent = d.home.short;
+      document.getElementById('homeTeamFull').textContent = d.home.name;
+      document.getElementById('matchStatus').textContent = d.status || 'In Progress';
+      const needEl = document.getElementById('matchNeed');
+
+      if (isMatchFinished()) {
+        needEl.innerHTML = '🏆 ' + (d.need || 'Match Complete');
+        needEl.style.display = 'block';
+        needEl.style.fontSize = '16px';
+        needEl.style.fontWeight = '800';
+        needEl.style.color = '#10b981';
+      } else if (isMatchUpcoming()) {
+        needEl.innerHTML = '⏳ ' + d.date + ' • ' + d.time;
+        needEl.style.display = 'block';
+        needEl.style.fontSize = '13px';
+        needEl.style.color = '#64748b';
+      } else {
+        var hp = d.probHome || 50, ap = d.probAway || 50;
+        needEl.innerHTML = '<div style="display:flex;align-items:center;gap:8px;justify-content:center">' +
+          '<span style="font-size:11px;font-weight:700;color:#2196f3">WIN%</span>' +
+          '<div style="flex:1;max-width:160px;height:6px;background:#e2e8f0;border-radius:4px;overflow:hidden;display:flex">' +
+          '<div style="width:'+hp+'%;height:100%;background:#2196f3;border-radius:4px 0 0 4px"></div>' +
+          '<div style="width:'+ap+'%;height:100%;background:#10b981;border-radius:0 4px 4px 0"></div></div>' +
+          '<span style="font-size:11px;font-weight:600;color:#334155">'+d.home.short+' '+hp+'%</span>' +
+          '<span style="font-size:10px;color:#94a3b8">|</span>' +
+          '<span style="font-size:11px;font-weight:600;color:#334155">'+d.away.short+' '+ap+'%</span></div>';
+        needEl.style.display = 'block';
+        needEl.style.fontSize = '13px';
+        needEl.style.fontWeight = '600';
+        needEl.style.color = '#94a3b8';
       }
 
-      /* TEST */
-
-      setTimeout(() => {
-        showEvent("four");
-      }, 2000);
-
-      setTimeout(() => {
-        showEvent("six");
-      }, 5000);
-
-      setTimeout(() => {
-        showEvent("wicket");
-      }, 8000);
-    </script>
-    <script>
-      let eventTimeout;
-
-      function showEvent(type) {
-        const banner = document.getElementById("matchEventBanner");
-
-        const text = document.getElementById("eventText");
-
-        const animation = document.getElementById("eventAnimation");
-
-        // RESET
-        banner.className = "match-event-banner";
-
-        animation.innerHTML = "";
-
-        // FOUR
-        if (type === "four") {
-          text.innerHTML = "SOLID FOUR!";
-
-          animation.innerHTML = `<div class="batsman">
-            🏏
-        </div>`;
-
-          banner.classList.add("banner-four");
-        }
-
-        // SIX
-        else if (type === "six") {
-          text.innerHTML = "MASSIVE SIX!";
-
-          animation.innerHTML = `<div class="batsman">
-            🏏🔥
-        </div>`;
-
-          banner.classList.add("banner-six");
-        }
-
-        // WICKET
-        else if (type === "wicket") {
-          text.innerHTML = "WICKET!";
-
-          animation.innerHTML = `<div class="wicket-hands">
-            🙌
-        </div>`;
-
-          banner.classList.add("banner-wicket");
-        }
-
-        // SHOW
-        banner.style.display = "flex";
-
-        // AUTO HIDE
-        setTimeout(() => {
-          banner.style.display = "none";
-        }, 2500);
+      // For upcoming: show VS instead of scores
+      if (isMatchUpcoming()) {
+        document.getElementById('homeTeamScore').textContent = '—';
+        document.getElementById('homeTeamOvers').textContent = '';
+        document.getElementById('awayTeamScore').textContent = '—';
+        document.getElementById('awayTeamOvers').textContent = '';
+        document.getElementById('matchStatus').textContent = 'Upcoming';
+        return;
       }
-    </script>
-  </body>
+
+      if (currentSport === 'cricket') {
+        document.getElementById('homeTeamScore').textContent = d.home.score;
+        document.getElementById('homeTeamOvers').textContent = d.home.overs ? `(${d.home.overs} ov)` : '';
+        document.getElementById('awayTeamScore').textContent = d.away.score;
+        document.getElementById('awayTeamOvers').textContent = d.away.overs ? `(${d.away.overs} ov)` : '';
+      } else if (currentSport === 'football') {
+        document.getElementById('homeTeamScore').textContent = d.home.score || '0';
+        document.getElementById('homeTeamOvers').textContent = '';
+        document.getElementById('awayTeamScore').textContent = d.away.score || '0';
+        document.getElementById('awayTeamOvers').textContent = d.status || '';
+      } else if (currentSport === 'basketball') {
+        document.getElementById('homeTeamScore').textContent = d.home.score || '0';
+        document.getElementById('homeTeamOvers').textContent = d.status || '';
+        document.getElementById('awayTeamScore').textContent = d.away.score || '0';
+        document.getElementById('awayTeamOvers').textContent = '';
+      } else if (currentSport === 'tennis') {
+        document.getElementById('homeTeamScore').textContent = d.home.score || '0';
+        document.getElementById('homeTeamOvers').textContent = d.status || '';
+        document.getElementById('awayTeamScore').textContent = d.away.score || '0';
+        document.getElementById('awayTeamOvers').textContent = '';
+      } else if (currentSport === 'baseball') {
+        document.getElementById('homeTeamScore').textContent = d.home.score || '0';
+        document.getElementById('homeTeamOvers').textContent = d.status || '';
+        document.getElementById('awayTeamScore').textContent = d.away.score || '0';
+        document.getElementById('awayTeamOvers').textContent = '';
+      } else if (currentSport === 'hockey') {
+        document.getElementById('homeTeamScore').textContent = d.home.score || '0';
+        document.getElementById('homeTeamOvers').textContent = d.status || '';
+        document.getElementById('awayTeamScore').textContent = d.away.score || '0';
+        document.getElementById('awayTeamOvers').textContent = '';
+      } else if (currentSport === 'kabaddi') {
+        document.getElementById('homeTeamScore').textContent = d.home.score || '0';
+        document.getElementById('homeTeamOvers').textContent = d.status || 'Full Time';
+        document.getElementById('awayTeamScore').textContent = d.away.score || '0';
+        document.getElementById('awayTeamOvers').textContent = '';
+      } else if (currentSport === 'e-sports') {
+        document.getElementById('homeTeamScore').textContent = d.home.score || '0';
+        document.getElementById('homeTeamOvers').textContent = d.status || 'FT';
+        document.getElementById('awayTeamScore').textContent = d.away.score || '0';
+        document.getElementById('awayTeamOvers').textContent = '';
+      } else if (currentSport === 'tabletennis') {
+        document.getElementById('homeTeamScore').textContent = d.home.score || '0';
+        document.getElementById('homeTeamOvers').textContent = d.status || '';
+        document.getElementById('awayTeamScore').textContent = d.away.score || '0';
+        document.getElementById('awayTeamOvers').textContent = '';
+      } else {
+        document.getElementById('homeTeamScore').textContent = d.home.score || '-';
+        document.getElementById('homeTeamOvers').textContent = d.home.overs ? `(${d.home.overs})` : '';
+        document.getElementById('awayTeamScore').textContent = d.away.score || '-';
+        document.getElementById('awayTeamOvers').textContent = d.away.overs ? `(${d.away.overs})` : '';
+      }
+    }
+
+    function renderCricketRunPad() {
+      return '<div id="runPad" style="display:flex;gap:6px;padding:10px 0;justify-content:center;flex-wrap:wrap;border-bottom:1px solid #e2e8f0;margin-bottom:10px">' +
+        [1,2,3,4,6].map(r => '<button onclick="simulateRun('+r+')" style="width:48px;height:48px;border-radius:50%;border:2px solid #10b981;background:#fff;color:#10b981;font-size:18px;font-weight:800;cursor:pointer;transition:all 0.15s" onmouseover="this.style.background=\'#10b981\';this.style.color=\'#fff\'" onmouseout="this.style.background=\'#fff\';this.style.color=\'#10b981\'">'+r+'</button>').join('') +
+        '<button onclick="simulateRun(-1)" style="width:48px;height:48px;border-radius:50%;border:2px solid #ef4444;background:#fff;color:#ef4444;font-size:14px;font-weight:800;cursor:pointer;transition:all 0.15s" onmouseover="this.style.background=\'#ef4444\';this.style.color=\'#fff\'" onmouseout="this.style.background=\'#fff\';this.style.color=\'#ef4444\'">W</button>' +
+      '</div>';
+    }
+
+    window.simulateRun = function(runs) {
+      var d = getData();
+      if (!d || !d.ballByBall) return;
+      var ballLabel = runs === -1 ? 'W' : runs.toString();
+      var text = runs === -1 ? 'WICKET! Bowled!' : runs === 6 ? 'SIX! Massive!' : runs === 4 ? 'FOUR! Crunched!' : runs + ' run' + (runs>1?'s':'') + ' taken.';
+      var lastOver = d.ballByBall.length > 0 ? d.ballByBall[d.ballByBall.length-1].over : '0.0';
+      var parts = lastOver.split('.');
+      var ovNum = parseInt(parts[0]);
+      var ballNum = parseInt(parts[1] || 0) + 1;
+      if (ballNum > 6) { ballNum = 1; ovNum++; }
+      d.ballByBall.push({
+        over: ovNum + '.' + ballNum,
+        batter: d.batting && d.batting.length > 0 ? d.batting[0].name : '',
+        bowler: d.bowling && d.bowling.length > 0 ? d.bowling[0].name : '',
+        result: ballLabel,
+        text: text
+      });
+      renderLiveUpdates();
+    };
+
+    function renderLiveUpdates() {
+      const d = getData();
+      const container = document.getElementById('liveContent');
+      let html = '';
+
+      if (currentSport === 'cricket') {
+        html += renderCricketRunPad();
+        const crease = d.batting ? d.batting.filter(b => b.out && b.out.includes('not out')) : [];
+        const topPair = crease.length >= 2 ? crease.slice(0,2) : [(d.batting||[])[0], (d.batting||[])[1] || (d.batting||[])[0]];
+        if (topPair[0]) {
+          html += '<div class="card"><div style="display:flex;gap:20px;flex-wrap:wrap;justify-content:center">';
+          topPair.forEach(b => {
+            if (!b) return;
+            html += `<div style="flex:1;min-width:180px;display:flex;align-items:center;gap:12px;padding:8px 12px;background:#f8fafc;border-radius:10px">
+              <div style="position:relative">
+                ${avatarHtml(b.name,48,'#e2e8f0')}
+                <div style="position:absolute;bottom:-2px;right:-2px;width:18px;height:18px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#2196f3;border:2px solid #2196f3">🏏</div>
+              </div>
+              <div>
+                <div style="font-size:16px;font-weight:700">${b.name.split(' ').pop()}</div>
+                <div style="font-size:11px;color:#64748b">${b.name}</div>
+                <div style="font-size:11px;color:#64748b;margin-top:4px">
+                  <strong style="font-size:15px;color:#0f172a">${b.runs}</strong>(${b.balls})
+                  <span style="color:#22c55e;margin-left:8px">4s:${b.fours}</span>
+                  <span style="color:#10b981;margin-left:4px">6s:${b.sixes}</span>
+                  <span style="color:#64748b;margin-left:8px">SR:${b.sr}</span>
+                </div>
+              </div>
+            </div>`;
+          });
+          html += '</div>';
+        }
+        if (d.bowling && d.bowling[0]) {
+          const b = d.bowling[0];
+          html += `<div style="margin-top:14px;padding-top:14px;border-top:1px solid #f1f5f9;display:flex;align-items:center;gap:12px">
+            <div style="position:relative">
+              ${avatarHtml(b.name,40,'#fee2e2')}
+              <div style="position:absolute;bottom:-2px;right:-2px;width:16px;height:16px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#ef4444;border:2px solid #ef4444">⚾</div>
+            </div>
+            <div>
+              <div style="font-size:14px;font-weight:600">${b.name.split(' ').pop()}</div>
+              <div style="font-size:11px;color:#64748b">${b.name}</div>
+              <div style="font-size:12px;color:#64748b;margin-top:4px">
+                <strong style="font-size:14px;color:#0f172a">${b.wickets}-${b.runs}</strong> (${b.overs}) • Econ: <strong>${b.economy}</strong>
+              </div>
+            </div>
+          </div>`;
+        }
+        html += '</div>';
+        if (d.overs && d.overs.length) {
+          html += '<div class="card" id="overGrid"><h3 style="font-size:13px;color:#64748b;font-weight:600;margin-bottom:12px">OVER BREAKDOWN</h3>';
+          d.overs.slice(-4).forEach(o => {
+            const b2 = generateBallsForOver(o);
+            html += `<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #f1f5f9">
+              <span style="font-size:12px;font-weight:700;color:#2196f3;min-width:58px">Over ${o.over}</span>
+              <div style="display:flex;gap:3px;flex-wrap:wrap">${b2.map(b3 => `<span class="over-ball ${b3.cls}" title="${b3.label}">${b3.label}</span>`).join('')}</div>
+              <span style="margin-left:auto;font-size:13px;font-weight:700;color:#0f172a">= ${o.runs}</span>
+            </div>`;
+          });
+          html += '</div>';
+        }
+      }
+
+      // Recent events for all sports
+      if (d.ballByBall && d.ballByBall.length) {
+        const isCricket = currentSport === 'cricket';
+        html += '<div class="card"><h3 style="font-size:13px;color:#64748b;font-weight:600;margin-bottom:10px">' + (isCricket ? 'RECENT BALLS' : 'LIVE EVENTS') + '</h3><div class="run-animation-area">';
+        d.ballByBall.slice(-12).forEach(b => {
+          const cls = getResultClass(b.result);
+          let label = b.result;
+          if (b.result==='0') label='●';
+          else if (b.result==='4'||b.result==='6') label=b.result;
+          else if (b.result==='W') label='W';
+          else if (b.result==='⚽') label='⚽';
+          else if (b.result==='HR') label='HR';
+          else if (['3','2','1'].includes(b.result)) label=b.result;
+          else label = isCricket ? '●' : '●';
+          html += `<div class="run-ball ${cls}">${label}<div class="run-ball-tooltip">${b.text.substring(0,40)}</div></div>`;
+        });
+        html += '</div>';
+        html += '<div style="margin-top:8px">';
+        d.ballByBall.slice(-6).reverse().forEach(b => {
+          const cls = getResultClass(b.result);
+          let label = b.result;
+          if (b.result==='0') label='●';
+          else if (['4','6','W','⚽','HR','3','2','1'].includes(b.result)) label=b.result;
+          else label = '●';
+          html += `<div style="display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:1px solid #f1f5f9">
+            <span style="font-size:11px;font-weight:700;color:#2196f3;min-width:50px">${b.over}</span>
+            <span class="ball-result ${cls}" style="width:24px;height:24px;font-size:10px">${label}</span>
+            <p style="font-size:12px;color:#475569;flex:1">${b.text}</p>
+          </div>`;
+        });
+        html += '</div></div>';
+      } else {
+        html = '<div class="card"><p style="color:#64748b">No live updates available.</p></div>';
+      }
+
+      container.innerHTML = html;
+    }
+
+    function generateBallsForOver(over) {
+      const results = ['0','1','2','4','6','W'];
+      const count = Math.min(6, Math.max(3, Math.ceil(over.runs/4) + (over.wickets||0)));
+      const balls = [];
+      let runsLeft = over.runs;
+      for (let i = 0; i < count; i++) {
+        if (i === count-1 && runsLeft > 0) {
+          balls.push({ label: runsLeft.toString(), cls: getResultClass(runsLeft.toString()) });
+        } else if (over.wickets > i) {
+          balls.push({ label: 'W', cls: 'wicket' });
+        } else if (runsLeft >= 6) {
+          balls.push({ label: '6', cls: 'six' });
+          runsLeft -= 6;
+        } else if (runsLeft >= 4) {
+          balls.push({ label: '4', cls: 'four' });
+          runsLeft -= 4;
+        } else if (runsLeft >= 2) {
+          balls.push({ label: '2', cls: 'normal' });
+          runsLeft -= 2;
+        } else if (runsLeft >= 1) {
+          balls.push({ label: '1', cls: 'normal' });
+          runsLeft -= 1;
+        } else {
+          balls.push({ label: '●', cls: 'dot' });
+        }
+      }
+      return balls;
+    }
+
+    function renderScorecard() {
+      const d = getData();
+      const container = document.getElementById('scorecardContent');
+      const scBarHome = document.getElementById('scBarHome');
+      if (scBarHome) scBarHome.innerHTML = `<strong>${d.home.short}</strong> <span id="scBarHomeScore">${d.home.score}</span>`;
+      const scBarAway = document.getElementById('scBarAway');
+      if (scBarAway) scBarAway.innerHTML = `<strong>${d.away.short}</strong> <span id="scBarAwayScore">${d.away.score}</span>`;
+      const scBarOver = document.getElementById('scBarOver');
+      if (scBarOver) scBarOver.textContent = d.home.overs ? `(${d.home.overs} ov)` : '';
+
+      if (currentSport === 'cricket') {
+        let html = renderCricketRunPad();
+        html += `<div class="scorecard-section"><h3 class="scorecard-title">${d.home.short} - Innings</h3>
+        <table class="scorecard-table"><thead><tr><th>Batter</th><th>R</th><th>B</th><th>4s</th><th>6s</th><th>SR</th></tr></thead><tbody>`;
+        (d.batting||[]).forEach(b => {
+          html += `<tr><td class="batter-name">${b.name} ${b.out ? `<span class="dismissal">${b.out}</span>` : ''}</td><td>${b.runs}</td><td>${b.balls}</td><td>${b.fours}</td><td>${b.sixes}</td><td>${b.sr || '-'}</td></tr>`;
+        });
+        html += `</tbody></table></div>`;
+        if (d.bowling && d.bowling.length) {
+          html += `<div class="scorecard-section" style="margin-top:24px"><h3 class="scorecard-title">${d.away.short} - Bowling</h3>
+          <table class="scorecard-table"><thead><tr><th>Bowler</th><th>O</th><th>M</th><th>R</th><th>W</th><th>Econ</th></tr></thead><tbody>`;
+          d.bowling.forEach(b => {
+            html += `<tr><td class="batter-name">${b.name}</td><td>${b.overs}</td><td>${b.maidens}</td><td>${b.runs}</td><td>${b.wickets}</td><td>${b.economy || '-'}</td></tr>`;
+          });
+          html += `</tbody></table></div>`;
+        }
+        container.innerHTML = html;
+        return;
+      }
+
+      if (currentSport === 'football' || currentSport === 'hockey' || currentSport === 'kabaddi' || currentSport === 'e-sports' || currentSport === 'tabletennis') {
+        var iconMap = { football:'⚽', hockey:'🏒', kabaddi:'🤼', 'e-sports':'🎮', tabletennis:'🏓' };
+        let html = `<div class="scorecard-section"><h3 class="scorecard-title">${iconMap[currentSport]||'📋'} Match Events</h3>
+        <div style="display:flex;flex-direction:column;gap:8px">`;
+        (d.ballByBall||[]).forEach(b => {
+          html += `<div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:#f8fafc;border-radius:8px">
+            <span style="font-size:11px;font-weight:700;color:#2196f3;min-width:50px">${b.over}</span>
+            <span style="font-size:16px">${b.result || '●'}</span>
+            <span style="font-size:12px;color:#475569">${b.text}</span>
+          </div>`;
+        });
+        html += `</div></div>`;
+        container.innerHTML = html;
+        return;
+      }
+
+      if (currentSport === 'basketball') {
+        let html = `<div class="scorecard-section"><h3 class="scorecard-title">🏀 Play-by-Play</h3>
+        <div style="display:flex;flex-direction:column;gap:8px">`;
+        (d.ballByBall||[]).forEach(b => {
+          html += `<div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:#f8fafc;border-radius:8px">
+            <span style="font-size:11px;font-weight:700;color:#2196f3;min-width:50px">${b.over}</span>
+            <span style="font-size:11px;font-weight:700;color:#10b981">${b.result === '3' ? '3PT' : b.result === '2' ? '2PT' : b.result === '1' ? 'FT' : b.result}</span>
+            <span style="font-size:12px;color:#475569">${b.text}</span>
+          </div>`;
+        });
+        html += `</div></div>`;
+        container.innerHTML = html;
+        return;
+      }
+
+      if (currentSport === 'tennis') {
+        let html = `<div class="scorecard-section"><h3 class="scorecard-title">🎾 Match Points</h3>
+        <div style="display:flex;flex-direction:column;gap:8px">`;
+        (d.ballByBall||[]).forEach(b => {
+          html += `<div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:#f8fafc;border-radius:8px">
+            <span style="font-size:11px;font-weight:700;color:#2196f3;min-width:50px">${b.over}</span>
+            <span style="font-size:11px;font-weight:700;color:#10b981">${b.result}</span>
+            <span style="font-size:12px;color:#475569">${b.text}</span>
+          </div>`;
+        });
+        html += `</div></div>`;
+        container.innerHTML = html;
+        return;
+      }
+
+      if (currentSport === 'baseball') {
+        let html = `<div class="scorecard-section"><h3 class="scorecard-title">⚾ Inning Events</h3>
+        <div style="display:flex;flex-direction:column;gap:8px">`;
+        (d.ballByBall||[]).forEach(b => {
+          html += `<div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:#f8fafc;border-radius:8px">
+            <span style="font-size:11px;font-weight:700;color:#2196f3;min-width:50px">${b.over}</span>
+            <span style="font-size:11px;font-weight:700;color:#f59e0b">${b.result}</span>
+            <span style="font-size:12px;color:#475569">${b.text}</span>
+          </div>`;
+        });
+        html += `</div></div>`;
+        container.innerHTML = html;
+        return;
+      }
+
+      if (!d.batting || !d.batting.length) {
+        container.innerHTML = '<p class="text-gray-500">Scorecard not available for this sport.</p>';
+        return;
+      }
+      let html = `<div class="scorecard-section"><h3 class="scorecard-title">${d.home.short} - Scorecard</h3>
+      <table class="scorecard-table"><thead><tr><th>Player</th><th>R</th><th>B</th><th>4s</th><th>6s</th><th>SR</th></tr></thead><tbody>`;
+      d.batting.forEach(b => {
+        html += `<tr><td class="batter-name">${b.name}</td><td>${b.runs}</td><td>${b.balls}</td><td>${b.fours}</td><td>${b.sixes}</td><td>${b.sr || '-'}</td></tr>`;
+      });
+      html += `</tbody></table></div>`;
+      if (d.bowling && d.bowling.length) {
+        html += `<div class="scorecard-section" style="margin-top:24px"><h3 class="scorecard-title">${d.away.short} - Bowling</h3>
+        <table class="scorecard-table"><thead><tr><th>Bowler</th><th>O</th><th>M</th><th>R</th><th>W</th><th>Econ</th></tr></thead><tbody>`;
+        d.bowling.forEach(b => {
+          html += `<tr><td class="batter-name">${b.name}</td><td>${b.overs}</td><td>${b.maidens}</td><td>${b.runs}</td><td>${b.wickets}</td><td>${b.economy || '-'}</td></tr>`;
+        });
+        html += `</tbody></table></div>`;
+      }
+      container.innerHTML = html;
+    }
+
+    function renderCommentary() {
+      const d = getData();
+      const container = document.getElementById('commentaryContent');
+      if (!d.commentary || !d.commentary.length) {
+        container.innerHTML = '<div class="card"><p style="color:#64748b">No commentary available.</p></div>';
+        return;
+      }
+      let html = d.commentary.map(c => {
+        if (c.over === '---') {
+          return `<div style="text-align:center;padding:16px;margin:8px 0;background:linear-gradient(135deg,#f1f5f9,#e2e8f0);border-radius:8px;font-size:13px;font-weight:700;color:#0f172a">${c.text}</div>`;
+        }
+        return `<div class="commentary-item">
+          <div class="commentary-top">
+            <span class="over-no">${c.over}</span>
+            ${c.bowler ? avatarHtml(c.bowler,26,'#fee2e2') : ''}
+            <span class="bowler-text" style="display:flex;align-items:center;gap:6px">
+              ${c.bowler ? c.bowler : ''}
+              ${c.bowler && c.batter ? '→' : ''}
+              ${avatarHtml(c.batter,26,'#e2e8f0')}
+              ${c.batter ? c.batter : ''}
+            </span>
+          </div>
+          <div class="commentary-body">
+            <div class="ball-result ${getResultClass(c.result)}" style="width:26px;height:26px;font-size:11px">${c.result === '0' ? '●' : c.result === '4' ? '4' : c.result === '6' ? '6' : c.result === 'W' ? 'W' : c.result}</div>
+            <p class="commentary-text">${c.text}</p>
+          </div>
+        </div>`;
+      }).join('');
+
+      // Show winner at the bottom
+      if (d.need) {
+        html += `<div style="text-align:center;padding:20px;margin-top:12px;background:linear-gradient(135deg,#2196f3,#1565c0);border-radius:12px">
+          <div style="font-size:14px;font-weight:600;color:#fff;margin-bottom:4px">🏆 Match Result</div>
+          <div style="font-size:20px;font-weight:800;color:#fff">${d.need}</div>
+          <div style="font-size:12px;color:rgba(255,255,255,.7);margin-top:4px">${d.target ? `Target: ${d.target}` : ''} • ${d.venue}</div>
+        </div>`;
+      }
+
+      container.innerHTML = html;
+    }
+
+    function renderSquads() {
+      const d = getData();
+      const container = document.getElementById('squadsContent');
+      if (!d.squad || !d.squad.home || !d.squad.home.length) {
+        container.innerHTML = '<p class="text-gray-500">Squad information not available.</p>';
+        return;
+      }
+      const playerCard = (p) => `
+        <div class="squad-player-card">
+          <img class="player-avatar" src="${p.img || 'assets/community/avatar4.jpg'}" alt="${p.name}" />
+          <div class="squad-player-info">
+            <h4>${p.name}</h4>
+            <p>${p.role}</p>
+          </div>
+        </div>
+      `;
+      container.innerHTML = `
+        <div class="squad-column">
+          <h3 class="scorecard-title">${d.home.short} - Playing XI</h3>
+          ${d.squad.home.map(playerCard).join('')}
+        </div>
+        <div class="squad-column">
+          <h3 class="scorecard-title">${d.away.short} - Playing XI</h3>
+          ${d.squad.away.map(playerCard).join('')}
+        </div>
+      `;
+    }
+
+    function renderOvers() {
+      const d = getData();
+      const container = document.getElementById('oversContent');
+      if (!d.ballByBall || !d.ballByBall.length) {
+        container.innerHTML = '<p class="text-gray-500">Timeline data not available.</p>';
+        return;
+      }
+      if (currentSport === 'cricket') {
+        let html = `<table class="scorecard-table overs-table"><thead><tr><th>Over</th><th>Batter</th><th>Result</th><th>Event</th></tr></thead><tbody>`;
+        d.ballByBall.slice(-20).forEach(b => {
+          html += `<tr><td>${b.over}</td><td>${b.batter||'-'}</td><td>${b.result}</td><td style="font-size:11px">${b.text.substring(0,50)}</td></tr>`;
+        });
+        html += `</tbody></table>`;
+        container.innerHTML = html;
+        return;
+      }
+      let html = `<table class="scorecard-table overs-table"><thead><tr><th>Time</th><th>Player</th><th>Event</th></tr></thead><tbody>`;
+      d.ballByBall.slice(-20).forEach(b => {
+        html += `<tr><td>${b.over}</td><td>${b.batter||'-'}</td><td style="font-size:11px">${b.text.substring(0,60)}</td></tr>`;
+      });
+      html += `</tbody></table>`;
+      container.innerHTML = html;
+    }
+
+    function renderGraphs() {
+      const d = getData();
+      const container = document.getElementById('graphsContent');
+      if (!d.ballByBall || !d.ballByBall.length) {
+        container.innerHTML = '<p class="text-gray-500">Graph data not available.</p>';
+        return;
+      }
+
+      if (currentSport === 'cricket') {
+        const overs = d.overs || [];
+        if (!overs.length) { container.innerHTML = '<p class="text-gray-500">Graph data not available.</p>'; return; }
+        const totalOvers = overs.length;
+        const maxRuns = Math.max(...overs.map(o => o.runs), 1);
+        const barHeight = 180;
+        const barWidth = Math.max(16, Math.min(32, 600 / totalOvers - 4));
+        let runFlow = overs.map(o => {
+          const h = (o.runs / maxRuns) * barHeight;
+          const color = o.wickets > 0 ? '#ef4444' : '#2196f3';
+          return `<div class="graph-bar-wrapper" style="width:${barWidth+4}px">
+            <div class="graph-bar" style="height:${Math.max(h,3)}px;background:${color};width:${barWidth}px" title="Over ${o.over}: ${o.runs} runs${o.wickets?', '+o.wickets+' wkt':''}"></div>
+            <span class="graph-label">${o.over}</span>
+          </div>`;
+        }).join('');
+        let cumRuns = 0;
+        const rrPoints = overs.map(o => { cumRuns += o.runs; return cumRuns; });
+        const maxCum = Math.max(...rrPoints, 1);
+        const lineW = 600, lineH = 140;
+        const points = rrPoints.map((v,i) => { const x = ((i+1)/totalOvers)*lineW; const y = lineH - (v/maxCum)*lineH; return `${x},${y}`; }).join(' ');
+
+        // --- Boundaries per over ---
+        var byOver = {};
+        d.ballByBall.forEach(function(b){
+          var ovNum = b.over.split('.')[0];
+          if(!byOver[ovNum]) byOver[ovNum]={fours:0,sixes:0,dot:0,total:0};
+          byOver[ovNum].total++;
+          if(b.result==='4') byOver[ovNum].fours++;
+          else if(b.result==='6') byOver[ovNum].sixes++;
+          else if(b.result==='0') byOver[ovNum].dot++;
+        });
+        var ovKeys=Object.keys(byOver).slice(0,20);
+        var maxB = Math.max.apply(null, ovKeys.map(function(k){return byOver[k].fours+byOver[k].sixes;}),1);
+        var boundaryChart = ovKeys.map(function(k){
+          var o=byOver[k], fh=(o.fours/maxB)*100, sh=(o.sixes/maxB)*100;
+          return '<div style="display:flex;align-items:center;gap:6px;margin:4px 0;font-size:11px">' +
+            '<span style="min-width:30px;font-weight:700;color:#2196f3">Over '+k+'</span>' +
+            '<div style="flex:1;height:16px;background:#f1f5f9;border-radius:4px;overflow:hidden;display:flex">' +
+            (o.fours?'<div style="width:'+fh+'%;background:#22c55e;height:100%" title="4s: '+o.fours+'"></div>':'') +
+            (o.sixes?'<div style="width:'+sh+'%;background:#10b981;height:100%" title="6s: '+o.sixes+'"></div>':'') +
+            '</div>' +
+            '<span style="min-width:50px;text-align:right;color:#475569">'+(o.fours||0)+' 4s / '+(o.sixes||0)+' 6s</span></div>';
+        }).join('');
+
+        // --- Dot ball % per over ---
+        var dotChart = ovKeys.map(function(k){
+          var o=byOver[k], dotPct=o.total>0?Math.round((o.dot/o.total)*100):0;
+          var col=dotPct>50?'#ef4444':dotPct>25?'#f59e0b':'#22c55e';
+          return '<div style="display:flex;align-items:center;gap:6px;margin:3px 0;font-size:11px">' +
+            '<span style="min-width:30px;font-weight:700;color:#2196f3">Over '+k+'</span>' +
+            '<div style="flex:1;height:12px;background:#f1f5f9;border-radius:6px;overflow:hidden">' +
+            '<div style="width:'+dotPct+'%;background:'+col+';height:100%;border-radius:6px;transition:width .3s"></div></div>' +
+            '<span style="min-width:40px;text-align:right;font-weight:700;color:'+col+'">'+dotPct+'%</span></div>';
+        }).join('');
+
+        // --- Player contribution (horizontal bars) ---
+        var batters = d.batting||[];
+        var totalRuns = batters.reduce(function(s,b){return s+(b.runs||0);},0)||1;
+        var playerBars = batters.slice(0,8).map(function(b){
+          var pct = Math.round(((b.runs||0)/totalRuns)*100);
+          return '<div style="display:flex;align-items:center;gap:8px;margin:5px 0">' +
+            '<span style="min-width:90px;font-size:11px;font-weight:600;color:#0f172a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+b.name.split(' ').pop()+'</span>' +
+            '<div style="flex:1;height:18px;background:#f1f5f9;border-radius:4px;overflow:hidden">' +
+            '<div style="width:'+pct+'%;background:linear-gradient(90deg,#2196f3,#1565c0);height:100%;border-radius:4px;display:flex;align-items:center;justify-content:flex-end;padding-right:4px;min-width:20px">' +
+            '<span style="font-size:9px;color:#fff;font-weight:700">'+(pct>12?b.runs:'')+'</span></div></div>' +
+            '<span style="min-width:50px;text-align:right;font-size:11px;color:#475569">'+b.runs+' ('+pct+'%)</span></div>';
+        }).join('');
+
+        // --- Partnership breakdown ---
+        var partScores=[], pRuns=0, pBalls=0, wkts=0;
+        d.ballByBall.forEach(function(b){
+          pBalls++;
+          var v=parseInt(b.result);
+          if(!isNaN(v)) pRuns+=v;
+          else if(b.result==='W'){wkts++; if(pRuns>0 || pBalls>1) partScores.push({runs:pRuns,balls:pBalls,wkt:true}); pRuns=0;pBalls=0;}
+        });
+        if(pRuns>0||pBalls>1) partScores.push({runs:pRuns,balls:pBalls,wkt:false});
+        var maxPart = Math.max.apply(null, partScores.map(function(p){return p.runs;}),1);
+        var partBars = partScores.slice(0,10).map(function(p,i){
+          var pw = (p.runs/maxPart)*100;
+          return '<div style="display:flex;align-items:center;gap:6px;margin:4px 0;font-size:11px">' +
+            '<span style="min-width:20px;font-weight:700;color:#94a3b8">'+(i+1)+'</span>' +
+            '<span style="min-width:45px;color:#64748b;font-size:10px">'+(p.balls||0)+'b</span>' +
+            '<div style="flex:1;height:14px;background:#f1f5f9;border-radius:4px;overflow:hidden">' +
+            '<div style="width:'+Math.max(pw,3)+'%;background:'+(p.wkt?'#ef4444':'#22c55e')+';height:100%;border-radius:4px"></div></div>' +
+            '<span style="min-width:40px;text-align:right;font-weight:700;color:#0f172a">'+p.runs+'</span>' +
+            (p.wkt?'<span style="font-size:9px;color:#ef4444">⬇</span>':'')+'</div>';
+        }).join('');
+
+        // --- CRR progression ---
+        var crrLine='', crrMax=0;
+        if(overs.length>1){
+          var crrMax = Math.max.apply(null, overs.map(function(o,i){ return (i+1)>0?Math.round((rrPoints[i]/(i+1))*10)/10:0; }), 5)||5;
+          var crrW=600, crrH=100;
+          var crrPoints = rrPoints.map(function(v,i){
+            var crr = (i+1)>0 ? v/(i+1) : 0;
+            var x = ((i+1)/totalOvers)*crrW;
+            var y = crrH - (crr/crrMax)*crrH;
+            return {x:x, y:y, val:crr.toFixed(1)};
+          });
+          crrLine = '<div class="graph-section"><h3 class="scorecard-title">📈 Run Rate Progression</h3>' +
+            '<svg viewBox="0 0 '+crrW+' '+crrH+'" style="width:100%;height:'+crrH+'px;background:#f8fafc;border-radius:8px">' +
+            '<polyline points="'+crrPoints.map(function(p){return p.x+','+p.y}).join(' ')+'" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" />' +
+            crrPoints.map(function(p){return '<circle cx="'+p.x+'" cy="'+p.y+'" r="3" fill="#10b981" stroke="#fff" stroke-width="1.5" />';}).join('') +
+            '</svg><p class="graph-footer">Overs → (CRR)</p></div>';
+        }
+
+        container.innerHTML = `
+          <div class="graph-section"><h3 class="scorecard-title">📊 Run Flow (Per Over)</h3><div class="graph-container"><div class="graph-bars" style="height:${barHeight+30}px">${runFlow}</div></div><p class="graph-footer">Overs →</p></div>
+          <div class="graph-section"><h3 class="scorecard-title">📈 Cumulative Run Rate</h3><svg viewBox="0 0 ${lineW} ${lineH}" style="width:100%;height:${lineH}px;background:#f8fafc;border-radius:8px"><polyline points="${points}" fill="none" stroke="#2196f3" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" />${rrPoints.map((v,i) => { const x = ((i+1)/totalOvers)*lineW; const y = lineH - (v/maxCum)*lineH; return `<circle cx="${x}" cy="${y}" r="4" fill="#2196f3" stroke="#fff" stroke-width="2" />`;}).join('')}</svg><p class="graph-footer">Overs → (Total: ${cumRuns} runs)</p></div>
+          ${crrLine}
+          <div class="graph-section"><h3 class="scorecard-title">🎯 Boundaries Per Over</h3><div style="padding:4px 0">${boundaryChart}</div><p class="graph-footer" style="font-size:10px;color:#94a3b8"><span style="color:#22c55e">■</span> Fours  <span style="color:#10b981">■</span> Sixes</p></div>
+          <div class="graph-section"><h3 class="scorecard-title">● Dot Ball % Per Over</h3><div style="padding:4px 0">${dotChart}</div><p class="graph-footer" style="font-size:10px;color:#94a3b8"><span style="color:#22c55e">■</span> Low (&le;25%)  <span style="color:#f59e0b">■</span> Medium (25-50%)  <span style="color:#ef4444">■</span> High (&gt;50%)</p></div>
+          <div class="graph-section"><h3 class="scorecard-title">🧑‍✈️ Player Contribution</h3><div style="padding:4px 0">${playerBars}</div><p class="graph-footer" style="font-size:10px;color:#94a3b8">% of total runs (${totalRuns})</p></div>
+          <div class="graph-section"><h3 class="scorecard-title">🔗 Partnerships</h3><div style="padding:4px 0">${partBars}</div><p class="graph-footer" style="font-size:10px;color:#94a3b8"><span style="color:#22c55e">■</span> Uncapped  <span style="color:#ef4444">■</span> Ended by wicket</p></div>
+          <div class="graph-section"><h3 class="scorecard-title">⚡ Quick Stats</h3><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:8px">
+            <div style="text-align:center;padding:10px;background:#f1f5f9;border-radius:8px"><div style="font-size:20px;font-weight:800">${d.home.score||'-'}</div><div style="font-size:10px;color:#64748b">${d.home.short}</div></div>
+            <div style="text-align:center;padding:10px;background:#f1f5f9;border-radius:8px"><div style="font-size:20px;font-weight:800">${d.away.score||'-'}</div><div style="font-size:10px;color:#64748b">${d.away.short}</div></div>
+            <div style="text-align:center;padding:10px;background:#f1f5f9;border-radius:8px"><div style="font-size:20px;font-weight:800;color:#ef4444">${overs.reduce((s,o)=>s+o.wickets,0)}</div><div style="font-size:10px;color:#64748b">Wickets</div></div>
+            <div style="text-align:center;padding:10px;background:#f1f5f9;border-radius:8px"><div style="font-size:20px;font-weight:800;color:#10b981">${overs.reduce((s,o)=>s+o.runs,0)}</div><div style="font-size:10px;color:#64748b">Total Runs</div></div>
+            <div style="text-align:center;padding:10px;background:#f1f5f9;border-radius:8px"><div style="font-size:20px;font-weight:800;color:#22c55e">${d.batting?d.batting.reduce(function(s,b){return s+(b.fours||0);},0):0}</div><div style="font-size:10px;color:#64748b">Fours</div></div>
+            <div style="text-align:center;padding:10px;background:#f1f5f9;border-radius:8px"><div style="font-size:20px;font-weight:800;color:#10b981">${d.batting?d.batting.reduce(function(s,b){return s+(b.sixes||0);},0):0}</div><div style="font-size:10px;color:#64748b">Sixes</div></div>
+          </div></div>`;
+        return;
+      }
+
+      // === Non-cricket sports ===
+      var events = d.ballByBall||[];
+      // Event type breakdown
+      var eventTypes = {};
+      events.forEach(function(b){
+        var r = b.result||'';
+        if(r==='⚽'||r==='goal') eventTypes['Goals'] = (eventTypes['Goals']||0)+1;
+        else if(r==='HR') eventTypes['Home Runs'] = (eventTypes['Home Runs']||0)+1;
+        else if(r==='2'||r==='3'||r==='1') eventTypes['Makes'] = (eventTypes['Makes']||0)+1;
+        else if(r==='A'||r==='★') eventTypes['Key Plays'] = (eventTypes['Key Plays']||0)+1;
+        else eventTypes['Events'] = (eventTypes['Events']||0)+1;
+      });
+      var typeKeys = Object.keys(eventTypes);
+      var maxType = Math.max.apply(null, typeKeys.map(function(k){return eventTypes[k];}),1);
+      var typeBars = typeKeys.map(function(k){
+        var w = (eventTypes[k]/maxType)*100;
+        var colors = { 'Goals':'#ef4444', 'Home Runs':'#f59e0b', 'Makes':'#22c55e', 'Key Plays':'#2196f3', 'Events':'#64748b' };
+        return '<div style="display:flex;align-items:center;gap:6px;margin:4px 0;font-size:11px">' +
+          '<span style="min-width:80px;font-weight:600;color:#475569">'+k+'</span>' +
+          '<div style="flex:1;height:14px;background:#f1f5f9;border-radius:4px;overflow:hidden">' +
+          '<div style="width:'+w+'%;background:'+(colors[k]||'#2196f3')+';height:100%;border-radius:4px"></div></div>' +
+          '<span style="min-width:30px;text-align:right;font-weight:700;color:#0f172a">'+eventTypes[k]+'</span></div>';
+      }).join('');
+
+      // Timeline with result badges
+      var timelineHtml = events.slice(-12).reverse().map(function(b){
+        var badge;
+        if(b.result==='⚽') badge='<span style="background:#ef4444;color:#fff;border-radius:50%;width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;font-size:10px">⚽</span>';
+        else if(b.result==='HR') badge='<span style="background:#f59e0b;color:#fff;border-radius:4px;padding:1px 5px;font-size:9px;font-weight:700">HR</span>';
+        else if(b.result==='A') badge='<span style="background:#2196f3;color:#fff;border-radius:4px;padding:1px 5px;font-size:9px;font-weight:700">★</span>';
+        else if(b.result==='★') badge='<span style="background:#8b5cf6;color:#fff;border-radius:4px;padding:1px 5px;font-size:9px;font-weight:700">★</span>';
+        else if(b.result==='3'||b.result==='2'||b.result==='1') badge='<span style="background:#22c55e;color:#fff;border-radius:4px;padding:1px 5px;font-size:9px;font-weight:700">'+b.result+'</span>';
+        else badge='<span style="width:8px;height:8px;border-radius:50%;background:#94a3b8;display:inline-block"></span>';
+        return '<div style="display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:1px solid #f1f5f9">' +
+          '<div style="margin-top:2px">'+badge+'</div>' +
+          '<span style="font-size:10px;font-weight:700;color:#2196f3;min-width:44px;margin-top:2px">'+b.over+'</span>' +
+          '<p style="font-size:11px;color:#475569;margin:0;flex:1">'+b.text+'</p></div>';
+      }).join('');
+
+      // Score by period (derived from event order)
+      var homePeriodScores = [], awayPeriodScores = [], periods = [];
+      var hScore = 0, aScore = 0, currentPeriod = 'Start';
+      events.forEach(function(b, idx){
+        var period = b.over.split(' ')[0]||b.over.split('-')[0];
+        if(period !== currentPeriod && idx > 0){
+          periods.push({period:currentPeriod, h:hScore, a:aScore});
+          hScore = 0; aScore = 0;
+          currentPeriod = period;
+        } else { currentPeriod = period; }
+        // Simple heuristic: check if text contains home/away team name
+      });
+      if(events.length) periods.push({period:currentPeriod, h:hScore||'-', a:aScore||'-'});
+      if(periods.length<2 && events.length){
+        // fallback: just show all events count
+      }
+      var periodChartHtml = '';
+      if(periods.length>=2){
+        var maxP = Math.max.apply(null, periods.map(function(p){ return Math.max(p.h||0,p.a||0); }), 1);
+        periodChartHtml = periods.map(function(p){
+          var hh = ((p.h||0)/maxP)*40, ah = ((p.a||0)/maxP)*40;
+          return '<div style="display:flex;flex-direction:column;align-items:center;gap:4px;min-width:50px">' +
+            '<div style="display:flex;align-items:flex-end;gap:3px;height:50px">' +
+            '<div style="width:16px;height:'+Math.max(hh,2)+'px;background:#2196f3;border-radius:3px 3px 0 0" title="'+(p.h||0)+'"></div>' +
+            '<div style="width:16px;height:'+Math.max(ah,2)+'px;background:#ef4444;border-radius:3px 3px 0 0" title="'+(p.a||0)+'"></div>' +
+            '</div><span style="font-size:9px;color:#64748b">'+p.period+'</span></div>';
+        }).join('');
+      }
+
+      // Enhanced score dashboard
+      container.innerHTML = `
+        <div class="graph-section">
+          <h3 class="scorecard-title">📈 Match Timeline</h3>
+          <div style="border-left:2px solid #e2e8f0;padding-left:10px;margin-left:4px">${timelineHtml}</div>
+        </div>
+        <div class="graph-section">
+          <h3 class="scorecard-title">📊 Event Breakdown</h3>
+          <div style="padding:4px 0">${typeBars}</div>
+        </div>
+        ${periodChartHtml ? '<div class="graph-section"><h3 class="scorecard-title">⏱ Period Analysis</h3><div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;padding:8px 0">'+periodChartHtml+'</div></div>' : ''}
+        <div class="graph-section">
+          <h3 class="scorecard-title">⚡ Match Dashboard</h3>
+          <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px">
+            <div style="text-align:center;padding:16px;background:linear-gradient(135deg,#2196f3,#1565c0);border-radius:12px;color:#fff">
+              <div style="font-size:28px;font-weight:800">${d.home.score||'-'}</div>
+              <div style="font-size:11px;opacity:.8">${d.home.short}</div>
+              <div style="font-size:10px;opacity:.6;margin-top:4px">HOME</div>
+            </div>
+            <div style="text-align:center;padding:16px;background:linear-gradient(135deg,#ef4444,#dc2626);border-radius:12px;color:#fff">
+              <div style="font-size:28px;font-weight:800">${d.away.score||'-'}</div>
+              <div style="font-size:11px;opacity:.8">${d.away.short}</div>
+              <div style="font-size:10px;opacity:.6;margin-top:4px">AWAY</div>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px">
+            <div style="text-align:center;padding:8px;background:#f1f5f9;border-radius:8px"><div style="font-size:16px;font-weight:800;color:#2196f3">${events.length}</div><div style="font-size:9px;color:#64748b">Total Events</div></div>
+            <div style="text-align:center;padding:8px;background:#f1f5f9;border-radius:8px"><div style="font-size:16px;font-weight:800;color:#10b981">${d.status||'-'}</div><div style="font-size:9px;color:#64748b">Status</div></div>
+            <div style="text-align:center;padding:8px;background:#f1f5f9;border-radius:8px"><div style="font-size:16px;font-weight:800;color:#f59e0b">${(eventTypes['Goals']||0)+(eventTypes['Home Runs']||0)+(eventTypes['Key Plays']||0)}</div><div style="font-size:9px;color:#64748b">Key Moments</div></div>
+          </div>
+        </div>`;
+    }
+
+    // ===== LIVE CHAT (WebSocket) =====
+    function getSportPrompt() {
+      var prompts = {
+        cricket: ['What a shot! 🔥','Need 6 now!','Great bowling!','Fielding needs improvement','Umpire? Really? 🤨','Come on team! 💪','Superb catch! 👏','Bowler on fire! 🔥','Need a boundary!'],
+        football: ['What a goal! ⚽','Great save! 🧤','Offside! 🤨','Come on! 💪','Diving! 😤','VAR check!','Free kick!','What a pass! 👏'],
+        basketball: ['Slam dunk! 🏀','Great D!','Three pointer!','And-one!','Rebound!','Full court press!','Time out!','What a play! 👏'],
+        tennis: ['Great shot! 🎾','Ace!','Net cord! 😤','Come on! 💪','Challenge!','What a rally!','Break point!','Game! 👏'],
+        baseball: ['HOME RUN! ⚾','Strikeout!','Great catch!','Double play!','Grand slam!','What a pitch!','Safe!','Out! 👏'],
+        hockey: ['GOAL! 🏒','Great save! 🥅','Hit the post!','Power play!','Penalty!','What a pass!','Body check! 💥','Overtime!'],
+        kabaddi: ['Great raid! 🤼','Super tackle!','Bonus point!','ALL OUT!','What a game!','Come on! 💪','Do-or-die raid!'],
+        'e-sports': ['CLUTCH! 🎮','Ace round!','What a play!','One tap!','Ninja defuse!','Team wipe!','Eco round win!'],
+        tabletennis: ['Great rally! 🏓','Edge ball!','Smash!','Backhand winner!','What a game!','Deuce!','Match point!'],
+      };
+      var p = prompts[currentSport] || prompts.cricket;
+      return p[Math.floor(Math.random() * p.length)];
+    }
+    let chatMessages = [];
+    let chatWs = null;
+    let myUserId = null;
+    let wsConnected = false;
+    let chatReconnectTimer = null;
+
+    function getMatchIdForChat() {
+      const params = new URLSearchParams(window.location.search);
+      const sport = params.get('sport') || 'cricket';
+      const home = params.get('home') || '';
+      const away = params.get('away') || '';
+      return sport + '_' + home + '_' + away;
+    }
+
+    function connectWebSocket() {
+      const matchId = getMatchIdForChat();
+      const wsUrl = 'ws://localhost:3001/ws/chat?match=' + encodeURIComponent(matchId);
+
+      try {
+        chatWs = new WebSocket(wsUrl);
+
+        chatWs.onopen = () => {
+          wsConnected = true;
+          document.getElementById('chatCount').textContent = 'Connected';
+          document.getElementById('chatCount').style.color = '#10b981';
+        };
+
+        chatWs.onmessage = (event) => {
+          try {
+            const data = JSON.parse(event.data);
+            handleWsMessage(data);
+          } catch {}
+        };
+
+        chatWs.onclose = () => {
+          wsConnected = false;
+          document.getElementById('chatCount').textContent = 'Offline';
+          document.getElementById('chatCount').style.color = '#ef4444';
+        };
+
+        chatWs.onerror = () => {
+          chatWs.close();
+        };
+
+        setTimeout(() => {
+          if (!wsConnected) showChatOffline();
+        }, 8000);
+      } catch {
+        showChatOffline();
+      }
+    }
+
+    function handleWsMessage(data) {
+      if (data.type === 'connected') {
+        myUserId = data.user.id;
+        chatMessages = data.recentMessages || [];
+        renderChat();
+        document.getElementById('chatCount').textContent = (data.onlineCount || 1) + ' online';
+      } else if (data.type === 'message') {
+        chatMessages.push(data);
+        if (chatMessages.length > 100) chatMessages.shift();
+        renderChat();
+      } else if (data.type === 'system') {
+        chatMessages.push(data);
+        if (chatMessages.length > 100) chatMessages.shift();
+        renderChat();
+      } else if (data.type === 'online_count') {
+        document.getElementById('chatCount').textContent = (data.onlineCount || 1) + ' online';
+      } else if (data.type === 'like_update') {
+        const idx = chatMessages.findIndex(m => m.id === data.messageId);
+        if (idx >= 0) {
+          chatMessages[idx].likes = data.likes;
+          const el = document.getElementById('likeCount_' + data.messageId);
+          if (el) el.textContent = data.likes;
+        }
+      } else if (data.type === 'typing') {
+        const el = document.getElementById('typingIndicator');
+        if (el) {
+          if (data.isTyping && data.userId !== myUserId) {
+            el.textContent = data.userName + ' is typing...';
+            el.style.display = 'block';
+            clearTimeout(el._typingTimer);
+            el._typingTimer = setTimeout(() => { el.style.display = 'none'; }, 3000);
+          } else if (!data.isTyping) {
+            el.style.display = 'none';
+          }
+        }
+      }
+    }
+
+    function sendChatMessage(text) {
+      if (!wsConnected || !chatWs || chatWs.readyState !== WebSocket.OPEN) {
+        return;
+      }
+      chatWs.send(JSON.stringify({ type: 'message', text }));
+      sendTyping(false);
+    }
+
+    function sendTyping(isTyping) {
+      if (!wsConnected || !chatWs || chatWs.readyState !== WebSocket.OPEN) return;
+      chatWs.send(JSON.stringify({ type: 'typing', isTyping }));
+    }
+
+    function insertEmoji(emoji) {
+      const input = document.getElementById('chatInput');
+      if (input) {
+        input.value += emoji;
+        input.focus();
+      }
+    }
+
+    function likeChat(messageId) {
+      if (!wsConnected || !chatWs) return;
+      chatWs.send(JSON.stringify({ type: 'like', messageId }));
+    }
+
+    function reactTo(msgId, emoji) {
+      const el = document.getElementById('reaction_' + msgId);
+      if (el) {
+        el.textContent = el.textContent === emoji ? '' : emoji;
+      }
+    }
+
+    function replyChat(name) {
+      const input = document.getElementById('chatInput');
+      if (input) { input.value = '@' + name + ' '; input.focus(); }
+    }
+
+    function addSportPrompt() {
+      const prompt = CHAT_PROMPTS[Math.floor(Math.random() * CHAT_PROMPTS.length)];
+      const input = document.getElementById('chatInput');
+      if (input) { input.value = prompt; input.focus(); }
+    }
+
+    function renderChat() {
+      const container = document.getElementById('chatMessages');
+      if (!container) return;
+      container.innerHTML = chatMessages.map((m) => {
+        if (m.type === 'system' || !m.user) {
+          return `<div style="text-align:center;font-size:11px;color:#94a3b8;padding:4px 0">${m.text}</div>`;
+        }
+        const initials = m.user.name.charAt(0).toUpperCase();
+        const isMe = m.user.id === myUserId;
+        return `<div class="chat-msg-row" style="display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px solid #f1f5f9">
+          <img src="${m.user.img}" alt="" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
+          /><div style="width:28px;height:28px;border-radius:50%;background:#e2e8f0;display:none;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#2196f3;flex-shrink:0">${initials}</div>
+          <div style="flex:1;min-width:0">
+            <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+              <span style="font-size:12px;font-weight:700${isMe ? ';color:#2196f3' : ''}">${m.user.name}${isMe ? ' (You)' : ''}</span>
+              <span style="font-size:10px;color:#94a3b8">${timeAgo(m.time)}</span>
+            </div>
+            <p style="font-size:12px;color:#475569;margin:2px 0 0">${m.text}</p>
+            <div style="display:flex;align-items:center;gap:2px;margin-top:3px;flex-wrap:wrap">
+              <button onclick="likeChat('${m.id}')" style="border:none;background:none;cursor:pointer;font-size:11px;color:#94a3b8;display:flex;align-items:center;gap:2px;padding:2px 6px;border-radius:4px">
+                ❤️ <span id="likeCount_${m.id}">${m.likes||0}</span>
+              </button>
+              <span style="font-size:10px;color:#d1d5db">•</span>
+              <span class="quick-reacts" style="display:none;gap:2px">
+                <span onclick="reactTo('${m.id}','🔥')" style="cursor:pointer;font-size:12px;padding:1px 3px;border-radius:3px">🔥</span>
+                <span onclick="reactTo('${m.id}','👍')" style="cursor:pointer;font-size:12px;padding:1px 3px;border-radius:3px">👍</span>
+                <span onclick="reactTo('${m.id}','😂')" style="cursor:pointer;font-size:12px;padding:1px 3px;border-radius:3px">😂</span>
+              </span>
+              <span id="reaction_${m.id}" style="font-size:13px;min-width:20px"></span>
+              <span style="font-size:10px;color:#d1d5db">•</span>
+              <button onclick="replyChat('${m.user.name}')" style="border:none;background:none;cursor:pointer;font-size:10px;color:#94a3b8;padding:2px 4px">Reply</button>
+            </div>
+          </div>
+        </div>`;
+      }).join('');
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function timeAgo(ts) {
+      const sec = Math.floor((Date.now() - ts) / 1000);
+      if (sec < 10) return 'just now';
+      if (sec < 60) return sec + 's';
+      const min = Math.floor(sec / 60);
+      if (min < 60) return min + 'm';
+      return Math.floor(min / 60) + 'h';
+    }
+
+    function getSportStickers() {
+      var sport = currentSport;
+      var common = ['😀','😂','❤️','🔥','👍','🎉','😎','🏆','💪','🙌','⚡','👏','😢','😡'];
+      var sportMap = {
+        cricket: ['🏏','🏆','🔥','💥','🎯','💪','👏','🙌','⚡','🎉','😎','❤️'],
+        football: ['⚽','🥅','🧤','🔥','💥','🎯','🙌','👏','💪','🎉','⚡','😭'],
+        basketball: ['🏀','🏆','🔥','💥','🎯','💪','👏','🙌','🎉','⚡','😤','👑'],
+        tennis: ['🎾','🏆','🔥','💥','🎯','💪','👏','🙌','🎉','⚡','😤','🧢'],
+        baseball: ['⚾','🏆','🔥','💥','🎯','💪','👏','🙌','🎉','⚡','🧤','😤'],
+        hockey: ['🏒','🥅','🏆','🔥','💥','🎯','💪','👏','🙌','🎉','⚡','😤'],
+        kabaddi: ['🤼','🏆','🔥','💥','🎯','💪','👏','🙌','🎉','⚡','💢','😤'],
+        'e-sports': ['🎮','🖥️','🏆','🔥','💥','🎯','💪','👏','🙌','🎉','⚡','😤'],
+        tabletennis: ['🏓','🏆','🔥','💥','🎯','💪','👏','🙌','🎉','⚡','😤','🧢'],
+      };
+      return sportMap[sport] || common;
+    }
+
+    function populateEmojiPicker() {
+      var picker = document.getElementById('emojiPicker');
+      if (!picker) return;
+      picker.innerHTML = '';
+      var stickers = getSportStickers();
+      stickers.forEach(function(s){
+        var el = document.createElement('span');
+        el.style.cssText = 'cursor:pointer;font-size:18px;padding:2px;border-radius:4px;transition:background .15s';
+        el.textContent = s;
+        el.onmouseover = function(){ this.style.background = '#e2e8f0'; };
+        el.onmouseout = function(){ this.style.background = 'transparent'; };
+        el.onclick = function(){ insertEmoji(this.textContent); };
+        picker.appendChild(el);
+      });
+    }
+
+    function setupChatInput() {
+      const input = document.getElementById('chatInput');
+      const btn = document.getElementById('chatSend');
+      const emojiToggle = document.getElementById('emojiToggle');
+      if (!input || !btn) return;
+      let typingTimer = null;
+      input.addEventListener('input', () => {
+        if (typingTimer) clearTimeout(typingTimer);
+        sendTyping(true);
+        typingTimer = setTimeout(() => { sendTyping(false); }, 2000);
+      });
+      const send = () => {
+        const text = input.value.trim();
+        if (!text) return;
+        if (wsConnected) {
+          sendChatMessage(text);
+        } else {
+          chatMessages.push({
+            type: 'message',
+            user: { name: 'You', img: '', id: 'local' },
+            text: text,
+            time: Date.now(),
+            likes: 0,
+            id: 'local_' + Date.now()
+          });
+          renderChat();
+        }
+        input.value = '';
+        if (typingTimer) { clearTimeout(typingTimer); typingTimer = null; }
+        sendTyping(false);
+      };
+      btn.addEventListener('click', send);
+      input.addEventListener('keydown', e => { if (e.key === 'Enter') send(); });
+      if (emojiToggle) {
+        emojiToggle.addEventListener('click', () => {
+          populateEmojiPicker();
+          const picker = document.getElementById('emojiPicker');
+          if (picker) picker.style.display = picker.style.display === 'none' ? 'flex' : 'none';
+        });
+      }
+    }
+
+    function showChatOffline() {
+      chatMessages = [
+        { type: 'system', text: 'Chat unavailable — offline', time: Date.now(), id: 'offline' },
+      ];
+      renderChat();
+      document.getElementById('chatCount').textContent = 'Offline';
+      document.getElementById('chatCount').style.color = '#ef4444';
+    }
+
+    function initChat() {
+      if (!window.currentUser) {
+        var chatMessagesContainer = document.getElementById('chatMessages');
+        if (chatMessagesContainer) chatMessagesContainer.innerHTML = '<div class="card" style="padding:24px;text-align:center;color:#64748b;font-size:13px"><p>Please <a href="login.html" style="color:#2196f3;font-weight:600">sign in</a> to use chat.</p></div>';
+        document.getElementById('chatInput') && (document.getElementById('chatInput').disabled = true);
+        document.getElementById('chatSend') && (document.getElementById('chatSend').disabled = true);
+        document.getElementById('chatCount') && (document.getElementById('chatCount').textContent = 'Sign in required');
+        return;
+      }
+      connectWebSocket();
+      setupChatInput();
+    }
+
+    setTimeout(initChat, 100);
+
+    function getResultClass(r) {
+      if (r === '4' || r === 'FOUR') return 'four';
+      if (r === '6' || r === 'SIX') return 'six';
+      if (r === 'W' || r === 'WICKET') return 'wicket';
+      if (r === '0' || r === 'dot') return 'dot';
+      if (r === '⚽' || r === 'HR' || r === 'A') return 'four';
+      return 'normal';
+    }
+
+    function getPlayerImg(name) {
+      if (!name) return '';
+      const d = getData();
+      if (d.squad) {
+        const all = [...(d.squad.home||[]), ...(d.squad.away||[])];
+        const found = all.find(function(p){ return p.name === name || (name && p.name && p.name.split(' ').pop() === name.split(' ').pop()); });
+        if (found && found.img) return found.img;
+      }
+      return '';
+    }
+
+    function avatarHtml(name, size, bg) {
+      if (!name) return '';
+      const img = getPlayerImg(name);
+      if (img) return `<img src="${img}" alt="${name}" style="width:${size}px;height:${size}px;border-radius:50%;object-fit:cover;flex-shrink:0" />`;
+      const letter = name.charAt(0).toUpperCase();
+      return `<div style="width:${size}px;height:${size}px;border-radius:50%;background:${bg||'#e2e8f0'};display:flex;align-items:center;justify-content:center;font-size:${Math.floor(size*0.45)}px;font-weight:800;color:#2196f3;flex-shrink:0">${letter}</div>`;
+    }
+
+    var MATCH_STATE = 'live'; // 'upcoming', 'live', 'finished'
+
+    function getMatchState() {
+      const d = getData();
+      if (!d) return 'upcoming';
+      if (d._finished) return 'finished';
+      var status = (d.status || '').toLowerCase();
+      // Check for finished
+      if (status.indexOf('complete') !== -1 || status === 'finished' || status.indexOf('won') !== -1 || status.indexOf('full time') !== -1 || status === 'ft') return 'finished';
+      // Check for upcoming (no scores or date-based)
+      if (status.indexOf('upcoming') !== -1 || status.indexOf('scheduled') !== -1) return 'upcoming';
+      if ((!d.home.score || d.home.score === '0') && (!d.away.score || d.away.score === '0') && (status.indexOf('starts') !== -1 || status.indexOf(':') !== -1)) return 'upcoming';
+      return 'live';
+    }
+
+    function isMatchLive() {
+      MATCH_STATE = getMatchState();
+      return MATCH_STATE === 'live';
+    }
+
+    function isMatchFinished() {
+      return MATCH_STATE === 'finished';
+    }
+
+    function isMatchUpcoming() {
+      return MATCH_STATE === 'upcoming';
+    }
+
+    function getTopPerformers(arr, limit) {
+      if (!arr || !arr.length) return [];
+      return [...arr].sort(function(a,b){return (b.runs||0)-(a.runs||0)}).slice(0,limit||5);
+    }
+
+    function getBestBowler(arr, limit) {
+      if (!arr || !arr.length) return [];
+      return [...arr].sort(function(a,b){(b.wickets||0)-(a.wickets||0)}).slice(0,limit||3);
+    }
+
+    // Static venue & H2H data for info details
+    var VENUE_DATA = {
+      'M. A. Chidambaram Stadium':{city:'Chennai',capacity:50000,record:'CSK win 68%',avgScore:168,lastMatch:'CSK vs MI — CSK won by 6 wkts'},
+      'Wankhede Stadium':{city:'Mumbai',capacity:33000,record:'MI win 62%',avgScore:178,lastMatch:'MI vs RCB — MI won by 4 runs'},
+      'Eden Gardens':{city:'Kolkata',capacity:68000,record:'KKR win 58%',avgScore:165,lastMatch:'KKR vs SRH — KKR won by 5 wkts'},
+      'M. Chinnaswamy Stadium':{city:'Bengaluru',capacity:40000,record:'RCB win 55%',avgScore:182,lastMatch:'RCB vs CSK — RCB won by 8 runs'},
+      'Anfield':{city:'Liverpool',capacity:53394,record:'Liverpool win 65%',avgScore:2.4,lastMatch:'LIV vs MCI — 2-2 draw'},
+      'Old Trafford':{city:'Manchester',capacity:74310,record:'Man Utd win 58%',avgScore:2.1,lastMatch:'MUN vs ARS — 1-3'},
+      'Camp Nou':{city:'Barcelona',capacity:99354,record:'Barcelona win 70%',avgScore:2.8,lastMatch:'FCB vs RMA — 2-1'},
+      'TD Garden':{city:'Boston',capacity:19156,record:'Celtics win 72%',avgScore:108,lastMatch:'BOS vs LAL — 112-108'},
+      'Staples Center':{city:'Los Angeles',capacity:19060,record:'Lakers win 60%',avgScore:105,lastMatch:'LAL vs GSW — 114-110'},
+    };
+    function getVenueInfo(name) { return VENUE_DATA[name] || null; }
+
+    // H2H lookup
+    var H2H_DATA = {
+      'RCB-CSK':{played:32,homeWins:14,awayWins:17,draws:1,last5:'CSK 3-2 RCB'},
+      'MI-CSK':{played:37,homeWins:18,awayWins:18,draws:1,last5:'MI 2-3 CSK'},
+      'LIV-MCI':{played:52,homeWins:21,awayWins:16,draws:15,last5:'LIV 2-2-1 MCI'},
+      'LAL-BOS':{played:88,homeWins:44,awayWins:42,draws:2,last5:'BOS 3-2 LAL'},
+      'England-Argentina':{played:3,homeWins:1,awayWins:1,draws:1,last5:'ENG 1-1-1 ARG'},
+      'RealMadrid-Bayern':{played:28,homeWins:12,awayWins:11,draws:5,last5:'RMA 2-2-1 BAY'},
+      'Djokovic-Alcaraz':{played:7,homeWins:3,awayWins:4,draws:0,last5:'DJO 2-3 CAR'},
+      'Lakers-Celtics':{played:92,homeWins:46,awayWins:44,draws:2,last5:'LAL 2-3 BOS'},
+      'Patna Pirates-Bengal Warriors':{played:12,homeWins:7,awayWins:5,draws:0,last5:'PAT 3-2 BEN'},
+      'Sentinels-FNATIC':{played:8,homeWins:4,awayWins:4,draws:0,last5:'SEN 3-2 FNC'},
+      'Fan Zhendong-Ma Long':{played:15,homeWins:8,awayWins:7,draws:0,last5:'FAN 3-2 MAL'},
+    };
+    function getH2H(home, away) {
+      var key = home+'-'+away, rev = away+'-'+home;
+      return H2H_DATA[key] || H2H_DATA[rev] || null;
+    }
+
+    function getWeatherInfo(venue) {
+      var conditions = ['Clear Sky','Partly Cloudy','Light Breeze','Humid','Ideal Conditions'];
+      var c = conditions[Math.floor(Math.random()*conditions.length)];
+      var temp = 22 + Math.floor(Math.random()*15);
+      return { condition:c, temp:temp+'°C', humidity:Math.floor(50+Math.random()*30)+'%', wind:Math.floor(5+Math.random()*20)+' km/h' };
+    }
+
+    function renderSummary() {
+      const d = getData();
+      const container = document.getElementById('summaryContent');
+      const live = isMatchLive();
+
+      var venueInfo = getVenueInfo(d.venue);
+      var h2h = getH2H(d.home.short, d.away.short);
+      var weather = getWeatherInfo(d.venue);
+      var venueDetails = venueInfo ? '<div style="margin-top:10px;padding:10px;background:#f0fdf4;border-radius:8px;font-size:11px;line-height:1.7">' +
+        '<span style="font-weight:700;color:#166534">📍 '+d.venue+'</span><br>' +
+        'City: '+venueInfo.city+' • Capacity: '+venueInfo.capacity.toLocaleString()+'<br>' +
+        'Avg Score: '+venueInfo.avgScore+' • Record: '+venueInfo.record+'<br>' +
+        'Last Match: '+venueInfo.lastMatch +
+        '</div>' : '';
+      var h2hHtml = h2h ? '<div style="margin-top:8px;padding:10px;background:#eff6ff;border-radius:8px;font-size:11px;line-height:1.7">' +
+        '<span style="font-weight:700;color:#1e40af">⚔️ Head to Head: '+d.home.short+' vs '+d.away.short+'</span><br>' +
+        'Played: '+h2h.played+' • '+d.home.short+': '+h2h.homeWins+' • '+d.away.short+': '+h2h.awayWins+(h2h.draws?(' • Draws: '+h2h.draws):'')+'<br>' +
+        'Last 5: '+h2h.last5 +
+        '</div>' : '';
+      var weatherHtml = weather ? '<div style="margin-top:8px;padding:10px;background:#fefce8;border-radius:8px;font-size:11px;line-height:1.7">' +
+        '<span style="font-weight:700;color:#854d0e">🌤️ Weather at '+d.venue+'</span><br>' +
+        'Condition: '+weather.condition+' • Temp: '+weather.temp+' • Humidity: '+weather.humidity+' • Wind: '+weather.wind +
+        '</div>' : '';
+
+      function playerLink(name) {
+        return '<a href="player.html?name='+encodeURIComponent(name)+'&sport='+currentSport+'" style="color:inherit;text-decoration:none;cursor:pointer" onmouseover="this.style.color=\'#2196f3\'" onmouseout="this.style.color=\'inherit\'">'+name+'</a>';
+      }
+
+      function venueLink(name) {
+        return '<a href="venue.html?name='+encodeURIComponent(name)+'" style="color:#2196f3;text-decoration:none;cursor:pointer;font-weight:600" onmouseover="this.style.textDecoration=\'underline\'" onmouseout="this.style.textDecoration=\'none\'">'+name+'</a>';
+      }
+
+      function potmHtml(name, stat) {
+        return '<div class="card" style="text-align:center;padding:24px">' +
+          '<div style="font-size:11px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">★ Player of the Match</div>' +
+          avatarHtml(name,64,'#2196f3') +
+          '<div style="font-size:16px;font-weight:700;margin-top:8px">'+playerLink(name)+'</div>' +
+          '<div style="font-size:13px;color:#64748b;margin-top:4px">'+stat+'</div>' +
+          '<div style="font-size:11px;color:#94a3b8;margin-top:2px">'+d.home.short+' - '+d.away.short+'</div>' +
+        '</div>';
+      }
+
+      function topPerfHtml(title, arr) {
+        if (!arr.length) return '';
+        var h = '<div class="card"><h3 style="font-size:13px;color:#64748b;font-weight:600;margin-bottom:12px">'+title+'</h3>';
+        arr.forEach(function(b,i){
+          var border = i < arr.length-1 ? 'border-bottom:1px solid #f1f5f9' : '';
+          h += '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;'+border+'">' +
+            '<span style="width:18px;font-size:12px;font-weight:700;color:#94a3b8">'+(i+1)+'</span>' +
+            avatarHtml(b.name,34,'#e2e8f0') +
+            '<div style="flex:1;font-size:13px;font-weight:600">'+playerLink(b.name.split(' ').pop())+'</div>' +
+            '<div style="text-align:right;font-size:13px;font-weight:700">'+b.runs+'<span style="font-weight:400;color:#64748b">('+b.balls+')</span></div>' +
+            '<div style="text-align:right;font-size:11px;color:#64748b;min-width:50px">'+b.fours+' 4s • '+b.sixes+' 6s</div>' +
+          '</div>';
+        });
+        return h + '</div>';
+      }
+
+      function infoCard() {
+        return '<div class="info-card" id="infoCard">' + [
+          {label:'Series',value:d.series},{label:'Match',value:d.home.short+' vs '+d.away.short+', '+d.match},{label:'Date',value:d.date},{label:'Time',value:d.time},{label:'Venue',value:venueLink(d.venue)},{label:'Toss',value:d.toss||'N/A'},...(d.umpires?[{label:'Umpires',value:d.umpires}]:[]),...(d.thirdUmpire?[{label:'3rd Umpire',value:d.thirdUmpire}]:[])
+        ].map(function(r){return '<div class=\"info-row\"><span>'+r.label+'</span><p>'+r.value+'</p></div>'}).join('') +
+        venueDetails + h2hHtml + weatherHtml +
+        '</div>';
+      }
+
+      if (isMatchUpcoming()) {
+        container.innerHTML = '<div class="card" style="text-align:center;padding:24px">' +
+          '<div style="font-size:24px;margin-bottom:8px">⏳</div>' +
+          '<div style="font-size:14px;font-weight:700;color:#64748b">Match Starts Soon</div>' +
+          '<div style="font-size:12px;color:#94a3b8;margin-top:4px">'+d.date+' • '+d.time+'</div>' +
+          '<div style="font-size:11px;color:#94a3b8;margin-top:2px">'+d.venue+'</div>' +
+        '</div>'+infoCard();
+        return;
+      }
+      if (isMatchLive()) {
+        container.innerHTML = '<div class="card"><p style="color:#64748b;font-size:13px">Match in progress — check <strong>Live</strong> tab for updates.</p></div>'+infoCard();
+        return;
+      }
+
+      // Completed match
+      var html = '';
+      html += '<div class="card" style="text-align:center;padding:16px">' +
+        '<div style="font-size:18px;font-weight:800;color:#10b981;margin-bottom:6px">'+(d.need||'Match Completed')+'</div>' +
+        '<div style="font-size:12px;color:#64748b">'+(d.toss||'')+'</div>' +
+      '</div>';
+
+      // Best performers — handle all sports
+      var homeTop = [], awayTop = [];
+      if (d.batting && d.batting.length) {
+        homeTop = getTopPerformers(d.batting, 5);
+        html += topPerfHtml(d.home.short+' - BEST PERFORMERS', homeTop);
+      }
+      if (d.awayBatting && d.awayBatting.length) {
+        awayTop = getTopPerformers(d.awayBatting, 5);
+        html += topPerfHtml(d.away.short+' - BEST PERFORMERS', awayTop);
+      }
+
+      // POTM
+      var potmName = d.need ? d.need.split(' won')[0] : '';
+      var allPlayers = (d.batting||[]).concat(d.awayBatting||[]);
+      var topPlayer = allPlayers.length ? allPlayers.sort(function(a,b){return (b.runs||0)-(a.runs||0)})[0] : null;
+      if (topPlayer) {
+        html += potmHtml(topPlayer.name, topPlayer.runs+'('+topPlayer.balls+') • '+topPlayer.fours+' fours • '+topPlayer.sixes+' sixes • SR '+topPlayer.sr);
+      } else if (d.ballByBall && d.ballByBall.length) {
+        // Non-cricket: show recent events
+        html += '<div class="card"><h3 style="font-size:13px;color:#64748b;font-weight:600;margin-bottom:12px">📋 Key Events</h3>';
+        d.ballByBall.slice(-6).reverse().forEach(function(b){
+          html += '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #f1f5f9">' +
+            '<span style="font-size:11px;font-weight:700;color:#2196f3;min-width:50px">'+b.over+'</span>' +
+            '<p style="font-size:12px;color:#475569;margin:0">'+b.text+'</p></div>';
+        });
+        html += '</div>';
+        var firstEvent = d.ballByBall.length > 0 ? d.ballByBall[0] : null;
+        if (firstEvent) html += potmHtml(d.home.short+' Star Player', firstEvent.text);
+      }
+
+      html += infoCard();
+      container.innerHTML = html;
+    }
+
+    function renderAll() {
+      MATCH_STATE = getMatchState();
+      renderMatchInfo();
+      renderSummary();
+      renderLiveUpdates();
+      renderScorecard();
+      renderCommentary();
+      renderSquads();
+      renderOvers();
+      renderGraphs();
+      updateChatScoreHeader();
+      startBallPlayback();
+    }
+
+    // Tabs
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active-content'));
+        tab.classList.add('active');
+        document.getElementById('tab-' + tab.dataset.tab).classList.add('active-content');
+        // Restart ball playback when switching to Live tab
+        if (tab.dataset.tab === 'live') {
+          stopBallPlayback();
+          setTimeout(startBallPlayback, 100);
+        }
+      });
+    });
+
+    function showMatchFinishedView(d) {
+      if (!d) d = getData();
+      // Live tab: show finished state
+      var liveDiv = document.getElementById('liveFinished');
+      if (liveDiv) {
+        liveDiv.style.display = 'block';
+        document.getElementById('liveFinishedResult').textContent = d.need || 'Match Completed';
+        document.getElementById('liveCurrentStatus').style.display = 'none';
+        document.getElementById('lcsCommentary').style.display = 'none';
+        document.getElementById('liveContent').innerHTML = '';
+        // Show top players in finished view
+        var topHtml = '';
+        var allP = (d.batting||[]).concat(d.awayBatting||[]);
+        if (allP.length) {
+          var sorted = allP.sort(function(a,b){return (b.runs||0)-(a.runs||0)});
+          var top3 = sorted.slice(0,3);
+          topHtml = '<div style="display:flex;gap:12px;justify-content:center;margin-top:12px">';
+          top3.forEach(function(p,i){
+            topHtml += '<div style="text-align:center;padding:10px;background:#fff;border-radius:8px;min-width:80px;box-shadow:0 1px 3px rgba(0,0,0,0.08)">' +
+              avatarHtml(p.name,40,'#e2e8f0') +
+              '<div style="font-size:11px;font-weight:700;margin-top:4px">'+p.name.split(' ').pop()+'</div>' +
+              '<div style="font-size:10px;color:#64748b">'+p.runs+'('+p.balls+')</div></div>';
+          });
+          topHtml += '</div>';
+        }
+        if (topHtml) document.getElementById('liveFinishedTopPlayers').innerHTML = topHtml;
+      }
+      // Update chat tab score header
+      updateChatScoreHeader(d);
+    }
+
+    function showMatchUpcomingView() {
+      var liveDiv = document.getElementById('liveFinished');
+      if (liveDiv) {
+        liveDiv.style.display = 'block';
+        document.getElementById('liveFinishedResult').textContent = '⏳ Match starts soon';
+        document.getElementById('liveCurrentStatus').style.display = 'none';
+        document.getElementById('lcsCommentary').style.display = 'none';
+        document.getElementById('liveContent').innerHTML = '';
+      }
+    }
+
+    function updateChatScoreHeader(d) {
+      if (!d) d = getData();
+      var header = document.getElementById('chatScoreHeader');
+      var detail = document.getElementById('chatScoreDetail');
+      var playing = document.getElementById('chatPlayingNow');
+      var status = document.getElementById('chatMatchStatus');
+      if (header) header.textContent = '🏏 '+d.home.short+' '+d.home.score+' - '+d.away.short+' '+d.away.score;
+      if (detail) detail.textContent = d.series+' • '+d.venue;
+      if (playing) {
+        var batter = d.batting && d.batting[0] ? d.batting[0].name.split(' ').pop() : '—';
+        var bowler = d.bowling && d.bowling[0] ? d.bowling[0].name.split(' ').pop() : '—';
+        playing.textContent = batter+' 🏏 '+bowler;
+      }
+      if (status) status.textContent = d.status || (isMatchFinished() ? '✅ Finished' : isMatchUpcoming() ? '⏳ Upcoming' : '🔴 Live');
+    }
+
+    // ===== BALL-BY-BALL AUTO PLAYBACK (stickers + score synced to actual data) =====
+    let playInterval = null;
+    let ballCursor = 0;
+
+    function computeCumulative(balls, idx) {
+      let r = 0, w = 0;
+      for (let i = 0; i <= idx; i++) {
+        const res = balls[i] ? balls[i].result : '';
+        if (res === '4' || res === '6') r += parseInt(res);
+        else if (res === '1' || res === '2' || res === '3') r += parseInt(res);
+        else if (res === 'W') w++;
+        else if (res === '⚽') r++;
+        else if (res === 'HR') r += 2;
+        else if (res === '🏀') r += 2;
+        else if (res === '🎯') r += 3;
+        else if (res === '🏐') r++;
+      }
+      return { runs: r, wickets: w };
+    }
+
+    function startBallPlayback() {
+      if (playInterval) { clearInterval(playInterval); playInterval = null; }
+      // Don't start playback for finished or upcoming matches
+      if (isMatchFinished()) {
+        showMatchFinishedView();
+        return;
+      }
+      if (isMatchUpcoming()) {
+        showMatchUpcomingView();
+        return;
+      }
+      const dd = getData();
+      const allBalls = dd.ballByBall || [];
+      if (!allBalls.length) return;
+
+      ballCursor = 0;
+
+      playInterval = setInterval(() => {
+        const d2 = getData();
+        const balls = d2.ballByBall || [];
+        if (!balls.length) { stopBallPlayback(); return; }
+
+        if (ballCursor >= balls.length) {
+          const finalStat = computeCumulative(balls, balls.length - 1);
+          const fs = `${finalStat.runs}/${finalStat.wickets}`;
+          document.getElementById('homeTeamScore') && (document.getElementById('homeTeamScore').textContent = fs);
+          document.getElementById('scBarHomeScore') && (document.getElementById('scBarHomeScore').textContent = fs);
+          document.getElementById('lcsResult') && (document.getElementById('lcsResult').textContent = '✅');
+          document.getElementById('lcsCommentary') && (document.getElementById('lcsCommentary').textContent = '🏏 Innings Complete! All overs bowled.');
+          document.getElementById('matchStatus') && (document.getElementById('matchStatus').textContent = 'Match Complete');
+          // Show result if available
+          var dd2 = getData && getData();
+          var res = dd2 ? dd2._result : '';
+          var needEl = document.getElementById('matchNeed');
+          if (needEl && res) { needEl.textContent = '🏆 '+res; needEl.style.display = 'flex'; needEl.style.fontSize = '16px'; needEl.style.fontWeight = '800'; needEl.style.color = '#10b981'; }
+          else if (needEl) needEl.style.display = 'flex';
+          // Mark data as finished so Info tab shows summary
+          if (dd2) { dd2._finished = true; dd2.status = 'Match Completed'; MATCH_STATE = 'finished'; }
+          stopBallPlayback();
+          showBannerEventByResult('');
+          return;
+        }
+
+        const b = balls[ballCursor];
+        ballCursor++;
+
+        // 1. Show sticker near scorecard
+        showEventSticker(b.result);
+
+        // 2. Compute real cumulative score up to this ball
+        const stat = computeCumulative(balls, ballCursor - 1);
+
+        // 3. Update score + overs EVERYWHERE
+        const scoreStr = `${stat.runs}/${stat.wickets}`;
+        const overStr = b.over ? `(${b.over} ov)` : '';
+
+        // Header score
+        const scoreEl = document.getElementById('homeTeamScore');
+        if (scoreEl) {
+          scoreEl.textContent = scoreStr;
+          scoreEl.style.transition = 'transform .15s ease';
+          scoreEl.style.transform = 'scale(1.25)';
+          setTimeout(() => { scoreEl.style.transform = 'scale(1)'; }, 150);
+        }
+        // Header overs
+        const oversEl = document.getElementById('homeTeamOvers');
+        if (oversEl) {
+          oversEl.textContent = overStr;
+          oversEl.style.transition = 'color .2s';
+          oversEl.style.color = '#2196f3';
+          setTimeout(() => { oversEl.style.color = ''; }, 400);
+        }
+        // Header status text
+        const statusEl = document.getElementById('matchStatus');
+        if (statusEl) statusEl.textContent = overStr || 'In Progress';
+
+        // Scorecard tab live bar
+        const scBarScore = document.getElementById('scBarHomeScore');
+        if (scBarScore) scBarScore.textContent = scoreStr;
+        const scBarOver = document.getElementById('scBarOver');
+        if (scBarOver) scBarOver.textContent = overStr;
+
+        // Live tab current status bar
+        const lcsOver = document.getElementById('lcsOver');
+        if (lcsOver) lcsOver.textContent = b.over || '-';
+        const lcsBatter = document.getElementById('lcsBatter');
+        if (lcsBatter) lcsBatter.textContent = b.batter || '-';
+        const lcsBowler = document.getElementById('lcsBowler');
+        if (lcsBowler) lcsBowler.textContent = b.bowler || '-';
+        const lcsResult = document.getElementById('lcsResult');
+        if (lcsResult) {
+          let rLabel = b.result;
+          if (b.result === '0') rLabel = '●';
+          else if (b.result === '4') rLabel = '4';
+          else if (b.result === '6') rLabel = '6';
+          else if (b.result === 'W') rLabel = 'W';
+          else if (b.result === '⚽') rLabel = '⚽';
+          else if (b.result === 'HR') rLabel = '💥';
+          lcsResult.textContent = rLabel;
+          lcsResult.style.transition = 'transform .15s ease';
+          lcsResult.style.transform = 'scale(1.5)';
+          setTimeout(() => { lcsResult.style.transform = 'scale(1)'; }, 200);
+        }
+        // Live commentary line
+        const lcsComm = document.getElementById('lcsCommentary');
+        if (lcsComm && b.text) {
+          lcsComm.textContent = `${b.over} — ${b.bowler || ''} to ${b.batter || ''}: ${b.text}`;
+          lcsComm.style.transition = 'background .2s';
+          lcsComm.style.background = '#e0f2fe';
+          setTimeout(() => { lcsComm.style.background = ''; }, 600);
+        }
+
+        // 4. Also update the banner event
+        showBannerEventByResult(b.result);
+      }, 2200);
+    }
+
+    function stopBallPlayback() {
+      if (playInterval) { clearInterval(playInterval); playInterval = null; }
+      ballCursor = 0;
+    }
+
+    function showEventSticker(result) {
+      const container = document.getElementById('floatEvents');
+      if (!container) return;
+      const el = document.createElement('div');
+      const cls = getResultClass(result);
+      el.className = `float-event ${cls}`;
+      let label = result;
+      if (result === '0') label = '●';
+      else if (result === '4') label = '4';
+      else if (result === '6') label = '6';
+      else if (result === 'W') label = 'W';
+      el.textContent = label;
+      const left = 25 + Math.random() * 50;
+      el.style.left = left + '%';
+      el.style.top = (5 + Math.random() * 35) + '%';
+      el.style.transform = `rotate(${-10 + Math.random() * 20}deg) scale(${0.6 + Math.random() * 0.8})`;
+      container.appendChild(el);
+      setTimeout(() => el.remove(), 2000);
+    }
+
+    function showBannerEventByResult(result) {
+      const banner = document.getElementById('matchEventBanner');
+      const text = document.getElementById('eventText');
+      const animation = document.getElementById('eventAnimation');
+      if (!banner) return;
+      banner.className = 'match-event-banner';
+      animation.innerHTML = '';
+      if (result === '4') { text.innerHTML = 'FOUR! 🏏'; animation.innerHTML = '<div class="batsman">🏏</div>'; }
+      else if (result === '6') { text.innerHTML = 'SIX! 🚀'; animation.innerHTML = '<div class="batsman">🏏</div>'; }
+      else if (result === 'W') { text.innerHTML = 'WICKET! 🙌'; animation.innerHTML = '<div class="wicket-hands">🙌</div>'; }
+      else if (result === '⚽') { text.innerHTML = 'GOAL! ⚽'; animation.innerHTML = '<div class="batsman">⚽</div>'; }
+      else if (result === 'HR') { text.innerHTML = 'HOME RUN! ⚾'; animation.innerHTML = '<div class="batsman">⚾</div>'; }
+      else if (result === '🏀') { text.innerHTML = 'SCORE! 🏀'; animation.innerHTML = '<div class="batsman">🏀</div>'; }
+      else if (result === '1') { text.innerHTML = 'Single! ▶'; animation.innerHTML = ''; }
+      else if (result === '2') { text.innerHTML = 'Double! ▶▶'; animation.innerHTML = ''; }
+      else if (!result) { text.innerHTML = '🏏 Match Complete!'; animation.innerHTML = '<div class="wicket-hands">🏆</div>'; }
+      else { text.innerHTML = 'Dot Ball ●'; animation.innerHTML = ''; }
+      banner.classList.remove('show');
+      void banner.offsetWidth;
+      banner.classList.add('show');
+      setTimeout(() => { banner.classList.remove('show'); }, 2200);
+    }
+
+    // Init - load database then render
+    loadDatabase();
+  </script>
+<script src="js/notif-ws.js"></script></body>
 </html>

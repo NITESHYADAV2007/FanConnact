@@ -176,7 +176,7 @@
         <nav class="hidden xl:flex items-center space-x-6 mx-6 shrink-0">
           <a
             class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link"
-            href="index.html"
+            href="dashboard.html"
             >Home</a
           >
           <a
@@ -186,12 +186,12 @@
           >
           <a
             class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link"
-            href="index.html"
+            href="prediction.html"
             >Predictions</a
           >
           <a
             class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link"
-            href="index.html"
+            href="leaderboard.html"
             >Leaderboard</a
           >
           <a
@@ -270,10 +270,10 @@
 
     <!-- Mobile Sub-Nav -->
     <nav class="xl:hidden flex overflow-x-auto gap-1 sm:gap-2 px-2 py-1.5 sm:px-4 sm:py-2.5 bg-white dark:bg-black border-b border-gray-200 dark:border-border-subtle scrollbar-none whitespace-nowrap" style="-webkit-overflow-scrolling:touch;scrollbar-width:none;">
-      <a href="index.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Home</a>
+      <a href="dashboard.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Home</a>
       <a href="livematches.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Matches</a>
-      <a href="index.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Predictions</a>
-      <a href="index.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Leaderboard</a>
+      <a href="prediction.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Predictions</a>
+      <a href="leaderboard.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Leaderboard</a>
       <a href="news&update.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">News</a>
     </nav>
 
@@ -294,7 +294,7 @@
         <!-- Logo Container for collapsed state -->
         <div
           class="p-6 flex items-center space-x-2 logo-container cursor-pointer"
-          onclick="window.location.href = 'index.html'"
+          onclick="window.location.href = 'dashboard.html'"
         >
           <img src="assets/fancoin/fanconnactlogo.png" alt="Fanconnact" class="w-8 h-8 flex-shrink-0" />
           <span
@@ -479,60 +479,16 @@
                   tournaments!
                 </p>
               </div>
-              <!-- Sport Filter Buttons -->
-              <div class="flex flex-wrap gap-3 mb-8" data-purpose="sport-filters">
-                <button
-                  class="flex items-center space-x-2 bg-gray-800/40 text-white px-5 py-2.5 rounded-lg font-medium text-sm border border-gray-700"
-                >
-                  <span class="">🏆</span><span class="">All Sports</span></button
-                ><button
-                  class="flex items-center space-x-2 bg-accent-green text-brand-dark px-5 py-2.5 rounded-lg font-bold text-sm"
-                >
-                  <span class="">🤼</span><span class="">Kabaddi</span></button
-                ><button
-                  class="flex items-center space-x-2 bg-gray-800/40 text-white px-5 py-2.5 rounded-lg font-medium text-sm border border-gray-700"
-                >
-                  <span class="">🏏</span><span class="">Cricket</span></button
-                ><button
-                  class="flex items-center space-x-2 bg-gray-800/40 text-white px-5 py-2.5 rounded-lg font-medium text-sm border border-gray-700"
-                >
-                  <span class="">⚽</span><span class="">Football</span></button
-                ><button
-                  class="flex items-center space-x-2 bg-gray-800/40 text-white px-5 py-2.5 rounded-lg font-medium text-sm border border-gray-700"
-                >
-                  <span class="">🏀</span><span class="">Basketball</span></button
-                ><button
-                  class="w-10 h-10 flex items-center justify-center bg-gray-800/40 rounded-lg border border-gray-700"
-                >
-                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"
-                    ></path>
-                  </svg>
-                </button>
-              </div>
-              <!-- Category Filter Tabs -->
+              
+              <!-- Tournament Tabs -->
               <div
-                class="flex items-center space-x-8 border-b border-gray-800 mb-8 overflow-x-auto pb-1 whitespace-nowrap"
-                data-purpose="league-tabs"
+                class="border-b border-gray-200 dark:border-border-subtle mb-8 flex space-x-8 overflow-x-auto pb-0"
+                data-purpose="tournament-filters"
               >
-                <a
-                  class="text-accent-green font-bold text-sm pb-4 border-b-2 border-accent-green"
-                  href="index.html"
-                  >All</a
-                ><a
-                  class="text-gray-400 hover:text-white font-medium text-sm pb-4"
-                  href="index.html"
-                  >Pro Kabaddi League</a
-                ><a
-                  class="text-gray-400 hover:text-white font-medium text-sm pb-4"
-                  href="index.html"
-                  >Asian Kabaddi Championship</a
-                ><a
-                  class="text-gray-400 hover:text-white font-medium text-sm pb-4"
-                  href="index.html"
-                  >Kabaddi World Cup</a
-                >
+                <button class="pb-4 border-b-2 border-emerald-accent text-emerald-accent font-bold text-sm px-1 shrink-0">All</button>
+                <button class="pb-4 text-slate-500 dark:text-gray-300 hover:text-emerald-accent transition-colors font-medium text-sm px-1 shrink-0">Asian Kabaddi Championship 2026</button>
+                <button class="pb-4 text-slate-500 dark:text-gray-300 hover:text-emerald-accent transition-colors font-medium text-sm px-1 shrink-0">Pro Kabaddi Season 12</button>
+              <button id="statsTab" class="pb-4 text-slate-500 dark:text-gray-300 hover:text-emerald-accent transition-colors font-medium text-sm px-1 shrink-0 cursor-pointer" onclick="document.getElementById('statsSection').classList.toggle('hidden');document.getElementById('statsTab').classList.toggle('text-emerald-accent');document.getElementById('statsTab').classList.toggle('border-emerald-accent');document.getElementById('statsTab').style.borderBottom=document.getElementById('statsTab').classList.contains('text-emerald-accent')?'2px solid #10b981':'none'">Stats</button>
               </div>
               <!-- Action Bar -->
               <div
@@ -608,179 +564,300 @@
                   </button>
                 </div>
               </div>
+            <!-- BEGIN: StatsSection -->
+            <div id="statsSection" class="hidden">
+              <div class="bg-card-bg rounded-2xl border border-border-subtle mb-8">
+                <div class="flex items-center justify-between px-6 py-4 border-b border-border-subtle">
+                  <h3 class="font-bold text-sm">Kabaddi Stats & Rankings</h3>
+                  <span class="text-[10px] text-gray-500">Auto-updated from PKL</span>
+                </div>
+                <div id="sportStatsContainer"></div>
+              </div>
+            </div>
+            <!-- END: StatsSection -->
             <!-- Matches Grid/List -->
             <div class="space-y-6" data-purpose="matches-list">
-              <!-- Match Card 1 -->
-              <div
-                class="bg-brand-surface rounded-2xl p-4 md:p-5 border border-gray-800/50 hover:border-gray-700 transition relative overflow-hidden group"
-              >
+              <!-- Match 1: India vs Iran - Live - Asian Kabaddi Championship -->
+              <div class="bg-brand-surface rounded-2xl p-4 md:p-5 border border-gray-800/50 hover:border-gray-700 transition relative overflow-hidden group" data-tournament="Asian Kabaddi Championship 2026" data-status="live">
                 <div class="flex justify-between items-start mb-8">
                   <div class="flex items-center space-x-3">
-                    <span
-                      class="bg-red-500/20 text-red-500 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-tighter flex items-center"
-                      ><span class="w-1 h-1 bg-red-500 rounded-full mr-1"></span>
-                      LIVE</span
-                    >
-                    <p class="text-xs text-gray-400">
-                      PKL • Season 10 • Gachibowli Indoor Stadium
-                    </p>
+                    <span class="bg-red-500/20 text-red-500 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-tighter flex items-center"><span class="w-1 h-1 bg-red-500 rounded-full mr-1"></span> LIVE</span>
+                    <p class="text-xs text-gray-400">Asian Kabaddi Championship 2026 • Semi-Final • Gachibowli Indoor Stadium</p>
                   </div>
-                  <button class="text-gray-500 hover:text-white">
-                    <svg
-                      class="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-                      ></path>
-                    </svg>
-                  </button>
                 </div>
                 <div class="flex items-center justify-center space-x-12 mb-8">
                   <div class="text-center w-40">
-                    <div class="relative inline-block">
-                      <div
-                        class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden"
-                      >
-                        <img
-                          alt="Patna Pirates"
-                          class="w-14 h-14 object-contain"
-                          src="https://lh3.googleusercontent.com/aida-public/AB6AXuCxqjr5nZv59w43gydv_cwPCQp3pfHafKIfzaaXwX7iqgfj_Fdqaii8XIY1QvKvqPXNsqCrcXoOLU3jznSUxfzIMXhEribW5PTQ596bhudN5ruxW97MHM4h-ETuKwuZQ8J9LchUX_Wf0-OjHJhfaixcWe9zfqThuSq0W5Qzc0A9qHpEXRDEaV26jo0Wvodak_dZDLTqvtSOzFJBWWDCh1MNsTbIscGmSZUe2cAz8dJ75hJahSO4imcWj41O4XZqcFDtLEvMTlEk2eA"
-                        />
-                      </div>
+                    <div class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden">
+                      <span class="text-2xl font-bold">🇮🇳</span>
                     </div>
-                    <p class="text-sm font-bold mb-1">Patna Pirates</p>
-                    <div class="flex justify-center space-x-1">
-                      <span class="text-4xl font-black text-white">38</span>
-                    </div>
+                    <p class="text-sm font-bold mb-1">India</p>
+                    <div class="flex justify-center space-x-1"><span class="text-4xl font-black text-white">42</span></div>
                   </div>
                   <div class="text-center">
                     <div class="text-gray-500 font-bold text-xl mb-1">2nd Half</div>
-                    <div class="text-accent-green font-bold text-[10px] uppercase">
-                      05:12 REMAINING
-                    </div>
+                    <div class="text-accent-green font-bold text-[10px] uppercase">08:45 REMAINING</div>
                   </div>
                   <div class="text-center w-40">
-                    <div class="relative inline-block">
-                      <div
-                        class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden"
-                      >
-                        <img
-                          alt="Puneri Paltan"
-                          class="w-14 h-14 object-contain"
-                          src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2-k1OEdkvIU98VS58IfmhSuehbrEb17DXuXk_tB-hUUU1kD_1bbHH75I8aJlhpYeHJsYHiqrJG0BevgnRedUiYHyPRi4Ur2ym4T-PhndYh2WJPMoFdOe0sUlAvM8oseRNVq_9UmgCC7Zt7sqsxB0X1Mhx9b4zcXP2VhJmoGPLioZ4ELYoUVIyosVpoGF3FYMxQxfae_CDwUCqBMVPRb8iaCVp_-cF4DX6VupjhUlVzP-HuBbHyblgrZnqYQalNVLax-l1avFi4Fg"
-                        />
-                      </div>
+                    <div class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden">
+                      <span class="text-2xl font-bold">🇮🇷</span>
                     </div>
-                    <p class="text-sm font-bold mb-1">Puneri Paltan</p>
-                    <div class="flex justify-center space-x-1">
-                      <span class="text-4xl font-black text-white">36</span>
-                    </div>
+                    <p class="text-sm font-bold mb-1">Iran</p>
+                    <div class="flex justify-center space-x-1"><span class="text-4xl font-black text-white">35</span></div>
                   </div>
                 </div>
-                <div
-                  class="flex justify-between items-center pt-6 border-t border-gray-800"
-                >
-                  <p class="text-xs text-gray-500 font-medium">
-                    2.4M Fans Tracking
-                  </p>
+                <div class="flex justify-between items-center pt-6 border-t border-gray-800">
+                  <p class="text-xs text-gray-500 font-medium">1.8M Fans Watching</p>
                   <div class="flex space-x-3">
-                    <button
-                      class="px-5 py-2 rounded-lg border border-accent-green text-accent-green text-xs font-bold hover:bg-accent-green/10"
-                    >
-                      Game Stats</button
-                    ><button
-                      class="px-5 py-2 rounded-lg bg-gray-800 text-white text-xs font-bold hover:bg-gray-700"
-                    >
-                      Play-by-Play
-                    </button>
+                    <button onclick="window.location.href='match-center.html?sport=kabaddi&home=India&away=Iran'" class="px-5 py-2 rounded-lg border border-accent-green text-accent-green text-xs font-bold hover:bg-accent-green/10">Game Stats</button>
+                    <button onclick="window.location.href='match-center.html?sport=kabaddi&home=India&away=Iran'" class="px-5 py-2 rounded-lg bg-gray-800 text-white text-xs font-bold hover:bg-gray-700">Play-by-Play</button>
                   </div>
                 </div>
               </div>
-              <!-- Match Card 2 -->
-              <div
-                class="bg-brand-surface rounded-2xl p-4 md:p-5 border border-gray-800/50 hover:border-gray-700 transition relative overflow-hidden group"
-              >
+              <!-- Match 2: Patna Pirates vs Bengal Warriors - Live - Pro Kabaddi -->
+              <div class="bg-brand-surface rounded-2xl p-4 md:p-5 border border-gray-800/50 hover:border-gray-700 transition relative overflow-hidden group" data-tournament="Pro Kabaddi Season 12" data-status="live">
                 <div class="flex justify-between items-start mb-8">
                   <div class="flex items-center space-x-3">
-                    <span
-                      class="bg-red-500/20 text-red-500 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-tighter flex items-center"
-                      ><span class="w-1 h-1 bg-red-500 rounded-full mr-1"></span>
-                      LIVE</span
-                    >
-                    <p class="text-xs text-gray-400">
-                      PKL • Season 10 • Thyagaraj Indoor Stadium
-                    </p>
+                    <span class="bg-red-500/20 text-red-500 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-tighter flex items-center"><span class="w-1 h-1 bg-red-500 rounded-full mr-1"></span> LIVE</span>
+                    <p class="text-xs text-gray-400">PKL Season 12 • Pre-Season Friendly • Patna Indoor Stadium</p>
                   </div>
-                  <button class="text-gray-500 hover:text-white">
-                    <svg
-                      class="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-                      ></path>
-                    </svg>
-                  </button>
                 </div>
                 <div class="flex items-center justify-center space-x-12 mb-8">
                   <div class="text-center w-40">
-                    <div
-                      class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden"
-                    >
-                      <img
-                        alt="Bengaluru Bulls"
-                        class="w-14 h-14 object-contain"
-                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuDeYkGPdEXSjmIY75XpTjQom0A11tG0cotHr5kPZTDHMBQBDba_fWBzG7eWCO5NQ0S5a-UAer5FZF3-vFTTcT0q4XcgGHu1P3zCeYUsn8gfe5SrJO6g-C3B5DfTGo0PApEH-2AjRu1lcakvUJ08i81Fa9G4ompQAqi_ROO0YKpetJ_CBDWgMGIDN8kjRvM_eoe5E6k3EsU1hbNPipnlopb5wpunhg379OrtSYRPAcBiHu5McIqsg64NW7tor6E8ODIr3tTXVAYfTEg"
-                      />
+                    <div class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden">
+                      <span class="text-xl font-bold">PAT</span>
                     </div>
-                    <p class="text-sm font-bold mb-1">Bengaluru Bulls</p>
-                    <div class="flex justify-center space-x-1">
-                      <span class="text-4xl font-black text-white">24</span>
-                    </div>
+                    <p class="text-sm font-bold mb-1">Patna Pirates</p>
+                    <div class="flex justify-center space-x-1"><span class="text-4xl font-black text-white">35</span></div>
                   </div>
                   <div class="text-center">
                     <div class="text-gray-500 font-bold text-xl mb-1">1st Half</div>
-                    <div class="text-accent-green font-bold text-[10px] uppercase">
-                      Intermission
-                    </div>
+                    <div class="text-accent-green font-bold text-[10px] uppercase">12:30 REMAINING</div>
                   </div>
                   <div class="text-center w-40">
-                    <div
-                      class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden"
-                    >
-                      <img
-                        alt="Dabang Delhi KC"
-                        class="w-14 h-14 object-contain"
-                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbn5Xs2TOS0plgOPSwkLI9ORKDTKWP-vjX9jEsFHynkG-hIzBmcHvhJTwZYmFPXAgFNcDSbrTEkoOa9GFGUVRrEgMvqdFUK0EY4yS63ywAK3RX4I-9AuoweU5X2gv0KqZvI0hzK9xrWUeXoDqOjoc6-UCXNhYj93C3I9zUyYVBOiLgdHZA8QyI6hsCm7zwie8MGNl_mfjwNUaB87Gtn9yq-Kri0S5vaSZ9XlC57XhgOOfwH2RitDZi5JBipXuOpCVkSyvEVjvYd-s"
-                      />
+                    <div class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden">
+                      <span class="text-xl font-bold">BW</span>
                     </div>
-                    <p class="text-sm font-bold mb-1">Dabang Delhi KC</p>
-                    <div class="flex justify-center space-x-1">
-                      <span class="text-4xl font-black text-white">30</span>
-                    </div>
+                    <p class="text-sm font-bold mb-1">Bengal Warriors</p>
+                    <div class="flex justify-center space-x-1"><span class="text-4xl font-black text-white">31</span></div>
                   </div>
                 </div>
-                <div
-                  class="flex justify-between items-center pt-6 border-t border-gray-800"
-                >
-                  <p class="text-xs text-gray-500 font-medium">
-                    1.1M Fans Watching
-                  </p>
+                <div class="flex justify-between items-center pt-6 border-t border-gray-800">
+                  <p class="text-xs text-gray-500 font-medium">980K Fans Watching</p>
                   <div class="flex space-x-3">
-                    <button
-                      class="px-5 py-2 rounded-lg border border-accent-green text-accent-green text-xs font-bold"
-                    >
-                      Game Stats</button
-                    ><button
-                      class="px-5 py-2 rounded-lg bg-gray-800 text-white text-xs font-bold"
-                    >
-                      Play-by-Play
-                    </button>
+                    <button onclick="window.location.href='match-center.html?sport=kabaddi&home=Patna Pirates&away=Bengal Warriors'" class="px-5 py-2 rounded-lg border border-accent-green text-accent-green text-xs font-bold">Game Stats</button>
+                    <button onclick="window.location.href='match-center.html?sport=kabaddi&home=Patna Pirates&away=Bengal Warriors'" class="px-5 py-2 rounded-lg bg-gray-800 text-white text-xs font-bold">Play-by-Play</button>
+                  </div>
+                </div>
+              </div>
+              <!-- Match 3: Pakistan vs Korea - Live - Asian Kabaddi -->
+              <div class="bg-brand-surface rounded-2xl p-4 md:p-5 border border-gray-800/50 hover:border-gray-700 transition relative overflow-hidden group" data-tournament="Asian Kabaddi Championship 2026" data-status="live">
+                <div class="flex justify-between items-start mb-8">
+                  <div class="flex items-center space-x-3">
+                    <span class="bg-red-500/20 text-red-500 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-tighter flex items-center"><span class="w-1 h-1 bg-red-500 rounded-full mr-1"></span> LIVE</span>
+                    <p class="text-xs text-gray-400">Asian Kabaddi Championship 2026 • Quarter-Final • Noida Indoor Stadium</p>
+                  </div>
+                </div>
+                <div class="flex items-center justify-center space-x-12 mb-8">
+                  <div class="text-center w-40">
+                    <div class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden">
+                      <span class="text-2xl font-bold">🇵🇰</span>
+                    </div>
+                    <p class="text-sm font-bold mb-1">Pakistan</p>
+                    <div class="flex justify-center space-x-1"><span class="text-4xl font-black text-white">38</span></div>
+                  </div>
+                  <div class="text-center">
+                    <div class="text-gray-500 font-bold text-xl mb-1">2nd Half</div>
+                    <div class="text-accent-green font-bold text-[10px] uppercase">03:15 REMAINING</div>
+                  </div>
+                  <div class="text-center w-40">
+                    <div class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden">
+                      <span class="text-2xl font-bold">🇰🇷</span>
+                    </div>
+                    <p class="text-sm font-bold mb-1">South Korea</p>
+                    <div class="flex justify-center space-x-1"><span class="text-4xl font-black text-white">32</span></div>
+                  </div>
+                </div>
+                <div class="flex justify-between items-center pt-6 border-t border-gray-800">
+                  <p class="text-xs text-gray-500 font-medium">1.2M Fans Watching</p>
+                  <div class="flex space-x-3">
+                    <button onclick="window.location.href='match-center.html?sport=kabaddi&home=Pakistan&away=South Korea'" class="px-5 py-2 rounded-lg border border-accent-green text-accent-green text-xs font-bold">Game Stats</button>
+                    <button onclick="window.location.href='match-center.html?sport=kabaddi&home=Pakistan&away=South Korea'" class="px-5 py-2 rounded-lg bg-gray-800 text-white text-xs font-bold">Play-by-Play</button>
+                  </div>
+                </div>
+              </div>
+              <!-- Match 4: Iran vs Korea - Finished - Asian Kabaddi -->
+              <div class="bg-brand-surface rounded-2xl p-4 md:p-5 border border-gray-800/50 hover:border-gray-700 transition relative overflow-hidden group" data-tournament="Asian Kabaddi Championship 2026" data-status="finished">
+                <div class="flex justify-between items-start mb-8">
+                  <div class="flex items-center space-x-3">
+                    <span class="bg-gray-600/20 text-gray-400 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-tighter">FINISHED</span>
+                    <p class="text-xs text-gray-400">Asian Kabaddi Championship 2026 • Group Stage</p>
+                  </div>
+                </div>
+                <div class="flex items-center justify-center space-x-12 mb-8">
+                  <div class="text-center w-40">
+                    <div class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden">
+                      <span class="text-2xl font-bold">🇮🇷</span>
+                    </div>
+                    <p class="text-sm font-bold mb-1">Iran</p>
+                    <div class="flex justify-center space-x-1"><span class="text-4xl font-black text-white">45</span></div>
+                  </div>
+                  <div class="text-center">
+                    <div class="text-gray-500 font-bold text-xl mb-1">Final</div>
+                    <div class="text-gray-600 font-bold text-[10px] uppercase">Jul 12, 2026</div>
+                  </div>
+                  <div class="text-center w-40">
+                    <div class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden">
+                      <span class="text-2xl font-bold">🇰🇷</span>
+                    </div>
+                    <p class="text-sm font-bold mb-1">South Korea</p>
+                    <div class="flex justify-center space-x-1"><span class="text-4xl font-black text-white">30</span></div>
+                  </div>
+                </div>
+                <div class="flex justify-between items-center pt-6 border-t border-gray-800">
+                  <p class="text-xs text-gray-500 font-medium">890K Fans Tracked</p>
+                  <div class="flex space-x-3">
+                    <button onclick="window.location.href='match-center.html?sport=kabaddi&home=Iran&away=South Korea'" class="px-5 py-2 rounded-lg border border-accent-green text-accent-green text-xs font-bold">Game Stats</button>
+                    <button onclick="window.location.href='match-center.html?sport=kabaddi&home=Iran&away=South Korea'" class="px-5 py-2 rounded-lg bg-gray-800 text-white text-xs font-bold">Highlights</button>
+                  </div>
+                </div>
+              </div>
+              <!-- Match 5: India vs Pakistan - Upcoming - Asian Kabaddi -->
+              <div class="bg-brand-surface rounded-2xl p-4 md:p-5 border border-gray-800/50 hover:border-gray-700 transition relative overflow-hidden group" data-tournament="Asian Kabaddi Championship 2026" data-status="upcoming">
+                <div class="flex justify-between items-start mb-8">
+                  <div class="flex items-center space-x-3">
+                    <span class="bg-blue-500/20 text-blue-400 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-tighter flex items-center"><span class="w-1 h-1 bg-blue-400 rounded-full mr-1"></span> UPCOMING</span>
+                    <p class="text-xs text-gray-400">Asian Kabaddi Championship 2026 • Final • Gachibowli Indoor Stadium</p>
+                  </div>
+                </div>
+                <div class="flex items-center justify-center space-x-12 mb-8">
+                  <div class="text-center w-40">
+                    <div class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden">
+                      <span class="text-2xl font-bold">🇮🇳</span>
+                    </div>
+                    <p class="text-sm font-bold mb-1">India</p>
+                  </div>
+                  <div class="text-center">
+                    <div class="text-gray-500 font-bold text-xl mb-1">VS</div>
+                    <div class="text-blue-400 font-bold text-[10px] uppercase">Jul 18 • 7:30 PM IST</div>
+                  </div>
+                  <div class="text-center w-40">
+                    <div class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden">
+                      <span class="text-2xl font-bold">🇵🇰</span>
+                    </div>
+                    <p class="text-sm font-bold mb-1">Pakistan</p>
+                  </div>
+                </div>
+                <div class="flex justify-between items-center pt-6 border-t border-gray-800">
+                  <p class="text-xs text-gray-500 font-medium">2.1M Fans Expected</p>
+                  <div class="flex space-x-3">
+                    <button onclick="window.location.href='match-center.html?sport=kabaddi&home=India&away=Pakistan'" class="px-5 py-2 rounded-lg border border-accent-green text-accent-green text-xs font-bold">Set Reminder</button>
+                    <button onclick="window.location.href='match-center.html?sport=kabaddi&home=India&away=Pakistan'" class="px-5 py-2 rounded-lg bg-gray-800 text-white text-xs font-bold">Preview</button>
+                  </div>
+                </div>
+              </div>
+              <!-- Match 6: U Mumba vs Patna Pirates - Upcoming - Pro Kabaddi -->
+              <div class="bg-brand-surface rounded-2xl p-4 md:p-5 border border-gray-800/50 hover:border-gray-700 transition relative overflow-hidden group" data-tournament="Pro Kabaddi Season 12" data-status="upcoming">
+                <div class="flex justify-between items-start mb-8">
+                  <div class="flex items-center space-x-3">
+                    <span class="bg-blue-500/20 text-blue-400 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-tighter flex items-center"><span class="w-1 h-1 bg-blue-400 rounded-full mr-1"></span> UPCOMING</span>
+                    <p class="text-xs text-gray-400">PKL Season 12 • Pre-Season Friendly</p>
+                  </div>
+                </div>
+                <div class="flex items-center justify-center space-x-12 mb-8">
+                  <div class="text-center w-40">
+                    <div class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden">
+                      <span class="text-xl font-bold">UM</span>
+                    </div>
+                    <p class="text-sm font-bold mb-1">U Mumba</p>
+                  </div>
+                  <div class="text-center">
+                    <div class="text-gray-500 font-bold text-xl mb-1">VS</div>
+                    <div class="text-blue-400 font-bold text-[10px] uppercase">Jul 19 • 5:00 PM IST</div>
+                  </div>
+                  <div class="text-center w-40">
+                    <div class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden">
+                      <span class="text-xl font-bold">PAT</span>
+                    </div>
+                    <p class="text-sm font-bold mb-1">Patna Pirates</p>
+                  </div>
+                </div>
+                <div class="flex justify-between items-center pt-6 border-t border-gray-800">
+                  <p class="text-xs text-gray-500 font-medium">650K Fans Expected</p>
+                  <div class="flex space-x-3">
+                    <button onclick="window.location.href='match-center.html?sport=kabaddi&home=U Mumba&away=Patna Pirates'" class="px-5 py-2 rounded-lg border border-accent-green text-accent-green text-xs font-bold">Set Reminder</button>
+                    <button onclick="window.location.href='match-center.html?sport=kabaddi&home=U Mumba&away=Patna Pirates'" class="px-5 py-2 rounded-lg bg-gray-800 text-white text-xs font-bold">Preview</button>
+                  </div>
+                </div>
+              </div>
+              <!-- Match 7: Bengal Warriors vs U Mumba - Finished - Pro Kabaddi -->
+              <div class="bg-brand-surface rounded-2xl p-4 md:p-5 border border-gray-800/50 hover:border-gray-700 transition relative overflow-hidden group" data-tournament="Pro Kabaddi Season 12" data-status="finished">
+                <div class="flex justify-between items-start mb-8">
+                  <div class="flex items-center space-x-3">
+                    <span class="bg-gray-600/20 text-gray-400 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-tighter">FINISHED</span>
+                    <p class="text-xs text-gray-400">PKL Season 12 • Pre-Season Friendly</p>
+                  </div>
+                </div>
+                <div class="flex items-center justify-center space-x-12 mb-8">
+                  <div class="text-center w-40">
+                    <div class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden">
+                      <span class="text-xl font-bold">BW</span>
+                    </div>
+                    <p class="text-sm font-bold mb-1">Bengal Warriors</p>
+                    <div class="flex justify-center space-x-1"><span class="text-4xl font-black text-white">28</span></div>
+                  </div>
+                  <div class="text-center">
+                    <div class="text-gray-500 font-bold text-xl mb-1">Final</div>
+                    <div class="text-gray-600 font-bold text-[10px] uppercase">Jul 11, 2026</div>
+                  </div>
+                  <div class="text-center w-40">
+                    <div class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden">
+                      <span class="text-xl font-bold">UM</span>
+                    </div>
+                    <p class="text-sm font-bold mb-1">U Mumba</p>
+                    <div class="flex justify-center space-x-1"><span class="text-4xl font-black text-white">26</span></div>
+                  </div>
+                </div>
+                <div class="flex justify-between items-center pt-6 border-t border-gray-800">
+                  <p class="text-xs text-gray-500 font-medium">720K Fans Tracked</p>
+                  <div class="flex space-x-3">
+                    <button onclick="window.location.href='match-center.html?sport=kabaddi&home=Bengal Warriors&away=U Mumba'" class="px-5 py-2 rounded-lg border border-accent-green text-accent-green text-xs font-bold">Game Stats</button>
+                    <button onclick="window.location.href='match-center.html?sport=kabaddi&home=Bengal Warriors&away=U Mumba'" class="px-5 py-2 rounded-lg bg-gray-800 text-white text-xs font-bold">Highlights</button>
+                  </div>
+                </div>
+              </div>
+              <!-- Match 8: India vs Korea - Finished - Asian Kabaddi -->
+              <div class="bg-brand-surface rounded-2xl p-4 md:p-5 border border-gray-800/50 hover:border-gray-700 transition relative overflow-hidden group" data-tournament="Asian Kabaddi Championship 2026" data-status="finished">
+                <div class="flex justify-between items-start mb-8">
+                  <div class="flex items-center space-x-3">
+                    <span class="bg-gray-600/20 text-gray-400 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-tighter">FINISHED</span>
+                    <p class="text-xs text-gray-400">Asian Kabaddi Championship 2026 • Group Stage</p>
+                  </div>
+                </div>
+                <div class="flex items-center justify-center space-x-12 mb-8">
+                  <div class="text-center w-40">
+                    <div class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden">
+                      <span class="text-2xl font-bold">🇮🇳</span>
+                    </div>
+                    <p class="text-sm font-bold mb-1">India</p>
+                    <div class="flex justify-center space-x-1"><span class="text-4xl font-black text-white">48</span></div>
+                  </div>
+                  <div class="text-center">
+                    <div class="text-gray-500 font-bold text-xl mb-1">Final</div>
+                    <div class="text-gray-600 font-bold text-[10px] uppercase">Jul 10, 2026</div>
+                  </div>
+                  <div class="text-center w-40">
+                    <div class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden">
+                      <span class="text-2xl font-bold">🇰🇷</span>
+                    </div>
+                    <p class="text-sm font-bold mb-1">South Korea</p>
+                    <div class="flex justify-center space-x-1"><span class="text-4xl font-black text-white">24</span></div>
+                  </div>
+                </div>
+                <div class="flex justify-between items-center pt-6 border-t border-gray-800">
+                  <p class="text-xs text-gray-500 font-medium">1.5M Fans Tracked</p>
+                  <div class="flex space-x-3">
+                    <button onclick="window.location.href='match-center.html?sport=kabaddi&home=India&away=South Korea'" class="px-5 py-2 rounded-lg border border-accent-green text-accent-green text-xs font-bold">Game Stats</button>
+                    <button onclick="window.location.href='match-center.html?sport=kabaddi&home=India&away=South Korea'" class="px-5 py-2 rounded-lg bg-gray-800 text-white text-xs font-bold">Highlights</button>
                   </div>
                 </div>
               </div>
@@ -792,7 +869,7 @@
             <div class="bg-card-bg rounded-2xl p-6 border border-border-subtle">
               <div class="flex items-center justify-between mb-6">
                 <h3 class="font-bold">Calendar</h3>
-                <a class="text-emerald-accent text-xs font-semibold hover:underline" href="index.html">View Full Calendar</a>
+                <a class="text-emerald-accent text-xs font-semibold hover:underline" href="calendar.html?game=kabbaddi">View Full Calendar</a>
               </div>
               <div class="grid grid-cols-7 gap-2 text-center">
                 <div class="space-y-2">
@@ -884,7 +961,7 @@
                     </button>
                   </div>
                 </div>
-                <a class="text-emerald-accent text-xs font-semibold hover:underline" href="index.html">View All</a>
+                <a class="text-emerald-accent text-xs font-semibold hover:underline" href="top-players.html?game=kabaddi">View All</a>
               </div>
               <div class="flex space-x-2 mb-6 bg-dark-bg p-1 rounded-lg">
                 <button class="flex-1 py-1.5 text-[10px] font-bold rounded-md bg-emerald-accent/10 border border-emerald-accent text-emerald-accent">Raid Points</button>
@@ -952,5 +1029,29 @@
     </div>
     <script type="module" src="js/script.js"></script>
     <script src="js/theme.js"></script>
-  </body>
+    <script src="js/sport-filters.js"></script>
+    <script src="js/sport-stats.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        if (typeof initSportStats === 'function') {
+          initSportStats('sportStatsContainer');
+        }
+      });
+    </script>
+    <script>
+    document.addEventListener('DOMContentLoaded',function(){
+      document.querySelectorAll('[onclick*="match-center.html"]').forEach(function(b){
+        var c=b.closest('[data-status]'); if(!c) return;
+        var st=c.getAttribute('data-status')||'live';
+        var se=c.querySelectorAll('.text-4xl,.sm\\:text-2xl,.text-2xl');
+        var hs='',as='';
+        if(se.length>=2){ hs=se[0].textContent.trim(); as=se[1].textContent.trim(); if(hs==='-')hs=''; if(as==='-')as=''; }
+        var oc=b.getAttribute('onclick'); if(!oc) return;
+        var m=oc.match(/'(match-center\.html\?[^']+)'/); if(!m) return;
+        var u=m[1]; if(hs)u+='&hs='+encodeURIComponent(hs); if(as)u+='&as='+encodeURIComponent(as);
+        u+='&state='+st; b.setAttribute('onclick',"window.location.href='"+u+"'");
+      });
+    });
+    </script>
+  <script src="js/notif-ws.js"></script></body>
 </html>

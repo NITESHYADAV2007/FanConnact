@@ -1867,12 +1867,16 @@
                     });
                 });
 
-                // Date of Birth - click icon or input to open picker
-                document.getElementById('dob-icon')?.addEventListener('click', () => {
+                // Date of Birth — set max to 6 years ago + icon opens native picker
+                const dobInput = document.getElementById('dob');
+                if (dobInput) {
+                    const sixYearsAgo = new Date();
+                    sixYearsAgo.setFullYear(sixYearsAgo.getFullYear() - 6);
+                    dobInput.max = sixYearsAgo.toISOString().split('T')[0];
+                }
+                document.getElementById('dob-icon')?.addEventListener('click', (e) => {
+                    e.stopPropagation();
                     document.getElementById('dob')?.showPicker();
-                });
-                document.getElementById('dob')?.addEventListener('click', (e) => {
-                    e.target.showPicker();
                 });
 
                 // Password visibility toggle

@@ -176,7 +176,7 @@
         <nav class="hidden xl:flex items-center space-x-6 mx-6 shrink-0">
           <a
             class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link"
-            href="index.html"
+            href="dashboard.html"
             >Home</a
           >
           <a
@@ -186,12 +186,12 @@
           >
           <a
             class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link"
-            href="index.html"
+            href="prediction.html"
             >Predictions</a
           >
           <a
             class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link"
-            href="index.html"
+            href="leaderboard.html"
             >Leaderboard</a
           >
           <a
@@ -270,10 +270,10 @@
 
     <!-- Mobile Sub-Nav -->
     <nav class="xl:hidden flex overflow-x-auto gap-1 sm:gap-2 px-2 py-1.5 sm:px-4 sm:py-2.5 bg-white dark:bg-black border-b border-gray-200 dark:border-border-subtle scrollbar-none whitespace-nowrap" style="-webkit-overflow-scrolling:touch;scrollbar-width:none;">
-      <a href="index.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Home</a>
+      <a href="dashboard.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Home</a>
       <a href="livematches.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Matches</a>
-      <a href="index.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Predictions</a>
-      <a href="index.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Leaderboard</a>
+      <a href="prediction.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Predictions</a>
+      <a href="leaderboard.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Leaderboard</a>
       <a href="news&update.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">News</a>
     </nav>
 
@@ -294,7 +294,7 @@
         <!-- Logo Container for collapsed state -->
         <div
           class="p-6 flex items-center space-x-2 logo-container cursor-pointer"
-          onclick="window.location.href = 'index.html'"
+          onclick="window.location.href = 'dashboard.html'"
         >
           <img src="assets/fancoin/fanconnactlogo.png" alt="Fanconnact" class="w-8 h-8 flex-shrink-0" />
           <span
@@ -475,42 +475,10 @@
               <div class="mb-8">
                 <h2 class="text-4xl font-bold mb-2">Basketball Matches</h2>
                 <p class="text-gray-400 text-sm">
-                  Follow the NBA, EuroLeague, and major international basketball
-                  tournaments!
+                  Follow the NBA Summer League and all the basketball action!
                 </p>
               </div>
-              <!-- Sport Filter Buttons -->
-              <div class="flex flex-wrap gap-3 mb-8" data-purpose="sport-filters">
-                <button
-                  class="flex items-center space-x-2 bg-gray-800/40 text-white px-5 py-2.5 rounded-lg font-medium text-sm border border-gray-700"
-                >
-                  <span class="">🏆</span><span class="">All Sports</span></button
-                ><button
-                  class="flex items-center space-x-2 bg-gray-800/40 text-white px-5 py-2.5 rounded-lg font-medium text-sm border border-gray-700"
-                >
-                  <span class="">🤼</span><span class="">Kabaddi</span></button
-                ><button
-                  class="flex items-center space-x-2 bg-gray-800/40 text-white px-5 py-2.5 rounded-lg font-medium text-sm border border-gray-700"
-                >
-                  <span class="">🏏</span><span class="">Cricket</span></button
-                ><button
-                  class="flex items-center space-x-2 bg-gray-800/40 text-white px-5 py-2.5 rounded-lg font-medium text-sm border border-gray-700"
-                >
-                  <span class="">⚽</span><span class="">Football</span></button
-                ><button
-                  class="flex items-center space-x-2 bg-accent-green text-brand-dark px-5 py-2.5 rounded-lg font-bold text-sm"
-                >
-                  <span class="">🏀</span><span class="">Basketball</span></button
-                ><button
-                  class="w-10 h-10 flex items-center justify-center bg-gray-800/40 rounded-lg border border-gray-700"
-                >
-                  <svg class="w-4 h-4" fill="currentColor" viewbox="0 0 20 20">
-                    <path
-                      d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"
-                    ></path>
-                  </svg>
-                </button>
-              </div>
+
               <!-- Category Filter Tabs -->
               <div
                 class="flex items-center space-x-8 border-b border-gray-200 dark:border-border-subtle mb-8 overflow-x-auto pb-0 whitespace-nowrap"
@@ -521,22 +489,13 @@
                 >
                   All
                 </button>
-                <button
-                  class="pb-4 text-slate-500 dark:text-gray-300 hover:text-emerald-accent transition-colors font-medium text-sm px-1 shrink-0"
-                >
-                  NBA
-                </button>
-                <button
-                  class="pb-4 text-slate-500 dark:text-gray-300 hover:text-emerald-accent transition-colors font-medium text-sm px-1 shrink-0"
-                >
-                  EuroLeague
-                </button>
-                <button
-                  class="pb-4 text-slate-500 dark:text-gray-300 hover:text-emerald-accent transition-colors font-medium text-sm px-1 shrink-0"
-                >
-                  World Cup
-                </button>
-              </div>
+                 <button
+                   class="pb-4 text-slate-500 dark:text-gray-300 hover:text-emerald-accent transition-colors font-medium text-sm px-1 shrink-0"
+                 >
+                   NBA Summer League 2026
+                 </button>
+                 <button id="statsTab" class="pb-4 text-slate-500 dark:text-gray-300 hover:text-emerald-accent transition-colors font-medium text-sm px-1 shrink-0 cursor-pointer" onclick="document.getElementById('statsSection').classList.toggle('hidden');document.getElementById('statsTab').classList.toggle('text-emerald-accent');document.getElementById('statsTab').classList.toggle('border-emerald-accent');document.getElementById('statsTab').style.borderBottom=document.getElementById('statsTab').classList.contains('text-emerald-accent')?'2px solid #10b981':'none'">Stats</button>
+               </div>
               <!-- Action Bar -->
               <div
                 class="flex flex-col md:flex-row justify-between gap-4 mb-6"
@@ -611,11 +570,24 @@
                   </button>
                 </div>
               </div>
+            <!-- BEGIN: StatsSection -->
+            <div id="statsSection" class="hidden">
+              <div class="bg-card-bg rounded-2xl border border-border-subtle mb-8">
+                <div class="flex items-center justify-between px-6 py-4 border-b border-border-subtle">
+                  <h3 class="font-bold text-sm">Basketball Stats & Rankings</h3>
+                  <span class="text-[10px] text-gray-500">Auto-updated from ESPN</span>
+                </div>
+                <div id="sportStatsContainer"></div>
+              </div>
+            </div>
+            <!-- END: StatsSection -->
             <!-- Matches Grid/List -->
             <div class="space-y-6" data-purpose="matches-list">
-              <!-- Match Card 1 -->
+              <!-- Match Card 1: NBA Summer League - Live -->
               <div
                 class="bg-brand-surface rounded-2xl p-4 md:p-5 border border-gray-800/50 hover:border-gray-700 transition relative overflow-hidden group"
+                data-tournament="NBA Summer League 2026"
+                data-status="live"
               >
                 <div class="flex justify-between items-start mb-8">
                   <div class="flex items-center space-x-3">
@@ -625,7 +597,7 @@
                       LIVE</span
                     >
                     <p class="text-xs text-gray-400">
-                      NBA • Finals • Game 5 • Madison Square Garden
+                      NBA Summer League • Lakers vs Celtics • Cox Pavilion
                     </p>
                   </div>
                   <button class="text-gray-500 hover:text-white">
@@ -687,14 +659,16 @@
                   class="flex justify-between items-center pt-6 border-t border-gray-800"
                 >
                     <p class="text-xs text-gray-500 font-medium">
-                     4.5M Fans Watching
+                      4.5M Fans Watching
                   </p>
                   <div class="flex space-x-3">
                     <button
+                      onclick="window.location.href='match-center.html?sport=basketball&home=Lakers&away=Celtics'"
                       class="px-5 py-2 rounded-lg border border-accent-green text-accent-green text-xs font-bold hover:bg-accent-green/10"
                     >
                       Game Stats</button
                     ><button
+                      onclick="window.location.href='match-center.html?sport=basketball&home=Lakers&away=Celtics'"
                       class="px-5 py-2 rounded-lg bg-gray-800 text-white text-xs font-bold hover:bg-gray-700"
                     >
                       Play-by-Play
@@ -702,9 +676,11 @@
                   </div>
                 </div>
               </div>
-              <!-- Match Card 2 -->
+              <!-- Match Card 2: NBA Summer League - Live -->
               <div
                 class="bg-brand-surface rounded-2xl p-4 md:p-5 border border-gray-800/50 hover:border-gray-700 transition relative overflow-hidden group"
+                data-tournament="NBA Summer League 2026"
+                data-status="live"
               >
                 <div class="flex justify-between items-start mb-8">
                   <div class="flex items-center space-x-3">
@@ -714,7 +690,7 @@
                       LIVE</span
                     >
                     <p class="text-xs text-gray-400">
-                      NBA • Regular Season • Chase Center
+                      NBA Summer League • Bucks vs Warriors • Thomas & Mack
                     </p>
                   </div>
                   <button class="text-gray-500 hover:text-white">
@@ -732,39 +708,21 @@
                 </div>
                 <div class="flex items-center justify-center space-x-12 mb-8">
                   <div class="text-center w-40">
-                    <div
-                      class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden"
-                    >
-                      <img
-                        alt="Golden State Warriors"
-                        class="w-14 h-14 object-contain"
-                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuDeYkGPdEXSjmIY75XpTjQom0A11tG0cotHr5kPZTDHMBQBDba_fWBzG7eWCO5NQ0S5a-UAer5FZF3-vFTTcT0q4XcgGHu1P3zCeYUsn8gfe5SrJO6g-C3B5DfTGo0PApEH-2AjRu1lcakvUJ08i81Fa9G4ompQAqi_ROO0YKpetJ_CBDWgMGIDN8kjRvM_eoe5E6k3EsU1hbNPipnlopb5wpunhg379OrtSYRPAcBiHu5McIqsg64NW7tor6E8ODIr3tTXVAYfTEg"
-                      />
-                    </div>
-                    <p class="text-sm font-bold mb-1">Golden State Warriors</p>
+                    <p class="text-sm font-bold mb-1">Milwaukee Bucks</p>
                     <div class="flex justify-center space-x-1">
-                      <span class="text-4xl font-black text-white">122</span>
+                      <span class="text-4xl font-black text-white">98</span>
                     </div>
                   </div>
                   <div class="text-center">
-                    <div class="text-gray-500 font-bold text-xl mb-1">3rd Quarter</div>
+                    <div class="text-gray-500 font-bold text-xl mb-1">4th Quarter</div>
                     <div class="text-accent-green font-bold text-[10px] uppercase">
-                      07:15 Remaining
+                      05:42 Remaining
                     </div>
                   </div>
                   <div class="text-center w-40">
-                    <div
-                      class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gray-800 bg-brand-dark flex items-center justify-center overflow-hidden"
-                    >
-                      <img
-                        alt="Miami Heat"
-                        class="w-14 h-14 object-contain"
-                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbn5Xs2TOS0plgOPSwkLI9ORKDTKWP-vjX9jEsFHynkG-hIzBmcHvhJTwZYmFPXAgFNcDSbrTEkoOa9GFGUVRrEgMvqdFUK0EY4yS63ywAK3RX4I-9AuoweU5X2gv0KqZvI0hzK9xrWUeXoDqOjoc6-UCXNhYj93C3I9zUyYVBOiLgdHZA8QyI6hsCm7zwie8MGNl_mfjwNUaB87Gtn9yq-Kri0S5vaSZ9XlC57XhgOOfwH2RitDZi5JBipXuOpCVkSyvEVjvYd-s"
-                      />
-                    </div>
-                    <p class="text-sm font-bold mb-1">Miami Heat</p>
+                    <p class="text-sm font-bold mb-1">Golden State Warriors</p>
                     <div class="flex justify-center space-x-1">
-                      <span class="text-4xl font-black text-white">115</span>
+                      <span class="text-4xl font-black text-white">94</span>
                     </div>
                   </div>
                 </div>
@@ -772,19 +730,222 @@
                   class="flex justify-between items-center pt-6 border-t border-gray-800"
                 >
                     <p class="text-xs text-gray-500 font-medium">
-                     2.8M Fans Watching
+                      3.1M Fans Watching
                   </p>
                   <div class="flex space-x-3">
                     <button
+                      onclick="window.location.href='match-center.html?sport=basketball&home=Bucks&away=Warriors'"
                       class="px-5 py-2 rounded-lg border border-accent-green text-accent-green text-xs font-bold"
                     >
                       Game Stats</button
                     ><button
+                      onclick="window.location.href='match-center.html?sport=basketball&home=Bucks&away=Warriors'"
                       class="px-5 py-2 rounded-lg bg-gray-800 text-white text-xs font-bold"
                     >
                       Play-by-Play
                     </button>
                   </div>
+                </div>
+              </div>
+              <!-- Match Card 3: NBA Summer League - Upcoming -->
+              <div
+                class="bg-brand-surface rounded-2xl p-4 md:p-5 border border-gray-800/50 hover:border-gray-700 transition relative overflow-hidden group"
+                data-tournament="NBA Summer League 2026"
+                data-status="upcoming"
+              >
+                <div class="flex justify-between items-start mb-8">
+                  <div class="flex items-center space-x-3">
+                    <span class="bg-yellow-500/20 text-yellow-500 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-tighter">Upcoming</span>
+                    <p class="text-xs text-gray-400">NBA Summer League • Heat vs Nuggets</p>
+                  </div>
+                  <button class="text-gray-500 hover:text-white">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+                  </button>
+                </div>
+                <div class="flex items-center justify-center space-x-12 mb-8">
+                  <div class="text-center w-40">
+                    <p class="text-sm font-bold mb-1">Miami Heat</p>
+                    <div class="flex justify-center space-x-1"><span class="text-4xl font-black text-white">-</span></div>
+                  </div>
+                    <div class="text-center">
+                    <div class="text-gray-500 font-bold text-xl mb-1">18 Jul, 2026</div>
+                    <div class="text-accent-green font-bold text-[10px] uppercase">9:00 PM</div>
+                  </div>
+                  <div class="text-center w-40">
+                    <p class="text-sm font-bold mb-1">Denver Nuggets</p>
+                    <div class="flex justify-center space-x-1"><span class="text-4xl font-black text-white">-</span></div>
+                  </div>
+                </div>
+                <div class="flex justify-between items-center pt-6 border-t border-gray-800">
+                  <button onclick="window.location.href='match-center.html?sport=basketball&home=Heat&away=Nuggets'" class="px-5 py-2 rounded-lg border border-gray-700 text-gray-300 text-xs font-bold">Set Reminder</button>
+                  <button onclick="window.location.href='match-center.html?sport=basketball&home=Heat&away=Nuggets'" class="text-gray-400 text-xs font-bold flex items-center space-x-1">View Details<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></button>
+                </div>
+              </div>
+              <!-- Match Card 4: NBA Summer League - Upcoming -->
+              <div
+                class="bg-brand-surface rounded-2xl p-4 md:p-5 border border-gray-800/50 hover:border-gray-700 transition relative overflow-hidden group"
+                data-tournament="NBA Summer League 2026"
+                data-status="upcoming"
+              >
+                <div class="flex justify-between items-start mb-8">
+                  <div class="flex items-center space-x-3">
+                    <span class="bg-yellow-500/20 text-yellow-500 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-tighter">Upcoming</span>
+                    <p class="text-xs text-gray-400">NBA Summer League • Real Madrid vs Barcelona</p>
+                  </div>
+                  <button class="text-gray-500 hover:text-white">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+                  </button>
+                </div>
+                <div class="flex items-center justify-center space-x-12 mb-8">
+                  <div class="text-center w-40">
+                    <p class="text-sm font-bold mb-1">Real Madrid</p>
+                    <div class="flex justify-center space-x-1"><span class="text-4xl font-black text-white">-</span></div>
+                  </div>
+                    <div class="text-center">
+                    <div class="text-gray-500 font-bold text-xl mb-1">19 Jul, 2026</div>
+                    <div class="text-accent-green font-bold text-[10px] uppercase">8:30 PM</div>
+                  </div>
+                  <div class="text-center w-40">
+                    <p class="text-sm font-bold mb-1">FC Barcelona</p>
+                    <div class="flex justify-center space-x-1"><span class="text-4xl font-black text-white">-</span></div>
+                  </div>
+                </div>
+                <div class="flex justify-between items-center pt-6 border-t border-gray-800">
+                  <button onclick="window.location.href='match-center.html?sport=basketball&home=RealMadrid&away=Barcelona'" class="px-5 py-2 rounded-lg border border-gray-700 text-gray-300 text-xs font-bold">Set Reminder</button>
+                  <button onclick="window.location.href='match-center.html?sport=basketball&home=RealMadrid&away=Barcelona'" class="text-gray-400 text-xs font-bold flex items-center space-x-1">View Details<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></button>
+                </div>
+              </div>
+              <!-- Match Card 5: NBA Summer League - Upcoming -->
+              <div
+                class="bg-brand-surface rounded-2xl p-4 md:p-5 border border-gray-800/50 hover:border-gray-700 transition relative overflow-hidden group"
+                data-tournament="NBA Summer League 2026"
+                data-status="upcoming"
+              >
+                <div class="flex justify-between items-start mb-8">
+                  <div class="flex items-center space-x-3">
+                    <span class="bg-yellow-500/20 text-yellow-500 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-tighter">Upcoming</span>
+                    <p class="text-xs text-gray-400">NBA Summer League • USA vs Spain • Cox Pavilion</p>
+                  </div>
+                  <button class="text-gray-500 hover:text-white">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+                  </button>
+                </div>
+                <div class="flex items-center justify-center space-x-12 mb-8">
+                  <div class="text-center w-40">
+                    <p class="text-sm font-bold mb-1">USA</p>
+                    <div class="flex justify-center space-x-1"><span class="text-4xl font-black text-white">-</span></div>
+                  </div>
+                    <div class="text-center">
+                    <div class="text-gray-500 font-bold text-xl mb-1">20 Jul, 2026</div>
+                    <div class="text-accent-green font-bold text-[10px] uppercase">6:00 PM</div>
+                  </div>
+                  <div class="text-center w-40">
+                    <p class="text-sm font-bold mb-1">Spain</p>
+                    <div class="flex justify-center space-x-1"><span class="text-4xl font-black text-white">-</span></div>
+                  </div>
+                </div>
+                <div class="flex justify-between items-center pt-6 border-t border-gray-800">
+                  <button onclick="window.location.href='match-center.html?sport=basketball&home=USA&away=Spain'" class="px-5 py-2 rounded-lg border border-gray-700 text-gray-300 text-xs font-bold">Set Reminder</button>
+                  <button onclick="window.location.href='match-center.html?sport=basketball&home=USA&away=Spain'" class="text-gray-400 text-xs font-bold flex items-center space-x-1">View Details<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></button>
+                </div>
+              </div>
+              <!-- Match Card 6: NBA Summer League - Finished -->
+              <div
+                class="bg-brand-surface rounded-2xl p-4 md:p-5 border border-gray-800/50 hover:border-gray-700 transition relative overflow-hidden group"
+                data-tournament="NBA Summer League 2026"
+                data-status="finished"
+              >
+                <div class="flex justify-between items-start mb-8">
+                  <div class="flex items-center space-x-3">
+                    <span class="bg-gray-600/20 text-gray-400 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-tighter">Finished</span>
+                    <p class="text-xs text-gray-400">NBA Summer League • Fenerbahce vs Olympiacos</p>
+                  </div>
+                  <button class="text-gray-500 hover:text-white">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+                  </button>
+                </div>
+                <div class="flex items-center justify-center space-x-12 mb-8">
+                  <div class="text-center w-40">
+                    <p class="text-sm font-bold mb-1">Fenerbahce</p>
+                    <div class="flex justify-center space-x-1"><span class="text-4xl font-black text-white">89</span></div>
+                  </div>
+                  <div class="text-center">
+                    <div class="text-accent-green font-bold text-[10px] uppercase">Fenerbahce won by 7</div>
+                  </div>
+                  <div class="text-center w-40">
+                    <p class="text-sm font-bold mb-1">Olympiacos</p>
+                    <div class="flex justify-center space-x-1"><span class="text-4xl font-black text-white">82</span></div>
+                  </div>
+                </div>
+                <div class="flex justify-between items-center pt-6 border-t border-gray-800">
+                  <p class="text-xs text-gray-500 font-medium">1.8M Fans Watched</p>
+                  <button onclick="window.location.href='match-center.html?sport=basketball&home=Fenerbahce&away=Olympiacos'" class="px-5 py-2 rounded-lg border border-accent-green text-accent-green text-xs font-bold">Game Stats</button>
+                </div>
+              </div>
+              <!-- Match Card 7: NBA Summer League - Finished -->
+              <div
+                class="bg-brand-surface rounded-2xl p-4 md:p-5 border border-gray-800/50 hover:border-gray-700 transition relative overflow-hidden group"
+                data-tournament="NBA Summer League 2026"
+                data-status="finished"
+              >
+                <div class="flex justify-between items-start mb-8">
+                  <div class="flex items-center space-x-3">
+                    <span class="bg-gray-600/20 text-gray-400 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-tighter">Finished</span>
+                    <p class="text-xs text-gray-400">NBA Summer League • Thunder vs Mavericks</p>
+                  </div>
+                  <button class="text-gray-500 hover:text-white">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+                  </button>
+                </div>
+                <div class="flex items-center justify-center space-x-12 mb-8">
+                  <div class="text-center w-40">
+                    <p class="text-sm font-bold mb-1">Oklahoma City Thunder</p>
+                    <div class="flex justify-center space-x-1"><span class="text-4xl font-black text-white">118</span></div>
+                  </div>
+                  <div class="text-center">
+                    <div class="text-accent-green font-bold text-[10px] uppercase">Thunder won by 11</div>
+                  </div>
+                  <div class="text-center w-40">
+                    <p class="text-sm font-bold mb-1">Dallas Mavericks</p>
+                    <div class="flex justify-center space-x-1"><span class="text-4xl font-black text-white">107</span></div>
+                  </div>
+                </div>
+                <div class="flex justify-between items-center pt-6 border-t border-gray-800">
+                  <p class="text-xs text-gray-500 font-medium">2.2M Fans Watched</p>
+                  <button onclick="window.location.href='match-center.html?sport=basketball&home=Thunder&away=Mavericks'" class="px-5 py-2 rounded-lg border border-accent-green text-accent-green text-xs font-bold">Game Stats</button>
+                </div>
+              </div>
+              <!-- Match Card 8: NBA Summer League - Finished -->
+              <div
+                class="bg-brand-surface rounded-2xl p-4 md:p-5 border border-gray-800/50 hover:border-gray-700 transition relative overflow-hidden group"
+                data-tournament="NBA Summer League 2026"
+                data-status="finished"
+              >
+                <div class="flex justify-between items-start mb-8">
+                  <div class="flex items-center space-x-3">
+                    <span class="bg-gray-600/20 text-gray-400 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-tighter">Finished</span>
+                    <p class="text-xs text-gray-400">NBA Summer League • Canada vs Australia</p>
+                  </div>
+                  <button class="text-gray-500 hover:text-white">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+                  </button>
+                </div>
+                <div class="flex items-center justify-center space-x-12 mb-8">
+                  <div class="text-center w-40">
+                    <p class="text-sm font-bold mb-1">Canada</p>
+                    <div class="flex justify-center space-x-1"><span class="text-4xl font-black text-white">101</span></div>
+                  </div>
+                  <div class="text-center">
+                    <div class="text-accent-green font-bold text-[10px] uppercase">Canada won by 9</div>
+                  </div>
+                  <div class="text-center w-40">
+                    <p class="text-sm font-bold mb-1">Australia</p>
+                    <div class="flex justify-center space-x-1"><span class="text-4xl font-black text-white">92</span></div>
+                  </div>
+                </div>
+                <div class="flex justify-between items-center pt-6 border-t border-gray-800">
+                  <p class="text-xs text-gray-500 font-medium">1.5M Fans Watched</p>
+                  <button onclick="window.location.href='match-center.html?sport=basketball&home=Canada&away=Australia'" class="px-5 py-2 rounded-lg border border-accent-green text-accent-green text-xs font-bold">Game Stats</button>
                 </div>
               </div>
             </div>
@@ -795,7 +956,7 @@
             <div class="bg-card-bg rounded-2xl p-6 border border-border-subtle">
               <div class="flex items-center justify-between mb-6">
                 <h3 class="font-bold">Calendar</h3>
-                <a class="text-emerald-accent text-xs font-semibold hover:underline" href="index.html">View Full Calendar</a>
+                <a class="text-emerald-accent text-xs font-semibold hover:underline" href="calendar.html?game=basketball">View Full Calendar</a>
               </div>
               <div class="grid grid-cols-7 gap-2 text-center">
                 <div class="space-y-2">
@@ -887,7 +1048,7 @@
                     </button>
                   </div>
                 </div>
-                <a class="text-emerald-accent text-xs font-semibold hover:underline" href="index.html">View All</a>
+                <a class="text-emerald-accent text-xs font-semibold hover:underline" href="top-players.html?game=basketball">View All</a>
               </div>
               <div class="flex space-x-2 mb-6 bg-dark-bg p-1 rounded-lg">
                 <button class="flex-1 py-1.5 text-[10px] font-bold rounded-md bg-emerald-accent/10 border border-emerald-accent text-emerald-accent">Points</button>
@@ -955,5 +1116,29 @@
     </div>
     <script type="module" src="js/script.js"></script>
     <script src="js/theme.js"></script>
-  </body>
+    <script src="js/sport-filters.js"></script>
+    <script src="js/sport-stats.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        if (typeof initSportStats === 'function') {
+          initSportStats('sportStatsContainer');
+        }
+      });
+    </script>
+    <script>
+    document.addEventListener('DOMContentLoaded',function(){
+      document.querySelectorAll('[onclick*="match-center.html"]').forEach(function(b){
+        var c=b.closest('[data-status]'); if(!c) return;
+        var st=c.getAttribute('data-status')||'live';
+        var se=c.querySelectorAll('.text-4xl,.sm\\:text-2xl,.text-2xl');
+        var hs='',as='';
+        if(se.length>=2){ hs=se[0].textContent.trim(); as=se[1].textContent.trim(); if(hs==='-')hs=''; if(as==='-')as=''; }
+        var oc=b.getAttribute('onclick'); if(!oc) return;
+        var m=oc.match(/'(match-center\.html\?[^']+)'/); if(!m) return;
+        var u=m[1]; if(hs)u+='&hs='+encodeURIComponent(hs); if(as)u+='&as='+encodeURIComponent(as);
+        u+='&state='+st; b.setAttribute('onclick',"window.location.href='"+u+"'");
+      });
+    });
+    </script>
+  <script src="js/notif-ws.js"></script></body>
 </html>

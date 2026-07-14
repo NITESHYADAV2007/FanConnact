@@ -1,0 +1,26 @@
+FanConnact Rankings API running on http://localhost:3001
+WebSocket chat running on ws://localhost:3001/ws/chat
+Endpoints:
+  GET /api/sports
+  GET /api/sports/:sport
+  GET /api/rankings/:sport/:category
+  GET /api/leaderboard
+  GET /api/leaderboard/:sport/:category
+  GET /api/sync/status
+  POST /api/sync/trigger
+  GET /api/sync/last-updated
+[RankingsSync] 2026-07-13 08:03:00 - Starting auto-sync every 6h
+[RankingsSync] 2026-07-13 08:03:00 - Starting player rankings sync...
+[RankingsSync] 2026-07-13 08:03:00 - Scraping ICC rankings: odi-men
+[RankingsSync] 2026-07-13 08:03:00 - Scraping ICC rankings: t20-men
+[RankingsSync] 2026-07-13 08:03:00 - Scraping ICC rankings: test-men
+[RankingsSync] 2026-07-13 08:03:00 - Scraping FIFA rankings
+[RankingsSync] 2026-07-13 08:03:02 - Updated NBA scoring: 100 players
+[RankingsSync] 2026-07-13 08:03:03 - Updated MLB HR: 100 players
+[RankingsSync] 2026-07-13 08:03:03 - Player rankings sync complete. Next sync in 6h
+[RankingsSync] 2026-07-13 08:03:03 - Starting team rankings sync...
+[RankingsSync] 2026-07-13 08:03:03 - Scraping ICC rankings: odi-men
+[RankingsSync] 2026-07-13 08:03:03 - Scraping ICC rankings: t20-men
+[RankingsSync] 2026-07-13 08:03:03 - Scraping ICC rankings: test-men
+[RankingsSync] 2026-07-13 08:03:03 - Team rankings sync complete
+[RankingsSync] 2026-07-13 08:03:03 - Full sync cycle completed

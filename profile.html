@@ -259,14 +259,14 @@
       <!-- Top AppBar Header (like news page, NO sidebar) -->
       <header class="sticky top-0 z-50 transition-colors duration-300 bg-white dark:bg-brand-dark border-b border-gray-200 dark:border-brand-border px-4 md:px-6 py-3 md:py-4 flex items-center justify-between shrink-0">
         <div class="flex items-center space-x-4 md:space-x-8">
-          <div id="header-logo" class="flex items-center gap-2" onclick="window.location.href='index.html'" style="cursor:pointer">
+          <div id="header-logo" class="flex items-center gap-2" onclick="window.location.href='dashboard.html'" style="cursor:pointer">
             <img src="assets/fancoin/fanconnactlogo.png" alt="Fanconnact" class="w-7 h-7" />
             <span class="text-base font-bold whitespace-nowrap"><span class="text-fan">Fan</span><span class="text-connect">Connact</span></span>
           </div>
 
           <!-- Desktop Nav -->
           <nav class="hidden xl:flex items-center space-x-6 shrink-0">
-            <a class="text-gray-400 hover:text-brand-green transition-colors font-medium text-sm" href="index.html">Home</a>
+            <a class="text-gray-400 hover:text-brand-green transition-colors font-medium text-sm" href="dashboard.html">Home</a>
             <a class="text-gray-400 hover:text-brand-green transition-colors font-medium text-sm" href="livematches.html">Matches</a>
             <a class="text-gray-400 hover:text-brand-green transition-colors font-medium text-sm" href="prediction.html">Predictions</a>
             <a class="text-gray-400 hover:text-brand-green transition-colors font-medium text-sm" href="leaderboard.html">Leaderboard</a>
@@ -279,6 +279,15 @@
             <span id="theme-toggle-light-icon" class="material-symbols-outlined hidden text-yellow-400">light_mode</span>
             <span id="theme-toggle-dark-icon" class="material-symbols-outlined text-slate-500 dark:text-slate-400">dark_mode</span>
           </button>
+
+          <div id="profile-trigger" onclick="window.location.href='profile.html'" class="flex items-center space-x-2 group relative cursor-pointer shrink-0">
+            <div class="text-right hidden md:block">
+              <p id="user-name-display" class="text-sm font-bold font-headline text-slate-900 dark:text-white"></p>
+              <p id="user-level-display" class="text-[10px] text-slate-500 uppercase tracking-wider"></p>
+            </div>
+            <img id="user-profile-img" alt="User" class="w-6 h-6 sm:w-7 sm:h-7 md:w-10 md:h-10 rounded-full border-2 border-brand-green" src="https://lh3.googleusercontent.com/aida-public/AB6AXuARZ0xVBU1KvcLOf_ZliOHitD78PVSiDr1qlcai6kvG_jn6epDDtgIDvdS6ua2TZqciXhMqDw6mk2eq9wvTp7-B6CfJDv4ojxPvR6jrB2qbta__ofGg1moSqgOm0kQa-hSS3UJMmhiNzN0ATFdKJqevDzCZBACLb1Ku-BrA29W3Oi1vhMGxeiyb4AXGw-ByXo2Tan25gBOd1JgP8rK_7LsKzczbNyat9sSGsL_OhzKBtupfCW9XrnwK6BPAZg3XGBBtd4Ry7pdyfBFG" />
+          </div>
+
           <button id="mobile-logout-btn" class="p-2 hover:bg-error/10 text-error rounded-full transition-all">
             <span class="material-symbols-outlined">logout</span>
           </button>
@@ -287,7 +296,7 @@
 
       <!-- Mobile Sub-Nav (scrollable pills, like news page) -->
       <nav class="xl:hidden flex overflow-x-auto gap-1 sm:gap-2 px-2 py-1.5 sm:px-4 sm:py-2 bg-white dark:bg-brand-dark border-b border-gray-200 dark:border-brand-border scrollbar-none whitespace-nowrap shrink-0" style="-webkit-overflow-scrolling:touch;scrollbar-width:none;">
-        <a href="index.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Home</a>
+        <a href="dashboard.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Home</a>
         <a href="livematches.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Matches</a>
         <a href="prediction.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Predictions</a>
         <a href="leaderboard.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Leaderboard</a>
@@ -1147,7 +1156,7 @@
         if (bd >= now) { v(m, "Cannot be in future", false); return; }
         const rawAge = now.getFullYear() - y;
         const adj = now.getMonth() < (mo - 1) || (now.getMonth() === (mo - 1) && now.getDate() < d) ? rawAge - 1 : rawAge;
-        if (adj < 13) v(m, "Must be 13+", false);
+        if (adj < 6) v(m, "Must be 6+", false);
         else v(m, "", true);
       });
 
@@ -2112,12 +2121,19 @@
         if (selectedDefault) finalPhotoURL = selectedDefault;
         if (croppedBase64Edit) finalPhotoURL = croppedBase64Edit;
 
+        // Convert DD/MM/YYYY -> yyyy-MM-dd before storing to Firestore
+        let dobISO = newDob;
+        if (dobISO && /^\d{2}\/\d{2}\/\d{4}$/.test(dobISO)) {
+          const [dd, mm, yyyy] = dobISO.split('/');
+          dobISO = yyyy + '-' + mm + '-' + dd;
+        }
+
         try {
           await updateProfile(user, { displayName: newFullName });
           const firestoreData = {
             fullName: newFullName, email: newEmail, username: newUsername,
             gender: document.getElementById("profile-detail-gender").value,
-            dob: newDob, mobile: newMobile, location: newLocation, frame: selectedFrame,
+            dob: dobISO, mobile: newMobile, location: newLocation, frame: selectedFrame,
           };
           if (finalPhotoURL) firestoreData.photoURL = finalPhotoURL;
           await setDoc(doc(db, "users", user.uid), firestoreData, { merge: true });
@@ -2171,7 +2187,7 @@
 
       // ── Logout ──
       const logoutHandler = () => {
-        signOut(auth).then(() => (window.location.href = "berforeloginindex.html"));
+        signOut(auth).then(() => (window.location.href = "index.html"));
       };
       document.getElementById("profile-signout-btn")?.addEventListener("click", logoutHandler);
       document.getElementById("mobile-logout-btn")?.addEventListener("click", logoutHandler);

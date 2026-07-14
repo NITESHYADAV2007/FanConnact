@@ -76,6 +76,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Monitor Real Auth State
   onAuthStateChanged(auth, async (user) => {
     currentUser = user;
+    window.currentUser = user;
 
     // Redirect guests from protected pages
     if (!user) {
@@ -83,12 +84,11 @@ document.addEventListener("DOMContentLoaded", () => {
       const page = path.split("/").pop();
       // Pages guests are allowed to see
       const guestAllowedPages = [
-        "berforeloginindex.html",
+        "index.html",
         "login.html",
         "signup.html",
         "news.html",
         "news&update.html",
-        "index.html",
         "cricket.html",
         "football.html",
         "basketball.html",
@@ -100,7 +100,6 @@ document.addEventListener("DOMContentLoaded", () => {
         "kabbaddi.html",
         "e-sports.html",
         "livematches.html",
-        "all-games.html",
         "match-center.html",
         "notification.html",
         "profile.html",
@@ -113,14 +112,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Default landing page for unauthenticated users visiting root or protected pages
       if (page === "" || !guestAllowedPages.includes(page)) {
-        window.location.href = "berforeloginindex.html";
+        window.location.href = "index.html";
         return;
       }
     } else if (user) {
       // User is logged in. Redirect away from landing and auth pages to dashboard.
       const page = window.location.pathname.split("/").pop();
       if (
-        page === "berforeloginindex.html" ||
+        page === "index.html" ||
         page === "login.html"
       ) {
         // Check Firestore emailVerified for OTP-verified users
@@ -136,7 +135,7 @@ document.addEventListener("DOMContentLoaded", () => {
           await signOut(auth);
           return;
         }
-        window.location.href = "index.html";
+        window.location.href = "dashboard.html";
         return;
       }
     }
@@ -1963,7 +1962,7 @@ document.addEventListener("DOMContentLoaded", () => {
       // Define which tabs are accessible without login
       const allowedTabs = ["Home", "News", "News & Updates"];
       const isHomeOrNews =
-        allowedTabs.some((t) => linkText.includes(t)) || href === "index.html";
+        allowedTabs.some((t) => linkText.includes(t)) || href === "dashboard.html";
 
       // Define sport-related pages that require login.
       // This array should include all sport-specific pages and general match pages.
@@ -1990,19 +1989,19 @@ document.addEventListener("DOMContentLoaded", () => {
       if (sportPagesRequiringLogin.some((sport) => linkText.includes(sport))) {
         if (!currentUser) {
           e.preventDefault();
-          window.location.href = "berforeloginindex.html";
+          window.location.href = "index.html";
         }
         return;
       }
 
-      // If guest clicks a link to index.html, redirect to guest landing page instead
-      if (!currentUser && href === "index.html") {
+      // If guest clicks a link to dashboard.html, redirect to landing page instead
+      if (!currentUser && href === "dashboard.html") {
         e.preventDefault();
         if (window.innerWidth < 1024) {
           sidebar?.classList.add("-translate-x-full");
           headerLogo?.classList.remove("hidden");
         }
-        window.location.href = "berforeloginindex.html";
+        window.location.href = "index.html";
         return;
       }
 
@@ -2015,7 +2014,7 @@ document.addEventListener("DOMContentLoaded", () => {
         href !== "signup.html"
       ) {
         e.preventDefault();
-        window.location.href = "berforeloginindex.html";
+        window.location.href = "index.html";
         return;
       }
 
@@ -2051,4 +2050,134 @@ document.addEventListener("DOMContentLoaded", () => {
       headerLogo?.classList.remove("hidden");
     }
   });
+
+  // 8. Search Autocomplete — opens player.html on result click
+  (function() {
+    var searchInput = document.querySelector('input[placeholder="Search teams, matches, players..."]');
+    if (!searchInput) return;
+
+    var wrapper = searchInput.parentElement;
+    wrapper.style.position = "relative";
+    var dropdown = document.createElement("div");
+    dropdown.className = "absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl z-50 max-h-80 overflow-y-auto hidden";
+    wrapper.appendChild(dropdown);
+
+    var playerCache = null;
+    var fetchPromise = null;
+
+    function fetchAllPlayers() {
+      if (fetchPromise) return fetchPromise;
+      playerCache = [];
+      var sports = [
+        { id: "cricket", name: "Cricket" },
+        { id: "football", name: "Football" },
+        { id: "basketball", name: "Basketball" },
+        { id: "tennis", name: "Tennis" },
+        { id: "baseball", name: "Baseball" },
+        { id: "hockey", name: "Hockey" },
+        { id: "volleyball", name: "Volleyball" },
+        { id: "kabbaddi", name: "Kabaddi" },
+        { id: "e-sports", name: "E-Sports" },
+        { id: "table-tennis", name: "Table Tennis" }
+      ];
+      var promises = sports.map(function(s) {
+        return fetch("/api/rankings/" + s.id + "?limit=100")
+          .then(function(r) { return r.json(); })
+          .then(function(data) {
+            if (data && data.players) {
+              data.players.forEach(function(p) {
+                if (p && p.name) {
+                  playerCache.push({
+                    name: p.name,
+                    sport: s.name,
+                    sportId: s.id,
+                    country: p.country || "",
+                    img: p.imgUrl || ""
+                  });
+                }
+              });
+            }
+          })
+          .catch(function() {});
+      });
+      fetchPromise = Promise.all(promises);
+      return fetchPromise;
+    }
+
+    searchInput.addEventListener("input", function() {
+      var query = this.value.trim();
+      if (query.length < 2) {
+        dropdown.classList.add("hidden");
+        return;
+      }
+      fetchAllPlayers().then(function() {
+        if (query !== searchInput.value.trim()) return;
+        var lower = query.toLowerCase();
+        var results = playerCache.filter(function(p) {
+          return p.name.toLowerCase().indexOf(lower) !== -1;
+        });
+        results = results.slice(0, 8);
+        if (results.length === 0) {
+          dropdown.classList.add("hidden");
+          return;
+        }
+        dropdown.innerHTML = "";
+        results.forEach(function(p) {
+          var item = document.createElement("div");
+          item.className = "flex items-center gap-3 px-4 py-2.5 hover:bg-gray-100 dark:hover:bg-white/5 cursor-pointer transition-colors border-b border-gray-100 dark:border-gray-700 last:border-b-0";
+          var img = p.img || "https://ui-avatars.com/api/?name=" + encodeURIComponent(p.name.substring(0, 2)) + "&background=8b5cf6&color=fff&size=40";
+          var detail = p.sport + (p.country ? " • " + p.country : "");
+          item.innerHTML = '<img src="' + img + '" class="w-8 h-8 rounded-full object-cover" onerror="this.src=\'https://ui-avatars.com/api/?name=' + encodeURIComponent(p.name.substring(0, 2)) + '&background=8b5cf6&color=fff&size=40\'"><div class="min-w-0"><div class="text-sm font-bold text-gray-900 dark:text-white truncate">' + p.name + '</div><div class="text-[10px] text-gray-500 truncate">' + detail + '</div></div>';
+          (function(playerName, playerSport) {
+            item.addEventListener("click", function() {
+              openPlayerProfile(playerName, playerSport);
+            });
+          })(p.name, p.sport);
+          dropdown.appendChild(item);
+        });
+        dropdown.classList.remove("hidden");
+      });
+    });
+
+    function openPlayerProfile(playerName, sportName) {
+      var sidMap = {
+        "Cricket": "cricket", "Football": "football", "Basketball": "basketball",
+        "Tennis": "tennis", "Baseball": "baseball", "Hockey": "hockey",
+        "Volleyball": "volleyball", "Kabaddi": "kabbaddi",
+        "E-Sports": "e-sports", "Table Tennis": "table-tennis"
+      };
+      var sid = sidMap[sportName] || "cricket";
+      fetch("/api/rankings/" + sid + "?limit=100")
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (data && data.players) {
+            var found = null;
+            for (var i = 0; i < data.players.length; i++) {
+              if (data.players[i].name && data.players[i].name.toLowerCase() === playerName.toLowerCase()) {
+                found = data.players[i];
+                break;
+              }
+            }
+            if (found) {
+              sessionStorage.setItem("playerSport", sportName);
+              sessionStorage.setItem("playerView", JSON.stringify({ player: found, sport: sportName }));
+              window.location.href = "player.html";
+            }
+          }
+        })
+        .catch(function(e) { console.error("Search nav error", e); });
+    }
+
+    document.addEventListener("click", function(e) {
+      if (!wrapper.contains(e.target)) {
+        dropdown.classList.add("hidden");
+      }
+    });
+
+    searchInput.addEventListener("focus", function() {
+      if (this.value.trim().length >= 2) {
+        this.dispatchEvent(new Event("input", { bubbles: true }));
+      }
+    });
+  })();
 });

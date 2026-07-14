@@ -12,7 +12,14 @@
       document.documentElement.classList.remove('dark');
     }
   </script>
-  <title>FanConnect Dashboard</title>
+  <title>FanConnect Leaderboard</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/fancoin/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/fancoin/favicon-16x16.png" />
+  <meta property="og:site_name" content="Fanconnact" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="assets/fancoin/fanconnactlogo.png" />
+  <meta property="og:title" content="Fanconnact - Leaderboard" />
+  <meta property="og:description" content="Join Fanconnact for fantasy sports, predictions, and live matches." />
   <!-- Tailwind CSS v3 with plugins -->
   <link rel="stylesheet" href="css/tailwind.css" />
   <!-- Google Fonts: Lexend for headlines, Hanken Grotesk for body as per Design System -->
@@ -23,6 +30,11 @@
     href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
     rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .dark .team-cat-btn {
+      border-color: #2A2E35;
+    }
+  </style>
   <style data-purpose="custom-layout-styles">
     body {
       transition: all 0.3s ease;
@@ -137,6 +149,76 @@
       overflow: hidden !important;
     }
 
+    /* Light mode overrides for dark leaderboard cards */
+    body:not(.dark) .bg-\[#060d18\] { background: #ffffff !important; }
+    body:not(.dark) .border-\[#12263f\] { border-color: #e5e7eb !important; }
+    body:not(.dark) #ranking-table-section > div { border: 1px solid #e5e7eb !important; }
+    body:not(.dark) .bg-\[#15253a\] { background: #f3f4f6 !important; }
+    body:not(.dark) #full-leaderboard-container { border-top-color: #e5e7eb !important; }
+    /* rank cards need dark bg so text visible in light mode */
+    #card-rank1, #card-rank2, #card-rank3 { background: rgba(11,14,23,0.85) !important; border-radius: 12px !important; padding: 8px !important; }
+
+    /* ==========================
+       LEADERBOARD RESPONSIVE
+       ========================== */
+    @media (max-width: 768px) {
+      #leaderboard-filter-bar { padding: 10px 12px !important; gap: 6px !important; }
+      #leaderboard-filter-bar > span { font-size: 9px !important; }
+      #leaderboard-filter-bar button { padding: 5px 8px !important; font-size: 10px !important; }
+      #game-filter-wrapper { gap: 4px !important; }
+      #game-filter-wrapper > span { display: none !important; }
+      #game-filter-buttons { gap: 4px !important; flex-wrap: nowrap !important; overflow-x: auto !important; -webkit-overflow-scrolling: touch; }
+      #game-filter-buttons button { flex-shrink: 0 !important; padding: 4px 8px !important; font-size: 10px !important; }
+      main.flex-1 { padding: 0 !important; }
+      div[class*="p-4 lg:p-6"] { padding: 0 !important; }
+      #fan-content { padding: 0 !important; }
+
+      #podiumWrapper { overflow: visible !important; aspect-ratio: auto !important; min-height: 300px !important; }
+      #card-rank1, #card-rank2, #card-rank3 { background: rgba(11,14,23,0.85) !important; border-radius: 12px !important; padding: 8px !important; }
+      #htmlOverlay > div:first-child { padding: 10px !important; }
+      .right-sidebar-section { padding: 14px !important; }
+      .your-rank-card { padding: 14px !important; }
+      #currentRank.text-6xl { font-size: 32px !important; }
+      #totalXP.text-4xl { font-size: 20px !important; }
+      h3.text-2xl { font-size: 16px !important; }
+      .text-xl { font-size: 14px !important; }
+      /* light mode overrides for dark cards */
+      .bg-\[#060d18\] { background: inherit !important; }
+      .border-\[#12263f\] { border-color: inherit !important; }
+      #ranking-table-section > div { border: 1px solid #e5e7eb !important; }
+      .dark #ranking-table-section > div { border-color: #12263f !important; }
+    }
+    @media (max-width: 640px) {
+      header { padding: 10px 12px !important; }
+      #mobile-menu-btn { padding: 6px !important; }
+      #header-logo img { width: 20px !important; height: 20px !important; }
+      #header-logo span { font-size: 13px !important; }
+      #profile-trigger { padding-left: 8px !important; }
+      #profile-trigger img { width: 28px !important; height: 28px !important; }
+      nav.xl\\:hidden { padding: 6px 8px !important; }
+      nav.xl\\:hidden a { font-size: 10px !important; padding: 4px 8px !important; }
+      #ranking-table-section { margin: 0 !important; }
+      #ranking-table-section > div { border-radius: 0 !important; border-left: 0 !important; border-right: 0 !important; }
+      #full-leaderboard-container { max-height: 350px !important; }
+      #team-content { padding: 0 !important; }
+      #team-content > div { padding: 10px !important; }
+      #team-category-tabs { gap: 4px !important; overflow-x: auto !important; flex-wrap: nowrap !important; -webkit-overflow-scrolling: touch; }
+      #team-category-tabs button { flex-shrink: 0 !important; padding: 4px 8px !important; font-size: 10px !important; }
+      table thead th { padding: 8px !important; font-size: 9px !important; }
+      table tbody td { padding: 8px !important; font-size: 11px !important; }
+      table tbody td img { width: 20px !important; height: 14px !important; }
+    }
+    @media (max-width: 480px) {
+      header { padding: 6px 8px !important; }
+      #mobile-menu-btn span { font-size: 20px !important; }
+      button#theme-toggle { padding: 4px !important; }
+      button#theme-toggle span { font-size: 18px !important; }
+      .notification-trigger span { font-size: 18px !important; }
+      .notification-trigger span.absolute { width: 12px !important; height: 12px !important; font-size: 8px !important; }
+      #profile-trigger img { width: 24px !important; height: 24px !important; }
+      #user-name-display { font-size: 11px !important; }
+      #user-level-display { font-size: 8px !important; }
+    }
   </style>
 
 <body
@@ -149,18 +231,14 @@
     <button id="close-sidebar-btn" class="lg:hidden p-2 absolute top-4 right-4 text-slate-500 dark:text-gray-400">
       <span class="material-symbols-outlined">close</span>
     </button>
-    <div class="p-6 flex items-center gap-3 logo-container">
-
-      <img src="assets/logo.png" alt="FanConnect Logo" class="w-12 h-12 object-contain rounded-xl">
-
-      <h1 class="text-xl font-bold text-brand-green">
-        Fan<span class="text-emerald-400">Connact</span>
-      </h1>
+    <div class="p-6 flex items-center space-x-2 logo-container">
+      <img src="assets/fancoin/fanconnactlogo.png" alt="Fanconnact" class="w-8 h-8 flex-shrink-0" />
+      <span class="text-xl font-bold tracking-tight font-headline logo-text"><span class="text-fan">Fan</span><span class="text-connect">Connact</span></span>
     </div>
 
     <nav class="flex-1 px-4 space-y-1 mt-2 transition-all">
       <h3 class="text-xs font-bold text-slate-500 dark:text-gray-300 uppercase tracking-wider mb-4 px-3">MENU</h3>
-      <a class="flex items-center space-x-3 px-3 py-2 rounded-lg nav-link transition-colors text-slate-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800" href="index.html">
+      <a class="flex items-center space-x-3 px-3 py-2 rounded-lg nav-link transition-colors text-slate-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800" href="dashboard.html">
         <span class="material-symbols-outlined text-xl">home</span>
         <span class="text-sm nav-text">Home</span>
       </a>
@@ -177,7 +255,7 @@
       <div class="h-px bg-gray-200 dark:bg-brand-border my-4 mx-2"></div>
 
       <a class="flex items-center space-x-3 px-3 py-2 rounded-lg nav-link transition-colors text-slate-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-        href="profile.html">
+        href="top-players.html">
         <span class="material-symbols-outlined text-xl">person_pin</span>
         <span class="text-sm nav-text">Player Zone</span>
       </a>
@@ -229,22 +307,19 @@
       class="sticky top-0 z-50 transition-colors duration-300 bg-white dark:bg-black border-b border-gray-200 dark:border-border-subtle px-4 md:px-8 py-4 flex items-center justify-between"
     >
       <div class="flex items-center space-x-4 md:space-x-12">
-        <button
-          class="text-gray-400 hover:text-emerald-accent lg:hidden"
-          id="mobile-menu-btn"
-        >
+        <button id="mobile-menu-btn" class="p-2 text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 rounded-lg transition-colors shrink-0">
           <span class="material-symbols-outlined">menu</span>
         </button>
 
-        <div id="header-logo" class="flex items-center gap-2 ml-2">
-          <img src="assets/fancoin/fanconnactlogo.png" alt="Fanconnact" class="w-7 h-7" />
-          <span class="text-base font-bold whitespace-nowrap"><span class="text-fan">Fan</span><span class="text-connect">Connact</span></span>
+        <div id="header-logo" class="lg:hidden flex items-center gap-1 sm:gap-2 ml-1 sm:ml-2">
+          <img src="assets/fancoin/fanconnactlogo.png" alt="Fanconnact" class="w-6 h-6 sm:w-7 sm:h-7" />
+          <span class="text-sm sm:text-base font-bold whitespace-nowrap"><span class="text-fan">Fan</span><span class="text-connect">Connact</span></span>
         </div>
 
         <nav class="hidden xl:flex items-center space-x-6 mx-6 shrink-0">
-          <a class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link" href="index.html">Home</a>
+          <a class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link" href="dashboard.html">Home</a>
           <a class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link" href="livematches.html">Matches</a>
-          <a class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link" href="index.html">Predictions</a>
+          <a class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link" href="prediction.html">Predictions</a>
           <a class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link" href="leaderboard.html">Leaderboard</a>
           <a class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link" href="news&update.html">News</a>
         </nav>
@@ -274,9 +349,9 @@
 
     <!-- Mobile Sub-Nav -->
     <nav class="xl:hidden flex overflow-x-auto gap-1 sm:gap-2 px-2 py-1.5 sm:px-4 sm:py-2.5 bg-white dark:bg-black border-b border-gray-200 dark:border-border-subtle scrollbar-none whitespace-nowrap" style="-webkit-overflow-scrolling:touch;scrollbar-width:none;">
-      <a href="index.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Home</a>
+      <a href="dashboard.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Home</a>
       <a href="livematches.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Matches</a>
-      <a href="index.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Predictions</a>
+      <a href="prediction.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Predictions</a>
       <a href="leaderboard.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Leaderboard</a>
       <a href="news&update.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">News</a>
     </nav>
@@ -290,15 +365,15 @@
         <span class="text-[10px] sm:text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider ml-2">Game:</span>
         <div class="flex flex-wrap gap-1.5" id="game-filter-buttons">
           <button class="game-filter-btn px-3 py-1 text-xs font-medium rounded-lg border transition-all active-filter bg-emerald-500 text-white border-emerald-500" data-game="cricket">Cricket</button>
-          <button class="game-filter-btn px-3 py-1 text-xs font-medium rounded-lg border transition-all bg-white dark:bg-black text-gray-600 dark:text-gray-300 border-border-subtle hover:border-emerald-accent" data-game="football">Football</button>
-          <button class="game-filter-btn px-3 py-1 text-xs font-medium rounded-lg border transition-all bg-white dark:bg-black text-gray-600 dark:text-gray-300 border-border-subtle hover:border-emerald-accent" data-game="basketball">Basketball</button>
-          <button class="game-filter-btn px-3 py-1 text-xs font-medium rounded-lg border transition-all bg-white dark:bg-black text-gray-600 dark:text-gray-300 border-border-subtle hover:border-emerald-accent" data-game="tennis">Tennis</button>
-          <button class="game-filter-btn px-3 py-1 text-xs font-medium rounded-lg border transition-all bg-white dark:bg-black text-gray-600 dark:text-gray-300 border-border-subtle hover:border-emerald-accent" data-game="hockey">Hockey</button>
-          <button class="game-filter-btn px-3 py-1 text-xs font-medium rounded-lg border transition-all bg-white dark:bg-black text-gray-600 dark:text-gray-300 border-border-subtle hover:border-emerald-accent" data-game="kabaddi">Kabaddi</button>
-          <button class="game-filter-btn px-3 py-1 text-xs font-medium rounded-lg border transition-all bg-white dark:bg-black text-gray-600 dark:text-gray-300 border-border-subtle hover:border-emerald-accent" data-game="e-sports">E-Sports</button>
-          <button class="game-filter-btn px-3 py-1 text-xs font-medium rounded-lg border transition-all bg-white dark:bg-black text-gray-600 dark:text-gray-300 border-border-subtle hover:border-emerald-accent" data-game="baseball">Baseball</button>
-          <button class="game-filter-btn px-3 py-1 text-xs font-medium rounded-lg border transition-all bg-white dark:bg-black text-gray-600 dark:text-gray-300 border-border-subtle hover:border-emerald-accent" data-game="volleyball">Volleyball</button>
-          <button class="game-filter-btn px-3 py-1 text-xs font-medium rounded-lg border transition-all bg-white dark:bg-black text-gray-600 dark:text-gray-300 border-border-subtle hover:border-emerald-accent" data-game="table-tennis">Table Tennis</button>
+          <button class="game-filter-btn px-3 py-1 text-xs font-medium rounded-lg border transition-all bg-white dark:bg-black text-gray-600 dark:text-gray-300 border-gray-300 dark:border-border-subtle hover:border-emerald-accent" data-game="football">Football</button>
+          <button class="game-filter-btn px-3 py-1 text-xs font-medium rounded-lg border transition-all bg-white dark:bg-black text-gray-600 dark:text-gray-300 border-gray-300 dark:border-border-subtle hover:border-emerald-accent" data-game="basketball">Basketball</button>
+          <button class="game-filter-btn px-3 py-1 text-xs font-medium rounded-lg border transition-all bg-white dark:bg-black text-gray-600 dark:text-gray-300 border-gray-300 dark:border-border-subtle hover:border-emerald-accent" data-game="tennis">Tennis</button>
+          <button class="game-filter-btn px-3 py-1 text-xs font-medium rounded-lg border transition-all bg-white dark:bg-black text-gray-600 dark:text-gray-300 border-gray-300 dark:border-border-subtle hover:border-emerald-accent" data-game="hockey">Hockey</button>
+          <button class="game-filter-btn px-3 py-1 text-xs font-medium rounded-lg border transition-all bg-white dark:bg-black text-gray-600 dark:text-gray-300 border-gray-300 dark:border-border-subtle hover:border-emerald-accent" data-game="kabaddi">Kabaddi</button>
+          <button class="game-filter-btn px-3 py-1 text-xs font-medium rounded-lg border transition-all bg-white dark:bg-black text-gray-600 dark:text-gray-300 border-gray-300 dark:border-border-subtle hover:border-emerald-accent" data-game="e-sports">E-Sports</button>
+          <button class="game-filter-btn px-3 py-1 text-xs font-medium rounded-lg border transition-all bg-white dark:bg-black text-gray-600 dark:text-gray-300 border-gray-300 dark:border-border-subtle hover:border-emerald-accent" data-game="baseball">Baseball</button>
+          <button class="game-filter-btn px-3 py-1 text-xs font-medium rounded-lg border transition-all bg-white dark:bg-black text-gray-600 dark:text-gray-300 border-gray-300 dark:border-border-subtle hover:border-emerald-accent" data-game="volleyball">Volleyball</button>
+          <button class="game-filter-btn px-3 py-1 text-xs font-medium rounded-lg border transition-all bg-white dark:bg-black text-gray-600 dark:text-gray-300 border-gray-300 dark:border-border-subtle hover:border-emerald-accent" data-game="table-tennis">Table Tennis</button>
         </div>
       </div>
     </div>
@@ -312,7 +387,7 @@
 
           <div class="w-full max-w-[850px] mx-auto px-2 sm:px-4">
             <div
-              class="relative w-full bg-[#16191E] rounded-2xl border border-[#2A2E35] shadow-2xl overflow-hidden aspect-[14/10] sm:aspect-[16/10] md:aspect-[16/9]"
+              class="relative w-full bg-[#0B0E11] rounded-2xl border border-[#2A2E35] shadow-2xl overflow-hidden aspect-[14/10] sm:aspect-[16/10] md:aspect-[16/9]"
               id="podiumWrapper">
 
               <canvas id="podiumCanvas" class="absolute inset-0 w-full h-full z-0 pointer-events-none"></canvas>
@@ -612,149 +687,8 @@
                 <div class="col-span-3">Level</div>
                 <div class="col-span-3 text-right">XP</div>
               </div> <!-- Row 4 -->
-              <div class="border-b border-[#0f1d30]">
-                <!-- Mobile Header -->
-<div class="md:hidden grid grid-cols-[50px_1fr_90px]
-            px-4 py-3
-            text-[11px]
-            font-semibold
-            text-slate-400
-            border-b border-[#12263f]">
-    <div>Rank</div>
-    <div>User &  Level</div>
-    <div class="text-right">XP</div>
-
-</div>
-                <!-- Desktop -->
-                <div class="hidden md:grid grid-cols-12 items-center px-6 py-4 hover:bg-[#091321] transition">
-                  <div class="col-span-1 text-white font-semibold">4</div>
-
-                  <div class="col-span-5 flex items-center gap-3">
-                    <img src="https://i.pravatar.cc/100?img=12" class="w-10 h-10 rounded-full">
-                    <span class="text-white">CSK_Rider</span>
-                  </div>
-
-                  <div class="col-span-3">
-                    <span class="bg-[#23153e] text-purple-300 px-3 py-1 rounded-lg text-sm">
-                      Level 15
-                    </span>
-                  </div>
-
-                  <div class="col-span-3 text-right text-white font-semibold">
-                    7,450 XP
-                  </div>
-                </div>
-
-                <!-- Mobile -->
-                <div class="md:hidden p-4">
-                  <div class="flex items-center gap-3">
-                    <div class="text-white font-bold">#4</div>
-
-                    <img src="https://i.pravatar.cc/100?img=12" class="w-10 h-10 rounded-full">
-
-                    <div class="flex-1">
-                      <div class="text-white font-medium">CSK_Rider</div>
-
-                      <div class="flex justify-between mt-1">
-                        <span class="bg-[#23153e] text-purple-300 px-2 py-1 rounded text-xs">
-                          Level 15
-                        </span>
-
-                        <span class="text-white font-semibold">
-                          7,450 XP
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-              </div> <!-- Row 5 -->
-              <div class="border-b border-[#0f1d30]">
-                <div class="hidden md:grid grid-cols-12 items-center px-6 py-4 hover:bg-[#091321] transition">
-                  <div class="col-span-1 text-white font-semibold">5</div>
-
-                  <div class="col-span-5 flex items-center gap-3">
-                    <img src="https://i.pravatar.cc/100?img=20" class="w-10 h-10 rounded-full">
-                    <span class="text-white">BlueArmy</span>
-                  </div>
-
-                  <div class="col-span-3">
-                    <span class="bg-[#23153e] text-purple-300 px-3 py-1 rounded-lg text-sm">
-                      Level 14
-                    </span>
-                  </div>
-
-                  <div class="col-span-3 text-right text-white font-semibold">
-                    6,980 XP
-                  </div>
-                </div>
-
-                <div class="md:hidden p-4">
-                  <div class="flex items-center gap-3">
-                    <div class="text-white font-bold">#5</div>
-
-                    <img src="https://i.pravatar.cc/100?img=20" class="w-10 h-10 rounded-full">
-
-                    <div class="flex-1">
-                      <div class="text-white font-medium">BlueArmy</div>
-
-                      <div class="flex justify-between mt-1">
-                        <span class="bg-[#23153e] text-purple-300 px-2 py-1 rounded text-xs">
-                          Level 14
-                        </span>
-
-                        <span class="text-white font-semibold">
-                          6,980 XP
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-              </div> <!-- Row 6 -->
-              <div class="border-b border-[#0f1d30]">
-                <div class="hidden md:grid grid-cols-12 items-center px-6 py-4 hover:bg-[#091321] transition">
-                  <div class="col-span-1 text-white font-semibold">6</div>
-
-                  <div class="col-span-5 flex items-center gap-3">
-                    <img src="https://i.pravatar.cc/100?img=15" class="w-10 h-10 rounded-full">
-                    <span class="text-white">RohitFan_45</span>
-                  </div>
-
-                  <div class="col-span-3">
-                    <span class="bg-[#23153e] text-purple-300 px-3 py-1 rounded-lg text-sm">
-                      Level 14
-                    </span>
-                  </div>
-
-                  <div class="col-span-3 text-right text-white font-semibold">
-                    6,250 XP
-                  </div>
-                </div>
-
-                <div class="md:hidden p-4">
-                  <div class="flex items-center gap-3">
-                    <div class="text-white font-bold">#6</div>
-
-                    <img src="https://i.pravatar.cc/100?img=15" class="w-10 h-10 rounded-full">
-
-                    <div class="flex-1">
-                      <div class="text-white font-medium">RohitFan_45</div>
-
-                      <div class="flex justify-between mt-1">
-                        <span class="bg-[#23153e] text-purple-300 px-2 py-1 rounded text-xs">
-                          Level 14
-                        </span>
-
-                        <span class="text-white font-semibold">
-                          6,250 XP
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-              </div> <!-- Your Row -->
+              <div id="leaderboard-rows-4-6"></div>
+              <!-- Your Row -->
               <div class="bg-green-500/10 border border-green-500/20">
                 <div class="hidden md:grid grid-cols-12 items-center px-6 py-5">
                   <div class="col-span-1 text-green-400 font-bold text-xl">
@@ -830,10 +764,12 @@
 
               </div> 
               <!-- Button -->
-              <a href="leaderboard.html"
-class="w-full flex items-center justify-center rounded-xl border border-purple-500/40 text-purple-300 py-3 hover:bg-purple-500/10 transition">
+              <button onclick="toggleFullLeaderboard()"
+class="w-full flex items-center justify-center rounded-xl border border-purple-500/40 text-purple-300 py-3 hover:bg-purple-500/10 transition" id="full-lb-btn">
     View Full Leaderboard →
-</a>
+</button>
+              <!-- Full Leaderboard Container (hidden by default) -->
+              <div id="full-leaderboard-container" class="hidden max-h-[500px] overflow-y-auto custom-scrollbar border-t border-[#12263f]"></div>
             </div>
 
           </div>
@@ -894,134 +830,7 @@ class="w-full flex items-center justify-center rounded-xl border border-purple-5
         </span>
     </h3>
 
-    <div class="space-y-4" id="topEarnersList">
-
-        <!-- 1 -->
-        <div class="flex items-center justify-between">
-
-            <div class="flex items-center gap-3">
-
-                <span class="text-slate-400 w-4">
-                    1
-                </span>
-
-                <img
-                src="https://i.pravatar.cc/100?img=12"
-                class="w-10 h-10 rounded-full">
-
-                <span class="text-white">
-                    MI_Army
-                </span>
-
-            </div>
-
-            <span class="text-[#f7c948] font-semibold">
-                2,450 XP
-            </span>
-
-        </div>
-
-        <!-- 2 -->
-        <div class="flex items-center justify-between">
-
-            <div class="flex items-center gap-3">
-
-                <span class="text-slate-400 w-4">
-                    2
-                </span>
-
-                <img
-                src="https://i.pravatar.cc/100?img=20"
-                class="w-10 h-10 rounded-full">
-
-                <span class="text-white">
-                    CricketKing
-                </span>
-
-            </div>
-
-            <span class="text-[#f7c948] font-semibold">
-                2,150 XP
-            </span>
-
-        </div>
-
-        <!-- 3 -->
-        <div class="flex items-center justify-between">
-
-            <div class="flex items-center gap-3">
-
-                <span class="text-slate-400 w-4">
-                    3
-                </span>
-
-                <img
-                src="https://i.pravatar.cc/100?img=15"
-                class="w-10 h-10 rounded-full">
-
-                <span class="text-white">
-                    Virat18
-                </span>
-
-            </div>
-
-            <span class="text-[#f7c948] font-semibold">
-                1,890 XP
-            </span>
-
-        </div>
-
-        <!-- 4 -->
-        <div class="flex items-center justify-between">
-
-            <div class="flex items-center gap-3">
-
-                <span class="text-slate-400 w-4">
-                    4
-                </span>
-
-                <img
-                src="https://i.pravatar.cc/100?img=33"
-                class="w-10 h-10 rounded-full">
-
-                <span class="text-white">
-                    CSK_Rider
-                </span>
-
-            </div>
-
-            <span class="text-[#f7c948] font-semibold">
-                1,620 XP
-            </span>
-
-        </div>
-
-        <!-- 5 -->
-        <div class="flex items-center justify-between">
-
-            <div class="flex items-center gap-3">
-
-                <span class="text-slate-400 w-4">
-                    5
-                </span>
-
-                <img
-                src="https://i.pravatar.cc/100?img=8"
-                class="w-10 h-10 rounded-full">
-
-                <span class="text-white">
-                    BlueArmy
-                </span>
-
-            </div>
-
-            <span class="text-[#f7c948] font-semibold">
-                1,450 XP
-            </span>
-
-        </div>
-
-    </div>
+    <div class="space-y-4" id="topEarnersList"></div>
 
     <!-- Button -->
 
@@ -1053,11 +862,11 @@ class="w-full flex items-center justify-center rounded-xl border border-purple-5
         <!-- Category Tabs -->
         <div class="flex items-center gap-2 mb-6" id="team-category-tabs"></div>
         <!-- Team Table -->
-        <div class="bg-[#16191E] border border-[#2A2E35] rounded-xl overflow-hidden">
+        <div class="bg-white dark:bg-black border border-gray-200 dark:border-[#2A2E35] rounded-xl overflow-hidden">
           <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse" id="team-table">
-              <thead class="bg-black/40 border-b border-[#2A2E35]">
-                <tr class="text-gray-400 text-xs uppercase tracking-wider font-semibold">
+              <thead class="bg-gray-50 dark:bg-black/40 border-b border-gray-200 dark:border-[#2A2E35]">
+                <tr class="text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider font-semibold">
                   <th class="px-4 py-4 w-16">Rank</th>
                   <th class="px-4 py-4">Team</th>
                   <th class="px-4 py-4 text-center">Format</th>
@@ -1077,12 +886,24 @@ class="w-full flex items-center justify-center rounded-xl border border-purple-5
 
   </main>
   <script src="js/leaderboard.js"></script>
+  <script src="js/team-rankings-data.js"></script>
   <script type="module" src="js/script.js"></script>
   <script>
-    const API_BASE = 'http://localhost:3001';
-    let currentTeamSport = 'cricket';
-    let currentTeamCategory = 'ODI';
+    const SPORT_ALIASES = { 'tabletennis':'tennis', 'table-tennis':'tennis', 'badminton':'tennis', 'rugby':'football' };
+    const initGameFromUrl = new URLSearchParams(window.location.search).get('game');
+    let currentTeamSport = initGameFromUrl ? (SPORT_ALIASES[initGameFromUrl] || (initGameFromUrl === 'e-sports' ? 'esports' : initGameFromUrl)) : 'cricket';
+    let currentTeamCategory = null;
+    let teamData = null;
     let teamSports = [];
+
+    function getTeamSportsFromData() {
+      return Object.entries(teamData).map(([id, val]) => ({
+        id,
+        label: val.label,
+        icon: val.icon,
+        categories: val.categories
+      }));
+    }
 
     // Init: load team data since Team mode is default
     loadTeamSports();
@@ -1114,16 +935,70 @@ class="w-full flex items-center justify-center rounded-xl border border-purple-5
       });
     });
 
+    let usingBackendForTeams = false;
+
     async function loadTeamSports() {
       try {
-        const res = await fetch(API_BASE + '/api/leaderboard');
-        const data = await res.json();
-        teamSports = data.sports;
+        const res = await fetch('http://localhost:3001/api/leaderboard', { signal: AbortSignal.timeout(3000) });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.sports && data.sports.length) {
+            teamSports = data.sports;
+            teamData = {};
+            teamSports.forEach(s => { teamData[s.id] = s; });
+            usingBackendForTeams = true;
+            renderTeamCategories();
+            loadTeamRankings();
+            if (data._lastSync) {
+              const el = document.createElement('div');
+              el.className = 'text-[10px] text-gray-500 dark:text-gray-400 text-center mt-2';
+              el.innerHTML = 'Last updated: ' + new Date(data._lastSync).toLocaleString() + ' <button onclick="refreshTeamData()" class="text-emerald-400 hover:text-emerald-300 underline ml-2">Refresh</button>';
+              document.getElementById('team-content').querySelector('.max-w-6xl').appendChild(el);
+            }
+            return;
+          }
+        }
+      } catch {}
+      // Fallback to inline data (works with file:// protocol)
+      if (typeof TEAM_RANKINGS_DATA !== 'undefined') {
+        teamData = TEAM_RANKINGS_DATA;
+        teamSports = getTeamSportsFromData();
+        // Set category from sport data if not already set
+        const curSport = teamSports.find(s => s.id === currentTeamSport);
+        if (curSport) {
+          if (!currentTeamCategory || !curSport.categories.includes(currentTeamCategory)) {
+            currentTeamCategory = curSport.categories[0];
+          }
+        }
         renderTeamCategories();
         loadTeamRankings();
-      } catch (e) {
-        document.getElementById('team-table-body').innerHTML = '<tr><td colspan="8" class="px-4 py-12 text-center text-gray-500">Server unreachable. Start the backend.</td></tr>';
+        if (initGameFromUrl) {
+          const gameBtn = document.querySelector(`.game-filter-btn[data-game="${initGameFromUrl}"]`);
+          if (gameBtn) {
+            document.querySelectorAll('.game-filter-btn').forEach(b => {
+              b.classList.remove('active-filter', 'bg-emerald-500', 'text-white', 'border-emerald-500');
+              b.classList.add('bg-white', 'dark:bg-black', 'text-gray-600', 'dark:text-gray-300', 'border-border-subtle');
+            });
+            gameBtn.classList.add('active-filter', 'bg-emerald-500', 'text-white', 'border-emerald-500');
+            gameBtn.classList.remove('bg-white', 'dark:bg-black', 'text-gray-600', 'dark:text-gray-300', 'border-border-subtle');
+          }
+        }
+      } else {
+        document.getElementById('team-table-body').innerHTML = '<tr><td colspan="8" class="px-4 py-12 text-center text-gray-500">Team rankings data not available.</td></tr>';
       }
+    }
+
+    function refreshTeamData() {
+      if (usingBackendForTeams) {
+        fetch('http://localhost:3001/api/sync/trigger', { method: 'POST', signal: AbortSignal.timeout(3000) }).catch(() => {});
+      }
+      setTimeout(function() {
+        if (usingBackendForTeams) {
+          loadTeamSports();
+        } else {
+          loadTeamRankings();
+        }
+      }, 1000);
     }
 
     function renderTeamCategories() {
@@ -1131,7 +1006,7 @@ class="w-full flex items-center justify-center rounded-xl border border-purple-5
       const sport = teamSports.find(s => s.id === currentTeamSport);
       if (!sport) return;
       container.innerHTML = sport.categories.map(c => `
-        <button onclick="switchTeamCategory('${c}')" class="team-cat-btn px-4 py-1.5 rounded-lg text-xs font-semibold border transition-all ${c === currentTeamCategory ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500' : 'bg-transparent text-gray-500 border-[#2A2E35] hover:border-emerald-500'}" data-cat="${c}">
+        <button onclick="switchTeamCategory('${c}')" class="team-cat-btn px-4 py-1.5 rounded-lg text-xs font-semibold border transition-all ${c === currentTeamCategory ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500' : 'bg-transparent text-gray-500 dark:text-gray-500 border-gray-300 dark:border-[#2A2E35] hover:border-emerald-500'}" data-cat="${c}">
           ${c}
         </button>
       `).join('');
@@ -1141,11 +1016,11 @@ class="w-full flex items-center justify-center rounded-xl border border-purple-5
       currentTeamCategory = cat;
       document.querySelectorAll('.team-cat-btn').forEach(b => {
         b.classList.remove('bg-emerald-500/20', 'text-emerald-400', 'border-emerald-500');
-        b.classList.add('bg-transparent', 'text-gray-500', 'border-[#2A2E35]');
+        b.classList.add('bg-transparent', 'text-gray-500', 'border-gray-300');
       });
       const btn = document.querySelector(`.team-cat-btn[data-cat="${cat}"]`);
       if (btn) {
-        btn.classList.remove('bg-transparent', 'text-gray-500', 'border-[#2A2E35]');
+        btn.classList.remove('bg-transparent', 'text-gray-500', 'border-gray-300');
         btn.classList.add('bg-emerald-500/20', 'text-emerald-400', 'border-emerald-500');
       }
       loadTeamRankings();
@@ -1155,41 +1030,48 @@ class="w-full flex items-center justify-center rounded-xl border border-purple-5
       const body = document.getElementById('team-table-body');
       body.innerHTML = '<tr><td colspan="8" class="px-4 py-12 text-center"><div class="inline-block w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div><p class="text-gray-500 mt-2 text-sm">Loading...</p></td></tr>';
       try {
-        const res = await fetch(API_BASE + '/api/leaderboard/' + currentTeamSport + '/' + currentTeamCategory);
-        const data = await res.json();
-        if (!data.rankings || !data.rankings.length) {
+        if (!teamData || !teamData[currentTeamSport]) {
+          body.innerHTML = '<tr><td colspan="8" class="px-4 py-12 text-center text-gray-500">No rankings found for this sport</td></tr>';
+          return;
+        }
+        const rankings = teamData[currentTeamSport].rankings[currentTeamCategory];
+        if (!rankings || !rankings.length) {
           body.innerHTML = '<tr><td colspan="8" class="px-4 py-12 text-center text-gray-500">No rankings found</td></tr>';
           return;
         }
-        body.innerHTML = data.rankings.map(item => {
-          let trendHtml = '<span class="text-gray-500">—</span>';
-          if (item.trend === 'up') trendHtml = `<span class="material-symbols-outlined text-emerald-400 text-sm">arrow_upward</span><span class="text-emerald-400 text-xs font-bold ml-0.5">${item.trendVal}</span>`;
-          else if (item.trend === 'down') trendHtml = `<span class="material-symbols-outlined text-red-400 text-sm">arrow_downward</span><span class="text-red-400 text-xs font-bold ml-0.5">${item.trendVal}</span>`;
-          const medal = item.rank === 1 ? '🥇' : item.rank === 2 ? '🥈' : item.rank === 3 ? '🥉' : '';
-          return `
-            <tr class="border-b border-[#2A2E35] hover:bg-white/5 transition-colors">
-              <td class="px-4 py-4 text-white font-bold text-sm">${medal || item.rank}</td>
-              <td class="px-4 py-4">
-                <div class="flex items-center gap-3">
-                  <img src="${item.flag}" alt="${item.team}" class="w-7 h-4.5 object-cover rounded border border-gray-700">
-                  <span class="text-white font-medium text-sm">${item.team}</span>
-                  <span class="text-gray-500 text-xs uppercase">${item.code}</span>
-                </div>
-              </td>
-              <td class="px-4 py-4 text-center"><span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-blue-900/40 text-blue-400">${currentTeamCategory}</span></td>
-              <td class="px-4 py-4 text-center text-gray-300 text-sm">${item.matches}</td>
-              <td class="px-4 py-4 text-center text-gray-300 text-sm">${item.wins}</td>
-              <td class="px-4 py-4 text-center text-gray-300 text-sm">${typeof item.winPct === 'number' ? item.winPct.toFixed(2) + '%' : item.winPct}</td>
-              <td class="px-4 py-4 text-right text-emerald-400 font-bold text-sm">${item.rating}</td>
-              <td class="px-4 py-4"><div class="flex items-center justify-center gap-0.5">${trendHtml}</div></td>
-            </tr>`;
+        body.innerHTML = rankings.map(function(item) {
+          if (!item) return '';
+          var trendHtml = '<span class="text-gray-500">—</span>';
+          if (item.trend === 'up') trendHtml = '<span class="material-symbols-outlined text-emerald-400 text-sm">arrow_upward</span><span class="text-emerald-400 text-xs font-bold ml-0.5">' + (item.trendVal||'') + '</span>';
+          else if (item.trend === 'down') trendHtml = '<span class="material-symbols-outlined text-red-400 text-sm">arrow_downward</span><span class="text-red-400 text-xs font-bold ml-0.5">' + (item.trendVal||'') + '</span>';
+          var medal = item.rank === 1 ? '🥇' : item.rank === 2 ? '🥈' : item.rank === 3 ? '🥉' : '';
+          var sportPage = ({ 'esports':'e-sports', 'kabaddi':'kabbaddi', 'volleyball':'vollyeball' })[currentTeamSport] || currentTeamSport;
+          return '<tr class="border-b border-gray-200 dark:border-[#2A2E35] hover:bg-gray-50 dark:hover:bg-white/5 transition-colors cursor-pointer" onclick="window.location.href=\'' + sportPage + '.html\'"><td class="px-4 py-4 text-gray-900 dark:text-white font-bold text-sm">' + (medal || item.rank) + '</td><td class="px-4 py-4"><div class="flex items-center gap-3"><img src="' + (item.flag||'') + '" alt="' + (item.team||'') + '" class="w-7 h-4.5 object-cover rounded border border-gray-300 dark:border-gray-700" onerror="this.outerHTML=\'<span class=\\\'inline-flex items-center justify-center w-7 h-4.5 rounded bg-gray-200 dark:bg-gray-700 text-[8px] font-bold text-gray-500\\\'>' + ((item.code||item.team||'?').substring(0,3).toUpperCase()) + '</span>\'"><span class="text-gray-900 dark:text-white font-medium text-sm">' + (item.team||'') + '</span><span class="text-gray-500 text-xs uppercase">' + (item.code||'') + '</span></div></td><td class="px-4 py-4 text-center"><span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400">' + (currentTeamCategory||'') + '</span></td><td class="px-4 py-4 text-center text-gray-600 dark:text-gray-300 text-sm">' + (item.matches||0) + '</td><td class="px-4 py-4 text-center text-gray-600 dark:text-gray-300 text-sm">' + (item.wins||0) + '</td><td class="px-4 py-4 text-center text-gray-600 dark:text-gray-300 text-sm">' + (typeof item.winPct === 'number' ? item.winPct.toFixed(2) + '%' : (item.winPct||'—')) + '</td><td class="px-4 py-4 text-right text-emerald-600 dark:text-emerald-400 font-bold text-sm">' + (item.rating||'') + '</td><td class="px-4 py-4"><div class="flex items-center justify-center gap-0.5">' + trendHtml + '</div></td></tr>';
         }).join('');
       } catch (e) {
-        body.innerHTML = '<tr><td colspan="8" class="px-4 py-12 text-center text-red-400">Failed to load. Start the backend server.</td></tr>';
+        body.innerHTML = '<tr><td colspan="8" class="px-4 py-12 text-center text-red-400">Failed to load team rankings.</td></tr>';
       }
     }
 
     // Game filter buttons now load team rankings
+    function switchTeamGame(game) {
+      const mappedSport = SPORT_ALIASES[game] || (game === 'e-sports' ? 'esports' : game);
+      if (teamSports.length === 0) {
+        setTimeout(function() { switchTeamGame(game); }, 200);
+        return;
+      }
+      const sport = teamSports.find(s => s.id === mappedSport);
+      if (sport) {
+        currentTeamSport = mappedSport;
+        currentTeamCategory = sport.categories[0];
+        renderTeamCategories();
+        loadTeamRankings();
+      } else {
+        const body = document.getElementById('team-table-body');
+        if (body) body.innerHTML = '<tr><td colspan="8" class="px-4 py-12 text-center text-gray-500">No ranking data available for ' + game + '</td></tr>';
+      }
+    }
+
     document.querySelectorAll('.game-filter-btn').forEach(btn => {
       btn.addEventListener('click', function() {
         document.querySelectorAll('.game-filter-btn').forEach(b => {
@@ -1201,22 +1083,14 @@ class="w-full flex items-center justify-center rounded-xl border border-purple-5
         
         const mode = document.querySelector('.filter-mode-btn.active-filter');
         if (mode && mode.dataset.mode === 'team') {
-          const game = this.dataset.game;
-          const mappedSport = game === 'e-sports' ? 'esports' : game;
-          if (teamSports.length > 0) {
-            const sport = teamSports.find(s => s.id === mappedSport);
-            if (sport) {
-              currentTeamSport = mappedSport;
-              currentTeamCategory = sport.categories[0];
-              renderTeamCategories();
-              loadTeamRankings();
-            }
-          }
+          switchTeamGame(this.dataset.game);
         }
       });
     });
   </script>
+
+  <script src="js/theme.js"></script>
   <script src="js/sidebar.js"></script>
-</body>
+<script src="js/notif-ws.js"></script></body>
 
 </html>

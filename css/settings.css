@@ -177,6 +177,20 @@ THEME CARDS
   cursor: pointer;
 }
 
+@media (max-width: 600px) {
+  .theme-item {
+    width: 180px;
+    height: 140px;
+  }
+}
+
+@media (max-width: 400px) {
+  .theme-item {
+    width: 150px;
+    height: 120px;
+  }
+}
+
 .theme-item:hover {
   transform: translateY(-6px);
 
