@@ -1,0 +1,1222 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <script>
+    if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  </script>
+  <title>FanConnect Dashboard</title>
+  <!-- Tailwind CSS v3 with plugins -->
+  <link rel="stylesheet" href="css/tailwind.css" />
+  <!-- Google Fonts: Lexend for headlines, Hanken Grotesk for body as per Design System -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;family=Hanken+Grotesk:wght@300;400;500;600;700&amp;display=swap"
+    rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style data-purpose="custom-layout-styles">
+    body {
+      transition: all 0.3s ease;
+      font-family: "Hanken Grotesk", sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    .dark body {
+      background-color: #0B0E11;
+      color: #ffffff;
+    }
+
+    .light body {
+      background-color: #F8F9FF;
+      color: #0f172a;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      border-radius: 0.25rem;
+    }
+
+    .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+      background-color: #2A2E35;
+    }
+
+    .light .custom-scrollbar::-webkit-scrollbar-thumb {
+      background-color: #d1d5db;
+    }
+
+    .glow-green {
+      box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
+    }
+
+    .hero-gradient {
+      background-image: linear-gradient(rgba(11, 14, 17, 0.3), rgba(11, 14, 17, 0.6));
+      background-size: cover;
+      background-position: center;
+    }
+
+    :root:not(.dark) .hero-gradient {
+      border-color: #e2e8f0;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .fan-war-bg {
+      background:
+        linear-gradient(rgba(15, 23, 42, 0.7), rgba(30, 27, 75, 0.8)),
+        url("https://lh3.googleusercontent.com/aida-public/AB6AXuDwCuhhgmpq4ax-2MoOqwW680LvqXJYLB7BSTP9ByZYzcWclRelEC6d-CAoLsKJVL4pEo44viJDoj1Nybp5b8UEUzO1uF-AQsmorzyBa_GhGwev3TKjQUAESIovARJWAUTdiVJii8YxP3eVgsHcoBXLfE5lDEKt5ZuNPeFahTYSFovGMAI4nOAY-A2GljKuEtF5T3Wqtla0m8ClWUwd2p5cnTBGe5nsoT3kxhb_NoZZgLWE9DQUi3ap8FAsXGv28cDJJUT8SSG-_Cfa");
+      background-size: cover;
+      background-position: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    :root:not(.dark) .fan-war-bg {
+      background-image:
+        linear-gradient(rgba(240, 249, 255, 0.5), rgba(224, 242, 254, 0.7)),
+        url("https://lh3.googleusercontent.com/aida-public/AB6AXuDwCuhhgmpq4ax-2MoOqwW680LvqXJYLB7BSTP9ByZYzcWclRelEC6d-CAoLsKJVL4pEo44viJDoj1Nybp5b8UEUzO1uF-AQsmorzyBa_GhGwev3TKjQUAESIovARJWAUTdiVJii8YxP3eVgsHcoBXLfE5lDEKt5ZuNPeFahTYSFovGMAI4nOAY-A2GljKuEtF5T3Wqtla0m8ClWUwd2p5cnTBGe5nsoT3kxhb_NoZZgLWE9DQUi3ap8FAsXGv28cDJJUT8SSG-_Cfa");
+      background-size: cover;
+      background-position: center;
+    }
+
+    .nav-link-active {
+      font-weight: 500;
+    }
+
+    .dark .nav-link-active {
+      background-color: rgba(16, 185, 129, 0.2) !important;
+      color: #10b981 !important;
+      border-right: 4px solid #10b981 !important;
+    }
+
+    .dark .nav-link-active span,
+    .dark .nav-link-active .nav-text {
+      color: #10b981 !important;
+    }
+
+    :root:not(.dark) .nav-link-active {
+      background-color: #ecfdf5 !important;
+      color: #047857 !important;
+      border-right: 4px solid #10b981 !important;
+    }
+
+    /* Profile Frames */
+    .frame-gold {
+      border: 3px solid #eab308 !important;
+      box-shadow: 0 0 10px rgba(234, 179, 8, 0.5);
+    }
+
+    .frame-emerald {
+      border: 3px solid #10b981 !important;
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+    }
+
+    .frame-diamond {
+      border: 3px solid #22d3ee !important;
+      box-shadow: 0 0 10px rgba(34, 211, 238, 0.5);
+    }
+
+    #sidebar.sidebar-collapsed {
+      width: 0 !important;
+      min-width: 0 !important;
+      border-right-width: 0 !important;
+      padding: 0 !important;
+      overflow: hidden !important;
+    }
+
+  </style>
+
+<body
+  class="min-h-screen w-full flex flex-row overflow-x-hidden overflow-y-auto transition-colors duration-300 bg-[#F8F9FF] dark:bg-[#0B0E11]">
+  <!-- BEGIN: Sidebar -->
+  <aside id="sidebar"
+    class="fixed inset-y-0 left-0 z-[60] w-64 flex-shrink-0 flex flex-col h-screen transition-all duration-300 bg-white dark:bg-brand-dark border-r border-gray-200 dark:border-brand-border shadow-xl lg:shadow-none -translate-x-full lg:translate-x-0 lg:static overflow-y-auto custom-scrollbar"
+    data-purpose="sidebar-navigation">
+    <!-- Mobile Close Button -->
+    <button id="close-sidebar-btn" class="lg:hidden p-2 absolute top-4 right-4 text-slate-500 dark:text-gray-400">
+      <span class="material-symbols-outlined">close</span>
+    </button>
+    <div class="p-6 flex items-center gap-3 logo-container">
+
+      <img src="assets/logo.png" alt="FanConnect Logo" class="w-12 h-12 object-contain rounded-xl">
+
+      <h1 class="text-xl font-bold text-brand-green">
+        Fan<span class="text-emerald-400">Connact</span>
+      </h1>
+    </div>
+
+    <nav class="flex-1 px-4 space-y-1 mt-2 transition-all">
+      <h3 class="text-xs font-bold text-slate-500 dark:text-gray-300 uppercase tracking-wider mb-4 px-3">MENU</h3>
+      <a class="flex items-center space-x-3 px-3 py-2 rounded-lg nav-link transition-colors text-slate-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800" href="index.html">
+        <span class="material-symbols-outlined text-xl">home</span>
+        <span class="text-sm nav-text">Home</span>
+      </a>
+      <a class="flex items-center space-x-3 px-3 py-2 rounded-lg nav-link transition-colors text-slate-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+        href="livematches.html">
+        <span class="material-symbols-outlined text-xl">live_tv</span>
+        <span class="text-sm nav-text">Live Matches</span>
+      </a>
+      <a class="flex items-center space-x-3 px-3 py-2 rounded-lg nav-link transition-colors text-slate-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+        href="news&update.html">
+        <span class="material-symbols-outlined text-xl">newspaper</span>
+        <span class="text-sm nav-text">News & Updates</span>
+      </a>
+      <div class="h-px bg-gray-200 dark:bg-brand-border my-4 mx-2"></div>
+
+      <a class="flex items-center space-x-3 px-3 py-2 rounded-lg nav-link transition-colors text-slate-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+        href="profile.html">
+        <span class="material-symbols-outlined text-xl">person_pin</span>
+        <span class="text-sm nav-text">Player Zone</span>
+      </a>
+      <a class="flex items-center space-x-3 px-3 py-2 rounded-lg nav-link transition-colors text-slate-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+        href="prediction.html">
+        <span class="material-symbols-outlined text-xl">psychology</span>
+        <span class="text-sm nav-text">Predictions</span>
+      </a>
+      <a class="flex items-center space-x-3 px-3 py-2 rounded-lg nav-link nav-link-active transition-colors text-slate-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+        href="leaderboard.html">
+        <span class="material-symbols-outlined text-xl">leaderboard</span>
+        <span class="text-sm nav-text">Leaderboard</span>
+      </a>
+    </nav>
+    <!-- Side Promo Card: Fan War -->
+    <div class="p-4 mt-6 promo-card pb-12 md:pb-6">
+      <div
+        class="fan-war-bg rounded-2xl p-5 relative group border dark:border-white/10 border-emerald-100 shadow-soft overflow-hidden">
+        <div class="relative z-10">
+          <p
+            class="text-[10px] font-black uppercase tracking-widest mb-1 drop-shadow-md text-emerald-600 dark:text-brand-green">
+            Fan War
+          </p>
+          <h4 class="text-xl font-bold font-headline leading-tight mb-1 drop-shadow-lg text-slate-900 dark:text-white">
+            RCB vs CSK
+          </h4>
+          <p class="text-[11px] font-medium max-w-[120px] mb-4 drop-shadow-sm text-slate-600 dark:text-white/90">
+            Join the ultimate fan battle
+          </p>
+          <button
+            class="w-full bg-brand-green text-black font-bold py-2.5 rounded-lg text-sm transition-all active:scale-95 hover:bg-emerald-400 shadow-lg shadow-emerald-500/20 dark:shadow-emerald-500/40">
+            Join Now
+          </button>
+        </div>
+        <div
+          class="absolute -right-4 -bottom-4 opacity-30 group-hover:opacity-50 transition-opacity duration-500 w-36 h-36">
+          <img alt="Trophy" class="w-full h-full object-contain"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuCyoPG8fC8OtWBHcek3eIADBuDd3Np6gULZynELuZ7pPlKPOvdDgadQilZ4NfFjhSLU7lCBGKDWED-M5SFPsDrv8_LjVBezdu54XHLdbq0TOzs5Utw94juYlgZVjcdiDakU5HzApwMzI7nb7wmdy30hrCqwMIFwbTdvXWwadYvbQzkRBDzersvlj-TXlr7PpbbZAf-TX0lRI1vf3byQ_rAoIR5mQFrb-xpUqEy6NSMtl5FcuESAg3MgpigcW0jUnDqRWhgLqpm2Qbse" />
+        </div>
+      </div>
+    </div>
+  </aside>
+  <!-- END: Sidebar -->
+  <!-- Main Content Area -->
+  <main
+    class="flex-1 flex flex-col min-h-screen overflow-y-auto overflow-x-hidden transition-colors duration-300 bg-[#F8F9FF] dark:bg-[#0B0E11] custom-scrollbar">
+    <!-- BEGIN: MainHeader -->
+    <header
+      class="sticky top-0 z-50 transition-colors duration-300 bg-white dark:bg-black border-b border-gray-200 dark:border-border-subtle px-4 md:px-8 py-4 flex items-center justify-between"
+    >
+      <div class="flex items-center space-x-4 md:space-x-12">
+        <button
+          class="text-gray-400 hover:text-emerald-accent lg:hidden"
+          id="mobile-menu-btn"
+        >
+          <span class="material-symbols-outlined">menu</span>
+        </button>
+
+        <div id="header-logo" class="flex items-center gap-2 ml-2">
+          <img src="assets/fancoin/fanconnactlogo.png" alt="Fanconnact" class="w-7 h-7" />
+          <span class="text-base font-bold whitespace-nowrap"><span class="text-fan">Fan</span><span class="text-connect">Connact</span></span>
+        </div>
+
+        <nav class="hidden xl:flex items-center space-x-6 mx-6 shrink-0">
+          <a class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link" href="index.html">Home</a>
+          <a class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link" href="livematches.html">Matches</a>
+          <a class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link" href="index.html">Predictions</a>
+          <a class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link" href="leaderboard.html">Leaderboard</a>
+          <a class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link" href="news&update.html">News</a>
+        </nav>
+      </div>
+      <div class="flex items-center gap-5 md:gap-8">
+        <div class="relative hidden lg:block">
+          <input class="bg-gray-100 dark:bg-[#1a1a1a] text-slate-900 dark:text-white border-none rounded-xl py-2.5 pl-10 pr-4 text-sm w-64 focus:ring-1 focus:ring-emerald-accent" placeholder="Search teams, matches, players..." type="text" />
+          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl">search</span>
+        </div>
+        <button id="theme-toggle" class="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-all active:scale-95">
+          <span id="theme-toggle-light-icon" class="material-symbols-outlined hidden text-yellow-400">light_mode</span>
+          <span id="theme-toggle-dark-icon" class="material-symbols-outlined text-slate-500 dark:text-slate-400">dark_mode</span>
+        </button>
+        <div class="relative notification-trigger cursor-pointer">
+          <span class="material-symbols-outlined text-slate-500 dark:text-gray-300 cursor-pointer">notifications</span>
+          <span class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-[10px] flex items-center justify-center font-bold text-white shadow-sm">3</span>
+        </div>
+        <div id="profile-trigger" class="flex items-center space-x-3 cursor-pointer border-l border-gray-200 dark:border-gray-800 pl-4 md:pl-6">
+          <img id="user-profile-img" alt="User Profile" class="w-9 h-9 md:w-10 md:h-10 rounded-full border-2 border-emerald-accent" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDOdWz0yXTAfug92jAlZ-XZtnL5urTJNu8npwz7RIfeTacw2m4yeAoKNMAkf3MLOCIk0iI35_ID8tSabIp6I7MF2N_gez6RO01_i0q1DX3bj656URDlnI8A34wDvyRB5WoPOVTN1qvuyGRfskySDI-pCWAnw3raxBsKX2G6sEhrFHiweAO4TxLdxuB-4_oHoAPBbm9bwmrKrqSGKFEtAeXpM76OE_C1cQQSNmRYmIRT01ZVb4lT2k1tR1xDw6ujXtxiain2IWfiKxim" />
+          <div class="hidden sm:block">
+            <p id="user-name-display" class="text-sm font-bold text-slate-900 dark:text-white">NiteshY</p>
+            <p id="user-level-display" class="text-[10px] text-emerald-accent font-bold uppercase tracking-wider">Level 28</p>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Mobile Sub-Nav -->
+    <nav class="xl:hidden flex overflow-x-auto gap-1 sm:gap-2 px-2 py-1.5 sm:px-4 sm:py-2.5 bg-white dark:bg-black border-b border-gray-200 dark:border-border-subtle scrollbar-none whitespace-nowrap" style="-webkit-overflow-scrolling:touch;scrollbar-width:none;">
+      <a href="index.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Home</a>
+      <a href="livematches.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Matches</a>
+      <a href="index.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Predictions</a>
+      <a href="leaderboard.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Leaderboard</a>
+      <a href="news&update.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">News</a>
+    </nav>
+
+    <!-- Filter Bar -->
+    <div id="leaderboard-filter-bar" class="bg-white dark:bg-black border-b border-gray-200 dark:border-border-subtle px-4 md:px-8 py-3 flex flex-wrap items-center gap-3">
+      <span class="text-[10px] sm:text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Mode:</span>
+      <button class="filter-mode-btn px-4 py-1.5 text-xs sm:text-sm font-medium rounded-lg border transition-all active-filter bg-emerald-500 text-white border-emerald-500" data-mode="team">Team</button>
+      <button class="filter-mode-btn px-4 py-1.5 text-xs sm:text-sm font-medium rounded-lg border transition-all bg-white dark:bg-black text-gray-600 dark:text-gray-300 border-border-subtle hover:border-emerald-accent" data-mode="fans">Fans</button>
+      <div id="game-filter-wrapper" class="flex items-center gap-2 ml-2">
+        <span class="text-[10px] sm:text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider ml-2">Game:</span>
+        <div class="flex flex-wrap gap-1.5" id="game-filter-buttons">
+          <button class="game-filter-btn px-3 py-1 text-xs font-medium rounded-lg border transition-all active-filter bg-emerald-500 text-white border-emerald-500" data-game="cricket">Cricket</button>
+          <button class="game-filter-btn px-3 py-1 text-xs font-medium rounded-lg border transition-all bg-white dark:bg-black text-gray-600 dark:text-gray-300 border-border-subtle hover:border-emerald-accent" data-game="football">Football</button>
+          <button class="game-filter-btn px-3 py-1 text-xs font-medium rounded-lg border transition-all bg-white dark:bg-black text-gray-600 dark:text-gray-300 border-border-subtle hover:border-emerald-accent" data-game="basketball">Basketball</button>
+          <button class="game-filter-btn px-3 py-1 text-xs font-medium rounded-lg border transition-all bg-white dark:bg-black text-gray-600 dark:text-gray-300 border-border-subtle hover:border-emerald-accent" data-game="tennis">Tennis</button>
+          <button class="game-filter-btn px-3 py-1 text-xs font-medium rounded-lg border transition-all bg-white dark:bg-black text-gray-600 dark:text-gray-300 border-border-subtle hover:border-emerald-accent" data-game="hockey">Hockey</button>
+          <button class="game-filter-btn px-3 py-1 text-xs font-medium rounded-lg border transition-all bg-white dark:bg-black text-gray-600 dark:text-gray-300 border-border-subtle hover:border-emerald-accent" data-game="kabaddi">Kabaddi</button>
+          <button class="game-filter-btn px-3 py-1 text-xs font-medium rounded-lg border transition-all bg-white dark:bg-black text-gray-600 dark:text-gray-300 border-border-subtle hover:border-emerald-accent" data-game="e-sports">E-Sports</button>
+          <button class="game-filter-btn px-3 py-1 text-xs font-medium rounded-lg border transition-all bg-white dark:bg-black text-gray-600 dark:text-gray-300 border-border-subtle hover:border-emerald-accent" data-game="baseball">Baseball</button>
+          <button class="game-filter-btn px-3 py-1 text-xs font-medium rounded-lg border transition-all bg-white dark:bg-black text-gray-600 dark:text-gray-300 border-border-subtle hover:border-emerald-accent" data-game="volleyball">Volleyball</button>
+          <button class="game-filter-btn px-3 py-1 text-xs font-medium rounded-lg border transition-all bg-white dark:bg-black text-gray-600 dark:text-gray-300 border-border-subtle hover:border-emerald-accent" data-game="table-tennis">Table Tennis</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex-1 p-4 lg:p-6 overflow-visible">
+
+      <div id="fan-content" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+        <!-- LEFT SIDE -->
+        <section class="lg:col-span-8 space-y-6 min-w-0">
+
+          <div class="w-full max-w-[850px] mx-auto px-2 sm:px-4">
+            <div
+              class="relative w-full bg-[#16191E] rounded-2xl border border-[#2A2E35] shadow-2xl overflow-hidden aspect-[14/10] sm:aspect-[16/10] md:aspect-[16/9]"
+              id="podiumWrapper">
+
+              <canvas id="podiumCanvas" class="absolute inset-0 w-full h-full z-0 pointer-events-none"></canvas>
+
+              <div id="htmlOverlay"
+                class="absolute inset-0 z-10 pointer-events-none font-headline select-none w-full h-full">
+
+                <div class="p-4 md:p-6 w-full">
+                  <div class="border-b border-gray-800/50 pb-2 w-full">
+                    <span
+                      class="text-emerald-400 font-bold tracking-wide text-sm md:text-base border-b-2 border-emerald-400 pb-2 px-1">
+                      Global
+                    </span>
+                  </div>
+                </div>
+
+                <div id="card-rank2"
+                  class="absolute flex flex-col items-center origin-bottom -translate-x-1/2 -translate-y-full w-[120px] sm:w-[150px] md:w-[170px]">
+                  <div class="relative mb-1.5 flex items-center justify-center">
+                    <div
+                      class="absolute -left-4 sm:-left-6 md:-left-7 w-4 h-6 sm:w-5 sm:h-7 md:w-6 md:h-8 bg-gradient-to-b from-slate-300 via-slate-400 to-slate-600 flex items-center justify-center shadow-lg"
+                      style="clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);">
+                      <span class="text-slate-950 font-black text-[9px] sm:text-xs mt-0.5">2</span>
+                    </div>
+                    <div
+                      class="w-10 h-10 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-full p-[2px] bg-gradient-to-b from-blue-400 to-blue-600 shadow-[0_0_15px_rgba(59,130,246,0.4)]">
+                      <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150" alt="Rank 2"
+                        class="w-full h-full object-cover rounded-full bg-slate-800" />
+                    </div>
+                  </div>
+                  <div class="text-center space-y-0.5 w-full">
+                    <h3 class="text-[10px] sm:text-xs font-bold text-slate-200 tracking-wide truncate px-1">CricketKing
+                    </h3>
+                    <div class="leading-none"><span
+                        class="inline-block px-1.5 py-0.5 rounded bg-purple-950/60 border border-purple-500/30 text-[8px] sm:text-[9px] text-purple-300 scale-90">Level
+                        16</span></div>
+                    <div class="text-[10px] sm:text-xs md:text-sm font-black text-blue-400 pt-0.5">9,870 XP</div>
+                  </div>
+                </div>
+
+                <div id="card-rank1"
+                  class="absolute flex flex-col items-center origin-bottom -translate-x-1/2 -translate-y-full w-[130px] sm:w-[170px] md:w-[190px]">
+                  <div class="relative mb-2 flex items-center justify-center w-full">
+                    <div
+                      class="absolute left-[-4px] sm:left-0 md:left-2 top-[-12px] sm:top-[-14px] md:top-[-6px] flex flex-col items-center z-20 scale-75 sm:scale-90 md:scale-100">
+                      <svg class="w-3.5 h-3.5 text-amber-400 mb-0.5 drop-shadow" fill="currentColor"
+                        viewBox="0 0 24 24">
+                        <path d="M2 22h20v-2H2v2zm1-3h18V8l-4 4-3-7-3 7-4-4-4 8v11z" />
+                      </svg>
+                      <div
+                        class="w-4 h-6 sm:w-5 sm:h-7 md:w-6 md:h-8 bg-gradient-to-b from-amber-300 via-amber-500 to-amber-600 flex items-center justify-center shadow-lg"
+                        style="clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);">
+                        <span class="text-slate-950 font-black text-xs">1</span>
+                      </div>
+                    </div>
+                    <div class="relative p-1 flex items-center justify-center">
+                      <svg
+                        class="absolute -left-4 sm:-left-5 md:-left-6 w-4 h-8 sm:w-5 sm:h-10 md:w-6 md:h-12 text-amber-400/90 filter drop-shadow"
+                        viewBox="0 0 30 60" fill="currentColor">
+                        <path
+                          d="M25,50 C18,42 16,30 20,20 C17,24 14,30 15,35 C10,27 12,17 18,10 C15,14 13,20 15,25 C13,16 18,7 26,2 C22,6 21,12 23,17"
+                          fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" />
+                      </svg>
+                      <div
+                        class="w-11 h-11 sm:w-15 sm:h-15 md:w-18 md:h-18 rounded-full p-[2.5px] bg-gradient-to-b from-amber-300 via-amber-400 to-amber-600 shadow-[0_0_25px_rgba(234,179,8,0.5)] z-10">
+                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150" alt="Rank 1"
+                          class="w-full h-full object-cover rounded-full bg-slate-800" />
+                      </div>
+                      <svg
+                        class="absolute -right-4 sm:-right-5 md:-right-6 w-4 h-8 sm:w-5 sm:h-10 md:w-6 md:h-12 text-amber-400/90 filter drop-shadow"
+                        viewBox="0 0 30 60" fill="currentColor">
+                        <path
+                          d="M5,50 C12,42 14,30 10,20 C13,24 16,30 15,35 C20,27 18,17 12,10 C15,14 17,20 15,25 C17,16 12,7 4,2 C8,6 9,12 7,17"
+                          fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" />
+                      </svg>
+                    </div>
+                  </div>
+                  <div class="text-center space-y-0.5 z-10 w-full">
+                    <h2 class="text-xs sm:text-sm md:text-base font-black text-white tracking-wide truncate px-1">
+                      MI_Army</h2>
+                    <div class="leading-none"><span
+                        class="inline-block px-2 py-0.5 rounded bg-purple-950/60 border border-purple-500/30 text-[8px] sm:text-[9px] font-semibold text-purple-300 scale-90">Level
+                        18</span></div>
+                    <div
+                      class="text-xs sm:text-sm font-black text-transparent bg-clip-text bg-gradient-to-b from-amber-200 via-amber-400 to-amber-500 tracking-wide pt-0.5 drop-shadow-sm">
+                      12,560 XP
+                    </div>
+                  </div>
+                </div>
+
+                <div id="card-rank3"
+                  class="absolute flex flex-col items-center origin-bottom -translate-x-1/2 -translate-y-full w-[120px] sm:w-[150px] md:w-[170px]">
+                  <div class="relative mb-1.5 flex items-center justify-center">
+                    <div
+                      class="w-10 h-10 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-full p-[2px] bg-gradient-to-b from-orange-600 to-amber-800 shadow-[0_0_15px_rgba(234,88,12,0.4)]">
+                      <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150" alt="Rank 3"
+                        class="w-full h-full object-cover rounded-full bg-slate-800" />
+                    </div>
+                    <div
+                      class="absolute -right-4 sm:-right-6 md:-right-7 w-4 h-6 sm:w-5 sm:h-7 md:w-6 md:h-8 bg-gradient-to-b from-amber-700 via-orange-800 to-amber-950 flex items-center justify-center shadow-lg"
+                      style="clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);">
+                      <span class="text-orange-200 font-black text-[9px] sm:text-xs mt-0.5">3</span>
+                    </div>
+                  </div>
+                  <div class="text-center space-y-0.5 w-full">
+                    <h3 class="text-[10px] sm:text-xs font-bold text-slate-200 tracking-wide truncate px-1">Virat18</h3>
+                    <div class="leading-none"><span
+                        class="inline-block px-1.5 py-0.5 rounded bg-purple-950/50 border border-purple-500/20 text-[8px] sm:text-[9px] text-purple-300 scale-90">Level
+                        16</span></div>
+                    <div class="text-[10px] sm:text-xs md:text-sm font-black text-orange-400 pt-0.5">8,930 XP</div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+          <script>
+            (function () {
+              const box = document.getElementById('podiumWrapper');
+              const canvas = document.getElementById('podiumCanvas');
+
+              const card1 = document.getElementById('card-rank1');
+              const card2 = document.getElementById('card-rank2');
+              const card3 = document.getElementById('card-rank3');
+
+              const scene = new THREE.Scene();
+              const camera = new THREE.PerspectiveCamera(34, box.clientWidth / box.clientHeight, 0.1, 1000);
+
+              const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+              renderer.setSize(box.clientWidth, box.clientHeight);
+              renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+              const ambientLight = new THREE.AmbientLight(0x0f172a, 1.8);
+              scene.add(ambientLight);
+
+              const dirLight = new THREE.DirectionalLight(0xffffff, 0.6);
+              dirLight.position.set(0, 5, 4);
+              scene.add(dirLight);
+
+              function buildPlatform(x, y, z, r, h, baseColor, glowColor) {
+                const group = new THREE.Group();
+                group.position.set(x, y, z);
+
+                const cylGeo = new THREE.CylinderGeometry(r, r + 0.04, h, 64);
+                const cylMat = new THREE.MeshStandardMaterial({
+                  color: baseColor,
+                  metalness: 0.8,
+                  roughness: 0.2
+                });
+                const body = new THREE.Mesh(cylGeo, cylMat);
+                body.position.y = h / 2;
+                group.add(body);
+
+                const torusGeo = new THREE.TorusGeometry(r - 0.01, 0.012, 16, 100);
+                const torusMat = new THREE.MeshBasicMaterial({ color: glowColor });
+                const rim = new THREE.Mesh(torusGeo, torusMat);
+                rim.rotation.x = Math.PI / 2;
+                rim.position.y = h;
+                group.add(rim);
+
+                scene.add(group);
+                return { group, height: h, rim };
+              }
+
+              // Standardized base positions for tracking bounds
+              const stage2 = buildPlatform(-2.1, 0, 0, 0.65, 0.45, 0x1d3557, 0x3b82f6);
+              const stage1 = buildPlatform(0, 0, 0, 0.88, 0.78, 0x5c4008, 0xeab308);
+              const stage3 = buildPlatform(2.1, 0, 0, 0.65, 0.35, 0x5c2414, 0xea580c);
+
+              let beams = [];
+              function buildLightBeam(x, rotationAngle, colorHex) {
+                const beamGeo = new THREE.CylinderGeometry(0.12, 1.2, 8, 32, 1, true);
+                const beamMat = new THREE.MeshBasicMaterial({
+                  color: colorHex,
+                  transparent: true,
+                  opacity: 0.12,
+                  side: THREE.DoubleSide,
+                  blending: THREE.AdditiveBlending,
+                  depthWrite: false
+                });
+                const beam = new THREE.Mesh(beamGeo, beamMat);
+                beam.position.set(x, 3.6, -0.1);
+                beam.rotation.z = rotationAngle;
+                scene.add(beam);
+                beams.push({ mesh: beam, baseAngle: rotationAngle });
+              }
+              buildLightBeam(-2.1, -0.04, 0x3b82f6);
+              buildLightBeam(0, 0, 0xfde047);
+              buildLightBeam(2.1, 0.04, 0xea580c);
+
+              // UPDATED RESPONSIVE LOGIC: Fixing Mobile Projections and Clipping
+              function updateCameraAspect() {
+                const aspect = box.clientWidth / box.clientHeight;
+                camera.aspect = aspect;
+
+                if (aspect < 1.15) {
+                  // Mobile & Narrow Viewport Fixes
+                  const scaleFactor = Math.max(aspect * 0.85, 0.6); // Lock positions safely inside
+                  const newX = 2.1 * scaleFactor;
+
+                  stage2.group.position.x = -newX;
+                  stage3.group.position.x = newX;
+                  if (beams[0]) beams[0].mesh.position.x = -newX;
+                  if (beams[2]) beams[2].mesh.position.x = newX;
+
+                  // Pull camera back proportionally as viewport narrows down
+                  camera.position.set(0, 2.2, 7.5 * (1.15 / aspect));
+                } else {
+                  // Desktop Viewport Configuration
+                  stage2.group.position.x = -2.1;
+                  stage3.group.position.x = 2.1;
+                  if (beams[0]) beams[0].mesh.position.x = -2.1;
+                  if (beams[2]) beams[2].mesh.position.x = 2.1;
+
+                  if (aspect > 1.7) {
+                    camera.position.set(0, 2.0, 6.8 * (aspect / 1.7));
+                  } else {
+                    camera.position.set(0, 2.0, 7.0);
+                  }
+                }
+                camera.lookAt(0, 1.15, 0);
+                camera.updateProjectionMatrix();
+              }
+              updateCameraAspect();
+
+              const pCount = 50;
+              const pGeom = new THREE.BufferGeometry();
+              const pos = new Float32Array(pCount * 3);
+              for (let i = 0; i < pCount * 3; i += 3) {
+                pos[i] = (Math.random() - 0.5) * 6.0;
+                pos[i + 1] = Math.random() * 4.0;
+                pos[i + 2] = (Math.random() - 0.5) * 1.2;
+              }
+              pGeom.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+              const pMat = new THREE.PointsMaterial({
+                size: 0.04,
+                color: 0xfef08a,
+                transparent: true,
+                opacity: 0.5,
+                blending: THREE.AdditiveBlending
+              });
+              const particles = new THREE.Points(pGeom, pMat);
+              scene.add(particles);
+
+              const tempV = new THREE.Vector3();
+              function updateCardPosition(cardDOM, stageObj) {
+                if (!cardDOM) return;
+
+                tempV.set(stageObj.group.position.x, stageObj.height, stageObj.group.position.z);
+                tempV.project(camera);
+
+                const x = (tempV.x * .5 + .5) * box.clientWidth;
+                const y = (tempV.y * -.5 + .5) * box.clientHeight;
+
+                cardDOM.style.left = `${x}px`;
+                cardDOM.style.top = `${y}px`;
+              }
+
+              const resizeObserver = new ResizeObserver(() => {
+                updateCameraAspect();
+                renderer.setSize(box.clientWidth, box.clientHeight);
+              });
+              resizeObserver.observe(box);
+
+              function loop() {
+                requestAnimationFrame(loop);
+                const time = performance.now() * 0.001;
+
+                stage1.rim.rotation.z = time * 0.12;
+                stage2.rim.rotation.z = -time * 0.08;
+                stage3.rim.rotation.z = time * 0.06;
+
+                const pArr = pGeom.attributes.position.array;
+                for (let i = 1; i < pCount * 3; i += 3) {
+                  pArr[i] += 0.003;
+                  if (pArr[i] > 4.0) pArr[i] = 0.1;
+                }
+                pGeom.attributes.position.needsUpdate = true;
+
+                updateCardPosition(card1, stage1);
+                updateCardPosition(card2, stage2);
+                updateCardPosition(card3, stage3);
+
+                renderer.render(scene, camera);
+              }
+              loop();
+            })();
+          </script>
+
+          <div id="ranking-table-section">
+            <div class="bg-[#060d18] border border-[#12263f] rounded-2xl overflow-hidden"> <!-- Desktop Header -->
+              <div class="hidden md:grid grid-cols-12 px-6 py-4 text-slate-400 text-sm border-b border-[#12263f]">
+                <div class="col-span-1">Rank</div>
+                <div class="col-span-5">User</div>
+                <div class="col-span-3">Level</div>
+                <div class="col-span-3 text-right">XP</div>
+              </div> <!-- Row 4 -->
+              <div class="border-b border-[#0f1d30]">
+                <!-- Mobile Header -->
+<div class="md:hidden grid grid-cols-[50px_1fr_90px]
+            px-4 py-3
+            text-[11px]
+            font-semibold
+            text-slate-400
+            border-b border-[#12263f]">
+    <div>Rank</div>
+    <div>User &  Level</div>
+    <div class="text-right">XP</div>
+
+</div>
+                <!-- Desktop -->
+                <div class="hidden md:grid grid-cols-12 items-center px-6 py-4 hover:bg-[#091321] transition">
+                  <div class="col-span-1 text-white font-semibold">4</div>
+
+                  <div class="col-span-5 flex items-center gap-3">
+                    <img src="https://i.pravatar.cc/100?img=12" class="w-10 h-10 rounded-full">
+                    <span class="text-white">CSK_Rider</span>
+                  </div>
+
+                  <div class="col-span-3">
+                    <span class="bg-[#23153e] text-purple-300 px-3 py-1 rounded-lg text-sm">
+                      Level 15
+                    </span>
+                  </div>
+
+                  <div class="col-span-3 text-right text-white font-semibold">
+                    7,450 XP
+                  </div>
+                </div>
+
+                <!-- Mobile -->
+                <div class="md:hidden p-4">
+                  <div class="flex items-center gap-3">
+                    <div class="text-white font-bold">#4</div>
+
+                    <img src="https://i.pravatar.cc/100?img=12" class="w-10 h-10 rounded-full">
+
+                    <div class="flex-1">
+                      <div class="text-white font-medium">CSK_Rider</div>
+
+                      <div class="flex justify-between mt-1">
+                        <span class="bg-[#23153e] text-purple-300 px-2 py-1 rounded text-xs">
+                          Level 15
+                        </span>
+
+                        <span class="text-white font-semibold">
+                          7,450 XP
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div> <!-- Row 5 -->
+              <div class="border-b border-[#0f1d30]">
+                <div class="hidden md:grid grid-cols-12 items-center px-6 py-4 hover:bg-[#091321] transition">
+                  <div class="col-span-1 text-white font-semibold">5</div>
+
+                  <div class="col-span-5 flex items-center gap-3">
+                    <img src="https://i.pravatar.cc/100?img=20" class="w-10 h-10 rounded-full">
+                    <span class="text-white">BlueArmy</span>
+                  </div>
+
+                  <div class="col-span-3">
+                    <span class="bg-[#23153e] text-purple-300 px-3 py-1 rounded-lg text-sm">
+                      Level 14
+                    </span>
+                  </div>
+
+                  <div class="col-span-3 text-right text-white font-semibold">
+                    6,980 XP
+                  </div>
+                </div>
+
+                <div class="md:hidden p-4">
+                  <div class="flex items-center gap-3">
+                    <div class="text-white font-bold">#5</div>
+
+                    <img src="https://i.pravatar.cc/100?img=20" class="w-10 h-10 rounded-full">
+
+                    <div class="flex-1">
+                      <div class="text-white font-medium">BlueArmy</div>
+
+                      <div class="flex justify-between mt-1">
+                        <span class="bg-[#23153e] text-purple-300 px-2 py-1 rounded text-xs">
+                          Level 14
+                        </span>
+
+                        <span class="text-white font-semibold">
+                          6,980 XP
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div> <!-- Row 6 -->
+              <div class="border-b border-[#0f1d30]">
+                <div class="hidden md:grid grid-cols-12 items-center px-6 py-4 hover:bg-[#091321] transition">
+                  <div class="col-span-1 text-white font-semibold">6</div>
+
+                  <div class="col-span-5 flex items-center gap-3">
+                    <img src="https://i.pravatar.cc/100?img=15" class="w-10 h-10 rounded-full">
+                    <span class="text-white">RohitFan_45</span>
+                  </div>
+
+                  <div class="col-span-3">
+                    <span class="bg-[#23153e] text-purple-300 px-3 py-1 rounded-lg text-sm">
+                      Level 14
+                    </span>
+                  </div>
+
+                  <div class="col-span-3 text-right text-white font-semibold">
+                    6,250 XP
+                  </div>
+                </div>
+
+                <div class="md:hidden p-4">
+                  <div class="flex items-center gap-3">
+                    <div class="text-white font-bold">#6</div>
+
+                    <img src="https://i.pravatar.cc/100?img=15" class="w-10 h-10 rounded-full">
+
+                    <div class="flex-1">
+                      <div class="text-white font-medium">RohitFan_45</div>
+
+                      <div class="flex justify-between mt-1">
+                        <span class="bg-[#23153e] text-purple-300 px-2 py-1 rounded text-xs">
+                          Level 14
+                        </span>
+
+                        <span class="text-white font-semibold">
+                          6,250 XP
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div> <!-- Your Row -->
+              <div class="bg-green-500/10 border border-green-500/20">
+                <div class="hidden md:grid grid-cols-12 items-center px-6 py-5">
+                  <div class="col-span-1 text-green-400 font-bold text-xl">
+                    23
+                  </div>
+
+                  <div class="col-span-5 flex items-center gap-3">
+                    <img src="https://i.pravatar.cc/100?img=33" class="w-11 h-11 rounded-full border border-green-400">
+
+                    <div>
+                      <div class="text-green-300">Arjun Singh</div>
+                      <div class="text-green-500 text-sm">(You)</div>
+                    </div>
+                  </div>
+
+                  <div class="col-span-3">
+                    <span class="bg-[#6d5dfc33] text-purple-200 px-3 py-1 rounded-lg text-sm">
+                      Level 12
+                    </span>
+                  </div>
+
+                  <div class="col-span-3 text-right text-green-400 font-bold text-xl">
+                    2,850 XP
+                  </div>
+                </div>
+
+                <div class="md:hidden p-4">
+                  <div class="flex items-center gap-3">
+
+                    <div class="text-green-400 font-bold">
+                      #23
+                    </div>
+
+                    <img src="https://i.pravatar.cc/100?img=33" class="w-11 h-11 rounded-full border border-green-400">
+
+                    <div class="flex-1">
+                      <div class="text-green-300">
+                        Arjun Singh
+                      </div>
+
+                      <div class="text-green-500 text-sm">
+                        (You)
+                      </div>
+                      <div class="mt-2">
+    <div class="w-full h-2 bg-[#15253a] rounded-full overflow-hidden">
+        <div
+            id="xpProgress"
+            class="h-full bg-gradient-to-r from-green-400 to-emerald-500 rounded-full"
+            style="width:71%">
+        </div>
+    </div>
+
+    <div class="flex justify-between text-[11px] text-slate-400 mt-1">
+        <span id="nextLevel">Next Level 13</span>
+        <span id="xpRemaining">1,150 XP to go</span>
+    </div>
+</div>
+
+                      <div class="flex justify-between mt-2">
+                        <span class="bg-[#6d5dfc33] text-purple-200 px-2 py-1 rounded text-xs">
+                          Level 12
+                        </span>
+
+                      <span id="userXP"
+      class="text-green-400 font-bold text-sm sm:text-base whitespace-nowrap">
+    2,850 XP
+</span>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+
+              </div> 
+              <!-- Button -->
+              <a href="leaderboard.html"
+class="w-full flex items-center justify-center rounded-xl border border-purple-500/40 text-purple-300 py-3 hover:bg-purple-500/10 transition">
+    View Full Leaderboard →
+</a>
+            </div>
+
+          </div>
+
+        </section>
+
+        <!-- RIGHT SIDE -->
+        <aside class="lg:col-span-4 space-y-6">
+<div class="bg-[#060d18] border border-[#12263f] rounded-2xl p-6">
+
+    <h3 class="text-white text-2xl font-semibold mb-4">
+        Your Rank
+    </h3>
+
+    <div class="flex items-end gap-3 mb-4">
+
+        <h1 id="currentRank"
+            class="text-green-400 text-6xl font-extrabold">
+            23
+        </h1>
+
+        <span class="text-slate-400 text-xl mb-2">
+            / 12,560
+        </span>
+
+    </div>
+
+    <p class="text-slate-400 text-sm mb-6">
+        Keep going! You can do better.
+    </p>
+
+    <div id="totalXP"
+         class="text-white text-4xl font-bold mb-5">
+         2,850 XP
+    </div>
+
+    <div class="w-full h-3 bg-[#15253a] rounded-full overflow-hidden">
+        <div id="sidebar-xpProgress"
+             class="h-full bg-gradient-to-r from-green-400 to-emerald-500 rounded-full"
+             style="width:71%">
+        </div>
+    </div>
+
+    <div class="flex justify-between text-sm text-slate-400 mt-3">
+        <span id="sidebar-nextLevel">Next Level 13</span>
+        <span id="sidebar-xpRemaining">1,150 XP to go</span>
+    </div>
+
+</div>
+
+<!-- TOP EARNERS -->
+<div class="bg-[#060d18] border border-[#12263f] rounded-2xl p-5">
+
+    <h3 class="text-white text-2xl font-semibold mb-5">
+        Top Earners
+        <span class="text-slate-400 text-base">
+            (This Month)
+        </span>
+    </h3>
+
+    <div class="space-y-4" id="topEarnersList">
+
+        <!-- 1 -->
+        <div class="flex items-center justify-between">
+
+            <div class="flex items-center gap-3">
+
+                <span class="text-slate-400 w-4">
+                    1
+                </span>
+
+                <img
+                src="https://i.pravatar.cc/100?img=12"
+                class="w-10 h-10 rounded-full">
+
+                <span class="text-white">
+                    MI_Army
+                </span>
+
+            </div>
+
+            <span class="text-[#f7c948] font-semibold">
+                2,450 XP
+            </span>
+
+        </div>
+
+        <!-- 2 -->
+        <div class="flex items-center justify-between">
+
+            <div class="flex items-center gap-3">
+
+                <span class="text-slate-400 w-4">
+                    2
+                </span>
+
+                <img
+                src="https://i.pravatar.cc/100?img=20"
+                class="w-10 h-10 rounded-full">
+
+                <span class="text-white">
+                    CricketKing
+                </span>
+
+            </div>
+
+            <span class="text-[#f7c948] font-semibold">
+                2,150 XP
+            </span>
+
+        </div>
+
+        <!-- 3 -->
+        <div class="flex items-center justify-between">
+
+            <div class="flex items-center gap-3">
+
+                <span class="text-slate-400 w-4">
+                    3
+                </span>
+
+                <img
+                src="https://i.pravatar.cc/100?img=15"
+                class="w-10 h-10 rounded-full">
+
+                <span class="text-white">
+                    Virat18
+                </span>
+
+            </div>
+
+            <span class="text-[#f7c948] font-semibold">
+                1,890 XP
+            </span>
+
+        </div>
+
+        <!-- 4 -->
+        <div class="flex items-center justify-between">
+
+            <div class="flex items-center gap-3">
+
+                <span class="text-slate-400 w-4">
+                    4
+                </span>
+
+                <img
+                src="https://i.pravatar.cc/100?img=33"
+                class="w-10 h-10 rounded-full">
+
+                <span class="text-white">
+                    CSK_Rider
+                </span>
+
+            </div>
+
+            <span class="text-[#f7c948] font-semibold">
+                1,620 XP
+            </span>
+
+        </div>
+
+        <!-- 5 -->
+        <div class="flex items-center justify-between">
+
+            <div class="flex items-center gap-3">
+
+                <span class="text-slate-400 w-4">
+                    5
+                </span>
+
+                <img
+                src="https://i.pravatar.cc/100?img=8"
+                class="w-10 h-10 rounded-full">
+
+                <span class="text-white">
+                    BlueArmy
+                </span>
+
+            </div>
+
+            <span class="text-[#f7c948] font-semibold">
+                1,450 XP
+            </span>
+
+        </div>
+
+    </div>
+
+    <!-- Button -->
+
+    <button
+    class="w-full mt-6 py-4
+           rounded-xl
+           border border-purple-500/40
+           text-purple-300
+           font-medium
+           hover:bg-purple-500/10
+           transition">
+
+        View All Top Earners →
+
+    </button>
+
+</div>
+
+
+        </aside>
+
+      </div>
+
+    </div>
+
+    <!-- TEAM CONTENT (shown by default when Team mode is active) -->
+    <div id="team-content">
+      <div class="max-w-6xl mx-auto px-4 py-6">
+        <!-- Category Tabs -->
+        <div class="flex items-center gap-2 mb-6" id="team-category-tabs"></div>
+        <!-- Team Table -->
+        <div class="bg-[#16191E] border border-[#2A2E35] rounded-xl overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse" id="team-table">
+              <thead class="bg-black/40 border-b border-[#2A2E35]">
+                <tr class="text-gray-400 text-xs uppercase tracking-wider font-semibold">
+                  <th class="px-4 py-4 w-16">Rank</th>
+                  <th class="px-4 py-4">Team</th>
+                  <th class="px-4 py-4 text-center">Format</th>
+                  <th class="px-4 py-4 text-center">Matches</th>
+                  <th class="px-4 py-4 text-center">Wins</th>
+                  <th class="px-4 py-4 text-center">Win %</th>
+                  <th class="px-4 py-4 text-right">Rating</th>
+                  <th class="px-4 py-4 text-center">Trend</th>
+                </tr>
+              </thead>
+              <tbody id="team-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+  <script src="js/leaderboard.js"></script>
+  <script type="module" src="js/script.js"></script>
+  <script>
+    const API_BASE = 'http://localhost:3001';
+    let currentTeamSport = 'cricket';
+    let currentTeamCategory = 'ODI';
+    let teamSports = [];
+
+    // Init: load team data since Team mode is default
+    loadTeamSports();
+
+    // Filter mode toggle
+    document.querySelectorAll('.filter-mode-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.filter-mode-btn').forEach(b => {
+          b.classList.remove('active-filter', 'bg-emerald-500', 'text-white', 'border-emerald-500');
+          b.classList.add('bg-white', 'dark:bg-black', 'text-gray-600', 'dark:text-gray-300', 'border-border-subtle');
+        });
+        this.classList.add('active-filter', 'bg-emerald-500', 'text-white', 'border-emerald-500');
+        this.classList.remove('bg-white', 'dark:bg-black', 'text-gray-600', 'dark:text-gray-300', 'border-border-subtle');
+
+        const wrapper = document.getElementById('game-filter-wrapper');
+        const fanContent = document.getElementById('fan-content');
+        const teamContent = document.getElementById('team-content');
+        if (this.dataset.mode === 'team') {
+          wrapper.classList.remove('hidden');
+          fanContent.classList.add('hidden');
+          teamContent.classList.remove('hidden');
+          if (teamSports.length === 0) loadTeamSports();
+          else loadTeamRankings();
+        } else {
+          wrapper.classList.add('hidden');
+          fanContent.classList.remove('hidden');
+          teamContent.classList.add('hidden');
+        }
+      });
+    });
+
+    async function loadTeamSports() {
+      try {
+        const res = await fetch(API_BASE + '/api/leaderboard');
+        const data = await res.json();
+        teamSports = data.sports;
+        renderTeamCategories();
+        loadTeamRankings();
+      } catch (e) {
+        document.getElementById('team-table-body').innerHTML = '<tr><td colspan="8" class="px-4 py-12 text-center text-gray-500">Server unreachable. Start the backend.</td></tr>';
+      }
+    }
+
+    function renderTeamCategories() {
+      const container = document.getElementById('team-category-tabs');
+      const sport = teamSports.find(s => s.id === currentTeamSport);
+      if (!sport) return;
+      container.innerHTML = sport.categories.map(c => `
+        <button onclick="switchTeamCategory('${c}')" class="team-cat-btn px-4 py-1.5 rounded-lg text-xs font-semibold border transition-all ${c === currentTeamCategory ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500' : 'bg-transparent text-gray-500 border-[#2A2E35] hover:border-emerald-500'}" data-cat="${c}">
+          ${c}
+        </button>
+      `).join('');
+    }
+
+    function switchTeamCategory(cat) {
+      currentTeamCategory = cat;
+      document.querySelectorAll('.team-cat-btn').forEach(b => {
+        b.classList.remove('bg-emerald-500/20', 'text-emerald-400', 'border-emerald-500');
+        b.classList.add('bg-transparent', 'text-gray-500', 'border-[#2A2E35]');
+      });
+      const btn = document.querySelector(`.team-cat-btn[data-cat="${cat}"]`);
+      if (btn) {
+        btn.classList.remove('bg-transparent', 'text-gray-500', 'border-[#2A2E35]');
+        btn.classList.add('bg-emerald-500/20', 'text-emerald-400', 'border-emerald-500');
+      }
+      loadTeamRankings();
+    }
+
+    async function loadTeamRankings() {
+      const body = document.getElementById('team-table-body');
+      body.innerHTML = '<tr><td colspan="8" class="px-4 py-12 text-center"><div class="inline-block w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div><p class="text-gray-500 mt-2 text-sm">Loading...</p></td></tr>';
+      try {
+        const res = await fetch(API_BASE + '/api/leaderboard/' + currentTeamSport + '/' + currentTeamCategory);
+        const data = await res.json();
+        if (!data.rankings || !data.rankings.length) {
+          body.innerHTML = '<tr><td colspan="8" class="px-4 py-12 text-center text-gray-500">No rankings found</td></tr>';
+          return;
+        }
+        body.innerHTML = data.rankings.map(item => {
+          let trendHtml = '<span class="text-gray-500">—</span>';
+          if (item.trend === 'up') trendHtml = `<span class="material-symbols-outlined text-emerald-400 text-sm">arrow_upward</span><span class="text-emerald-400 text-xs font-bold ml-0.5">${item.trendVal}</span>`;
+          else if (item.trend === 'down') trendHtml = `<span class="material-symbols-outlined text-red-400 text-sm">arrow_downward</span><span class="text-red-400 text-xs font-bold ml-0.5">${item.trendVal}</span>`;
+          const medal = item.rank === 1 ? '🥇' : item.rank === 2 ? '🥈' : item.rank === 3 ? '🥉' : '';
+          return `
+            <tr class="border-b border-[#2A2E35] hover:bg-white/5 transition-colors">
+              <td class="px-4 py-4 text-white font-bold text-sm">${medal || item.rank}</td>
+              <td class="px-4 py-4">
+                <div class="flex items-center gap-3">
+                  <img src="${item.flag}" alt="${item.team}" class="w-7 h-4.5 object-cover rounded border border-gray-700">
+                  <span class="text-white font-medium text-sm">${item.team}</span>
+                  <span class="text-gray-500 text-xs uppercase">${item.code}</span>
+                </div>
+              </td>
+              <td class="px-4 py-4 text-center"><span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-blue-900/40 text-blue-400">${currentTeamCategory}</span></td>
+              <td class="px-4 py-4 text-center text-gray-300 text-sm">${item.matches}</td>
+              <td class="px-4 py-4 text-center text-gray-300 text-sm">${item.wins}</td>
+              <td class="px-4 py-4 text-center text-gray-300 text-sm">${typeof item.winPct === 'number' ? item.winPct.toFixed(2) + '%' : item.winPct}</td>
+              <td class="px-4 py-4 text-right text-emerald-400 font-bold text-sm">${item.rating}</td>
+              <td class="px-4 py-4"><div class="flex items-center justify-center gap-0.5">${trendHtml}</div></td>
+            </tr>`;
+        }).join('');
+      } catch (e) {
+        body.innerHTML = '<tr><td colspan="8" class="px-4 py-12 text-center text-red-400">Failed to load. Start the backend server.</td></tr>';
+      }
+    }
+
+    // Game filter buttons now load team rankings
+    document.querySelectorAll('.game-filter-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.game-filter-btn').forEach(b => {
+          b.classList.remove('active-filter', 'bg-emerald-500', 'text-white', 'border-emerald-500');
+          b.classList.add('bg-white', 'dark:bg-black', 'text-gray-600', 'dark:text-gray-300', 'border-border-subtle');
+        });
+        this.classList.add('active-filter', 'bg-emerald-500', 'text-white', 'border-emerald-500');
+        this.classList.remove('bg-white', 'dark:bg-black', 'text-gray-600', 'dark:text-gray-300', 'border-border-subtle');
+        
+        const mode = document.querySelector('.filter-mode-btn.active-filter');
+        if (mode && mode.dataset.mode === 'team') {
+          const game = this.dataset.game;
+          const mappedSport = game === 'e-sports' ? 'esports' : game;
+          if (teamSports.length > 0) {
+            const sport = teamSports.find(s => s.id === mappedSport);
+            if (sport) {
+              currentTeamSport = mappedSport;
+              currentTeamCategory = sport.categories[0];
+              renderTeamCategories();
+              loadTeamRankings();
+            }
+          }
+        }
+      });
+    });
+  </script>
+  <script src="js/sidebar.js"></script>
+</body>
+
+</html>
