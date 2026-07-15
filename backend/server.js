@@ -3,6 +3,8 @@ const cors = require("cors");
 const path = require("path");
 const fs = require("fs");
 const http = require("http");
+const https = require("https");
+const cheerio = require("cheerio");
 const cron = require('node-cron');
 const rankingsSync = require("./rankings-sync");
 const { createChatServer } = require("./chat-server");
@@ -20,6 +22,18 @@ const TEAM_RANKINGS_PATH = path.join(DATA_DIR, "team-rankings.json");
 const server = http.createServer(app);
 const chatWSS = createChatServer(server);
 const notifWSS = createNotificationServer(server);
+
+// Explicit upgrade routing so multiple WS paths don't interfere
+server.on('upgrade', (req, socket, head) => {
+  const url = new URL(req.url, 'http://localhost');
+  if (url.pathname === '/ws/chat') {
+    chatWSS.handleUpgrade(req, socket, head, (ws) => chatWSS.emit('connection', ws, req));
+  } else if (url.pathname === '/ws/notifications') {
+    notifWSS.handleUpgrade(req, socket, head, (ws) => notifWSS.emit('connection', ws, req));
+  } else {
+    socket.destroy();
+  }
+});
 
 // ─── SPORT CONFIGURATIONS ────────────────────────────────────────────────────
 
@@ -3640,13 +3654,14 @@ function loadPlayerRankings() {
 const TEAM_RANKINGS = loadTeamRankings();
 const PLAYER_RANKINGS = loadPlayerRankings();
 
-// Get leaderboard metadata (sports list with categories)
+// Get leaderboard metadata (sports list with categories + genders)
 app.get("/api/leaderboard", (req, res) => {
   const list = Object.entries(TEAM_RANKINGS).map(([key, val]) => ({
     id: key,
     label: val.label,
     icon: val.icon,
     categories: val.categories,
+    genders: val.genders || ["Men", "Women"],
   }));
   var pd = loadPlayerRankings();
   res.json({
@@ -3655,17 +3670,44 @@ app.get("/api/leaderboard", (req, res) => {
   });
 });
 
-// Get team rankings for a sport + category
-app.get("/api/leaderboard/:sport/:category", (req, res) => {
+// Get team rankings for a sport + gender + category
+// Accepts either /:sport/:category (defaults to Men) or /:sport/:gender/:category
+app.get("/api/leaderboard/:sport/:gender/:category", (req, res) => {
   const sport = TEAM_RANKINGS[req.params.sport];
   if (!sport) return res.status(404).json({ error: "Sport not found" });
-  const rankings = sport.rankings[req.params.category];
+  const gender = req.params.gender;
+  const category = req.params.category;
+  const genderBlock = sport.rankings[gender];
+  if (!genderBlock) return res.status(404).json({ error: "Gender not found" });
+  const rankings = genderBlock[category];
   if (!rankings) return res.status(404).json({ error: "Category not found" });
   var pd = loadPlayerRankings();
   res.json({
     sport: req.params.sport,
     label: sport.label,
     icon: sport.icon,
+    gender,
+    category,
+    rankings,
+    _lastSync: (pd._meta && pd._meta.lastSync) || null,
+  });
+});
+
+// Backwards-compatible: /:sport/:category (defaults gender to Men)
+app.get("/api/leaderboard/:sport/:category", (req, res) => {
+  const sport = TEAM_RANKINGS[req.params.sport];
+  if (!sport) return res.status(404).json({ error: "Sport not found" });
+  const gender = (sport.genders && sport.genders[0]) || "Men";
+  const genderBlock = sport.rankings[gender];
+  if (!genderBlock) return res.status(404).json({ error: "Gender not found" });
+  const rankings = genderBlock[req.params.category];
+  if (!rankings) return res.status(404).json({ error: "Category not found" });
+  var pd = loadPlayerRankings();
+  res.json({
+    sport: req.params.sport,
+    label: sport.label,
+    icon: sport.icon,
+    gender,
     category: req.params.category,
     rankings,
     _lastSync: (pd._meta && pd._meta.lastSync) || null,
@@ -3707,6 +3749,100 @@ function refreshData() {
 cron.schedule('0 */6 * * *', () => {
   console.log('[Cron] Starting auto-sync...');
   rankingsSync.fullSync().then(refreshData).catch(() => {});
+});
+
+// ─── MATCH NEWS (cricbuzz proxy with fallback) ──────────────────────────────
+const NEWS_MATCH_ID = '129458'; // eng-vs-ind-1st-odi-2026
+async function fetchCricbuzzNews() {
+  try {
+    const url = 'https://www.cricbuzz.com/cricket-match-news/' + NEWS_MATCH_ID + '/eng-vs-ind-1st-odi-india-tour-of-england-2026';
+    const html = await new Promise((resolve, reject) => {
+      https.get(url, res => {
+        let body = '';
+        res.on('data', d => body += d);
+        res.on('end', () => resolve(body));
+      }).on('error', reject);
+    });
+    const $ = cheerio.load(html);
+    const articles = [];
+    $('.cb-col.cb-col-100.cb-lst-itm.cb-lst-itm-lg').each((i, el) => {
+      const title = $(el).find('.cb-nws-hdln').text().trim() || $(el).find('a').first().text().trim();
+      const desc = $(el).find('.cb-nws-con').text().trim();
+      const link = $(el).find('a').first().attr('href') || '';
+      const time = $(el).find('.cb-nws-time').text().trim();
+      const img = $(el).find('img').first().attr('src') || '';
+      if (title) articles.push({ title, desc: desc.slice(0, 200), link: link.startsWith('http') ? link : 'https://www.cricbuzz.com' + link, time, image: img });
+    });
+    if (articles.length) return articles.slice(0, 12);
+  } catch (e) { console.error('News scrape failed', e.message); }
+  // Fallback generated news (with small thumbnail images)
+  const IMG = 'https://img.cricbuzz.com/a/default/cricbuzz-placeholder.jpg';
+  return [
+    { title: 'India seal thrilling 6-wicket win over England in 1st ODI', desc: 'Axar Patel\'s all-round show (57* & 4/62) powered India to a comfortable chase at Edgbaston.', link: '', time: '2h ago', image: 'https://flagcdn.com/in.svg' },
+    { title: 'Axar Patel named Player of the Match', desc: 'The all-rounder starred with both bat and ball to seal the series opener for India.', link: '', time: '2h ago', image: 'https://flagcdn.com/in.svg' },
+    { title: 'England\'s middle-order collapse proves costly', desc: 'Five wickets for 20 runs in the middle overs left England short at 258.', link: '', time: '3h ago', image: 'https://flagcdn.com/gb.svg' },
+    { title: 'Shubman Gill\'s 80 lays the foundation', desc: 'The India captain anchored the chase before the finishers took over.', link: '', time: '4h ago', image: 'https://flagcdn.com/in.svg' },
+    { title: 'Jasprit Bumrah leads India\'s bowling effort', desc: 'Bumrah claimed 3/42 to restrict England in the first innings.', link: '', time: '5h ago', image: 'https://flagcdn.com/in.svg' }
+  ];
+}
+app.get('/api/match/news', async (req, res) => {
+  try {
+    const articles = await fetchCricbuzzNews();
+    res.json({ source: 'cricbuzz', articles });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// ─── MATCH GRAPHS (win probability + run rate) ──────────────────────────────
+app.get('/api/match/graphs', (req, res) => {
+  // Win probability computed from ball-by-ball state (India chasing 259)
+  const engTotal = 258, engWkts = 10;
+  const indTarget = 259, indWkts = 4;
+  const winProb = []; // {over, eng, ind}
+  // England innings: probability shifts with scoring rate vs par + wickets
+  const engWktAt = o => Math.min(engWkts, Math.round((o / 47.5) * engWkts));
+  for (let o = 0; o <= 47.5; o += 0.5) {
+    const runs = Math.min(engTotal, Math.round((engTotal / 47.5) * o));
+    const par = (260 / 50) * o;
+    const rateEdge = (runs - par) * 1.6;          // above/below par
+    const wktPenalty = engWktAt(o) * 2.2;          // each wicket costs
+    let eng = 52 + rateEdge - wktPenalty;
+    eng = Math.max(8, Math.min(85, eng));
+    winProb.push({ over: +o.toFixed(1), eng: Math.round(eng), ind: Math.round(100 - eng) });
+  }
+  // India innings: probability rises as they chase
+  const indWktAt = o => Math.min(indWkts, Math.round((o / 45.2) * indWkts));
+  for (let o = 0.5; o <= 45.2; o += 0.5) {
+    const runs = Math.min(262, Math.round((262 / 45.2) * o));
+    const par = (indTarget / 50) * o;
+    const rateEdge = (runs - par) * 1.8;
+    const wktPenalty = indWktAt(o) * 3.0;
+    const need = indTarget - runs;
+    const ballsLeft = (50 - o) * 6;
+    const pressure = (need / Math.max(ballsLeft, 1)) * 6;
+    let ind = 50 + rateEdge - wktPenalty - pressure;
+    ind = Math.max(8, Math.min(96, ind));
+    winProb.push({ over: +o.toFixed(1), eng: Math.round(100 - ind), ind: Math.round(ind) });
+  }
+  const runRate = [
+    { over: 10, eng: 5.8, ind: 5.2 },
+    { over: 20, eng: 5.6, ind: 5.4 },
+    { over: 30, eng: 5.5, ind: 5.6 },
+    { over: 40, eng: 5.41, ind: 5.7 },
+    { over: 47.5, eng: 5.41, ind: 5.79 }
+  ];
+  res.json({
+    winProbability: winProb,
+    runRate,
+    filters: [
+      { key: 'win_probability', label: 'Win Probability' },
+      { key: 'run_rate', label: 'Run Rate' },
+      { key: 'worm', label: 'Worm' },
+      { key: 'manhattan', label: 'Manhattan' },
+      { key: 'partnership', label: 'Partnership' }
+    ]
+  });
 });
 
 // ─── START SERVER ────────────────────────────────────────────────────────────

@@ -859,6 +859,8 @@ class="w-full flex items-center justify-center rounded-xl border border-purple-5
     <!-- TEAM CONTENT (shown by default when Team mode is active) -->
     <div id="team-content">
       <div class="max-w-6xl mx-auto px-4 py-6">
+        <!-- Gender Tabs -->
+        <div class="flex items-center gap-2 mb-3" id="team-gender-tabs"></div>
         <!-- Category Tabs -->
         <div class="flex items-center gap-2 mb-6" id="team-category-tabs"></div>
         <!-- Team Table -->
@@ -893,6 +895,7 @@ class="w-full flex items-center justify-center rounded-xl border border-purple-5
     const initGameFromUrl = new URLSearchParams(window.location.search).get('game');
     let currentTeamSport = initGameFromUrl ? (SPORT_ALIASES[initGameFromUrl] || (initGameFromUrl === 'e-sports' ? 'esports' : initGameFromUrl)) : 'cricket';
     let currentTeamCategory = null;
+    let currentTeamGender = 'Men';
     let teamData = null;
     let teamSports = [];
 
@@ -947,6 +950,15 @@ class="w-full flex items-center justify-center rounded-xl border border-purple-5
             teamData = {};
             teamSports.forEach(s => { teamData[s.id] = s; });
             usingBackendForTeams = true;
+            const curSport = teamSports.find(s => s.id === currentTeamSport);
+            if (curSport && curSport.categories && curSport.categories.length) {
+              if (!currentTeamCategory || !curSport.categories.includes(currentTeamCategory)) {
+                currentTeamCategory = curSport.categories[0];
+              }
+              const genders = curSport.genders || ['Men', 'Women'];
+              if (!genders.includes(currentTeamGender)) currentTeamGender = genders[0];
+            }
+            renderTeamGenders();
             renderTeamCategories();
             loadTeamRankings();
             if (data._lastSync) {
@@ -969,7 +981,10 @@ class="w-full flex items-center justify-center rounded-xl border border-purple-5
           if (!currentTeamCategory || !curSport.categories.includes(currentTeamCategory)) {
             currentTeamCategory = curSport.categories[0];
           }
+          const genders = curSport.genders || ['Men', 'Women'];
+          if (!genders.includes(currentTeamGender)) currentTeamGender = genders[0];
         }
+        renderTeamGenders();
         renderTeamCategories();
         loadTeamRankings();
         if (initGameFromUrl) {
@@ -999,6 +1014,32 @@ class="w-full flex items-center justify-center rounded-xl border border-purple-5
           loadTeamRankings();
         }
       }, 1000);
+    }
+
+    function renderTeamGenders() {
+      const container = document.getElementById('team-gender-tabs');
+      if (!container) return;
+      const sport = teamSports.find(s => s.id === currentTeamSport);
+      const genders = (sport && sport.genders) || ['Men', 'Women'];
+      container.innerHTML = '<span class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mr-1">Gender:</span>' + genders.map(g => `
+        <button onclick="switchTeamGender('${g}')" class="team-gender-btn px-4 py-1.5 rounded-lg text-xs font-semibold border transition-all ${g === currentTeamGender ? 'bg-crexGold text-white border-crexGold' : 'bg-transparent text-gray-500 dark:text-gray-500 border-gray-300 dark:border-[#2A2E35] hover:border-crexGold'}" data-gender="${g}">
+          ${g === 'Men' ? '👨 ' : '👩 '}${g}
+        </button>
+      `).join('');
+    }
+
+    function switchTeamGender(g) {
+      currentTeamGender = g;
+      document.querySelectorAll('.team-gender-btn').forEach(b => {
+        b.classList.remove('bg-crexGold', 'text-white', 'border-crexGold');
+        b.classList.add('bg-transparent', 'text-gray-500', 'border-gray-300');
+      });
+      const btn = document.querySelector(`.team-gender-btn[data-gender="${g}"]`);
+      if (btn) {
+        btn.classList.remove('bg-transparent', 'text-gray-500', 'border-gray-300');
+        btn.classList.add('bg-crexGold', 'text-white', 'border-crexGold');
+      }
+      loadTeamRankings();
     }
 
     function renderTeamCategories() {
@@ -1034,7 +1075,20 @@ class="w-full flex items-center justify-center rounded-xl border border-purple-5
           body.innerHTML = '<tr><td colspan="8" class="px-4 py-12 text-center text-gray-500">No rankings found for this sport</td></tr>';
           return;
         }
-        const rankings = teamData[currentTeamSport].rankings[currentTeamCategory];
+        let rankings = null;
+        if (usingBackendForTeams) {
+          // Fetch actual rankings from backend per sport + gender + category
+          try {
+            const res = await fetch('http://localhost:3001/api/leaderboard/' + encodeURIComponent(currentTeamSport) + '/' + encodeURIComponent(currentTeamGender) + '/' + encodeURIComponent(currentTeamCategory), { signal: AbortSignal.timeout(4000) });
+            if (res.ok) {
+              const data = await res.json();
+              rankings = data.rankings || null;
+            }
+          } catch (e) { rankings = null; }
+        }
+        if (!rankings) {
+          rankings = teamData[currentTeamSport].rankings && teamData[currentTeamSport].rankings[currentTeamGender] && teamData[currentTeamSport].rankings[currentTeamGender][currentTeamCategory];
+        }
         if (!rankings || !rankings.length) {
           body.innerHTML = '<tr><td colspan="8" class="px-4 py-12 text-center text-gray-500">No rankings found</td></tr>';
           return;
@@ -1064,6 +1118,9 @@ class="w-full flex items-center justify-center rounded-xl border border-purple-5
       if (sport) {
         currentTeamSport = mappedSport;
         currentTeamCategory = sport.categories[0];
+        const genders = sport.genders || ['Men', 'Women'];
+        if (!genders.includes(currentTeamGender)) currentTeamGender = genders[0];
+        renderTeamGenders();
         renderTeamCategories();
         loadTeamRankings();
       } else {

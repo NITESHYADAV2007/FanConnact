@@ -158,6 +158,13 @@ document.addEventListener("DOMContentLoaded", () => {
       if (welcomeElem)
         welcomeElem.innerHTML = `Welcome back, ${displayIdentity}! <span class="ml-2 text-2xl">👋</span>`;
       if (userAvatarElem) userAvatarElem.src = photo;
+      // Expose the auth-based profile immediately (Firestore may refine it)
+      window.currentUserProfile = {
+        name: displayIdentity,
+        username: '',
+        photoURL: photo,
+        level: 1
+      };
 
       // Fetch extra Firestore details in the background
       try {
@@ -189,6 +196,13 @@ document.addEventListener("DOMContentLoaded", () => {
             const name = data.fullName || data.username || displayIdentity;
             welcomeElem.textContent = `Welcome back, ${name}!`;
           }
+          // Expose the real database profile for other modules (e.g. chat)
+          window.currentUserProfile = {
+            name: data.fullName || data.username || displayIdentity,
+            username: data.username || '',
+            photoURL: data.photoURL || photo,
+            level: data.level || 1
+          };
         }
       } catch (error) {
         console.error("Error fetching user data from Firestore:", error);

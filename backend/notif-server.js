@@ -5,7 +5,7 @@ const NOTIF_HISTORY_LIMIT = 50;
 let notifClients = new Set();
 
 function createNotificationServer(httpServer) {
-  const wss = new WebSocketServer({ server: httpServer, path: '/ws/notifications' });
+  const wss = new WebSocketServer({ noServer: true });
 
   wss.on('connection', (ws) => {
     notifClients.add(ws);
@@ -59,22 +59,7 @@ function getUnreadCount() {
   return notifications.filter(n => !n.read).length;
 }
 
-const SAMPLE_NOTIFS = [
-  { type: 'match', sport: 'cricket', title: 'Match Starting Soon', message: 'MI vs CSK starts in 15 mins', icon: '🏏' },
-  { type: 'match', sport: 'football', title: 'Goal!', message: 'Messi scores in the 72nd minute!', icon: '⚽' },
-  { type: 'match', sport: 'basketball', title: 'Score Update', message: 'LAL 98 - BOS 94 (Q4 2:00)', icon: '🏀' },
-  { type: 'system', sport: 'general', title: 'Welcome', message: 'Notifications are now live!', icon: '🎉' },
-];
-
-// Push sample notifications periodically
-if (typeof setInterval !== 'undefined') {
-  let idx = 0;
-  setInterval(() => {
-    if (notifClients.size > 0) {
-      pushNotification(SAMPLE_NOTIFS[idx % SAMPLE_NOTIFS.length]);
-      idx++;
-    }
-  }, 60000);
-}
+// No demo/fake notifications are pushed automatically — only real match events
+// (triggered via pushNotification from the backend) are sent to clients.
 
 module.exports = { createNotificationServer, pushNotification, markAsRead, getUnreadCount };
