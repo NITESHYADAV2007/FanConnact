@@ -42,6 +42,7 @@ const SPORTS = {
     label: "Cricket",
     icon: "sports_cricket",
     title: "ICC Cricket Rankings",
+    tournament: "ICC Men's & Women's Rankings 2026",
     subtitle:
       "Top 100 ranked players across formats — click any row for full profile",
     defaultCategory: "odi_bat_men",
@@ -88,6 +89,7 @@ const SPORTS = {
     label: "Football",
     icon: "sports_soccer",
     title: "Football Top Players",
+    tournament: "FIFA World Cup 2026 & Domestic Leagues",
     subtitle: "Top ranked footballers — click any row for full profile",
     defaultCategory: "scorers_men",
     filters: [
@@ -3492,6 +3494,7 @@ app.get("/api/sports/:sport", (req, res) => {
     label: sport.label,
     icon: sport.icon,
     title: sport.title,
+    tournament: sport.tournament || '',
     subtitle: sport.subtitle,
     defaultCategory: sport.defaultCategory,
     filters: sport.filters,

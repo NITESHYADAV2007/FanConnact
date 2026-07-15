@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 
 <html lang="en">
   <head>
@@ -139,6 +139,30 @@
       :root:not(.dark) .hover\:bg-gray-800:hover { background: #f1f5f9 !important; }
       :root:not(.dark) .hover\:text-white:hover { color: #0f172a !important; }
       :root:not(.dark) .dark\:hover\:bg-white\/5:hover { background: #f1f5f9 !important; }
+
+      /* ===== Crex-style Live Match View ===== */
+      #live-match-view { display: none; }
+      #live-match-view.open { display: block; }
+      .crex-pitch { background: linear-gradient(180deg,#0b3d1e 0%,#0e5a2b 60%,#0b3d1e 100%); }
+      .crex-card { background: #0b1626; border: 1px solid rgba(255,255,255,0.06); }
+      .dark .crex-card { background: #0b1626; }
+      :root:not(.dark) .crex-card { background: #0b1626; }
+      .crex-bat { background: #f7941d; }
+      .crex-bowl { background: #2b6cb0; }
+      .comm-item { animation: commIn .35s ease both; }
+      @keyframes commIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+      .comm-four { box-shadow: 0 0 0 1px #22c55e inset; }
+      .comm-six { box-shadow: 0 0 0 1px #a855f7 inset; }
+      .comm-wicket { box-shadow: 0 0 0 1px #ef4444 inset; }
+      .comm-milestone { box-shadow: 0 0 0 1px #f7941d inset; }
+      .badge-pop { display: inline-flex; align-items: center; justify-content: center; font-weight: 800; border-radius: 9999px; animation: badgePop .4s cubic-bezier(.2,1.4,.4,1) both; }
+      @keyframes badgePop { 0% { transform: scale(0) rotate(-20deg); } 60% { transform: scale(1.25) rotate(6deg); } 100% { transform: scale(1) rotate(0); } }
+      .run-float { position: absolute; font-weight: 800; pointer-events: none; animation: runFloat 1s ease-out forwards; }
+      @keyframes runFloat { 0% { opacity: 0; transform: translateY(0) scale(.6); } 20% { opacity: 1; } 100% { opacity: 0; transform: translateY(-34px) scale(1.1); } }
+      .pulse-live { animation: pulseLive 1.4s ease-in-out infinite; }
+      @keyframes pulseLive { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+      .score-flash { animation: scoreFlash .5s ease; }
+      @keyframes scoreFlash { 0% { color: #f7941d; transform: scale(1.18); } 100% { color: inherit; transform: scale(1); } }
     </style>
     <meta
       name="description"
@@ -530,15 +554,17 @@
               <div class="flex items-center justify-between mb-6" data-purpose="status-filters">
                 <div class="flex space-x-3">
                   <button
-                    class="bg-[#161d2b] border border-emerald-accent text-emerald-accent px-4 py-1.5 rounded-lg text-sm flex items-center space-x-2"
+                    data-status="live"
+                    class="status-tab bg-[#161d2b] border border-emerald-accent text-emerald-accent px-4 py-1.5 rounded-lg text-sm flex items-center space-x-2"
                   >
                     <span
                       class="w-2 h-2 bg-red-500 rounded-full animate-pulse"
                     ></span>
-                    <span class="">Live (6)</span>
+                    <span class="">Live (<span data-count="live">0</span>)</span>
                   </button>
                   <button
-                    class="bg-[#161d2b] border border-gray-700 text-gray-400 px-4 py-1.5 rounded-lg text-sm flex items-center space-x-2 hover:text-white"
+                    data-status="upcoming"
+                    class="status-tab bg-[#161d2b] border border-gray-700 text-gray-400 px-4 py-1.5 rounded-lg text-sm flex items-center space-x-2 hover:text-white"
                   >
                     <svg
                       class="w-4 h-4"
@@ -553,10 +579,11 @@
                         stroke-width="2"
                       ></path>
                     </svg>
-                    <span class="">Upcoming (12)</span>
+                    <span class="">Upcoming (<span data-count="upcoming">0</span>)</span>
                   </button>
                   <button
-                    class="bg-[#161d2b] border border-gray-700 text-gray-400 px-4 py-1.5 rounded-lg text-sm flex items-center space-x-2 hover:text-white"
+                    data-status="finished"
+                    class="status-tab bg-[#161d2b] border border-gray-700 text-gray-400 px-4 py-1.5 rounded-lg text-sm flex items-center space-x-2 hover:text-white"
                   >
                     <svg
                       class="w-4 h-4"
@@ -571,7 +598,7 @@
                         stroke-width="2"
                       ></path>
                     </svg>
-                    <span class="">Finished (24)</span>
+                    <span class="">Finished (<span data-count="finished">0</span>)</span>
                   </button>
                 </div>
                 <div class="flex space-x-3">
@@ -615,464 +642,7 @@
               </div>
               <!-- BEGIN: LiveMatchCards -->
               <div class="space-y-6" data-purpose="matches-list">
-                <div
-                  class="bg-white dark:bg-card-bg rounded-2xl p-6 border border-gray-200 dark:border-border-subtle hover:border-gray-600 transition-all cursor-pointer group shadow-soft"
-                  data-tournament="Football"
-                  data-status="live"
-                >
-                  <div class="flex items-center justify-between mb-8">
-                    <div class="flex items-center space-x-3">
-                      <span
-                        class="bg-red-500/20 text-red-500 text-[10px] font-bold px-2 py-0.5 rounded flex items-center"
-                        ><span
-                          class="w-1.5 h-1.5 bg-red-500 rounded-full mr-1.5"
-                        ></span>
-                        LIVE</span
-                      ><span class="text-xs font-semibold text-gray-400"
-                        >FIFA World Cup 2026 • Semi Final • Anfield</span
-                      >
-                    </div>
-                    <button class="text-gray-500 hover:text-white">
-                      <svg
-                        class="w-5 h-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewbox="0 0 24 24"
-                      >
-                        <path
-                          d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                        ></path>
-                      </svg>
-                    </button>
-                  </div>
-                  <div
-                    class="flex items-center justify-between px-4 lg:px-12 mb-8"
-                  >
-                    <div class="flex items-center space-x-6">
-                      <img
-                        alt="LIV"
-                        class="w-16 h-16 lg:w-20 lg:h-20 object-contain"
-                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuD5F4IAkw1Tcq3s82q-6HXUUCMtiuOErKPjyhaUcdL-37MM8XeziLK_571FCMPnzLlHNvGzsWYgaXyVqH4L9Q5lxN_naZ3vna4ipayFNEW1kfZ0uL5mn9XUSTWC5_EfV_RiBYched_rJOEcjRPpiAm_HTCu44QjjNt7WNRiuCq1L8EyYcGkt-UxwWBAUNWxKedZJ4jqpvxGILKeuu2QtBpWiUnmzufAFGe3ThGPCmL09CdD_vq_A5oBbFaOVv5vsKVsdUgu18eRoTAD"
-                      />
-                      <div><h2 class="text-2xl font-bold">2</h2></div>
-                    </div>
-                    <div class="text-center">
-                      <span class="text-gray-600 font-bold text-xl">VS</span>
-                      <p
-                        class="text-emerald-accent text-[11px] font-semibold mt-2 uppercase tracking-wide"
-                      >
-                        85' Minutes Played
-                      </p>
-                    </div>
-                    <div class="flex items-center space-x-6 flex-row-reverse">
-                      <img
-                        alt="MCI"
-                        class="w-16 h-16 lg:w-20 lg:h-20 object-contain ml-6"
-                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuDG3xugBAZbkS4xTfCf_BSLMQCIvdK4dOPZSP0vG79Luxedhru9u1NGAK-rNJuaVbiJiA6xU_5dym83gRVQaJFUKxPK8afSkszZ3xBu6L3XGZz620OtKlqVDvtM4kTt9s7psaTc9y557vWS8ewNWd5aL8ASFgIV_lSTUHrdtTLogSOFQjPzXiFuvEggCu9vru28wunCU_cTLHtixOgKBqRjJpT72hw3yxIDfjWQVDtrE35zlkSUbG4W40zzz1Mc5wds0kmf0p2tHmGy"
-                      />
-                      <div class="text-right">
-                        <h2 class="text-2xl font-bold">1</h2>
-                      </div>
-                    </div>
-                  </div>
-                  <div
-                    class="flex items-center justify-between pt-6 border-t border-gray-800/50"
-                  >
-                    <div class="flex items-center space-x-3">
-                      <span
-                        class="text-[11px] text-slate-500 dark:text-gray-400 font-medium"
-                        >1.2M Fans Watching</span
-                      >
-                    </div>
-                    <div class="flex space-x-3">
-                      <button onclick="window.location.href='match-center.html?sport=football&home=LIV&away=MCI'"
-                        class="bg-[#161d2b] border border-emerald-accent/50 text-emerald-accent px-4 py-1.5 rounded-lg text-xs font-bold flex items-center space-x-2 hover:bg-emerald-accent hover:text-black transition-all"
-                      >
-                        <span class="">Live Chat</span></button
-                      ><button onclick="window.location.href='match-center.html?sport=football&home=LIV&away=MCI'"
-                        class="bg-gray-800/50 text-white px-4 py-1.5 rounded-lg text-xs font-bold flex items-center space-x-2 hover:bg-gray-700 transition-all"
-                      >
-                        <span class="">Stats</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-                <div
-                  class="bg-white dark:bg-card-bg rounded-2xl p-6 border border-gray-200 dark:border-border-subtle hover:border-gray-600 transition-all cursor-pointer group shadow-soft"
-                  data-tournament="Basketball"
-                  data-status="live"
-                >
-                  <div class="flex items-center justify-between mb-8">
-                    <div class="flex items-center space-x-3">
-                      <span
-                        class="bg-red-500/20 text-red-500 text-[10px] font-bold px-2 py-0.5 rounded flex items-center"
-                        ><span
-                          class="w-1.5 h-1.5 bg-red-500 rounded-full mr-1.5"
-                        ></span>
-                        LIVE</span
-                      ><span class="text-xs font-semibold text-gray-400"
-                        >NBA Summer League • Cox Pavilion</span
-                      >
-                    </div>
-                    <button class="text-gray-500 hover:text-white">
-                      <svg
-                        class="w-5 h-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewbox="0 0 24 24"
-                      >
-                        <path
-                          d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                        ></path>
-                      </svg>
-                    </button>
-                  </div>
-                  <div
-                    class="flex items-center justify-between px-4 lg:px-12 mb-8"
-                  >
-                    <div class="flex items-center space-x-6">
-                      <img
-                        alt="LAL"
-                        class="w-16 h-16 lg:w-20 lg:h-20 object-contain"
-                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuBnpPa9a6kcrxOjVSgDsTPLC1b-wy4tkJjWnMRynflIOyEw7kx-W7VkMQm0T8Gl7rss2Wj3bd8-H3tozCn5tQWjFbcjVu8NF0hjq0tTCx0ryM48kEQ7xH8JPwMKsXupzxEUAUqd9BZTCkMfDshAX3Lv6vCuSEz9qPrhhvBcav2nfeNnZXD_9q7pmrQenrOnj8kTbt93qVvbsonRNP53lhS56I_qgtNijlwmfyLkLtCPuxOBuQVtZqICSGkzRhk0DTIEuptMtiJLUbsZ"
-                      />
-                      <div><h2 class="text-2xl font-bold">102</h2></div>
-                    </div>
-                    <div class="text-center">
-                      <span class="text-gray-600 font-bold text-xl">VS</span>
-                      <p
-                        class="text-emerald-accent text-[11px] font-semibold mt-2 uppercase tracking-wide"
-                      >
-                        Q4 - 2:45 Remaining
-                      </p>
-                    </div>
-                    <div class="flex items-center space-x-6 flex-row-reverse">
-                      <img
-                        alt="GSW"
-                        class="w-16 h-16 lg:w-20 lg:h-20 object-contain ml-6"
-                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuAYnt5XJGsKZ7yYaZMonR1NBZLAW7Xisxphie8zyO6oc-VQD4mPMbNcKdOR9cTtN7Yk90_KcYUUFe1vwhn7zAJHzllXv3OEAO-CQIIYfh0hT_GcMsZCEza-kUbR90z_0lZ9TzFmSLzymS4-bFySo5iNlIpJ3owQCB6fWTbG28RzBlOLnQ271DU7kbVbS7-zcHB0_TS3412h77N58knfrJfV3RDu_gDPonL-56OGerXLlwpMxlA8l3SB8T7g_s9uY_XdTtgritIRG1xd"
-                      />
-                      <div class="text-right">
-                        <h2 class="text-2xl font-bold">98</h2>
-                      </div>
-                    </div>
-                  </div>
-                  <div
-                    class="flex items-center justify-between pt-6 border-t border-gray-800/50"
-                  >
-                    <div class="flex items-center space-x-3">
-                      <span
-                        class="text-[11px] text-slate-500 dark:text-gray-400 font-medium"
-                        >850K Fans Watching</span
-                      >
-                    </div>
-                    <div class="flex space-x-3">
-                      <button onclick="window.location.href='match-center.html?sport=basketball&home=LAL&away=GSW'"
-                        class="bg-[#161d2b] border border-emerald-accent/50 text-emerald-accent px-4 py-1.5 rounded-lg text-xs font-bold flex items-center space-x-2 hover:bg-emerald-accent hover:text-black transition-all"
-                      >
-                        <span class="">Live Chat</span></button
-                      ><button onclick="window.location.href='match-center.html?sport=basketball&home=LAL&away=GSW'"
-                        class="bg-gray-800/50 text-white px-4 py-1.5 rounded-lg text-xs font-bold flex items-center space-x-2 hover:bg-gray-700 transition-all"
-                      >
-                        <span class="">Box Score</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Match Card 3 (Cricket) -->
-                <div
-                  class="bg-white dark:bg-card-bg rounded-2xl p-6 border border-gray-200 dark:border-border-subtle hover:border-emerald-accent/50 transition-all cursor-pointer group shadow-soft"
-                  data-tournament="Cricket"
-                  data-status="live"
-                >
-                  <div class="flex items-center justify-between mb-8">
-                    <div class="flex items-center space-x-3">
-                      <span
-                        class="bg-red-500/20 text-red-500 text-[10px] font-bold px-2 py-0.5 rounded flex items-center"
-                      >
-                        <span
-                          class="w-1.5 h-1.5 bg-red-500 rounded-full mr-1.5"
-                        ></span>
-                        LIVE
-                      </span>
-                      <span class="text-xs font-semibold text-gray-400"
-                        >The Hundred 2026 • Lord's • MI vs CSK</span
-                      >
-                    </div>
-                  </div>
-                  <div
-                    class="flex items-center justify-between px-4 lg:px-12 mb-8"
-                  >
-                    <div class="flex items-center space-x-6">
-                      <img
-                        class="w-16 h-16 lg:w-20 lg:h-20 object-contain"
-                        src="https://upload.wikimedia.org/wikipedia/en/thumb/c/cd/Mumbai_Indians_Logo.svg/512px-Mumbai_Indians_Logo.svg.png"
-                      />
-                      <div>
-                        <h2
-                          class="text-2xl font-bold text-slate-900 dark:text-white"
-                        >
-                          185/4
-                        </h2>
-                        <p class="text-xs text-gray-400">(18.2 ov)</p>
-                      </div>
-                    </div>
-                    <div class="text-center">
-                      <span class="text-gray-600 font-bold text-xl">VS</span>
-                      <p
-                        class="text-emerald-accent text-[10px] font-semibold mt-2 uppercase"
-                      >
-                        Need 42 runs in 10 balls
-                      </p>
-                    </div>
-                    <div class="flex items-center space-x-6 flex-row-reverse">
-                      <img
-                        class="w-16 h-16 lg:w-20 lg:h-20 object-contain ml-6"
-                        src="https://upload.wikimedia.org/wikipedia/en/thumb/2/2b/Chennai_Super_Kings_Logo.svg/512px-Chennai_Super_Kings_Logo.svg.png"
-                      />
-                      <div class="text-right">
-                        <h2
-                          class="text-2xl font-bold text-slate-900 dark:text-white"
-                        >
-                          165/7
-                        </h2>
-                        <p class="text-xs text-gray-400">(20 ov)</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div
-                    class="flex justify-end pt-6 border-t border-gray-800/50"
-                  >
-                    <button onclick="window.location.href='match-center.html?sport=cricket&home=MI&away=CSK'"
-                      class="bg-[#161d2b] border border-emerald-accent/50 text-emerald-accent px-4 py-1.5 rounded-lg text-xs font-bold hover:bg-emerald-accent hover:text-black"
-                    >
-                      Match Center
-                    </button>
-                  </div>
-                </div>
-
-                <!-- Match Card 4 (Tennis) -->
-                <div
-                  class="bg-white dark:bg-card-bg rounded-2xl p-6 border border-gray-200 dark:border-border-subtle hover:border-emerald-accent/50 transition-all cursor-pointer group shadow-soft"
-                  data-tournament="Tennis"
-                  data-status="live"
-                >
-                  <div class="flex items-center justify-between mb-8">
-                    <div class="flex items-center space-x-3">
-                      <span
-                        class="bg-red-500/20 text-red-500 text-[10px] font-bold px-2 py-0.5 rounded flex items-center"
-                      >
-                        <span
-                          class="w-1.5 h-1.5 bg-red-500 rounded-full mr-1.5"
-                        ></span>
-                        LIVE
-                      </span>
-                      <span class="text-xs font-semibold text-gray-400"
-                        >ATP Hamburg • Quarter Final • Rothenbaum</span
-                      >
-                    </div>
-                  </div>
-                  <div
-                    class="flex items-center justify-between px-4 lg:px-12 mb-8"
-                  >
-                    <div class="flex items-center space-x-6">
-                      <img
-                        class="w-16 h-16 lg:w-20 lg:h-20 object-cover rounded-full border-2 border-emerald-accent"
-                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Carlos_Alcaraz_2023_US_Open.jpg/512px-Carlos_Alcaraz_2023_US_Open.jpg"
-                      />
-                      <div>
-                        <h2
-                          class="text-2xl font-bold text-slate-900 dark:text-white"
-                        >
-                          1
-                        </h2>
-                        <p class="text-xs text-gray-400">Set</p>
-                      </div>
-                    </div>
-                    <div class="text-center">
-                      <span class="text-gray-600 font-bold text-xl">VS</span>
-                      <p
-                        class="text-emerald-accent text-[10px] font-semibold mt-2 uppercase"
-                      >
-                        Set 2: 4-2
-                      </p>
-                    </div>
-                    <div class="flex items-center space-x-6 flex-row-reverse">
-                      <img
-                        class="w-16 h-16 lg:w-20 lg:h-20 object-cover rounded-full border-2 border-white/10 ml-6"
-                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Novak_Djokovic_2023_US_Open.jpg/512px-Novak_Djokovic_2023_US_Open.jpg"
-                      />
-                      <div class="text-right">
-                        <h2
-                          class="text-2xl font-bold text-slate-900 dark:text-white"
-                        >
-                          0
-                        </h2>
-                        <p class="text-xs text-gray-400">Set</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div
-                    class="flex justify-end pt-6 border-t border-gray-800/50"
-                  >
-                    <button onclick="window.location.href='match-center.html?sport=tennis&home=Alcaraz&away=Djokovic'"
-                      class="bg-[#161d2b] border border-emerald-accent/50 text-emerald-accent px-4 py-1.5 rounded-lg text-xs font-bold hover:bg-emerald-accent hover:text-black"
-                    >
-                      View Stats
-                    </button>
-                  </div>
-                </div>
-
-                <!-- Match Card 5 (Baseball) -->
-                <div
-                  class="bg-white dark:bg-card-bg rounded-2xl p-6 border border-gray-200 dark:border-border-subtle hover:border-emerald-accent/50 transition-all cursor-pointer group shadow-soft"
-                  data-tournament="Baseball"
-                  data-status="live"
-                >
-                  <div class="flex items-center justify-between mb-8">
-                    <div class="flex items-center space-x-3">
-                      <span
-                        class="bg-red-500/20 text-red-500 text-[10px] font-bold px-2 py-0.5 rounded flex items-center"
-                      >
-                        <span
-                          class="w-1.5 h-1.5 bg-red-500 rounded-full mr-1.5"
-                        ></span>
-                        LIVE
-                      </span>
-                      <span class="text-xs font-semibold text-gray-400"
-                        >MLB Regular Season • Dodger Stadium</span
-                      >
-                    </div>
-                  </div>
-                  <div
-                    class="flex items-center justify-between px-4 lg:px-12 mb-8"
-                  >
-                    <div class="flex items-center space-x-6">
-                      <img
-                        class="w-16 h-16 lg:w-20 lg:h-20 object-contain"
-                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Los_Angeles_Dodgers_Logo.svg/512px-Los_Angeles_Dodgers_Logo.svg.png"
-                      />
-                      <div>
-                        <h2
-                          class="text-2xl font-bold text-slate-900 dark:text-white"
-                        >
-                          4
-                        </h2>
-                        <p class="text-xs text-gray-400">Runs</p>
-                      </div>
-                    </div>
-                    <div class="text-center">
-                      <span class="text-gray-600 font-bold text-xl">VS</span>
-                      <p
-                        class="text-emerald-accent text-[10px] font-semibold mt-2 uppercase"
-                      >
-                        Top 5th • 2 Outs
-                      </p>
-                    </div>
-                    <div class="flex items-center space-x-6 flex-row-reverse">
-                      <img
-                        class="w-16 h-16 lg:w-20 lg:h-20 object-contain ml-6"
-                        src="https://upload.wikimedia.org/wikipedia/en/thumb/a/ad/New_York_Yankees_logo.svg/512px-New_York_Yankees_logo.svg.png"
-                      />
-                      <div class="text-right">
-                        <h2
-                          class="text-2xl font-bold text-slate-900 dark:text-white"
-                        >
-                          2
-                        </h2>
-                        <p class="text-xs text-gray-400">Runs</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div
-                    class="flex justify-end pt-6 border-t border-gray-800/50"
-                  >
-                    <button onclick="window.location.href='match-center.html?sport=baseball&home=Dodgers&away=Yankees'"
-                      class="bg-[#161d2b] border border-emerald-accent/50 text-emerald-accent px-4 py-1.5 rounded-lg text-xs font-bold hover:bg-emerald-accent hover:text-black"
-                    >
-                      Watch Live
-                    </button>
-                  </div>
-                </div>
-                
-                <!-- Match Card 6 (Hockey) -->
-                <div
-                  class="bg-white dark:bg-card-bg rounded-2xl p-6 border border-gray-200 dark:border-border-subtle hover:border-emerald-accent/50 transition-all cursor-pointer group shadow-soft"
-                  data-tournament="Hockey"
-                  data-status="live"
-                >
-                  <div class="flex items-center justify-between mb-8">
-                    <div class="flex items-center space-x-3">
-                      <span
-                        class="bg-red-500/20 text-red-500 text-[10px] font-bold px-2 py-0.5 rounded flex items-center"
-                      >
-                        <span
-                          class="w-1.5 h-1.5 bg-red-500 rounded-full mr-1.5"
-                        ></span>
-                        LIVE
-                      </span>
-                      <span class="text-xs font-semibold text-gray-400"
-                        >NHL Free Agency 2026 • Summer Showcase</span
-                      >
-                    </div>
-                  </div>
-                  <div
-                    class="flex items-center justify-between px-4 lg:px-12 mb-8"
-                  >
-                    <div class="flex items-center space-x-6">
-                      <img
-                        class="w-16 h-16 lg:w-20 lg:h-20 object-contain"
-                        src="https://upload.wikimedia.org/wikipedia/en/thumb/2/2d/Washington_Capitals.svg/512px-Washington_Capitals.svg.png"
-                      />
-                      <div>
-                        <h2
-                          class="text-2xl font-bold text-slate-900 dark:text-white"
-                        >
-                          3
-                        </h2>
-                        <p class="text-xs text-gray-400">Goals</p>
-                      </div>
-                    </div>
-                    <div class="text-center">
-                      <span class="text-gray-600 font-bold text-xl">VS</span>
-                      <p
-                        class="text-emerald-accent text-[10px] font-semibold mt-2 uppercase"
-                      >
-                        04:12 Left
-                      </p>
-                    </div>
-                    <div class="flex items-center space-x-6 flex-row-reverse">
-                      <img
-                        class="w-16 h-16 lg:w-20 lg:h-20 object-contain ml-6"
-                        src="https://upload.wikimedia.org/wikipedia/en/thumb/a/ac/Vegas_Golden_Knights_logo.svg/512px-Vegas_Golden_Knights_logo.svg.png"
-                      />
-                      <div class="text-right">
-                        <h2
-                          class="text-2xl font-bold text-slate-900 dark:text-white"
-                        >
-                          3
-                        </h2>
-                        <p class="text-xs text-gray-400">Goals</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div
-                    class="flex justify-end pt-6 border-t border-gray-800/50"
-                  >
-                    <button onclick="window.location.href='match-center.html?sport=hockey&home=Capitals&away=GoldenKnights'"
-                      class="bg-[#161d2b] border border-emerald-accent/50 text-emerald-accent px-4 py-1.5 rounded-lg text-xs font-bold hover:bg-emerald-accent hover:text-black"
-                    >
-                      Full Stats
-                    </button>
-                  </div>
-                </div>
+                <!-- Real match cards injected from js/matches-data.js -->
               </div>
               <!-- END: LiveMatchCards -->
             </div>
@@ -1176,7 +746,7 @@
                         <p
                           class="text-[10px] text-gray-500 font-bold leading-none mb-1"
                         >
-                          IPL 2024 • Match 56
+                          IPL 2024 â€¢ Match 56
                         </p>
                         <p
                           class="text-xs font-bold dark:text-white light:text-slate-800"
@@ -1204,7 +774,7 @@
                         <p
                           class="text-[10px] text-gray-500 font-bold leading-none mb-1"
                         >
-                          Champions League • Quarter Final
+                          Champions League â€¢ Quarter Final
                         </p>
                         <p
                           class="text-xs font-bold dark:text-white light:text-slate-800"
@@ -1232,7 +802,7 @@
                         <p
                           class="text-[10px] text-gray-500 font-bold leading-none mb-1"
                         >
-                          NBA • Regular Season
+                          NBA â€¢ Regular Season
                         </p>
                         <p
                           class="text-xs font-bold dark:text-white light:text-slate-800"
@@ -1257,7 +827,7 @@
                         <p
                           class="text-[10px] text-gray-500 font-bold leading-none mb-1"
                         >
-                          NHL • Regular Season
+                          NHL â€¢ Regular Season
                         </p>
                         <p
                           class="text-xs font-bold dark:text-white light:text-slate-800"
@@ -1298,7 +868,7 @@
                       />
                       <div>
                         <p class="text-[10px] text-gray-500 font-bold leading-none mb-1">
-                          IPL 2024 • Match 56
+                          IPL 2024 â€¢ Match 56
                         </p>
                         <p class="text-xs font-bold dark:text-white light:text-slate-800">
                           MI vs CSK
@@ -1319,7 +889,7 @@
                       />
                       <div>
                         <p class="text-[10px] text-gray-500 font-bold leading-none mb-1">
-                          Premier League • Matchday 37
+                          Premier League â€¢ Matchday 37
                         </p>
                         <p class="text-xs font-bold dark:text-white light:text-slate-800">
                           LIV vs MCI
@@ -1340,7 +910,7 @@
                       />
                       <div>
                         <p class="text-[10px] text-gray-500 font-bold leading-none mb-1">
-                          MLB • Dodger Stadium
+                          MLB â€¢ Dodger Stadium
                         </p>
                         <p class="text-xs font-bold dark:text-white light:text-slate-800">
                           LAD vs NYY
@@ -1361,7 +931,7 @@
                       />
                       <div>
                         <p class="text-[10px] text-gray-500 font-bold leading-none mb-1">
-                          IPL 2025 • Qualifier 1
+                          IPL 2025 â€¢ Qualifier 1
                         </p>
                         <p class="text-xs font-bold dark:text-white light:text-slate-800">
                           CSK vs RCB
@@ -1380,24 +950,326 @@
           <!-- All Games Section Removed -->
         </div>
       </main>
+
+      <!-- BEGIN: Crex-style Live Match View (opens on live card click) -->
+      <div id="live-match-view" class="fixed inset-0 z-[60] overflow-y-auto bg-black/80 backdrop-blur-sm">
+        <div class="min-h-full lg:max-w-5xl lg:mx-auto bg-[#0a0e1a] text-white">
+          <!-- Top bar -->
+          <div class="sticky top-0 z-10 flex items-center justify-between px-4 py-3 bg-[#0b1626] border-b border-white/10">
+            <button id="lmv-close" class="flex items-center gap-2 text-sm text-gray-300 hover:text-white">
+              <span class="material-symbols-outlined text-xl">arrow_back</span> Matches
+            </button>
+            <div class="flex items-center gap-2 text-xs">
+              <span class="w-2 h-2 rounded-full bg-red-500 pulse-live"></span>
+              <span id="lmv-status" class="font-bold text-red-400 uppercase tracking-wide">Live</span>
+            </div>
+            <button id="lmv-chat" class="text-xs px-3 py-1.5 rounded-lg bg-[#f7941d] text-black font-bold">Live Chat</button>
+          </div>
+
+          <div class="p-4 space-y-4">
+            <!-- Scoreboard -->
+            <div class="crex-card rounded-2xl overflow-hidden">
+              <div class="px-4 py-2 text-[11px] uppercase tracking-wide text-gray-400" id="lmv-series">Series</div>
+              <div class="crex-pitch px-4 py-5">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <img id="lmv-home-logo" class="w-12 h-12 object-contain" src="" alt="">
+                    <div>
+                      <div id="lmv-home-name" class="font-bold text-lg leading-none">HOME</div>
+                      <div id="lmv-home-score" class="text-3xl font-extrabold mt-1 score-flash">0</div>
+                      <div id="lmv-home-sub" class="text-[11px] text-gray-300"></div>
+                    </div>
+                  </div>
+                  <div class="text-center text-xs text-gray-300">
+                    <div id="lmv-state" class="font-semibold">LIVE</div>
+                    <div id="lmv-over" class="mt-1"></div>
+                  </div>
+                  <div class="flex items-center gap-3 text-right">
+                    <div>
+                      <div id="lmv-away-name" class="font-bold text-lg leading-none">AWAY</div>
+                      <div id="lmv-away-score" class="text-3xl font-extrabold mt-1 score-flash">0</div>
+                      <div id="lmv-away-sub" class="text-[11px] text-gray-300"></div>
+                    </div>
+                    <img id="lmv-away-logo" class="w-12 h-12 object-contain" src="" alt="">
+                  </div>
+                </div>
+              </div>
+              <!-- Current players strip -->
+              <div class="grid grid-cols-2 gap-px bg-white/10">
+                <div class="bg-[#0b1626] px-4 py-3 flex items-center gap-3">
+                  <span class="text-[10px] uppercase font-bold text-[#f7941d]">Batting</span>
+                  <img id="lmv-bat1-img" class="w-8 h-8 rounded-full bg-gray-700 object-cover" src="" alt="">
+                  <div class="text-sm"><span id="lmv-bat1" class="font-semibold">-</span> <span id="lmv-bat1-runs" class="text-gray-400 text-xs"></span></div>
+                  <img id="lmv-bat2-img" class="w-8 h-8 rounded-full bg-gray-700 object-cover ml-2" src="" alt="">
+                  <div class="text-sm"><span id="lmv-bat2" class="font-semibold">-</span> <span id="lmv-bat2-runs" class="text-gray-400 text-xs"></span></div>
+                </div>
+                <div class="bg-[#0b1626] px-4 py-3 flex items-center gap-3">
+                  <span class="text-[10px] uppercase font-bold text-[#2b6cb0]">Bowling</span>
+                  <img id="lmv-bowl-img" class="w-8 h-8 rounded-full bg-gray-700 object-cover" src="" alt="">
+                  <div class="text-sm"><span id="lmv-bowl" class="font-semibold">-</span> <span id="lmv-bowl-fig" class="text-gray-400 text-xs"></span></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Commentary -->
+            <div class="crex-card rounded-2xl p-4">
+              <div class="flex items-center justify-between mb-3">
+                <h3 class="font-bold text-sm uppercase tracking-wide">Live Commentary</h3>
+                <span class="text-[11px] text-gray-400">Ball-by-ball</span>
+              </div>
+              <div id="lmv-comm" class="space-y-2 max-h-[55vh] overflow-y-auto pr-1"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- END: Crex-style Live Match View -->
+
     </div>
     <script type="module" src="js/script.js"></script>
     <script src="js/theme.js"></script>
-    <script src="js/sport-filters.js"></script>
     <script>
-    document.addEventListener('DOMContentLoaded',function(){
-      document.querySelectorAll('[onclick*="match-center.html"]').forEach(function(b){
-        var c=b.closest('[data-status]'); if(!c) return;
-        var st=c.getAttribute('data-status')||'live';
-        var se=c.querySelectorAll('.text-4xl,.sm\\:text-2xl,.text-2xl');
-        var hs='',as='';
-        if(se.length>=2){ hs=se[0].textContent.trim(); as=se[1].textContent.trim(); if(hs==='-')hs=''; if(as==='-')as=''; }
-        var oc=b.getAttribute('onclick'); if(!oc) return;
-        var m=oc.match(/'(match-center\.html\?[^']+)'/); if(!m) return;
-        var u=m[1]; if(hs)u+='&hs='+encodeURIComponent(hs); if(as)u+='&as='+encodeURIComponent(as);
-        u+='&state='+st; b.setAttribute('onclick',"window.location.href='"+u+"'");
+    /* ============================================================
+       Crex-style Live Match View â€” sport-aware, data-driven
+       Opens when a LIVE match card is clicked. Shows avatars,
+       live scoreboard and ball-by-ball commentary with
+       FOUR / SIX / WICKET / MILESTONE animations per sport.
+       ============================================================ */
+    (function () {
+      'use strict';
+      var view = document.getElementById('live-match-view');
+      if (!view) return;
+      var $ = function (id) { return document.getElementById(id); };
+      var timers = [];
+      function clearTimers() { timers.forEach(clearTimeout); timers = []; }
+      function later(fn, ms) { var t = setTimeout(fn, ms); timers.push(t); return t; }
+
+      // ---- Avatar helpers (initials fallback) ----
+      function initials(name) {
+        var parts = String(name).replace(/[^a-zA-Z ]/g, '').trim().split(/\s+/);
+        if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+        return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+      }
+      function avatar(name, bg) {
+        return 'https://ui-avatars.com/api/?name=' + encodeURIComponent(initials(name)) +
+          '&background=' + (bg || '374151') + '&color=fff&size=80&bold=true&format=png';
+      }
+
+      // ---- Per-sport commentary generators ----
+      // Each returns { text, type, runs, badge } where type in four/six/wicket/milestone/normal
+      var GEN = {
+        cricket: function (s) {
+          var r = Math.random();
+          if (r < 0.16) return { type: 'four', runs: 4, badge: '4', text: s.striker + ' times it beautifully through the covers for FOUR! ' + s.home + ' ' + s.homeScore + '/' + s.homeWkts + '.' };
+          if (r < 0.26) return { type: 'six', runs: 6, badge: '6', text: s.striker + ' launches ' + s.bowler + ' over long-on for a massive SIX! ' + s.home + ' ' + s.homeScore + '/' + s.homeWkts + '.' };
+          if (r < 0.34) { s.homeWkts++; return { type: 'wicket', runs: 0, badge: 'W', text: 'WICKET! ' + s.striker + ' b ' + s.bowler + ' ' + s.homeScore + '/' + s.homeWkts + '. Big breakthrough!' }; }
+          if (r < 0.40) return { type: 'milestone', runs: 1, badge: '50', text: 'Milestone! ' + s.striker + ' brings up a well-made half-century. ' + s.home + ' ' + s.homeScore + '/' + s.homeWkts + '.' };
+          var runs = [0, 1, 1, 2, 1, 3, 2, 1][Math.floor(Math.random() * 8)];
+          return { type: 'normal', runs: runs, badge: String(runs), text: runs + ' run' + (runs === 1 ? '' : 's') + ' taken off ' + s.bowler + '. ' + s.striker + ' on strike.' };
+        },
+        football: function (s) {
+          var r = Math.random();
+          if (r < 0.18) { s.homeScore++; return { type: 'wicket', runs: 1, badge: 'âš½', text: 'GOOOAL! ' + s.striker + ' finds the net for ' + s.home + '! ' + s.home + ' ' + s.homeScore + 'â€“' + s.awayScore + '.' }; }
+          if (r < 0.30) return { type: 'milestone', runs: 0, badge: 'ðŸŸ¨', text: 'Yellow card for ' + s.bowler + ' after a late challenge. ' + s.away + ' free-kick in a dangerous area.' };
+          if (r < 0.42) return { type: 'four', runs: 0, badge: 'ðŸŽ¯', text: 'Great chance! ' + s.striker + ' forces a fine save from the ' + s.away + ' keeper.' };
+          if (r < 0.52) return { type: 'six', runs: 0, badge: 'ðŸš€', text: 'Stunning strike from distance by ' + s.striker + ' â€” just wide! ' + s.home + ' ' + s.homeScore + 'â€“' + s.awayScore + '.' };
+          return { type: 'normal', runs: 0, badge: 'â€¢', text: 'Possession with ' + (Math.random() < 0.5 ? s.home : s.away) + '. ' + s.striker + ' looking lively on the wing.' };
+        },
+        basketball: function (s) {
+          var r = Math.random();
+          if (r < 0.22) { s.homeScore += 3; return { type: 'six', runs: 3, badge: '3PT', text: 'Three-pointer from downtown by ' + s.striker + '! ' + s.home + ' ' + s.homeScore + 'â€“' + s.awayScore + '.' }; }
+          if (r < 0.42) { s.homeScore += 2; return { type: 'four', runs: 2, badge: '2PT', text: 'And-1 opportunity! ' + s.striker + ' finishes strong through contact. ' + s.home + ' ' + s.homeScore + 'â€“' + s.awayScore + '.' }; }
+          if (r < 0.54) return { type: 'wicket', runs: 0, badge: 'ðŸ€', text: 'Steal and fast break! ' + s.bowler + ' picks ' + s.away + ' pocket. Transition bucket.' };
+          if (r < 0.64) return { type: 'milestone', runs: 0, badge: 'ðŸ”¥', text: 'Milestone: ' + s.striker + ' reaches 30 points on the night. On fire!' };
+          return { type: 'normal', runs: 0, badge: 'â€¢', text: s.striker + ' brings the ball up. ' + s.home + ' ' + s.homeScore + 'â€“' + s.awayScore + '.' };
+        },
+        tennis: function (s) {
+          var r = Math.random();
+          if (r < 0.20) return { type: 'wicket', runs: 0, badge: 'ðŸŽ¾', text: 'BREAK POINT! ' + s.striker + ' breaks serve against ' + s.away + '. ' + s.state + '.' };
+          if (r < 0.36) return { type: 'four', runs: 0, badge: 'ACE', text: 'Ace! ' + s.striker + ' unleashes a 210km/h serve. ' + s.state + '.' };
+          if (r < 0.50) return { type: 'six', runs: 0, badge: 'âš¡', text: 'Winner cross-court by ' + s.striker + '! Unreturnable. ' + s.state + '.' };
+          if (r < 0.62) return { type: 'milestone', runs: 0, badge: 'ðŸ†', text: 'Set point saved by ' + s.striker + '. Incredible defence. ' + s.state + '.' };
+          return { type: 'normal', runs: 0, badge: 'â€¢', text: s.striker + ' holds serve comfortably. ' + s.state + '.' };
+        },
+        baseball: function (s) {
+          var r = Math.random();
+          if (r < 0.18) { s.homeScore++; return { type: 'six', runs: 1, badge: 'HR', text: 'HOME RUN! ' + s.striker + ' sends it out of the park! ' + s.home + ' ' + s.homeScore + 'â€“' + s.awayScore + '.' }; }
+          if (r < 0.34) { s.homeScore++; return { type: 'four', runs: 1, badge: 'RBI', text: 'Base hit, RBI for ' + s.striker + '. ' + s.home + ' ' + s.homeScore + 'â€“' + s.awayScore + '.' }; }
+          if (r < 0.46) return { type: 'wicket', runs: 0, badge: 'âš¾', text: 'Strikeout! ' + s.bowler + ' paints the corner. ' + s.away + ' batter sits down.' };
+          if (r < 0.58) return { type: 'milestone', runs: 0, badge: 'ðŸ”¥', text: 'Milestone: ' + s.striker + ' extends hit streak to 12 games.' };
+          return { type: 'normal', runs: 0, badge: 'â€¢', text: s.bowler + ' on the mound. ' + s.striker + ' at the plate. ' + s.home + ' ' + s.homeScore + 'â€“' + s.awayScore + '.' };
+        },
+        hockey: function (s) {
+          var r = Math.random();
+          if (r < 0.20) { s.homeScore++; return { type: 'wicket', runs: 1, badge: 'ðŸ’', text: 'GOAL! ' + s.striker + ' roofs it top-shelf for ' + s.home + '! ' + s.home + ' ' + s.homeScore + 'â€“' + s.awayScore + '.' }; }
+          if (r < 0.36) return { type: 'four', runs: 0, badge: 'ðŸ¥…', text: 'Great save by the ' + s.away + ' goaltender off ' + s.striker + "'s slapshot." };
+          if (r < 0.50) return { type: 'six', runs: 0, badge: 'ðŸ’¥', text: 'Huge open-ice hit by ' + s.bowler + '. The crowd erupts!' };
+          if (r < 0.62) return { type: 'milestone', runs: 0, badge: 'ðŸ”¥', text: 'Milestone: ' + s.striker + ' records a Gordie Howe hat-trick (goal, assist, fight).' };
+          return { type: 'normal', runs: 0, badge: 'â€¢', text: s.home + ' controlling the puck in the ' + s.away + ' zone. ' + s.home + ' ' + s.homeScore + 'â€“' + s.awayScore + '.' };
+        }
+      };
+
+      // ---- Sport display config ----
+      var SPORT = {
+        Cricket: { unit: 'Run', state: function (s) { return 'Over ' + s.over.toFixed(1); }, sub: function (s, side) { return side === 'home' ? (s.homeWkts + ' wkts') : (s.awayWkts + ' wkts'); } },
+        Football: { unit: 'Goal', state: function (s) { return s.minute + "'"; }, sub: function () { return ''; } },
+        Basketball: { unit: 'PTS', state: function (s) { return 'Q' + s.quarter + ' â€¢ ' + s.clock; }, sub: function () { return ''; } },
+        Tennis: { unit: 'Set', state: function (s) { return s.state; }, sub: function () { return ''; } },
+        Baseball: { unit: 'Run', state: function (s) { return 'Top ' + s.inning + (s.outs ? ' â€¢ ' + s.outs + ' out' : ''); }, sub: function () { return ''; } },
+        Hockey: { unit: 'Goal', state: function (s) { return s.clock + ' left'; }, sub: function () { return ''; } }
+      };
+
+      var NAMES = {
+        LIV: 'Liverpool', MCI: 'Man City', LAL: 'Lakers', GSW: 'Warriors', MI: 'Mumbai Indians', CSK: 'Chennai Super Kings',
+        Alcaraz: 'C. Alcaraz', Djokovic: 'N. Djokovic', Dodgers: 'Dodgers', Yankees: 'Yankees', Capitals: 'Capitals', GoldenKnights: 'Golden Knights'
+      };
+      function fullName(code) { return NAMES[code] || code; }
+
+      // ---- Open the view from a clicked card ----
+      function openMatch(card) {
+        var sport = card.getAttribute('data-tournament');
+        var home = card.getAttribute('data-home') || 'HOME';
+        var away = card.getAttribute('data-away') || 'AWAY';
+        var cfg = SPORT[sport] || SPORT.Cricket;
+        var gen = GEN[sport] || GEN[sport.toLowerCase()] || GEN.cricket;
+
+        // Read initial scores from the card
+        var scoreEls = card.querySelectorAll('.text-2xl, .sm\\:text-2xl, .text-4xl');
+        var homeScore = 0, awayScore = 0;
+        if (scoreEls.length >= 2) {
+          var hRaw = scoreEls[0].textContent.split('/')[0].replace(/[^\d]/g, '');
+          var aRaw = scoreEls[1].textContent.split('/')[0].replace(/[^\d]/g, '');
+          var h = parseInt(hRaw, 10), a = parseInt(aRaw, 10);
+          if (!isNaN(h)) homeScore = h; if (!isNaN(a)) awayScore = a;
+        }
+        var series = (card.querySelector('.text-xs.font-semibold.text-gray-400') || {}).textContent || (sport + ' Live');
+
+        // Build state object
+        var st = {
+          sport: sport, home: fullName(home), away: fullName(away), homeCode: home, awayCode: away,
+          homeScore: homeScore, awayScore: awayScore, homeWkts: 0, awayWkts: 0,
+          over: 0.1, minute: 1, quarter: 1, clock: '11:00', inning: 1, outs: 0,
+          striker: '', bowler: '', state: ''
+        };
+        st.striker = sport === 'Tennis' ? st.home : (sport === 'Cricket' ? 'B Duckett' : st.home + ' #10');
+        st.bowler = sport === 'Tennis' ? st.away : (sport === 'Cricket' ? 'J Bumrah' : st.away + ' #7');
+        st.state = cfg.state(st);
+
+        // Populate header
+        $('lmv-series').textContent = series;
+        $('lmv-home-name').textContent = st.home;
+        $('lmv-away-name').textContent = st.away;
+        $('lmv-home-logo').src = (card.querySelectorAll('img')[0] || {}).src || avatar(st.home, '2196F3');
+        $('lmv-away-logo').src = (card.querySelectorAll('img')[1] || {}).src || avatar(st.away, 'D32F2F');
+        $('lmv-home-score').textContent = st.homeScore;
+        $('lmv-away-score').textContent = st.awayScore;
+        $('lmv-home-sub').textContent = cfg.sub(st, 'home');
+        $('lmv-away-sub').textContent = cfg.sub(st, 'away');
+        $('lmv-over').textContent = st.state;
+        $('lmv-state').textContent = 'LIVE';
+
+        // Current players strip (avatars)
+        $('lmv-bat1-img').src = avatar(st.striker, 'f7941d');
+        $('lmv-bat1').textContent = st.striker;
+        $('lmv-bat1-runs').textContent = sport === 'Cricket' ? '12 (8)' : '';
+        $('lmv-bat2-img').src = avatar(sport === 'Cricket' ? 'J Smith' : st.home + ' #11', 'f7941d');
+        $('lmv-bat2').textContent = sport === 'Cricket' ? 'J Smith' : (st.home + ' #11');
+        $('lmv-bat2-runs').textContent = sport === 'Cricket' ? '8 (6)' : '';
+        $('lmv-bowl-img').src = avatar(st.bowler, '2b6cb0');
+        $('lmv-bowl').textContent = st.bowler;
+        $('lmv-bowl-fig').textContent = sport === 'Cricket' ? '1/12 (2)' : '';
+
+        // Clear + seed commentary
+        var feed = $('lmv-comm');
+        feed.innerHTML = '';
+        addComm({ type: 'normal', badge: 'â€¢', text: 'Match started. ' + st.home + ' vs ' + st.away + ' â€” live ball-by-ball coverage begins.' }, false);
+
+        view.classList.add('open');
+        document.body.style.overflow = 'hidden';
+
+        // Live loop
+        clearTimers();
+        function tick() {
+          var ev = gen(st);
+          // update scoreboard
+          $('lmv-home-score').textContent = st.homeScore;
+          $('lmv-away-score').textContent = st.awayScore;
+          flash($('lmv-home-score')); flash($('lmv-away-score'));
+          st.state = cfg.state(st);
+          $('lmv-over').textContent = st.state;
+          $('lmv-home-sub').textContent = cfg.sub(st, 'home');
+          $('lmv-away-sub').textContent = cfg.sub(st, 'away');
+          // rotate players a bit for realism
+          if (Math.random() < 0.3) {
+            st.striker = sport === 'Tennis' ? st.home : (sport === 'Cricket' ? (Math.random() < .5 ? 'B Duckett' : 'J Root') : st.home + ' #' + (10 + Math.floor(Math.random() * 5)));
+            $('lmv-bat1').textContent = st.striker;
+            $('lmv-bat1-img').src = avatar(st.striker, 'f7941d');
+          }
+          addComm(ev, true);
+          // advance sport clock
+          if (sport === 'Cricket') st.over = Math.min(50, +(st.over + 0.1).toFixed(1));
+          else if (sport === 'Football') st.minute = Math.min(90, st.minute + 1);
+          else if (sport === 'Basketball') { st.clock = decClock(st.clock); if (st.clock === '00:00') { st.quarter = Math.min(4, st.quarter + 1); st.clock = '12:00'; } }
+          else if (sport === 'Baseball') { st.outs = (st.outs + 1) % 3; if (st.outs === 0) st.inning = Math.min(9, st.inning + 1); }
+          else if (sport === 'Hockey') st.clock = decClock(st.clock);
+          later(tick, 2600 + Math.random() * 1800);
+        }
+        later(tick, 1500);
+      }
+
+      function decClock(c) {
+        var p = c.split(':'); var m = parseInt(p[0], 10), s = parseInt(p[1], 10);
+        s -= 11; if (s < 0) { s += 60; m -= 1; } if (m < 0) m = 0;
+        return (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
+      }
+      function flash(el) { if (!el) return; el.classList.remove('score-flash'); void el.offsetWidth; el.classList.add('score-flash'); }
+
+      function addComm(ev, animate) {
+        var feed = $('lmv-comm');
+        var cls = 'comm-item ' + (ev.type === 'four' ? 'comm-four' : ev.type === 'six' ? 'comm-six' : ev.type === 'wicket' ? 'comm-wicket' : ev.type === 'milestone' ? 'comm-milestone' : '');
+        var color = ev.type === 'four' ? '#22c55e' : ev.type === 'six' ? '#a855f7' : ev.type === 'wicket' ? '#ef4444' : ev.type === 'milestone' ? '#f7941d' : '#94a3b8';
+        var row = document.createElement('div');
+        row.className = 'flex items-start gap-3 rounded-xl bg-white/5 p-3 ' + cls;
+        row.innerHTML =
+          '<span class="badge-pop shrink-0 w-9 h-9 text-sm" style="background:' + color + '22;color:' + color + ';border:1px solid ' + color + '55">' + (ev.badge || 'â€¢') + '</span>' +
+          '<div class="min-w-0"><p class="text-sm text-gray-100 leading-snug">' + ev.text + '</p>' +
+          '<p class="text-[10px] text-gray-500 mt-0.5">' + (ev.type === 'normal' ? 'Live' : ev.type.toUpperCase()) + '</p></div>';
+        feed.insertBefore(row, feed.firstChild);
+        while (feed.children.length > 40) feed.removeChild(feed.lastChild);
+        if (animate) {
+          var badge = row.querySelector('.badge-pop');
+          if (badge) { badge.style.animation = 'none'; void badge.offsetWidth; badge.style.animation = ''; }
+        }
+      }
+
+      function closeMatch() {
+        view.classList.remove('open');
+        document.body.style.overflow = '';
+        clearTimers();
+      }
+
+      // Wire up: clicking a LIVE card opens the view (instead of summary redirect)
+      document.querySelectorAll('[data-status="live"]').forEach(function (card) {
+        card.style.cursor = 'pointer';
+        card.addEventListener('click', function (e) {
+          // ignore clicks on the action buttons that explicitly navigate
+          if (e.target.closest('button[onclick]')) return;
+          openMatch(card);
+        });
       });
-    });
+      $('lmv-close').addEventListener('click', closeMatch);
+      $('lmv-chat').addEventListener('click', function () {
+        var card = document.querySelector('[data-status="live"].open') || document.querySelector('[data-status="live"]');
+        var sport = card ? card.getAttribute('data-tournament') : 'cricket';
+        var home = card ? (card.getAttribute('data-home') || 'HOME') : 'HOME';
+        var away = card ? (card.getAttribute('data-away') || 'AWAY') : 'AWAY';
+        window.location.href = 'match-center.html?sport=' + sport.toLowerCase() + '&home=' + home + '&away=' + away + '&state=live';
+      });
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeMatch(); });
+    })();
     </script>
-  <script src="js/notif-ws.js"></script></body>
+  <script src="js/notif-ws.js"></script>
+  <script src="js/matches-data.js"></script>
+  <script src="js/matches-render.js"></script>
+  <script src="js/sport-filters.js"></script>
+</body>
 </html>

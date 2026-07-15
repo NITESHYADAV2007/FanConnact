@@ -3,6 +3,7 @@ var FALLBACK = (function() {
   var SPORTS = {
     cricket: {
       label: "Cricket", icon: "sports_cricket", title: "ICC Cricket Rankings",
+      tournament: "ICC Men's & Women's Rankings 2026",
       subtitle: "Top 100 ranked players across formats",
       defaultCategory: "odi_bat_men",
       filters: [{ group: "format", label: "Format", options: [{ value: "odi", label: "ODI" }, { value: "t20", label: "T20" }, { value: "test", label: "Test" }] }, { group: "role", label: "Role", options: [{ value: "bat", label: "Batsman" }, { value: "bowl", label: "Bowler" }, { value: "ar", label: "All-Rounder" }] }, { group: "gender", label: "Gender", options: [{ value: "men", label: "Men" }, { value: "women", label: "Women" }] }],
@@ -10,6 +11,7 @@ var FALLBACK = (function() {
     },
     football: {
       label: "Football", icon: "sports_soccer", title: "Football Top Players",
+      tournament: "FIFA World Cup 2026 & Domestic Leagues",
       subtitle: "Top ranked footballers",
       defaultCategory: "scorers_men",
       filters: [{ group: "stat", label: "Category", options: [{ value: "scorers", label: "Top Scorers" }, { value: "assists", label: "Top Assists" }, { value: "rating", label: "Highest Rated" }] }, { group: "gender", label: "Gender", options: [{ value: "men", label: "Men" }, { value: "women", label: "Women" }] }],

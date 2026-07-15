@@ -206,50 +206,27 @@
         'table-tennis':'sports_tennis'
       };
 
-      const ALL_MATCHES = [
-        // Cricket
-        { date:'2026-07-10',sport:'cricket',team1:'India',team2:'Australia',tournament:'ICC World Cup',time:'3:30 PM IST',venue:'Wankhede Stadium, Mumbai',type:'ODI' },
-        { date:'2026-07-11',sport:'cricket',team1:'England',team2:'New Zealand',tournament:'ICC World Cup',time:'10:00 AM IST',venue:'Lord\'s, London',type:'ODI' },
-        { date:'2026-07-13',sport:'cricket',team1:'Pakistan',team2:'South Africa',tournament:'Asia Cup',time:'3:30 PM IST',venue:'Gaddafi Stadium, Lahore',type:'T20' },
-        { date:'2026-07-15',sport:'cricket',team1:'RCB',team2:'CSK',tournament:'IPL 2026',time:'7:30 PM IST',venue:'Chinnaswamy Stadium, Bengaluru',type:'T20' },
-        { date:'2026-07-18',sport:'cricket',team1:'MI',team2:'KKR',tournament:'IPL 2026',time:'3:30 PM IST',venue:'Wankhede Stadium, Mumbai',type:'T20' },
-        { date:'2026-07-20',sport:'cricket',team1:'Australia',team2:'England',tournament:'Ashes Series',time:'5:00 AM IST',venue:'The Gabba, Brisbane',type:'Test' },
-        // Football
-        { date:'2026-07-10',sport:'football',team1:'FC Barcelona',team2:'Real Madrid',tournament:'La Liga',time:'9:00 PM CET',venue:'Camp Nou, Barcelona',type:'League' },
-        { date:'2026-07-12',sport:'football',team1:'Manchester City',team2:'Liverpool FC',tournament:'Premier League',time:'5:30 PM BST',venue:'Etihad Stadium, Manchester',type:'League' },
-        { date:'2026-07-14',sport:'football',team1:'PSG',team2:'Olympique Marseille',tournament:'Ligue 1',time:'9:00 PM CET',venue:'Parc des Princes, Paris',type:'League' },
-        { date:'2026-07-17',sport:'football',team1:'Bayern Munich',team2:'Borussia Dortmund',tournament:'Bundesliga',time:'8:30 PM CET',venue:'Allianz Arena, Munich',type:'League' },
-        { date:'2026-07-19',sport:'football',team1:'Juventus',team2:'AC Milan',tournament:'Serie A',time:'8:45 PM CET',venue:'Allianz Stadium, Turin',type:'League' },
-        // Basketball
-        { date:'2026-07-10',sport:'basketball',team1:'LA Lakers',team2:'Golden State Warriors',tournament:'NBA',time:'7:30 PM PT',venue:'Crypto.com Arena, LA',type:'Regular Season' },
-        { date:'2026-07-13',sport:'basketball',team1:'Boston Celtics',team2:'Miami Heat',tournament:'NBA',time:'7:00 PM ET',venue:'TD Garden, Boston',type:'Regular Season' },
-        { date:'2026-07-16',sport:'basketball',team1:'Chicago Bulls',team2:'New York Knicks',tournament:'NBA',time:'7:30 PM ET',venue:'United Center, Chicago',type:'Regular Season' },
-        // Tennis
-        { date:'2026-07-11',sport:'tennis',team1:'Novak Djokovic',team2:'Carlos Alcaraz',tournament:'Wimbledon QF',time:'2:00 PM BST',venue:'Centre Court, Wimbledon',type:'Grand Slam' },
-        { date:'2026-07-12',sport:'tennis',team1:'Jannik Sinner',team2:'Daniil Medvedev',tournament:'Wimbledon QF',time:'1:00 PM BST',venue:'Centre Court, Wimbledon',type:'Grand Slam' },
-        { date:'2026-07-14',sport:'tennis',team1:'Iga Swiatek',team2:'Coco Gauff',tournament:'Wimbledon SF',time:'2:00 PM BST',venue:'Centre Court, Wimbledon',type:'Grand Slam' },
-        // Hockey
-        { date:'2026-07-11',sport:'hockey',team1:'India',team2:'Netherlands',tournament:'FIH Pro League',time:'7:00 PM IST',venue:'Kalinga Stadium, Bhubaneswar',type:'League' },
-        { date:'2026-07-15',sport:'hockey',team1:'Belgium',team2:'Germany',tournament:'FIH Pro League',time:'4:00 PM CET',venue:'Wilrijkse Plein, Antwerp',type:'League' },
-        { date:'2026-07-18',sport:'hockey',team1:'Australia',team2:'Argentina',tournament:'FIH Pro League',time:'6:00 PM AEST',venue:'Sydney Olympic Park',type:'League' },
-        // Kabaddi
-        { date:'2026-07-12',sport:'kabbaddi',team1:'Patna Pirates',team2:'Bengal Warriors',tournament:'PKL Season 11',time:'7:30 PM IST',venue:'Patliputra Sports Complex, Patna',type:'League' },
-        { date:'2026-07-14',sport:'kabbaddi',team1:'Jaipur Pink Panthers',team2:'U Mumba',tournament:'PKL Season 11',time:'8:00 PM IST',venue:'SMH Jain College, Mumbai',type:'League' },
-        { date:'2026-07-19',sport:'kabbaddi',team1:'Dabang Delhi',team2:'Haryana Steelers',tournament:'PKL Season 11',time:'7:30 PM IST',venue:'Thyagaraj Stadium, Delhi',type:'League' },
-        // E-Sports
-        { date:'2026-07-13',sport:'e-sports',team1:'Fnatic',team2:'G2 Esports',tournament:'VALORANT Champions',time:'6:00 PM CET',venue:'Riot Games Arena, Berlin',type:'Playoffs' },
-        { date:'2026-07-16',sport:'e-sports',team1:'T1',team2:'Gen.G',tournament:'LCK Summer Split',time:'5:00 PM KST',venue:'LoL Park, Seoul',type:'League' },
-        { date:'2026-07-20',sport:'e-sports',team1:'Team Liquid',team2:'Cloud9',tournament:'CS2 Major',time:'3:00 PM EST',venue:'Prudential Center, Newark',type:'Playoffs' },
-        // Baseball
-        { date:'2026-07-10',sport:'baseball',team1:'New York Yankees',team2:'Boston Red Sox',tournament:'MLB',time:'7:05 PM ET',venue:'Yankee Stadium, NY',type:'Regular Season' },
-        { date:'2026-07-14',sport:'baseball',team1:'LA Dodgers',team2:'San Francisco Giants',tournament:'MLB',time:'7:10 PM PT',venue:'Dodger Stadium, LA',type:'Regular Season' },
-        // Volleyball
-        { date:'2026-07-12',sport:'volleyball',team1:'Brazil',team2:'Poland',tournament:'VNL 2026',time:'8:00 PM BRT',venue:'Maracanãzinho, Rio',type:'League' },
-        { date:'2026-07-17',sport:'volleyball',team1:'USA',team2:'Italy',tournament:'VNL 2026',time:'7:00 PM ET',venue:'Honda Center, Anaheim',type:'League' },
-        // Table Tennis
-        { date:'2026-07-11',sport:'table-tennis',team1:'Fan Zhendong',team2:'Ma Long',tournament:'WTT Champions',time:'7:00 PM CST',venue:'Olympic Gym, Beijing',type:'Finals' },
-        { date:'2026-07-15',sport:'table-tennis',team1:'Tomokazu Harimoto',team2:'Lin Yun-Ju',tournament:'WTT Champions',time:'3:00 PM JST',venue:'Tokyo Gym, Tokyo',type:'Semifinals' },
-      ];
+      // Real matches sourced from js/matches-data.js (FANCONNECT_MATCHES)
+      function buildAllMatches() {
+        if (window.FANCONNECT_MATCHES && window.FANCONNECT_MATCHES.MATCHES) {
+          return window.FANCONNECT_MATCHES.MATCHES.map(function (m) {
+            var h = (window.FANCONNECT_MATCHES.TEAMS[m.home] || { name: m.home });
+            var a = (window.FANCONNECT_MATCHES.TEAMS[m.away] || { name: m.away });
+            return {
+              date: m.date || '2026-07-15',
+              sport: m.sport,
+              team1: h.name,
+              team2: a.name,
+              tournament: m.tournament || m.format || '',
+              time: m.time || (m.status === 'live' ? 'LIVE' : 'TBD'),
+              venue: m.venue || '',
+              type: m.format || m.status || ''
+            };
+          });
+        }
+        return [];
+      }
+      const ALL_MATCHES = buildAllMatches();
 
       let currentDate = new Date();
       let currentMonth = currentDate.getMonth();
@@ -399,5 +376,6 @@
 
       document.addEventListener('DOMContentLoaded', init);
     </script>
+  <script src="js/matches-data.js"></script>
   <script src="js/notif-ws.js"></script></body>
 </html>

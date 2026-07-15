@@ -64,10 +64,11 @@ function wikiAvatar(name, fallbackBg) {
   return fb;
 }
 
-function createSystemMessage(text) {
+function createSystemMessage(text, user) {
   return {
     type: 'system',
     text,
+    user: user || null,
     time: Date.now(),
     id: 'sys_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6)
   };
@@ -129,13 +130,17 @@ function createChatServer(httpServer) {
       recentMessages: messageHistory.slice(-30)
     }));
 
-    const welcomeMsg = createSystemMessage(`👋 ${userName} joined the chat!`);
-    broadcast(wss, welcomeMsg, matchId);
-
-    broadcast(wss, {
-      type: 'online_count',
-      onlineCount: getOnlineCount()
-    }, matchId);
+    // Announce join only AFTER the client identifies with its real profile
+    // (so the join/leave message shows the real name + photo, not the temp Fan_XXXX).
+    let announced = false;
+    const announceJoin = () => {
+      if (announced) return;
+      announced = true;
+      const joinMsg = createSystemMessage(`👋 ${user.name} joined the chat`, { name: user.name, img: user.img });
+      broadcast(wss, joinMsg, matchId);
+    };
+    // Fallback: if the client never identifies, announce with the temp name after 1.2s
+    const joinTimer = setTimeout(announceJoin, 1200);
 
     ws.on('message', (data) => {
       try {
@@ -147,6 +152,8 @@ function createChatServer(httpServer) {
           if (msg.user.img) user.img = String(msg.user.img).slice(0, 2000);
           onlineUsers.set(ws, { name: user.name, id: userId, alive: true, matchId });
           ws.send(JSON.stringify({ type: 'identified', user }));
+          clearTimeout(joinTimer);
+          announceJoin();
           return;
         }
 
@@ -162,6 +169,23 @@ function createChatServer(httpServer) {
             messageHistory = messageHistory.slice(-CHAT_HISTORY_LIMIT);
           }
           broadcast(wss, message, matchId);
+        }
+
+        if (msg.type === 'system' && msg.text) {
+          // Client-sent system question (e.g. match poll). Broadcast to room.
+          broadcast(wss, createSystemMessage(String(msg.text).slice(0, 200), { name: 'FanConnect', img: '' }), matchId);
+        }
+
+        if (msg.type === 'react' && msg.messageId) {
+          const target = messageHistory.find(m => m.id === msg.messageId);
+          if (target && target.type === 'message') {
+            target.likes = (target.likes || 0) + 1;
+            broadcast(wss, {
+              type: 'like_update',
+              messageId: msg.messageId,
+              likes: target.likes
+            }, matchId);
+          }
         }
 
         if (msg.type === 'like' && msg.messageId) {
@@ -203,7 +227,7 @@ function createChatServer(httpServer) {
 
     ws.on('close', () => {
       onlineUsers.delete(ws);
-      const leaveMsg = createSystemMessage(`🚶 ${userName} left the chat`);
+      const leaveMsg = createSystemMessage(`🚶 ${user.name} left the chat`, { name: user.name, img: user.img });
       broadcast(wss, leaveMsg, matchId);
       broadcast(wss, {
         type: 'online_count',

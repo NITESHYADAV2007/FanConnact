@@ -326,7 +326,7 @@
           usingServer = true;
 
           document.getElementById('title-text').textContent = sportConfig.title;
-          document.getElementById('subtitle-text').textContent = sportConfig.subtitle + ' \u2014 click any row for full profile';
+          document.getElementById('subtitle-text').textContent = (sportConfig.tournament ? sportConfig.tournament + ' \u2014 ' : '') + sportConfig.subtitle;
 
           activeFilters = {};
           sportConfig.filters.forEach(f => { activeFilters[f.group] = f.options[0].value; });
@@ -339,7 +339,7 @@
           if (fb) {
             sportConfig = fb;
             document.getElementById('title-text').textContent = sportConfig.title;
-            document.getElementById('subtitle-text').textContent = sportConfig.subtitle + ' \u2014 click any row for full profile (offline mode)';
+            document.getElementById('subtitle-text').textContent = (sportConfig.tournament ? sportConfig.tournament + ' \u2014 ' : '') + sportConfig.subtitle + ' (offline mode)';
             activeFilters = {};
             sportConfig.filters.forEach(function(f) { activeFilters[f.group] = f.options[0].value; });
             columns = sportConfig.columns;
