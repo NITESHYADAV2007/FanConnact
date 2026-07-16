@@ -248,6 +248,7 @@
 <a class="tab-link py-4 border-b-4 border-transparent hover:text-crexGold transition-all cursor-pointer whitespace-nowrap" href="#" data-tab="scorecard">Scorecard</a>
 <a class="tab-link py-4 border-b-4 border-transparent hover:text-crexGold transition-all cursor-pointer whitespace-nowrap" href="#" data-tab="commentary">Commentary</a>
 <a class="tab-link py-4 border-b-4 border-transparent hover:text-crexGold transition-all cursor-pointer whitespace-nowrap" href="#" data-tab="squads">Squads</a>
+<a class="tab-link py-4 border-b-4 border-transparent hover:text-crexGold transition-all cursor-pointer whitespace-nowrap" href="#" data-tab="rules">Rules</a>
 <a class="tab-link py-4 border-b-4 border-transparent hover:text-crexGold transition-all cursor-pointer whitespace-nowrap" href="#" data-tab="live-chat">Live Chat</a>
 
 <a class="tab-link py-4 border-b-4 border-transparent hover:text-crexGold transition-all cursor-pointer whitespace-nowrap" href="#" data-tab="graph">Graph</a>
@@ -1089,14 +1090,21 @@
   <aside class="col-span-12 lg:col-span-4 space-y-6">
     <section class="bg-white dark:bg-[#12172D] rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-800">
       <h3 class="font-bold text-gray-800 dark:text-white text-sm uppercase tracking-wide mb-4">This Over</h3>
-      <div class="flex items-center justify-between text-sm mb-2">
-        <span class="text-gray-500 dark:text-gray-400">Over 46</span>
-        <span class="font-mono text-emerald-600 dark:text-emerald-400 font-bold">1 6 = 7</span>
+      <div id="this-over-widget">
+        <div class="flex items-center justify-between text-sm mb-2">
+          <span class="text-gray-500 dark:text-gray-400">Over 0</span>
+          <span class="font-mono text-emerald-600 dark:text-emerald-400 font-bold">— = 0</span>
+        </div>
+        <div class="flex gap-1.5"><span class="text-xs text-gray-400">Waiting for first ball…</span></div>
       </div>
-      <div class="flex gap-1.5">
-        <span class="w-8 h-8 rounded bg-gray-100 dark:bg-white/5 flex items-center justify-center text-xs text-gray-600 dark:text-gray-300">1</span>
-        <span class="w-8 h-8 rounded bg-crexGold/20 flex items-center justify-center text-xs text-crexGold font-bold">6</span>
-      </div>
+    </section>
+    <section class="bg-white dark:bg-[#12172D] rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-800">
+      <h3 class="font-bold text-gray-800 dark:text-white text-sm uppercase tracking-wide mb-4">Over-by-Over</h3>
+      <div id="over-history"><p class="text-xs text-gray-400">Over-by-over summary will appear here.</p></div>
+    </section>
+    <section class="bg-white dark:bg-[#12172D] rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-800">
+      <h3 class="font-bold text-gray-800 dark:text-white text-sm uppercase tracking-wide mb-4">Live Positions</h3>
+      <div id="live-positions"><p class="text-xs text-gray-400">Live player positions appear here during the match.</p></div>
     </section>
     <section class="bg-white dark:bg-[#12172D] rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-800">
       <h3 class="font-bold text-gray-800 dark:text-white text-sm uppercase tracking-wide mb-4">Milestones</h3>
@@ -1194,6 +1202,19 @@
   </div>
 </div>
 <!-- END: PANEL Squads -->
+
+<!-- PANEL: Rules & Regulations (sport-aware) -->
+<div id="panel-rules" class="tab-panel grid grid-cols-12 gap-6 hidden">
+  <div class="col-span-12 bg-white dark:bg-[#12172D] rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-800">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-3xl">📋</span>
+      <h3 class="font-bold text-gray-800 dark:text-white text-lg">Rules &amp; Regulations</h3>
+    </div>
+    <ul class="space-y-3 text-sm text-gray-600 dark:text-gray-300" id="rules-list"></ul>
+  </div>
+</div>
+<!-- END: PANEL Rules -->
+
 </main>
 <!-- END: MainContent -->
 <!-- BEGIN: Footer -->

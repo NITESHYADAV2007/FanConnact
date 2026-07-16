@@ -163,9 +163,128 @@
     basketball: { label: 'Basketball', xUnit: 'Min', xMax: 48, icon: '🏀', isBall: false },
     tennis: { label: 'Tennis', xUnit: 'Games', xMax: 40, icon: '🎾', isBall: false },
     baseball: { label: 'Baseball', xUnit: 'Inn', xMax: 9, icon: '⚾', isBall: false },
-    hockey: { label: 'Hockey', xUnit: 'Min', xMax: 60, icon: '🏒', isBall: false }
+    hockey: { label: 'Hockey', xUnit: 'Min', xMax: 60, icon: '🏒', isBall: false },
+    kabaddi: { label: 'Kabaddi', xUnit: 'Min', xMax: 40, icon: '🤼', isKabaddi: true },
+    'e-sports': { label: 'E-Sports', xUnit: 'Min', xMax: 60, icon: '🎮', isKabaddi: true },
+    tabletennis: { label: 'Table Tennis', xUnit: 'Games', xMax: 11, icon: '🏓', isBall: false },
+    volleyball: { label: 'Volleyball', xUnit: 'Sets', xMax: 5, icon: '🏐', isBall: false }
   };
   const SC = SPORTS[SPORT] || SPORTS.cricket;
+
+  // ------------------------------------------------------------------ rules & regulations (sport-aware, proper for ALL games)
+  const RULES = {
+    cricket: {
+      title: 'Cricket — Rules & Regulations',
+      points: [
+        'Two teams of 11 players; the side batting tries to score runs while the other bowls and fields.',
+        'A match is split into innings; each innings ends when 10 batters are out or the allotted overs are bowled.',
+        'Runs are scored by running between the wickets (1 per run) or by hitting boundaries (4 for ground, 6 over the rope).',
+        'The bowling side dismisses batters via bowled, caught, LBW, run-out, stumped or hit-wicket.',
+        'Overs = 6 legal deliveries. No-balls and wides concede extra runs and a free hit may apply.',
+        'Limited-overs (ODI/T20): most runs wins. Test: win by runs or wickets; a draw is possible.'
+      ]
+    },
+    football: {
+      title: 'Football — Rules & Regulations',
+      points: [
+        'Two teams of 11 players aim to score by putting the ball into the opponent’s goal.',
+        'A standard match is 90 minutes (two 45-minute halves) plus stoppage time.',
+        'Goals scored with any part of the body except the hands/arms (goalkeepers excluded in their box).',
+        'Fouls and handballs are penalised with free-kicks; serious offences earn yellow/red cards.',
+        'Offside: an attacker ahead of the ball and second-last defender when the ball is played.',
+        'Most goals at full time wins; draws stand in league play, extra time/penalties in knockouts.'
+      ]
+    },
+    basketball: {
+      title: 'Basketball — Rules & Regulations',
+      points: [
+        'Two teams of five score by shooting the ball through the opponent’s hoop (2 or 3 points).',
+        'NBA games are 48 minutes (four 12-minute quarters); FIBA uses four 10-minute quarters.',
+        'A shot inside the arc is worth 2, beyond the three-point line is worth 3; free throws are 1 each.',
+        'Players may dribble, pass or shoot; travelling and double-dribble are violations.',
+        'Personal fouls (5–6) send opponents to the free-throw line; team fouls trigger bonus shots.',
+        'The team with the most points when time expires wins; ties go to overtime.'
+      ]
+    },
+    tennis: {
+      title: 'Tennis — Rules & Regulations',
+      points: [
+        'Singles or doubles; players score points to win games, games to win sets, sets to win the match.',
+        'Points run 0 (love), 15, 30, 40; deuce at 40–40 needs two clear points to win the game.',
+        'A set is won by the first player to 6 games (with a 2-game margin) or via a tiebreak at 6–6.',
+        'Serve must land in the diagonal service box; two faults concede the point (double fault).',
+        'Ball may bounce once before a return; touching the net or out-of-bounds loses the point.',
+        'Best-of-3 (WTA/most ATP) or best-of-5 (Grand Slam men) sets decides the winner.'
+      ]
+    },
+    baseball: {
+      title: 'Baseball — Rules & Regulations',
+      points: [
+        'Two teams of nine; the batting side scores runs by circling the four bases without being out.',
+        'A game is nine innings; the home team bats in the bottom half and wins if ahead after the top of the 9th.',
+        'Three outs end a half-inning via strikeout, fly-out or force/tag out on the bases.',
+        'A batter gets three strikes (a walk on four balls); a home run scores all runners on base.',
+        'Pitchers must deliver from the rubber; balks and illegal pitches advance runners.',
+        'If tied after nine innings, extra innings are played until a winner emerges.'
+      ]
+    },
+    hockey: {
+      title: 'Ice Hockey — Rules & Regulations',
+      points: [
+        'Two teams of six (including a goalie) score by putting the puck in the opponent’s net with a stick.',
+        'NHL games are 60 minutes (three 20-minute periods); ties go to overtime then a shootout.',
+        'Goals count only if struck with the stick below the crossbar and inside the posts.',
+        'Body-checking, high-sticking and tripping draw penalties (2, 4 or 5 minutes in the box).',
+        'Offside and icing stop play; the offending team faces a face-off in their zone.',
+        'Power plays award a man-advantage when a player is serving a penalty.'
+      ]
+    },
+    tabletennis: {
+      title: 'Table Tennis — Rules & Regulations',
+      points: [
+        'Singles or doubles rally using paddles; the ball must bounce once on each side.',
+        'A game is won at 11 points (by 2); matches are best-of-5 or best-of-7 games.',
+        'Serve alternates every 2 points; the ball must be tossed at least 16 cm straight up.',
+        'A let is called if the serve clips the net but still lands in play.',
+        'Double hits, failure to return, or hitting the ball off the table loses the point.',
+        'In doubles, partners must alternate hits and serve diagonally.'
+      ]
+    },
+    volleyball: {
+      title: 'Volleyball — Rules & Regulations',
+      points: [
+        'Two teams of six rally to ground the ball on the opponent’s court.',
+        'A match is best-of-5 sets; sets are to 25 (by 2), the decider to 15.',
+        'Three touches per side max (usually bump, set, spike); the same player may not touch twice consecutively.',
+        'The ball must cross the net within the antennae and not be caught or thrown.',
+        'Rotations move players clockwise after winning a serve from the opponent.',
+        'Back-row players may not attack the ball above the net from in front of the attack line.'
+      ]
+    },
+    kabaddi: {
+      title: 'Kabaddi — Rules & Regulations',
+      points: [
+        'Two teams of seven; a “raider” crosses to tag defenders and return without taking a breath.',
+        'The raider must chant “kabaddi” continuously while in the opponent’s half.',
+        'Tagged defenders are out; a successful raid scores a point and revives prior out teammates.',
+        'Defenders earn a point by stopping the raider before they return to their side.',
+        'Bonus line gives an extra point when 6+ defenders are on the court.',
+        'A match has two 20-minute halves; the side with the most points wins.'
+      ]
+    },
+    'e-sports': {
+      title: 'E-Sports — Rules & Regulations',
+      points: [
+        'Team-based competitive gaming; formats vary by title (5v5, battle royale, 1v1).',
+        'Matches are played on official patches with approved hardware and settings.',
+        'Objectives differ by game (destroy base, eliminate opponents, capture control points).',
+        'Pauses require an admin; intentional disconnects are penalised.',
+        'Behavioural rules forbid cheating, scripting, toxicity and collusion.',
+        'Series are best-of-3/5; the bracket or league table decides the champion.'
+      ]
+    }
+  };
+  const RULE_SET = RULES[SPORT] || RULES.cricket;
 
   // ------------------------------------------------------------------ name pools
   const FIRST = ['Aarav', 'Vihaan', 'Kabir', 'Reyansh', 'Aditya', 'Sai', 'Arjun', 'Vivaan', 'Liam', 'Noah', 'James', 'Harry', 'Ben', 'Joe', 'Sam', 'Will', 'Marcus', 'Bruno', 'Kevin', 'Leo', 'Rafael', 'Toni', 'Luka', 'Nikola', 'Carlos', 'Novak', 'Jannik', 'Daniil', 'Shohei', 'Aaron', 'Mookie', 'Freddie', 'Alex', 'Connor', 'Tom', 'Jack'];
@@ -518,10 +637,13 @@
         '</div></div>';
     };
 
+    const clockHtml = st.status === 'live'
+      ? '<div id="live-clock" class="mt-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-500/15 text-red-300 text-[11px] font-bold border border-red-500/30"><span class="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse"></span><span id="live-clock-text">' + esc(st.subText || 'LIVE') + '</span></div>'
+      : '';
     const center = '<div class="flex flex-col items-center justify-center px-4 py-4 md:py-0 md:px-8 border-y md:border-y-0 md:border-x border-gray-200 dark:border-gray-800 bg-slate-50 dark:bg-white/5">' +
       '<div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-crexGold/20 mb-2"><span class="text-2xl">' + st.icon + '</span></div>' +
       '<h2 class="text-crexGold text-center text-lg md:text-xl font-bold leading-tight">' + esc(st.resultText) + '</h2>' +
-      '<p class="text-[11px] text-slate-500 dark:text-gray-400 mt-1 text-center">' + esc(st.subText || '') + '</p></div>';
+      '<p class="text-[11px] text-slate-500 dark:text-gray-400 mt-1 text-center">' + esc(st.subText || '') + '</p>' + clockHtml + '</div>';
 
     sec.innerHTML =
       '<div class="max-w-7xl mx-auto">' +
@@ -541,14 +663,22 @@
   function renderCurrentPlayers() {
     const el = $('current-players'); if (!el) return;
     if (STATE !== 'live') { el.innerHTML = ''; return; }
-    const mk = (nm, role, color) => '<div class="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 backdrop-blur"><span class="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold" style="background:' + color + '">' + esc(nm.split(' ').map(w => w[0]).join('').slice(0, 2)) + '</span><div class="text-left leading-tight"><p class="text-xs font-semibold">' + esc(nm) + '</p><p class="text-[10px] text-gray-300">' + esc(role) + '</p></div></div>';
+    const homeXI = M.squads.home.xi, awayXI = M.squads.away.xi;
+    const homePlayer = homeXI.length ? homeXI[0].n : (M.players.home.length ? M.players.home[0] : genName());
+    const awayPlayer = awayXI.length ? awayXI[0].n : (M.players.away.length ? M.players.away[0] : genName());
+    const mk = (nm, role, team) => {
+      const tm = teamMeta(team);
+      const initials = nm.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+      const img = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(initials) + '&background=' + tm.color.replace('#', '') + '&color=ffffff&size=64&bold=true&format=png';
+      return '<div class="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 backdrop-blur"><img alt="' + esc(nm) + '" class="w-9 h-9 rounded-full border border-white/20" src="' + img + '"><div class="text-left leading-tight"><p class="text-xs font-semibold">' + esc(nm) + '</p><p class="text-[10px] text-gray-300">' + esc(role) + '</p></div></div>';
+    };
     let roleHome = 'Striker', roleAway = 'Bowler';
     if (SPORT === 'football' || SPORT === 'hockey') { roleHome = 'On Ball'; roleAway = 'Defending'; }
     else if (SPORT === 'basketball') { roleHome = 'With Ball'; roleAway = 'Guarding'; }
     else if (SPORT === 'tennis' || SPORT === 'tabletennis' || SPORT === 'volleyball') { roleHome = 'Serving'; roleAway = 'Receiving'; }
     else if (SPORT === 'kabaddi' || SPORT === 'e-sports') { roleHome = 'Raider'; roleAway = 'Cover'; }
     else if (SPORT === 'baseball') { roleHome = 'At Bat'; roleAway = 'Pitching'; }
-    el.innerHTML = mk(genName(), roleHome + ' · ' + HOME_T.name, HOME_T.color) + mk(genName(), roleAway + ' · ' + AWAY_T.name, AWAY_T.color);
+    el.innerHTML = mk(homePlayer, roleHome + ' · ' + HOME_T.name, HOME) + mk(awayPlayer, roleAway + ' · ' + AWAY_T.name, AWAY);
   }
 
   function renderMatchInfo() {
@@ -678,13 +808,20 @@
   function renderCommentary() {
     const p = $('panel-commentary'); if (!p) return;
     const feed = M.comm.items.map(it => commItemHtml(it)).join('');
+    const liveTag = STATE === 'live'
+      ? '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-500/20 text-red-300 text-[11px] font-semibold border border-red-500/30"><span class="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse"></span> LIVE</span>'
+      : '';
     p.innerHTML =
       '<div class="col-span-12 lg:col-span-8 space-y-6">' +
       '<div id="comm-players" class="bg-white dark:bg-[#12172D] rounded-lg shadow-sm border border-gray-200 dark:border-gray-800 p-4 flex items-center gap-4 overflow-x-auto"><span class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wide shrink-0">' + esc(M.comm.label) + '</span></div>' +
-      '<div class="bg-white dark:bg-[#12172D] rounded-lg shadow-sm border border-gray-200 dark:border-gray-800 p-4 flex flex-col sm:flex-row sm:items-center gap-4"><div class="inline-flex rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700" id="comm-filters"><button class="comm-filter px-3.5 py-1.5 text-xs font-semibold rounded-md text-white bg-crexGold" data-filter="all">All</button><button class="comm-filter px-3.5 py-1.5 text-xs font-semibold rounded-md text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white" data-filter="four">4s/PTS</button><button class="comm-filter px-3.5 py-1.5 text-xs font-semibold rounded-md text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white" data-filter="six">6s/GOAL</button><button class="comm-filter px-3.5 py-1.5 text-xs font-semibold rounded-md text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white" data-filter="wicket">Wickets</button><button class="comm-filter px-3.5 py-1.5 text-xs font-semibold rounded-md text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white" data-filter="milestone">Milestones</button></div></div>' +
-      '<section class="bg-white dark:bg-[#12172D] rounded-lg shadow-sm overflow-hidden border border-gray-200 dark:border-gray-800"><div class="flex items-center justify-between px-5 py-4 bg-[#0b1626] text-white"><h3 class="font-bold text-sm uppercase tracking-wide">Commentary</h3><span id="comm-innings-label" class="text-xs text-gray-300">' + esc(M.comm.label) + '</span></div><div id="comm-feed" class="divide-y divide-gray-100 dark:divide-gray-800">' + (feed || '<p class="p-6 text-sm text-gray-400">No commentary yet.</p>') + '</div></section>' +
+      '<div class="bg-white dark:bg-[#12172D] rounded-lg shadow-sm border border-gray-200 dark:border-gray-800 p-4 flex flex-col sm:flex-row sm:items-center gap-4"><div class="inline-flex rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700" id="comm-filters"><button class="comm-filter px-3.5 py-1.5 text-xs font-semibold rounded-md text-white bg-crexGold" data-filter="all">All</button><button class="comm-filter px-3.5 py-1.5 text-xs font-semibold rounded-md text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white" data-filter="four">4s/PTS</button><button class="comm-filter px-3.5 py-1.5 text-xs font-semibold rounded-md text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white" data-filter="six">6s/GOAL</button><button class="comm-filter px-3.5 py-1.5 text-xs font-semibold rounded-md text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white" data-filter="wicket">Wickets</button><button class="comm-filter px-3.5 py-1.5 text-xs font-semibold rounded-md text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white" data-filter="milestone">Milestones</button></div>' + (STATE === 'live' ? '<span class="text-xs text-gray-400 ml-auto hidden sm:block">Updates every few seconds · scroll for history</span>' : '') + '</div>' +
+      '<section class="bg-white dark:bg-[#12172D] rounded-lg shadow-sm overflow-hidden border border-gray-200 dark:border-gray-800"><div class="flex items-center justify-between px-5 py-4 bg-[#0b1626] text-white"><h3 class="font-bold text-sm uppercase tracking-wide">Commentary</h3>' + liveTag + '<span id="comm-innings-label" class="text-xs text-gray-300">' + esc(M.comm.label) + '</span></div><div id="comm-feed" class="divide-y divide-gray-100 dark:divide-gray-800">' + (feed || '<p class="p-6 text-sm text-gray-400">No commentary yet.</p>') + '</div></section>' +
       '</div>' +
-      '<aside class="col-span-12 lg:col-span-4 space-y-6"><section class="bg-white dark:bg-[#12172D] rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-800"><h3 class="font-bold text-gray-800 dark:text-white text-sm uppercase tracking-wide mb-4">This ' + (SC.isCricket ? 'Over' : 'Minute') + '</h3><p class="text-sm text-gray-500 dark:text-gray-400">Latest updates appear here as the match progresses.</p></section></aside>';
+      '<aside class="col-span-12 lg:col-span-4 space-y-6">' +
+      '<section class="bg-white dark:bg-[#12172D] rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-800"><h3 class="font-bold text-gray-800 dark:text-white text-sm uppercase tracking-wide mb-4">This ' + (SC.isCricket ? 'Over' : 'Minute') + '</h3><div id="this-over-widget"><div class="flex items-center justify-between text-sm mb-2"><span class="text-gray-500 dark:text-gray-400">Over 0</span><span class="font-mono text-emerald-600 dark:text-emerald-400 font-bold">— = 0</span></div><div class="flex gap-1.5"><span class="text-xs text-gray-400">Waiting for first ball…</span></div></div></section>' +
+      '<section class="bg-white dark:bg-[#12172D] rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-800"><h3 class="font-bold text-gray-800 dark:text-white text-sm uppercase tracking-wide mb-4">Over-by-Over</h3><div id="over-history"><p class="text-xs text-gray-400">Over-by-over summary will appear here.</p></div></section>' +
+      '<section class="bg-white dark:bg-[#12172D] rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-800"><h3 class="font-bold text-gray-800 dark:text-white text-sm uppercase tracking-wide mb-4">Live Positions</h3><div id="live-positions"><p class="text-xs text-gray-400">Live player positions appear here during the match.</p></div></section>' +
+      '</aside>';
 
     // filter handlers
     const feedEl = $('comm-feed');
@@ -694,11 +831,24 @@
       feedEl.querySelectorAll('.comm-item').forEach(it => { it.style.display = (f === 'all' || it.dataset.type === f) ? '' : 'none'; });
     }));
 
-    // live loop
+    // live loop — only for live matches (score + commentary update live)
     if (STATE === 'live') startLiveLoop(feedEl);
   }
 
+  // Rules & Regulations panel (sport-aware, proper for ALL games)
+  function renderRules() {
+    const p = $('panel-rules'); if (!p) return;
+    const pts = RULE_SET.points.map(pt => '<li class="flex items-start gap-3"><span class="text-crexGold mt-0.5 text-lg">•</span><span class="text-sm text-gray-600 dark:text-gray-300">' + esc(pt) + '</span></li>').join('');
+    p.innerHTML =
+      '<div class="col-span-12 bg-white dark:bg-[#12172D] rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-800">' +
+      '<div class="flex items-center gap-3 mb-5"><span class="text-3xl">' + SC.icon + '</span><h3 class="font-bold text-gray-800 dark:text-white text-lg">' + esc(RULE_SET.title) + '</h3></div>' +
+      '<ul class="space-y-3" id="rules-list">' + pts + '</ul>' +
+      '<p class="text-xs text-gray-400 mt-5">Applies to ' + esc(HOME_T.name) + ' vs ' + esc(AWAY_T.name) + ' · ' + esc(SC.label) + '.</p>' +
+      '</div>';
+  }
+
   let liveTimer = null;
+  let liveTick = 0;
   function flashScore() {
     const sec = $('score-header'); if (!sec) return;
     sec.querySelectorAll('.score-flash').forEach(el => {
@@ -707,11 +857,123 @@
       el.classList.add('score-flash');
     });
   }
+  // Crex-style floating "score update" toast that pops on every live change
+  function showScoreToast(team, delta, label) {
+    let host = $('live-toast-host');
+    if (!host) {
+      host = document.createElement('div');
+      host.id = 'live-toast-host';
+      host.className = 'fixed z-[120] bottom-5 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 pointer-events-none';
+      document.body.appendChild(host);
+    }
+    const t = document.createElement('div');
+    t.className = 'live-toast flex items-center gap-2 px-4 py-2 rounded-full bg-crexGold text-white text-sm font-bold shadow-lg';
+    t.innerHTML = '<span class="material-symbols-outlined text-[18px]">sports_cricket</span>' +
+      '<span>' + esc(team) + ' ' + (delta > 0 ? '+' : '') + delta + ' &middot; ' + esc(label) + '</span>';
+    host.appendChild(t);
+    requestAnimationFrame(() => t.classList.add('show'));
+    setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 400); }, 2600);
+  }
+  // Pulsing LIVE badge + animated scoreboard header for live matches
+  function ensureLiveBanner() {
+    const sec = $('score-header'); if (!sec) return;
+    if ($('live-banner')) return;
+    const banner = document.createElement('div');
+    banner.id = 'live-banner';
+    banner.className = 'max-w-7xl mx-auto mb-3 flex items-center justify-center gap-2';
+    banner.innerHTML =
+      '<span class="live-dot"></span>' +
+      '<span class="text-crexGold text-xs font-extrabold uppercase tracking-[0.2em]">Live</span>' +
+      '<span class="text-gray-300 text-xs">· ball-by-ball updates &amp; commentary</span>';
+    const inner = sec.querySelector('.max-w-7xl');
+    if (inner) inner.insertBefore(banner, inner.firstChild);
+  }
+  // ---- Live match clock (ticks forward, valid per sport) ----
+  let liveClock = { min: 0, sec: 0, over: 0, ball: 0, quarter: 1, set: 1, inn: 1 };
+  function clockLabel() {
+    if (SC.isCricket) {
+      const ov = liveClock.over, ball = liveClock.ball;
+      return ov + '.' + ball + ' ov';
+    }
+    if (SPORT === 'basketball') return 'Q' + liveClock.quarter + ' · ' + String(liveClock.min).padStart(2, '0') + ':' + String(liveClock.sec).padStart(2, '0');
+    if (SPORT === 'tennis' || SPORT === 'tabletennis' || SPORT === 'volleyball') return 'Set ' + liveClock.set + ' · ' + String(liveClock.min).padStart(2, '0') + ':' + String(liveClock.sec).padStart(2, '0');
+    if (SPORT === 'baseball') return 'Inn ' + liveClock.inn + ' · ' + String(liveClock.min).padStart(2, '0') + ':' + String(liveClock.sec).padStart(2, '0');
+    return String(liveClock.min).padStart(2, '0') + ':' + String(liveClock.sec).padStart(2, '0');
+  }
+  function clockMaxReached() {
+    if (SC.isCricket) return liveClock.over >= SC.xMax;
+    if (SPORT === 'basketball') return liveClock.quarter > 4;
+    if (SPORT === 'baseball') return liveClock.inn > 9;
+    if (SPORT === 'tennis' || SPORT === 'tabletennis' || SPORT === 'volleyball') return liveClock.set > 3;
+    return liveClock.min >= SC.xMax;
+  }
+  function tickClock() {
+    if (SC.isCricket) {
+      liveClock.ball++;
+      if (liveClock.ball >= 6) { liveClock.ball = 0; liveClock.over++; }
+    } else if (SPORT === 'basketball') {
+      liveClock.sec += 12;
+      if (liveClock.sec >= 60) { liveClock.sec = 0; liveClock.min++; }
+      if (liveClock.min >= 12) { liveClock.min = 0; liveClock.quarter++; }
+    } else if (SPORT === 'baseball') {
+      liveClock.sec += 30; if (liveClock.sec >= 60) { liveClock.sec = 0; liveClock.min++; }
+      if (liveClock.min >= 5) { liveClock.min = 0; liveClock.inn++; }
+    } else if (SPORT === 'tennis' || SPORT === 'tabletennis' || SPORT === 'volleyball') {
+      liveClock.sec += 45; if (liveClock.sec >= 60) { liveClock.sec = 0; liveClock.min++; }
+      if (liveClock.min >= 10) { liveClock.min = 0; liveClock.set++; }
+    } else {
+      liveClock.sec += 30; if (liveClock.sec >= 60) { liveClock.sec = 0; liveClock.min++; }
+    }
+  }
+  function updateClockUI() {
+    const el = $('live-clock-text'); if (el) el.textContent = clockLabel();
+  }
+  function startLiveClock() {
+    if (liveClockTimer) return;
+    liveClockTimer = setInterval(() => {
+      if (clockMaxReached()) { clearInterval(liveClockTimer); liveClockTimer = null; return; }
+      tickClock();
+      updateClockUI();
+    }, 1000);
+  }
+  let liveClockTimer = null;
+
+  // ---- Cricket innings state (one team bats at a time) ----
+  let liveInnings = null;
+  function getWkts(sc) { const m = /(\d+)/.exec(sc.sub || ''); return m ? parseInt(m[1], 10) : 0; }
+  function setWkts(sc, w) { sc.sub = '/' + w; }
+  function initLiveInnings() {
+    if (!SC.isCricket) return;
+    liveInnings = { num: 1, batting: 'home', target: null };
+    // Bowling team is yet to bat
+    M.score.away.score = '—'; M.score.away.sub = ''; M.score.away.detail = 'Yet to bat';
+  }
+  function switchInnings() {
+    if (!SC.isCricket || !liveInnings) return;
+    if (liveInnings.num === 1) {
+      const homeScore = parseInt(M.score.home.score, 10) || 0;
+      liveInnings.num = 2;
+      liveInnings.batting = 'away';
+      liveInnings.target = homeScore + 1;
+      M.score.away.score = '0'; M.score.away.sub = ''; M.score.away.detail = 'Target ' + liveInnings.target;
+      liveClock.over = 0; liveClock.ball = 0; updateClockUI();
+    } else {
+      liveInnings = null; // match complete
+    }
+  }
+
   function startLiveLoop(feedEl) {
     if (liveTimer) return;
+    ensureLiveBanner();
+    if (SC.isCricket) initLiveInnings();
+    startLiveClock();
+    // Track the current over's balls for the "This Over" widget (Crex-style)
+    let overBalls = [];
+    let lastOverNo = -1;
     liveTimer = setInterval(() => {
+      liveTick++;
       const r = rng();
-      let type = 'normal', badge = '•', text;
+      let type = 'normal', badge = '•', text, runs = 0;
       const pool = M.players.home.concat(M.players.away);
       const striker = pick(pool);
       const bowler = pick(pool);
@@ -721,12 +983,17 @@
       const isTennis = SPORT === 'tennis' || SPORT === 'tabletennis' || SPORT === 'volleyball';
       const isKabaddi = SPORT === 'kabaddi' || SPORT === 'e-sports';
       if (isCricket) {
-        if (r > 0.9) { type = 'six'; badge = '6'; text = striker + ' launches ' + bowler + ' over the ropes for a massive six! '; }
-        else if (r > 0.84) { type = 'four'; badge = '4'; text = striker + ' picks up a boundary off ' + bowler + '!'; }
-        else if (r > 0.8) { type = 'wicket'; badge = 'W'; text = striker + ' c & b ' + bowler + '. Wicket!'; }
+        if (r > 0.9) { type = 'six'; badge = '6'; runs = 6; text = striker + ' launches ' + bowler + ' over the ropes for a massive six! '; }
+        else if (r > 0.84) { type = 'four'; badge = '4'; runs = 4; text = striker + ' picks up a boundary off ' + bowler + '!'; }
+        else if (r > 0.8) {
+          type = 'wicket'; badge = 'W'; runs = 'W';
+          const dismissals = ['c ' + bowler + ' b ' + bowler, 'b ' + bowler, 'lbw b ' + bowler, 'run out (' + bowler + ')', 'st ' + bowler + ' b ' + bowler, 'c & b ' + bowler];
+          const d = pick(dismissals);
+          text = striker + ' ' + d + '. Wicket!';
+        }
         else if (r > 0.76) { type = 'milestone'; badge = '★'; text = striker + ' reaches a milestone.'; }
-        else { type = 'normal'; text = 'Play continues. ' + striker + ' on strike, ' + bowler + ' to bowl.'; }
-      } else if (isFootball || isHockey) {
+        else { runs = ri(0, 3); badge = String(runs); text = runs === 0 ? 'Dot ball. ' + bowler + ' lands it on a good length.' : runs + ' run' + (runs > 1 ? 's' : '') + ' taken.'; }
+      } else if (isFootball) {
         if (r > 0.88) { type = 'goal'; badge = '⚽'; text = 'GOAL! ' + striker + ' finds the net past ' + bowler + '!'; }
         else if (r > 0.82) { type = 'save'; badge = '🧤'; text = 'Brilliant save by ' + bowler + ' to deny ' + striker + '!'; }
         else if (r > 0.78) { type = 'card'; badge = '🟥'; text = striker + ' shown a card by the referee.'; }
@@ -748,11 +1015,13 @@
         else if (r > 0.84) { type = 'four'; badge = '4'; text = striker + ' scores!'; }
         else { type = 'normal'; text = 'Play continues. ' + striker + ' with the initiative.'; }
       }
+      // Use the live clock for the over/label so it stays valid
       let over;
-      if (isCricket) over = ri(1, 50) + '.' + ri(0, 5);
-      else if (isBasket) over = 'Q' + ri(1, 4);
-      else if (isTennis) over = 'Set ' + ri(1, 5);
-      else over = ri(1, SC.xMax) + "'";
+      if (isCricket) over = liveClock.over + '.' + liveClock.ball;
+      else if (isBasket) over = 'Q' + liveClock.quarter;
+      else if (isTennis) over = 'Set ' + liveClock.set;
+      else if (SPORT === 'baseball') over = 'Inn ' + liveClock.inn;
+      else over = clockLabel();
       const newBat = type === 'wicket' ? pick(pool.filter(n => n !== striker)) : null;
       // sport-aware type labels already set above (goal/save for football, set/ace for tennis, raid for kabaddi)
       const it = { over, type, runs: badge, badge, text, striker, bowler, nonstriker: pick(pool.filter(n => n !== striker)), newBatsman: newBat };
@@ -761,19 +1030,143 @@
       const item = wrap.firstElementChild;
       item.classList.add('score-flash');
       feedEl.insertBefore(item, feedEl.firstChild);
-      // bump score a little for live feel + animate (sport-aware)
+      // ---- Score update logic (innings-wise for cricket) ----
       const isGoalLike = (type === 'six' || type === 'four' || type === 'goal' || type === 'set' || type === 'raid' || type === 'pts');
       if (isGoalLike) {
-        const tgt = rng() > 0.5 ? M.score.home : M.score.away;
-        if (!isNaN(parseInt(tgt.score))) {
-          let add = 1;
+        let tgt, tgtTeam, add = 1;
+        if (SC.isCricket && liveInnings) {
+          // Only the batting side's score moves
+          tgt = (liveInnings.batting === 'home') ? M.score.home : M.score.away;
+          tgtTeam = (liveInnings.batting === 'home') ? HOME_T : AWAY_T;
+          if (type === 'six') add = 6; else if (type === 'four') add = 4;
+          if (!isNaN(parseInt(tgt.score))) tgt.score = parseInt(tgt.score) + add;
+          // Wicket also increments the batting side's wickets
+          if (type === 'wicket') { const w = getWkts(tgt) + 1; setWkts(tgt, w); }
+          // Innings change when target reached (2nd innings) or 50 overs done
+          if (liveInnings.num === 2 && liveInnings.target && parseInt(tgt.score, 10) >= liveInnings.target) {
+            switchInnings();
+          } else if (liveClock.over >= SC.xMax) {
+            switchInnings();
+          }
+        } else {
+          tgt = rng() > 0.5 ? M.score.home : M.score.away;
+          tgtTeam = (tgt === M.score.home) ? HOME_T : AWAY_T;
           if (type === 'six') add = 6; else if (type === 'four' && SC.isCricket) add = 4; else if (type === 'pts') add = ri(1, 3); else if (type === 'set' || type === 'raid') add = 1;
-          tgt.score = parseInt(tgt.score) + add;
+          if (!isNaN(parseInt(tgt.score))) tgt.score = parseInt(tgt.score) + add;
         }
         renderScoreHeader();
         flashScore();
+        showScoreToast(tgtTeam.name, add, (type === 'six' ? 'SIX' : type === 'four' ? 'FOUR' : type === 'goal' ? 'GOAL' : type === 'set' ? 'SET' : type === 'raid' ? 'RAID' : 'POINT'));
+      }
+      // ---- Crex-style ball animation + "This Over" tracker (cricket) ----
+      if (SC.isCricket) {
+        const ballLabel = (type === 'six') ? '6' : (type === 'four') ? '4' : (type === 'wicket') ? 'W' : (type === 'milestone') ? '★' : String(runs);
+        if (liveClock.over !== lastOverNo) {
+          // new over started — push previous over's balls into the scorecard history
+          if (overBalls.length) pushOverHistory(lastOverNo, overBalls.slice());
+          overBalls = [];
+          lastOverNo = liveClock.over;
+        }
+        overBalls.push({ type, label: ballLabel, runs });
+        animateBall(type, ballLabel);
+        updateThisOverWidget(liveClock.over, overBalls);
+        updateLivePositions();
+      } else {
+        updateLivePositions();
       }
     }, 3500);
+  }
+
+  // ---- Crex-style floating ball animation ----
+  function animateBall(type, label) {
+    let host = $('ball-anim-host');
+    if (!host) {
+      host = document.createElement('div');
+      host.id = 'ball-anim-host';
+      host.className = 'fixed inset-0 z-[115] pointer-events-none overflow-hidden';
+      document.body.appendChild(host);
+    }
+    const el = document.createElement('div');
+    el.className = 'crex-ball crex-ball-' + type;
+    el.textContent = label;
+    // random horizontal start near center-top
+    const leftPct = 35 + Math.random() * 30;
+    el.style.left = leftPct + 'vw';
+    el.style.top = '30vh';
+    host.appendChild(el);
+    setTimeout(() => el.remove(), 1600);
+  }
+
+  // ---- "This Over" widget (Crex-style over balls) ----
+  function updateThisOverWidget(overNo, balls) {
+    const el = $('this-over-widget'); if (!el) return;
+    const total = balls.reduce((s, b) => s + (typeof b.runs === 'number' ? b.runs : 0), 0);
+    const ballsHtml = balls.map(b => '<span class="over-ball ' + b.type + '">' + esc(b.label) + '</span>').join('');
+    el.innerHTML =
+      '<div class="flex items-center justify-between text-sm mb-2"><span class="text-gray-500 dark:text-gray-400">Over ' + overNo + '</span>' +
+      '<span class="font-mono text-emerald-600 dark:text-emerald-400 font-bold">' + (balls.length ? balls.map(b => b.label).join(' ') : '—') + ' = ' + total + '</span></div>' +
+      '<div class="flex gap-1.5 flex-wrap">' + (ballsHtml || '<span class="text-xs text-gray-400">Waiting for first ball…</span>') + '</div>';
+  }
+
+  // ---- Last over history shown in scorecard ----
+  let overHistory = [];
+  function pushOverHistory(overNo, balls) {
+    overHistory.unshift({ over: overNo, balls });
+    if (overHistory.length > 6) overHistory.pop();
+    renderOverHistory();
+  }
+  function renderOverHistory() {
+    const el = $('over-history'); if (!el) return;
+    if (!overHistory.length) { el.innerHTML = '<p class="text-xs text-gray-400">Over-by-over summary will appear here.</p>'; return; }
+    el.innerHTML = overHistory.map(o => {
+      const total = o.balls.reduce((s, b) => s + (typeof b.runs === 'number' ? b.runs : 0), 0);
+      const balls = o.balls.map(b => '<span class="over-ball ' + b.type + ' !w-6 !h-6 !text-[10px]">' + esc(b.label) + '</span>').join('');
+      return '<div class="flex items-center justify-between py-1.5 border-b border-gray-100 dark:border-gray-800 last:border-0">' +
+        '<span class="text-xs font-semibold text-crexGold w-10">' + o.over + '</span>' +
+        '<div class="flex gap-1 flex-1">' + balls + '</div>' +
+        '<span class="text-xs font-mono text-emerald-600 dark:text-emerald-400 font-bold">' + total + '</span></div>';
+    }).join('');
+  }
+
+  // ---- Live player positions (cricket pitch / kabaddi raid / football formation) ----
+  function updateLivePositions() {
+    const el = $('live-positions'); if (!el) return;
+    const isCricket = !!SC.isCricket;
+    const isKabaddi = !!SC.isKabaddi;
+    const isFootball = SPORT === 'football' || SPORT === 'hockey';
+    if (isCricket) {
+      // Two batters at crease + bowler running in
+      const batting = liveInnings ? (liveInnings.batting === 'home' ? M.squads.home.xi : M.squads.away.xi) : M.squads.home.xi;
+      const bowlTeam = liveInnings ? (liveInnings.batting === 'home' ? M.squads.away.xi : M.squads.home.xi) : M.squads.away.xi;
+      const s1 = batting[0] ? batting[0].n : 'Striker';
+      const s2 = batting[1] ? batting[1].n : 'Non-striker';
+      const bowler = bowlTeam[0] ? bowlTeam[0].n : 'Bowler';
+      el.innerHTML = '<div class="pitch-wrap"><div class="cricket-pitch">' +
+        '<div class="pos pos-striker" title="' + esc(s1) + '"><span class="pos-dot"></span><span class="pos-label">' + esc(s1) + '</span></div>' +
+        '<div class="pos pos-nonstriker" title="' + esc(s2) + '"><span class="pos-dot"></span><span class="pos-label">' + esc(s2) + '</span></div>' +
+        '<div class="pos pos-bowler" title="' + esc(bowler) + '"><span class="pos-dot"></span><span class="pos-label">' + esc(bowler) + '</span></div>' +
+        '<div class="pos pos-keeper" title="WK"><span class="pos-dot"></span><span class="pos-label">WK</span></div>' +
+        '</div></div>';
+    } else if (isKabaddi) {
+      const raider = M.squads.home.xi[0] ? M.squads.home.xi[0].n : 'Raider';
+      const defender = M.squads.away.xi[0] ? M.squads.away.xi[0].n : 'Cover';
+      const rx = 30 + (liveTick % 5) * 8, ry = 50 + (liveTick % 3) * 6;
+      el.innerHTML = '<div class="kabaddi-mat"><div class="kabaddi-half left"></div><div class="kabaddi-half right"></div>' +
+        '<div class="pos pos-raider" style="left:' + rx + '%;top:' + ry + '%" title="' + esc(raider) + '"><span class="pos-dot"></span><span class="pos-label">' + esc(raider) + '</span></div>' +
+        '<div class="pos pos-defender" style="left:' + (100 - rx) + '%;top:' + (100 - ry) + '%" title="' + esc(defender) + '"><span class="pos-dot"></span><span class="pos-label">' + esc(defender) + '</span></div>' +
+        '</div>';
+    } else if (isFootball) {
+      const f = (n, x, y) => '<div class="pos" style="left:' + x + '%;top:' + y + '%" title="' + esc(n) + '"><span class="pos-dot"></span><span class="pos-label">' + esc(n) + '</span></div>';
+      const home = M.squads.home.xi.slice(0, 5).map((p, i) => p.n);
+      const away = M.squads.away.xi.slice(0, 5).map((p, i) => p.n);
+      let html = '<div class="football-pitch"><div class="pitch-line center"></div><div class="pitch-line circle"></div>';
+      const spots = [[20,30],[35,55],[50,40],[65,60],[80,35],[20,70],[40,75],[60,25],[75,65],[50,80]];
+      home.concat(away).forEach((n, i) => { const s = spots[i % spots.length]; html += f(n, s[0], s[1]); });
+      html += '</div>';
+      el.innerHTML = html;
+    } else {
+      el.innerHTML = '<p class="text-xs text-gray-400">Live positions are shown for cricket, kabaddi and football.</p>';
+    }
   }
 
   function renderGraph() {
@@ -880,6 +1273,7 @@
     try { renderSummary(); } catch (e) { console.error('summary', e); }
     try { renderScorecard(); } catch (e) { console.error('scorecard', e); }
     try { renderCommentary(); } catch (e) { console.error('commentary', e); }
+    try { renderRules(); } catch (e) { console.error('rules', e); }
     try { renderSquads(); } catch (e) { console.error('squads', e); }
     try { renderGraph(); } catch (e) { console.error('graph', e); }
     try { renderNews(); } catch (e) { console.error('news', e); }
