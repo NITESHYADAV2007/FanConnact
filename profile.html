@@ -1734,6 +1734,9 @@
       }
 
       async function openCamera() {
+        if (!window.isSecureContext) {
+          alert("Camera needs a secure context (open via https:// or http://localhost, or double-click the file to open it as file://). Use the Gallery option instead."); return;
+        }
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
           alert("Camera not available. Try Gallery instead."); return;
         }
@@ -1758,9 +1761,13 @@
           document.getElementById("camera-preview").onloadedmetadata = () => startPreviewLoop();
         } catch (err) {
           if (err.name === "NotAllowedError" || err.name === "PermissionDeniedError")
-            alert("Camera permission denied.");
+            alert("Camera permission denied. Allow camera access in your browser's site settings, then try again.");
+          else if (err.name === "NotFoundError" || err.name === "OverconstrainedError")
+            alert("No camera found. Connect a webcam or use the Gallery option instead.");
+          else if (err.name === "NotReadableError" || err.name === "AbortError")
+            alert("Camera is in use by another app (Zoom, Teams, etc.) or blocked. Close it and try again, or use Gallery.");
           else
-            alert("Camera error: " + err.message);
+            alert("Camera error: " + err.message + "\n\nTip: open the page via https://, http://localhost, or as a file:// — not a plain http:// LAN address.");
         }
       }
 
