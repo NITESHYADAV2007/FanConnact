@@ -211,24 +211,23 @@ body.theme-royal .text-accent {
   color: #475569 !important; /* Darker slate for better readability */
 }
 
-/* Fanconnact Logo Text */
-:root:not(.dark) .text-fan {
-  color: #000000 !important;
+/* ── GLOBAL LOGO TEXT (overrides each page's inline <style>) ──
+   Light theme: Fan = near-black, Connact = blue.
+   Dark theme:  Fan = white,       Connact = green.
+   High specificity so it wins over per-page inline overrides. ── */
+html:root:not(.dark) .text-fan { color: #0f172a !important; }
+html.dark .text-fan { color: #ffffff !important; }
+html:root:not(.dark) .text-connect { color: #2196f3 !important; }
+html.dark .text-connect { color: #10b981 !important; }
+
+/* ── GLASSY SIDEBAR on every page & theme ── */
+#sidebar {
+  background-color: rgba(255, 255, 255, 0.72) !important;
+  backdrop-filter: blur(16px) saturate(140%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(140%) !important;
 }
-.dark .text-fan {
-  color: #ffffff !important;
-}
-/* Fanconnact Logo Text: Connect = blue in light, green in dark */
-:root:not(.dark) .text-connect,
-body.theme-light .text-connect,
-body.theme-esports .text-connect,
-body.theme-royal .text-connect {
-  color: #2196f3 !important;
-}
-.dark .text-connect,
-body.theme-dark .text-connect,
-body.theme-stadium .text-connect {
-  color: #10b981 !important;
+.dark #sidebar {
+  background-color: rgba(15, 23, 42, 0.65) !important;
 }
 
 /* Sidebar Collapsed State - fully hide sidebar */

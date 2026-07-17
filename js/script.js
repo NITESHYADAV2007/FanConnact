@@ -56,6 +56,14 @@
 })();
 
 document.addEventListener("DOMContentLoaded", () => {
+  // Rewrite "Live Matches"/"Matches" links to open the Match Center
+  // (product decision: Live Matches → Match Center, never a game page).
+  try {
+    document.querySelectorAll('a[href="livematches.html"]').forEach((a) => {
+      a.setAttribute("href", "match-center.html");
+    });
+  } catch (e) {}
+
   const themeToggleBtn = document.getElementById("theme-toggle");
   const mobileMenuBtn = document.getElementById("mobile-menu-btn");
   const closeSidebarBtn = document.getElementById("close-sidebar-btn");
@@ -128,32 +136,16 @@ document.addEventListener("DOMContentLoaded", () => {
       const path = window.location.pathname;
       const page = path.split("/").pop();
       // Pages guests are allowed to see
+      // Guests may only open the landing page and the public Match Center
+      // (plus auth/legal pages so they can sign in). Every other page
+      // redirects back to index.html.
       const guestAllowedPages = [
         "index.html",
+        "match-center.html",
         "login.html",
         "signup.html",
-        "news.html",
-        "news&update.html",
-        "cricket.html",
-        "football.html",
-        "basketball.html",
-        "baseball.html",
-        "hockey.html",
-        "tennis.html",
-        "tabletennis.html",
-        "vollyeball.html",
-        "kabbaddi.html",
-        "e-sports.html",
-        "livematches.html",
-        "match-center.html",
-        "prediction.html",
-        "notification.html",
-        "profile.html",
-        "terms.html",
         "forget-password.html",
-        "setting.html",
-        "fancoin.html",
-        "top-players.html",
+        "terms.html",
       ];
 
       // Default landing page for unauthenticated users visiting root or protected pages
