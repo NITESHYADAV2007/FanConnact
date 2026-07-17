@@ -6,11 +6,32 @@
       if (saved.compact) document.documentElement.classList.add('compact-mode');
       if (saved.largeText) document.documentElement.classList.add('large-text');
       if (saved.reduceAnimation) document.documentElement.classList.add('reduce-animation');
-      // Apply the chosen named theme (light/dark/stadium/esports/royal) on every page
-      var validThemes = ['light', 'dark', 'stadium', 'esports', 'royal'];
+      // Apply the chosen named theme (light/dark/stadium/esports/royal/custom) on every page
+      var validThemes = ['light', 'dark', 'stadium', 'esports', 'royal', 'custom'];
       var theme = saved.theme && validThemes.indexOf(saved.theme) !== -1 ? saved.theme : 'dark';
-      document.body.classList.remove('theme-light', 'theme-dark', 'theme-stadium', 'theme-esports', 'theme-royal');
+      document.body.classList.remove('theme-light', 'theme-dark', 'theme-stadium', 'theme-esports', 'theme-royal', 'theme-custom');
       document.body.classList.add('theme-' + theme);
+      // Custom theme: apply the user's saved CSS variables to <body>
+      if (theme === 'custom' && saved.customTheme) {
+        var c = saved.customTheme;
+        var s = document.body.style;
+        s.setProperty('--page-bg', c.pageBg || '#0b1220');
+        s.setProperty('--card-bg', c.cardBg || '#111827');
+        s.setProperty('--border', c.border || '#243347');
+        s.setProperty('--text', c.text || '#ffffff');
+        s.setProperty('--text-light', c.textLight || '#94a3b8');
+        s.setProperty('--primary', c.primary || '#22c55e');
+        s.setProperty('--hover', c.hover || '#162132');
+        if (c.bgImage) {
+          s.setProperty('--page-bg-image', 'linear-gradient(180deg, rgba(0,0,0,0.35), rgba(0,0,0,0.55)), url("' + c.bgImage + '")');
+        } else {
+          s.setProperty('--page-bg-image', 'none');
+        }
+        s.setProperty('--page-bg-size', c.bgSize || 'cover');
+        s.setProperty('--page-bg-position', c.bgPosition || 'center top');
+        s.setProperty('--page-bg-repeat', c.bgRepeat || 'no-repeat');
+        s.setProperty('--page-bg-attachment', c.bgAttachment || 'fixed');
+      }
     }
   } catch(e) {}
 })();

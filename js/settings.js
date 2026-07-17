@@ -25,7 +25,22 @@ const defaultSettings = {
   language: "English",
   timezone: "Asia/Kolkata",
   region: "India",
-  twoFactorEnabled: false
+  twoFactorEnabled: false,
+  customTheme: {
+    pageBg: "#0b1220",
+    cardBg: "#111827",
+    border: "#243347",
+    text: "#ffffff",
+    textLight: "#94a3b8",
+    primary: "#22c55e",
+    hover: "#162132",
+    bgImage: "",
+    bgSize: "cover",
+    bgPosition: "center top",
+    bgRepeat: "no-repeat",
+    bgAttachment: "fixed",
+    isDark: true
+  }
 };
 
 let settings = JSON.parse(localStorage.getItem(STORAGE_KEY)) || defaultSettings;
@@ -41,11 +56,19 @@ const themeCards = document.querySelectorAll("[data-theme]");
 
 function applyTheme(theme) {
   document.body.classList.remove(
-    "theme-light", "theme-dark", "theme-stadium", "theme-esports", "theme-royal"
+    "theme-light", "theme-dark", "theme-stadium", "theme-esports", "theme-royal", "theme-custom"
   );
   document.body.classList.add(`theme-${theme}`);
   settings.theme = theme;
   saveSettings();
+
+  // Custom theme: apply the user's saved CSS variables to <body>
+  if (theme === "custom") {
+    applyCustomTheme();
+  } else {
+    // Clear any inline custom vars so named themes use their CSS file values
+    clearCustomThemeVars();
+  }
 
   themeCards.forEach((card) => {
     card.classList.remove("active-theme");
@@ -57,6 +80,9 @@ function applyTheme(theme) {
   let colorTheme;
   if (theme === "light") {
     colorTheme = "light";
+  } else if (theme === "custom") {
+    // Custom theme declares its own dark/light intent
+    colorTheme = settings.customTheme && settings.customTheme.isDark ? "dark" : "light";
   } else {
     // dark, stadium, esports, royal are all dark-based
     colorTheme = "dark";
@@ -72,6 +98,41 @@ function applyTheme(theme) {
     darkIcon.classList.toggle("hidden", colorTheme !== "dark");
     lightIcon.classList.toggle("hidden", colorTheme === "dark");
   }
+}
+
+/* Apply the user-built custom theme by writing its values as inline
+   CSS variables on <body>. These are read by the body.theme-custom rules
+   in css/style.css. */
+function applyCustomTheme() {
+  const c = settings.customTheme || {};
+  const s = document.body.style;
+  s.setProperty("--page-bg", c.pageBg || "#0b1220");
+  s.setProperty("--card-bg", c.cardBg || "#111827");
+  s.setProperty("--border", c.border || "#243347");
+  s.setProperty("--text", c.text || "#ffffff");
+  s.setProperty("--text-light", c.textLight || "#94a3b8");
+  s.setProperty("--primary", c.primary || "#22c55e");
+  s.setProperty("--hover", c.hover || "#162132");
+  // Background image (optional). Empty = solid color only.
+  if (c.bgImage) {
+    s.setProperty("--page-bg-image", `linear-gradient(180deg, rgba(0,0,0,0.35), rgba(0,0,0,0.55)), url("${c.bgImage}")`);
+  } else {
+    s.setProperty("--page-bg-image", "none");
+  }
+  s.setProperty("--page-bg-size", c.bgSize || "cover");
+  s.setProperty("--page-bg-position", c.bgPosition || "center top");
+  s.setProperty("--page-bg-repeat", c.bgRepeat || "no-repeat");
+  s.setProperty("--page-bg-attachment", c.bgAttachment || "fixed");
+}
+
+/* Remove inline custom-theme variables so named themes fall back to CSS. */
+function clearCustomThemeVars() {
+  const s = document.body.style;
+  [
+    "--page-bg", "--card-bg", "--border", "--text", "--text-light",
+    "--primary", "--hover", "--page-bg-image", "--page-bg-size",
+    "--page-bg-position", "--page-bg-repeat", "--page-bg-attachment"
+  ].forEach((v) => s.removeProperty(v));
 }
 
 themeCards.forEach((card) => {
@@ -733,6 +794,12 @@ document.addEventListener("click", (e) => {
   setTimeout(() => {
     const isDark = document.documentElement.classList.contains("dark");
     const newTheme = isDark ? "dark" : "light";
+    // Only sync for light/dark. If the user picked a named/custom theme
+    // (stadium / esports / royal / custom), the toggle must NOT change it.
+    const namedThemes = ["light", "dark", "stadium", "esports", "royal", "custom"];
+    if (namedThemes.indexOf(settings.theme) !== -1 && settings.theme !== "light" && settings.theme !== "dark") {
+      return;
+    }
     if (settings.theme !== newTheme) {
       // The body class is updated by MutationObserver in HTML, but we
       // need to update settings and the theme card active state

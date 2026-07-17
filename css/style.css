@@ -22,9 +22,32 @@ body.theme-light,
 body.theme-dark,
 body.theme-stadium,
 body.theme-esports,
-body.theme-royal {
+body.theme-royal,
+body.theme-custom {
   background-color: var(--page-bg);
   color: var(--text);
+}
+
+/* ── AUTHORITATIVE THEME BACKGROUND ──
+   Many pages paint opaque backgrounds on <body> via per-page
+   `!important` rules (e.g. `.dark body { background: #0b0e11 !important }`)
+   which would hide the themed background image. This high-specificity
+   rule guarantees the active named/custom theme background always wins,
+   so toggling light/dark never changes the background of a non-light/dark
+   theme (stadium / esports / royal / custom). ── */
+html body.theme-light,
+html body.theme-dark,
+html body.theme-stadium,
+html body.theme-esports,
+html body.theme-royal,
+html body.theme-custom {
+  background-color: var(--page-bg) !important;
+  background-image: var(--page-bg-image, none) !important;
+  background-size: var(--page-bg-size, auto) !important;
+  background-position: var(--page-bg-position, center) !important;
+  background-repeat: var(--page-bg-repeat, no-repeat) !important;
+  background-attachment: var(--page-bg-attachment, scroll) !important;
+  color: var(--text) !important;
 }
 
 /* Body element itself carries bg-background / text-on-surface */
@@ -151,8 +174,43 @@ body.theme-light .text-accent,
 body.theme-dark .text-accent,
 body.theme-stadium .text-accent,
 body.theme-esports .text-accent,
-body.theme-royal .text-accent {
+body.theme-royal .text-accent,
+body.theme-custom .text-accent {
   color: var(--primary) !important;
+}
+
+/* ── CUSTOM THEME BINDINGS ──
+   A user-built theme (theme-custom) sets the same CSS variables as the
+   named themes, so we bind the global surface/primary/border classes to
+   those variables here. The actual values are applied at runtime by
+   js/settings.js (applyCustomTheme) / js/script.js via inline styles. ── */
+body.theme-custom .bg-surface,
+body.theme-custom .bg-surface-container-lowest,
+body.theme-custom .bg-surface-container-low,
+body.theme-custom .bg-brand-card,
+body.theme-custom .bg-background,
+body.theme-custom .bg-brand-dark {
+  background-color: var(--card-bg) !important;
+}
+body.theme-custom .border-outline-variant,
+body.theme-custom .border-brand-border {
+  border-color: var(--border) !important;
+}
+body.theme-custom .text-on-surface,
+body.theme-custom .text-on-surface-variant {
+  color: var(--text-light) !important;
+}
+body.theme-custom .text-primary,
+body.theme-custom .bg-primary {
+  color: var(--primary) !important;
+  background-color: var(--primary) !important;
+}
+body.theme-custom .bg-primary\/10 {
+  background-color: color-mix(in srgb, var(--primary) 10%, transparent) !important;
+}
+body.theme-custom .hover\:bg-surface-container-high:hover,
+body.theme-custom .hover\:bg-white\/5:hover {
+  background-color: var(--hover) !important;
 }
 
 /* Custom Scrollbars */
@@ -291,14 +349,19 @@ body.theme-stadium {
   --text-light: #b6eccf;
   --primary: #22c55e;
   --hover: rgba(15, 44, 29, 0.7);
-  background-color: var(--page-bg);
-  background-image:
+  --page-bg-image:
     linear-gradient(180deg, rgba(7, 20, 15, 0.55) 0%, rgba(6, 18, 13, 0.82) 100%),
     url("../assets/cricket bg.jpg");
-  background-size: cover;
-  background-position: center top;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
+  --page-bg-size: cover;
+  --page-bg-position: center top;
+  --page-bg-repeat: no-repeat;
+  --page-bg-attachment: fixed;
+  background-color: var(--page-bg);
+  background-image: var(--page-bg-image);
+  background-size: var(--page-bg-size);
+  background-position: var(--page-bg-position);
+  background-repeat: var(--page-bg-repeat);
+  background-attachment: var(--page-bg-attachment);
 }
 
 /* ESPORTS — e-sports arena photo background, violet accent */
@@ -310,14 +373,19 @@ body.theme-esports {
   --text-light: #c7b8f6;
   --primary: #a855f7;
   --hover: rgba(36, 22, 64, 0.7);
-  background-color: var(--page-bg);
-  background-image:
+  --page-bg-image:
     linear-gradient(180deg, rgba(18, 6, 34, 0.55) 0%, rgba(10, 3, 20, 0.82) 100%),
     url("../assets/esports bg.jpg");
-  background-size: cover;
-  background-position: center top;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
+  --page-bg-size: cover;
+  --page-bg-position: center top;
+  --page-bg-repeat: no-repeat;
+  --page-bg-attachment: fixed;
+  background-color: var(--page-bg);
+  background-image: var(--page-bg-image);
+  background-size: var(--page-bg-size);
+  background-position: var(--page-bg-position);
+  background-repeat: var(--page-bg-repeat);
+  background-attachment: var(--page-bg-attachment);
 }
 
 /* ROYAL — royal blue arena photo background, blue accent */
@@ -329,14 +397,38 @@ body.theme-royal {
   --text-light: #bfd6ff;
   --primary: #3b82f6;
   --hover: rgba(16, 42, 94, 0.7);
-  background-color: var(--page-bg);
-  background-image:
+  --page-bg-image:
     linear-gradient(180deg, rgba(6, 20, 47, 0.55) 0%, rgba(3, 10, 28, 0.82) 100%),
     url("../assets/background.jpg");
-  background-size: cover;
-  background-position: center top;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
+  --page-bg-size: cover;
+  --page-bg-position: center top;
+  --page-bg-repeat: no-repeat;
+  --page-bg-attachment: fixed;
+  background-color: var(--page-bg);
+  background-image: var(--page-bg-image);
+  background-size: var(--page-bg-size);
+  background-position: var(--page-bg-position);
+  background-repeat: var(--page-bg-repeat);
+  background-attachment: var(--page-bg-attachment);
+}
+
+/* CUSTOM — user-built theme. All values are supplied at runtime via
+   inline CSS variables on <body> (set by applyCustomTheme / script.js).
+   Sensible fallbacks are provided so the page is never unstyled. */
+body.theme-custom {
+  --page-bg: #0b1220;
+  --card-bg: rgba(17, 24, 39, 0.85);
+  --border: #243347;
+  --text: #ffffff;
+  --text-light: #94a3b8;
+  --primary: #22c55e;
+  --hover: rgba(22, 33, 50, 0.85);
+  background-color: var(--page-bg);
+  background-image: var(--page-bg-image, none);
+  background-size: var(--page-bg-size, cover);
+  background-position: var(--page-bg-position, center top);
+  background-repeat: var(--page-bg-repeat, no-repeat);
+  background-attachment: var(--page-bg-attachment, fixed);
 }
 
 /* GLASSY CARDS for named themes (stadium / esports / royal) —
@@ -345,18 +437,22 @@ body.theme-royal {
 body.theme-stadium .bg-card-bg,
 body.theme-esports .bg-card-bg,
 body.theme-royal .bg-card-bg,
+body.theme-custom .bg-card-bg,
 body.theme-stadium .bg-brand-card,
 body.theme-esports .bg-brand-card,
 body.theme-royal .bg-brand-card,
+body.theme-custom .bg-brand-card,
 body.theme-stadium .bg-surface,
 body.theme-esports .bg-surface,
-body.theme-royal .bg-surface {
+body.theme-royal .bg-surface,
+body.theme-custom .bg-surface {
   backdrop-filter: blur(14px) saturate(140%);
   -webkit-backdrop-filter: blur(14px) saturate(140%);
 }
 body.theme-stadium .hero-gradient,
 body.theme-esports .hero-gradient,
-body.theme-royal .hero-gradient {
+body.theme-royal .hero-gradient,
+body.theme-custom .hero-gradient {
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
 }
@@ -369,30 +465,38 @@ body.theme-royal .hero-gradient {
    transparent so the photo background shows through everywhere. ── */
 body.theme-stadium,
 body.theme-esports,
-body.theme-royal {
+body.theme-royal,
+body.theme-custom {
   background-color: transparent !important;
 }
 body.theme-stadium main,
 body.theme-esports main,
 body.theme-royal main,
+body.theme-custom main,
 body.theme-stadium .bg-white,
 body.theme-esports .bg-white,
 body.theme-royal .bg-white,
+body.theme-custom .bg-white,
 body.theme-stadium .dark\:bg-black,
 body.theme-esports .dark\:bg-black,
 body.theme-royal .dark\:bg-black,
+body.theme-custom .dark\:bg-black,
 body.theme-stadium .dark\:bg-brand-dark,
 body.theme-esports .dark\:bg-brand-dark,
 body.theme-royal .dark\:bg-brand-dark,
+body.theme-custom .dark\:bg-brand-dark,
 body.theme-stadium [class*="bg-[#F8F9FF]"],
 body.theme-esports [class*="bg-[#F8F9FF]"],
 body.theme-royal [class*="bg-[#F8F9FF]"],
+body.theme-custom [class*="bg-[#F8F9FF]"],
 body.theme-stadium [class*="bg-[#0B0E11]"],
 body.theme-esports [class*="bg-[#0B0E11]"],
 body.theme-royal [class*="bg-[#0B0E11]"],
+body.theme-custom [class*="bg-[#0B0E11]"],
 body.theme-stadium [class*="bg-[#0F172A]"],
 body.theme-esports [class*="bg-[#0F172A]"],
-body.theme-royal [class*="bg-[#0F172A]"] {
+body.theme-royal [class*="bg-[#0F172A]"],
+body.theme-custom [class*="bg-[#0F172A]"] {
   background-color: transparent !important;
   background-image: none !important;
 }
@@ -400,9 +504,11 @@ body.theme-royal [class*="bg-[#0F172A]"] {
 body.theme-stadium header,
 body.theme-esports header,
 body.theme-royal header,
+body.theme-custom header,
 body.theme-stadium nav,
 body.theme-esports nav,
-body.theme-royal nav {
+body.theme-royal nav,
+body.theme-custom nav {
   background-color: rgba(0, 0, 0, 0.35) !important;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);

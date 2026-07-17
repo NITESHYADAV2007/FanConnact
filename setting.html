@@ -246,6 +246,21 @@
           <span class="text-[10px] text-white/80" data-i18n="theme-royal-desc">Classic and sleek</span>
         </div>
       </div>
+      <!-- Custom Theme -->
+      <div data-theme="custom" class="relative group cursor-pointer border border-outline-variant rounded-lg overflow-hidden h-36 theme-item flex flex-col items-center justify-center gap-1" style="background:conic-gradient(from 180deg at 50% 50%, #22c55e, #3b82f6, #a855f7, #f7941d, #22c55e);">
+        <div class="absolute inset-0 bg-black/40 flex flex-col items-center justify-center">
+          <span class="material-symbols-outlined text-white text-3xl">tune</span>
+          <span class="block font-bold text-body-sm text-white mt-1">Custom</span>
+          <span class="text-[10px] text-white/80">Make your own</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex items-center justify-between border-t border-outline-variant dark:border-brand-border pt-lg">
+      <p class="text-[11px] text-on-surface-variant dark:text-slate-400">Pick a preset above, or build your own theme with custom colors and background.</p>
+      <button id="openCustomThemeBtn" class="shrink-0 px-4 py-2 rounded-xl bg-primary text-white text-sm font-semibold hover:opacity-90 transition-opacity flex items-center gap-2">
+        <span class="material-symbols-outlined text-[18px]">palette</span> Custom Theme Builder
+      </button>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-lg border-t border-outline-variant dark:border-brand-border pt-lg">
@@ -638,6 +653,99 @@
   </div>
 </main>
 
+<!-- =========================
+     CUSTOM THEME BUILDER MODAL
+     ========================= -->
+<div id="customThemeModal" class="hidden fixed inset-0 z-[300] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+  <div class="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl shadow-2xl border bg-surface-container-lowest dark:bg-brand-card border-outline-variant dark:border-brand-border">
+    <div class="flex items-center justify-between px-6 py-4 border-b border-outline-variant dark:border-brand-border sticky top-0 bg-surface-container-lowest dark:bg-brand-card z-10">
+      <div class="flex items-center gap-3">
+        <span class="w-9 h-9 rounded-xl bg-primary/15 text-primary flex items-center justify-center">
+          <span class="material-symbols-outlined text-xl">palette</span>
+        </span>
+        <span class="font-bold text-lg text-on-surface dark:text-white">Custom Theme Builder</span>
+      </div>
+      <button id="closeCustomThemeBtn" class="p-1.5 rounded-full hover:bg-black/10 dark:hover:bg-white/10 transition-colors">
+        <span class="material-symbols-outlined text-on-surface-variant dark:text-slate-400">close</span>
+      </button>
+    </div>
+
+    <div class="px-6 py-5 space-y-5">
+      <!-- Live preview -->
+      <div>
+        <label class="block text-xs font-semibold mb-2 text-on-surface-variant dark:text-slate-400">Live Preview</label>
+        <div id="customThemePreview" class="h-28 rounded-xl border border-outline-variant dark:border-brand-border flex items-center justify-center gap-3 overflow-hidden" style="background:#0b1220;color:#ffffff;">
+          <span class="px-3 py-1.5 rounded-lg text-sm font-semibold" style="background:#22c55e;color:#fff;">Primary</span>
+          <span class="px-3 py-1.5 rounded-lg text-sm font-semibold border" style="border-color:#243347;color:#94a3b8;">Card</span>
+          <span class="text-sm" style="color:#ffffff;">Text sample</span>
+        </div>
+      </div>
+
+      <!-- Color pickers -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+        <div>
+          <label class="block text-xs font-semibold mb-1 text-on-surface-variant dark:text-slate-400">Background</label>
+          <input id="ctPageBg" type="color" value="#0b1220" class="w-full h-10 rounded-lg border border-outline-variant dark:border-brand-border cursor-pointer bg-transparent" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold mb-1 text-on-surface-variant dark:text-slate-400">Card Background</label>
+          <input id="ctCardBg" type="color" value="#111827" class="w-full h-10 rounded-lg border border-outline-variant dark:border-brand-border cursor-pointer bg-transparent" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold mb-1 text-on-surface-variant dark:text-slate-400">Border</label>
+          <input id="ctBorder" type="color" value="#243347" class="w-full h-10 rounded-lg border border-outline-variant dark:border-brand-border cursor-pointer bg-transparent" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold mb-1 text-on-surface-variant dark:text-slate-400">Text</label>
+          <input id="ctText" type="color" value="#ffffff" class="w-full h-10 rounded-lg border border-outline-variant dark:border-brand-border cursor-pointer bg-transparent" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold mb-1 text-on-surface-variant dark:text-slate-400">Muted Text</label>
+          <input id="ctTextLight" type="color" value="#94a3b8" class="w-full h-10 rounded-lg border border-outline-variant dark:border-brand-border cursor-pointer bg-transparent" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold mb-1 text-on-surface-variant dark:text-slate-400">Accent (Primary)</label>
+          <input id="ctPrimary" type="color" value="#22c55e" class="w-full h-10 rounded-lg border border-outline-variant dark:border-brand-border cursor-pointer bg-transparent" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold mb-1 text-on-surface-variant dark:text-slate-400">Hover</label>
+          <input id="ctHover" type="color" value="#162132" class="w-full h-10 rounded-lg border border-outline-variant dark:border-brand-border cursor-pointer bg-transparent" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold mb-1 text-on-surface-variant dark:text-slate-400">Mode</label>
+          <select id="ctIsDark" class="w-full h-10 rounded-lg border border-outline-variant dark:border-brand-border bg-surface-container-low dark:bg-brand-dark text-on-surface dark:text-white text-sm px-2 outline-none">
+            <option value="true">Dark</option>
+            <option value="false">Light</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Background image -->
+      <div>
+        <label class="block text-xs font-semibold mb-1 text-on-surface-variant dark:text-slate-400">Background Image (optional URL)</label>
+        <input id="ctBgImage" type="text" placeholder="https://... or leave empty for solid color" class="w-full px-3 py-2.5 rounded-lg border border-outline-variant dark:border-brand-border bg-surface-container-low dark:bg-brand-dark text-on-surface dark:text-white text-sm outline-none focus:border-primary" />
+        <p class="text-[11px] text-on-surface-variant dark:text-slate-400 mt-1">Tip: use a direct image link. Leave blank for a solid color background.</p>
+      </div>
+
+      <!-- Presets -->
+      <div>
+        <label class="block text-xs font-semibold mb-2 text-on-surface-variant dark:text-slate-400">Quick Presets</label>
+        <div class="flex flex-wrap gap-2">
+          <button type="button" data-preset="sunset" class="px-3 py-1.5 rounded-lg text-xs font-semibold border border-outline-variant dark:border-brand-border hover:border-primary transition-colors text-on-surface dark:text-white">Sunset</button>
+          <button type="button" data-preset="ocean" class="px-3 py-1.5 rounded-lg text-xs font-semibold border border-outline-variant dark:border-brand-border hover:border-primary transition-colors text-on-surface dark:text-white">Ocean</button>
+          <button type="button" data-preset="mono" class="px-3 py-1.5 rounded-lg text-xs font-semibold border border-outline-variant dark:border-brand-border hover:border-primary transition-colors text-on-surface dark:text-white">Mono Dark</button>
+          <button type="button" data-preset="mint" class="px-3 py-1.5 rounded-lg text-xs font-semibold border border-outline-variant dark:border-brand-border hover:border-primary transition-colors text-on-surface dark:text-white">Mint Light</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-outline-variant dark:border-brand-border sticky bottom-0 bg-surface-container-lowest dark:bg-brand-card">
+      <button id="cancelCustomThemeBtn" class="px-4 py-2 rounded-lg text-sm font-semibold transition-colors hover:bg-black/10 dark:hover:bg-white/10 text-on-surface-variant dark:text-slate-400">Cancel</button>
+      <button id="applyCustomThemeBtn" class="px-5 py-2 rounded-lg text-sm font-semibold text-white transition-all hover:brightness-110" style="background:#10b981">Apply Custom Theme</button>
+    </div>
+  </div>
+</div>
+
 <script type="module" src="js/script.js"></script>
 <script src="js/theme.js"></script>
 <script src="js/settings.js"></script>
@@ -649,6 +757,138 @@
       else p.classList.remove('active');
     });
   });
+</script>
+<script>
+  (function () {
+    // ---- Custom Theme Builder ----
+    var modal = document.getElementById('customThemeModal');
+    var openBtn = document.getElementById('openCustomThemeBtn');
+    var closeBtn = document.getElementById('closeCustomThemeBtn');
+    var cancelBtn = document.getElementById('cancelCustomThemeBtn');
+    var applyBtn = document.getElementById('applyCustomThemeBtn');
+    var preview = document.getElementById('customThemePreview');
+
+    var fields = {
+      pageBg: document.getElementById('ctPageBg'),
+      cardBg: document.getElementById('ctCardBg'),
+      border: document.getElementById('ctBorder'),
+      text: document.getElementById('ctText'),
+      textLight: document.getElementById('ctTextLight'),
+      primary: document.getElementById('ctPrimary'),
+      hover: document.getElementById('ctHover'),
+      isDark: document.getElementById('ctIsDark'),
+      bgImage: document.getElementById('ctBgImage')
+    };
+
+    var PRESETS = {
+      sunset: { pageBg:'#2b1055', cardBg:'#3a1c71', border:'#ff7e5f', text:'#ffffff', textLight:'#ffd6c4', primary:'#ff7e5f', hover:'#4a2575', isDark:true },
+      ocean:  { pageBg:'#031b2e', cardBg:'#06304d', border:'#0ea5e9', text:'#ffffff', textLight:'#bae6fd', primary:'#0ea5e9', hover:'#0a3a5c', isDark:true },
+      mono:   { pageBg:'#0a0a0a', cardBg:'#171717', border:'#404040', text:'#fafafa', textLight:'#a3a3a3', primary:'#fafafa', hover:'#262626', isDark:true },
+      mint:   { pageBg:'#ecfdf5', cardBg:'#ffffff', border:'#6ee7b7', text:'#064e3b', textLight:'#047857', primary:'#10b981', hover:'#d1fae5', isDark:false }
+    };
+
+    function loadFromSettings() {
+      try {
+        var s = JSON.parse(localStorage.getItem('fanconnact-settings'));
+        var c = (s && s.customTheme) ? s.customTheme : {};
+        fields.pageBg.value = c.pageBg || '#0b1220';
+        fields.cardBg.value = c.cardBg || '#111827';
+        fields.border.value = c.border || '#243347';
+        fields.text.value = c.text || '#ffffff';
+        fields.textLight.value = c.textLight || '#94a3b8';
+        fields.primary.value = c.primary || '#22c55e';
+        fields.hover.value = c.hover || '#162132';
+        fields.isDark.value = (c.isDark === false) ? 'false' : 'true';
+        fields.bgImage.value = c.bgImage || '';
+      } catch (e) {}
+      updatePreview();
+    }
+
+    function updatePreview() {
+      if (!preview) return;
+      var bg = fields.pageBg.value;
+      if (fields.bgImage.value) {
+        bg = 'linear-gradient(180deg, rgba(0,0,0,0.35), rgba(0,0,0,0.55)), url("' + fields.bgImage.value + '") center / cover no-repeat fixed';
+      }
+      preview.style.background = bg;
+      preview.style.color = fields.text.value;
+      var primaryChip = preview.querySelector('span:first-child');
+      var cardChip = preview.querySelector('span:nth-child(2)');
+      var textChip = preview.querySelector('span:last-child');
+      if (primaryChip) { primaryChip.style.background = fields.primary.value; primaryChip.style.color = '#fff'; }
+      if (cardChip) { cardChip.style.borderColor = fields.border.value; cardChip.style.color = fields.textLight.value; }
+      if (textChip) { textChip.style.color = fields.text.value; }
+    }
+
+    function openModal() {
+      loadFromSettings();
+      modal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeModal() {
+      modal.classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+
+    if (openBtn) openBtn.addEventListener('click', openModal);
+    if (closeBtn) closeBtn.addEventListener('click', closeModal);
+    if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+    if (modal) modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && modal && !modal.classList.contains('hidden')) closeModal(); });
+
+    Object.keys(fields).forEach(function (k) {
+      if (fields[k]) fields[k].addEventListener('input', updatePreview);
+    });
+
+    document.querySelectorAll('[data-preset]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var p = PRESETS[btn.dataset.preset];
+        if (!p) return;
+        fields.pageBg.value = p.pageBg;
+        fields.cardBg.value = p.cardBg;
+        fields.border.value = p.border;
+        fields.text.value = p.text;
+        fields.textLight.value = p.textLight;
+        fields.primary.value = p.primary;
+        fields.hover.value = p.hover;
+        fields.isDark.value = p.isDark ? 'true' : 'false';
+        fields.bgImage.value = '';
+        updatePreview();
+      });
+    });
+
+    if (applyBtn) applyBtn.addEventListener('click', function () {
+      var customTheme = {
+        pageBg: fields.pageBg.value,
+        cardBg: fields.cardBg.value,
+        border: fields.border.value,
+        text: fields.text.value,
+        textLight: fields.textLight.value,
+        primary: fields.primary.value,
+        hover: fields.hover.value,
+        bgImage: fields.bgImage.value.trim(),
+        bgSize: 'cover',
+        bgPosition: 'center top',
+        bgRepeat: 'no-repeat',
+        bgAttachment: 'fixed',
+        isDark: fields.isDark.value === 'true'
+      };
+      // Persist + apply via settings.js
+      try {
+        var s = JSON.parse(localStorage.getItem('fanconnact-settings')) || {};
+        s.customTheme = customTheme;
+        s.theme = 'custom';
+        localStorage.setItem('fanconnact-settings', JSON.stringify(s));
+      } catch (e) {}
+      if (typeof window.applyTheme === 'function') {
+        window.applyTheme('custom');
+      }
+      closeModal();
+      if (typeof window.showToast === 'function') {
+        window.showToast('Custom theme applied!');
+      }
+    });
+  })();
 </script>
 <script src="js/notif-ws.js"></script></body>
 </html>
