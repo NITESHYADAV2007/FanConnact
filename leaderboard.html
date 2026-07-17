@@ -706,45 +706,45 @@
                 <div class="col-span-3 text-right">XP</div>
               </div> <!-- Row 4 -->
               <div id="leaderboard-rows-4-6"></div>
-              <!-- Your Row -->
+              <!-- Your Row (populated with real logged-in user by js/leaderboard.js) -->
               <div class="bg-green-500/10 border border-green-500/20">
                 <div class="hidden md:grid grid-cols-12 items-center px-6 py-5">
-                  <div class="col-span-1 text-green-400 font-bold text-xl">
-                    23
+                  <div class="col-span-1 text-green-400 font-bold text-xl" id="yourRowRank">
+                    —
                   </div>
 
                   <div class="col-span-5 flex items-center gap-3">
-                    <img src="https://i.pravatar.cc/100?img=33" class="w-11 h-11 rounded-full border border-green-400">
+                    <img src="assets/images/default-avatar.png?w=150" class="w-11 h-11 rounded-full border border-green-400" id="yourRowImg">
 
                     <div>
-                      <div class="text-green-300">Arjun Singh</div>
+                      <div class="text-green-300" id="yourRowName">You</div>
                       <div class="text-green-500 text-sm">(You)</div>
                     </div>
                   </div>
 
                   <div class="col-span-3">
-                    <span class="bg-[#6d5dfc33] text-purple-200 px-3 py-1 rounded-lg text-sm">
-                      Level 12
+                    <span class="bg-[#6d5dfc33] text-purple-200 px-3 py-1 rounded-lg text-sm" id="yourRowLevel">
+                      Level 1
                     </span>
                   </div>
 
-                  <div class="col-span-3 text-right text-green-400 font-bold text-xl">
-                    2,850 XP
+                  <div class="col-span-3 text-right text-green-400 font-bold text-xl" id="yourRowXP">
+                    0 XP
                   </div>
                 </div>
 
                 <div class="md:hidden p-4">
                   <div class="flex items-center gap-3">
 
-                    <div class="text-green-400 font-bold">
-                      #23
+                    <div class="text-green-400 font-bold" id="yourRowRankM">
+                      #—
                     </div>
 
-                    <img src="https://i.pravatar.cc/100?img=33" class="w-11 h-11 rounded-full border border-green-400">
+                    <img src="assets/images/default-avatar.png?w=150" class="w-11 h-11 rounded-full border border-green-400" id="yourRowImgM">
 
                     <div class="flex-1">
-                      <div class="text-green-300">
-                        Arjun Singh
+                      <div class="text-green-300" id="yourRowNameM">
+                        You
                       </div>
 
                       <div class="text-green-500 text-sm">
@@ -755,24 +755,24 @@
         <div
             id="xpProgress"
             class="h-full bg-gradient-to-r from-green-400 to-emerald-500 rounded-full"
-            style="width:71%">
+            style="width:0%">
         </div>
     </div>
 
     <div class="flex justify-between text-[11px] text-slate-400 mt-1">
-        <span id="nextLevel">Next Level 13</span>
-        <span id="xpRemaining">1,150 XP to go</span>
+        <span id="nextLevel">Next Level 2</span>
+        <span id="xpRemaining">0 XP to go</span>
     </div>
 </div>
 
                       <div class="flex justify-between mt-2">
-                        <span class="bg-[#6d5dfc33] text-purple-200 px-2 py-1 rounded text-xs">
-                          Level 12
+                        <span class="bg-[#6d5dfc33] text-purple-200 px-2 py-1 rounded text-xs" id="yourRowLevelM">
+                          Level 1
                         </span>
 
                       <span id="userXP"
       class="text-green-400 font-bold text-sm sm:text-base whitespace-nowrap">
-    2,850 XP
+    0 XP
 </span>
                       </div>
                     </div>
@@ -806,11 +806,11 @@ class="w-full flex items-center justify-center rounded-xl border border-purple-5
 
         <h1 id="currentRank"
             class="text-green-400 text-6xl font-extrabold">
-            23
+            —
         </h1>
 
-        <span class="text-slate-400 text-xl mb-2">
-            / 12,560
+        <span class="text-slate-400 text-xl mb-2" id="totalUsersLabel">
+            / 0
         </span>
 
     </div>
@@ -821,19 +821,19 @@ class="w-full flex items-center justify-center rounded-xl border border-purple-5
 
     <div id="totalXP"
          class="text-white text-4xl font-bold mb-5">
-         2,850 XP
+         0 XP
     </div>
 
     <div class="w-full h-3 bg-[#15253a] rounded-full overflow-hidden">
         <div id="sidebar-xpProgress"
              class="h-full bg-gradient-to-r from-green-400 to-emerald-500 rounded-full"
-             style="width:71%">
+             style="width:0%">
         </div>
     </div>
 
     <div class="flex justify-between text-sm text-slate-400 mt-3">
-        <span id="sidebar-nextLevel">Next Level 13</span>
-        <span id="sidebar-xpRemaining">1,150 XP to go</span>
+        <span id="sidebar-nextLevel">Next Level 2</span>
+        <span id="sidebar-xpRemaining">0 XP to go</span>
     </div>
 
 </div>

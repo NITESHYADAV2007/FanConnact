@@ -217,7 +217,9 @@ document.addEventListener("DOMContentLoaded", () => {
         name: displayIdentity,
         username: '',
         photoURL: photo,
-        level: 1
+        level: 1,
+        uid: user.uid,
+        xp: 0
       };
 
       // Fetch extra Firestore details in the background
@@ -261,7 +263,9 @@ document.addEventListener("DOMContentLoaded", () => {
             photoURL: data.photoURL || photo,
             level: (window.LevelSystem && window.LevelSystem.levelFromXP)
               ? window.LevelSystem.levelFromXP(data.xp || 0)
-              : (data.level || 1)
+              : (data.level || 1),
+            uid: user.uid,
+            xp: parseInt(data.xp, 10) || 0
           };
         }
       } catch (error) {

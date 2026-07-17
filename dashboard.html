@@ -769,52 +769,9 @@
                   >
                 </div>
               </div>
-              <div class="space-y-5 mb-8">
-                <!-- Rank 1 -->
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center space-x-4">
-                    <span class="text-xs font-bold dark:text-brand-green text-emerald-600 w-6">1</span>
-                    <img class="w-10 h-10 rounded-full border-2 border-brand-green" src="https://i.pravatar.cc/150?u=11" alt="Fan">
-                    <div>
-                      <p class="text-sm font-bold dark:text-white text-slate-900">Vikram Malhotra</p>
-                      <p class="text-[10px] text-gray-500">Level 48 • Super Fan</p>
-                    </div>
-                  </div>
-                  <div class="text-right">
-                    <p class="text-xs font-bold dark:text-brand-green text-emerald-600">12,450</p>
-                    <p class="text-[9px] text-gray-500 uppercase">Earned</p>
-                  </div>
-                </div>
-                <!-- Rank 2 -->
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center space-x-4">
-                    <span class="text-xs font-bold text-gray-500 w-6">2</span>
-                    <img class="w-10 h-10 rounded-full border dark:border-brand-border border-gray-200" src="https://i.pravatar.cc/150?u=12" alt="Fan">
-                    <div>
-                      <p class="text-sm font-bold dark:text-white text-slate-900">Sneha Reddy</p>
-                      <p class="text-[10px] text-gray-500">Level 42 • Predictor</p>
-                    </div>
-                  </div>
-                  <div class="text-right">
-                    <p class="text-xs font-bold dark:text-white text-slate-900">10,200</p>
-                    <p class="text-[9px] text-gray-500 uppercase">Earned</p>
-                  </div>
-                </div>
-                <!-- Rank 3 -->
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center space-x-4">
-                    <span class="text-xs font-bold text-gray-500 w-6">3</span>
-                    <img class="w-10 h-10 rounded-full border dark:border-brand-border border-gray-200" src="https://i.pravatar.cc/150?u=13" alt="Fan">
-                    <div>
-                      <p class="text-sm font-bold dark:text-white text-slate-900">Arnav Mehra</p>
-                      <p class="text-[10px] text-gray-500">Level 35 • Rookie</p>
-                    </div>
-                  </div>
-                  <div class="text-right">
-                    <p class="text-xs font-bold dark:text-white text-slate-900">8,900</p>
-                    <p class="text-[9px] text-gray-500 uppercase">Earned</p>
-                  </div>
-                </div>
+              <div class="space-y-5 mb-8" id="top-fans-list">
+                <!-- Real Top Fans injected from Firestore by inline script -->
+                <div class="text-center text-gray-500 text-sm py-4">Loading top fans…</div>
               </div>
           <button onclick="window.location.href='leaderboard.html'"
   class="w-full border py-3 rounded-2xl text-[11px] font-bold uppercase tracking-widest dark:bg-[#1A1D23] dark:border-brand-border dark:text-gray-400 dark:hover:text-white bg-gray-50 border-gray-200 text-slate-600 hover:bg-gray-100 transition-all font-headline"
@@ -832,5 +789,65 @@
 <script src="js/notif-ws.js"></script>
 <script src="js/matches-data.js"></script>
 <script src="js/matches-render.js"></script>
+<script>
+  // Populate "Top Fans" with REAL registered Firestore users (no fake names).
+  (async function () {
+    var container = document.getElementById("top-fans-list");
+    if (!container) return;
+    try {
+      // Wait for Firebase handles exposed by js/script.js -> js/firebase-config.js
+      var tries = 0;
+      while (!(window.__FB__ && window.__FB__.db) && tries < 40) {
+        await new Promise(function (r) { setTimeout(r, 100); });
+        tries++;
+      }
+      if (!window.__FB__ || !window.__FB__.db) throw new Error("Firebase not ready");
+      var fs = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+      var q = fs.query(
+        fs.collection(window.__FB__.db, "users"),
+        fs.orderBy("xp", "desc"),
+        fs.limit(5)
+      );
+      var snap = await fs.getDocs(q);
+      var users = [];
+      snap.forEach(function (doc) {
+        var d = doc.data();
+        var xp = parseInt(d.xp, 10) || 0;
+        var level = (window.LevelSystem && window.LevelSystem.levelFromXP)
+          ? window.LevelSystem.levelFromXP(xp)
+          : (parseInt(d.level, 10) || 1);
+        var name = d.username || d.fullName || d.email || "Fan";
+        var img = d.photoURL || (d.email ? ("https://i.pravatar.cc/150?u=" + encodeURIComponent(d.email)) : "assets/images/default-avatar.png?w=150");
+        users.push({ name: name, level: level, xp: xp, img: img });
+      });
+      if (!users.length) {
+        container.innerHTML = '<div class="text-center text-gray-500 text-sm py-4">No fans yet.</div>';
+        return;
+      }
+      container.innerHTML = users.map(function (u, i) {
+        var rank = i + 1;
+        var borderCls = rank === 1 ? "border-2 border-brand-green" : "border dark:border-brand-border border-gray-200";
+        var rankColor = rank === 1 ? "dark:text-brand-green text-emerald-600" : "text-gray-500";
+        return '<div class="flex items-center justify-between">' +
+          '<div class="flex items-center space-x-4">' +
+            '<span class="text-xs font-bold ' + rankColor + ' w-6">' + rank + '</span>' +
+            '<img class="w-10 h-10 rounded-full ' + borderCls + '" src="' + u.img + '" alt="Fan">' +
+            '<div>' +
+              '<p class="text-sm font-bold dark:text-white text-slate-900">' + u.name + '</p>' +
+              '<p class="text-[10px] text-gray-500">Level ' + u.level + ' • Fan</p>' +
+            '</div>' +
+          '</div>' +
+          '<div class="text-right">' +
+            '<p class="text-xs font-bold dark:text-brand-green text-emerald-600">' + u.xp.toLocaleString() + '</p>' +
+            '<p class="text-[9px] text-gray-500 uppercase">Earned</p>' +
+          '</div>' +
+        '</div>';
+      }).join("");
+    } catch (e) {
+      console.warn("[dashboard] top fans load failed:", e.message);
+      container.innerHTML = '<div class="text-center text-gray-500 text-sm py-4">Could not load fans.</div>';
+    }
+  })();
+</script>
 </body>
 </html>

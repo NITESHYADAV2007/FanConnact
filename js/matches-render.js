@@ -10,7 +10,7 @@
   "use strict";
   const DATA = window.FANCONNECT_MATCHES;
   if (!DATA) { console.warn("[matches] no data"); return; }
-  const { TEAMS, MATCHES } = DATA;
+  let { TEAMS, MATCHES } = DATA;
 
   const SPORT_LABEL = {
     cricket: "Cricket", football: "Football", basketball: "Basketball",
@@ -305,7 +305,36 @@
     container.innerHTML = list.map(c => cardHTML(c, horizontal, compact)).join("");
   }
 
-  function init() {
+  // ---- Firestore matches source (real data, with hardcoded fallback) ----
+  async function loadMatchesFromFirestore() {
+    try {
+      if (!window.__FB__ || !window.__FB__.db) {
+        console.warn("[matches] Firebase not ready, using static data");
+        return false;
+      }
+      const { collection, getDocs } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+      const snap = await getDocs(collection(window.__FB__.db, "matches"));
+      if (snap.empty) {
+        console.warn("[matches] No matches in Firestore, using static data");
+        return false;
+      }
+      const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      if (docs.length) {
+        MATCHES = docs;
+        console.log("[matches] Loaded " + docs.length + " matches from Firestore");
+        return true;
+      }
+      return false;
+    } catch (e) {
+      console.warn("[matches] Firestore load failed, using static data:", e.message);
+      return false;
+    }
+  }
+
+  async function init() {
+    // Load real matches from Firestore first (falls back to static data)
+    await loadMatchesFromFirestore();
+
     // 0) dashboard hero carousel (top live match)
     renderDashboardHero();
     // 1) index.html hero carousel grid
@@ -330,6 +359,6 @@
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
   else init();
 
-  window.FANCONNECT_renderMatches = { renderInto, cardHTML };
+  window.FANCONNECT_renderMatches = { renderInto, cardHTML, loadMatchesFromFirestore };
 })();
 

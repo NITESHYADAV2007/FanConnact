@@ -5,9 +5,9 @@ var FALLBACK = (function() {
       label: "Cricket", icon: "sports_cricket", title: "ICC Cricket Rankings",
       tournament: "ICC Men's & Women's Rankings 2026",
       subtitle: "Top 100 ranked players across formats",
-      defaultCategory: "odi_bat_men",
-      filters: [{ group: "format", label: "Format", options: [{ value: "odi", label: "ODI" }, { value: "t20", label: "T20" }, { value: "test", label: "Test" }] }, { group: "role", label: "Role", options: [{ value: "bat", label: "Batsman" }, { value: "bowl", label: "Bowler" }, { value: "ar", label: "All-Rounder" }] }, { group: "gender", label: "Gender", options: [{ value: "men", label: "Men" }, { value: "women", label: "Women" }] }],
-      columns: [{ key: "name", label: "Player" }, { key: "country", label: "Country" }, { key: "rating", label: "Rating", align: "center" }, { key: "matches", label: "Mat", align: "center", hide: "sm" }, { key: "runs", label: "Runs", align: "center", hide: "md" }, { key: "wkts", label: "Wkts", align: "center", hide: "md" }, { key: "avg", label: "Avg", align: "center", hide: "lg" }, { key: "econ", label: "Econ/SR", align: "center", hide: "lg" }]
+      defaultCategory: "odi_bat_men_runs",
+      filters: [{ group: "format", label: "Format", options: [{ value: "odi", label: "ODI" }, { value: "t20", label: "T20" }, { value: "test", label: "Test" }] }, { group: "role", label: "Role", options: [{ value: "bat", label: "Batsman" }, { value: "bowl", label: "Bowler" }, { value: "ar", label: "All-Rounder" }] }, { group: "gender", label: "Gender", options: [{ value: "men", label: "Men" }, { value: "women", label: "Women" }] }, { group: "stat", label: "Stat", options: [{ value: "runs", label: "Most Runs" }, { value: "wkts", label: "Most Wickets" }, { value: "sixes", label: "Most Sixes" }] }],
+      columns: [{ key: "name", label: "Player" }, { key: "country", label: "Country" }, { key: "rating", label: "Rating", align: "center" }, { key: "matches", label: "Mat", align: "center", hide: "sm" }, { key: "runs", label: "Runs", align: "center", hide: "md" }, { key: "wkts", label: "Wkts", align: "center", hide: "md" }, { key: "sixes", label: "Sixes", align: "center", hide: "md" }, { key: "avg", label: "Avg", align: "center", hide: "lg" }, { key: "econ", label: "Econ/SR", align: "center", hide: "lg" }]
     },
     football: {
       label: "Football", icon: "sports_soccer", title: "Football Top Players",
@@ -94,18 +94,28 @@ var FALLBACK = (function() {
 
   function makeCricketPlayers(sportId, cat) {
     var parts = cat.split("_");
-    var format = parts[0], role = parts[1] || "bat", gender = parts[2] || "men";
+    var format = parts[0], role = parts[1] || "bat", gender = parts[2] || "men", stat = parts[3] || "runs";
     var key = format + "_" + role + "_" + gender;
     var raw = CRICKET_CR[key];
-    if (raw && raw.length >= 5) return raw.map(function(p, i){ return { rank: i+1, name: p[0], country: p[1], rating: p[2], matches: p[3], runs: p[4], wkts: p[5], avg: p[6], econ: p[7] }; });
-    var names = gender === "women" ? CRICKET_NAMES.slice(0, 30) : CRICKET_NAMES;
-    var countries = gender === "women" ? CRICKET_COUNTRIES_W : CRICKET_COUNTRIES;
     var ps = [];
-    for (var i = 0; i < 100; i++) {
-      var rating = Math.max(1, 700 - Math.floor(i * 6.5));
-      var isB = role === "bowl", isA = role === "ar";
-      ps.push({ rank: i+1, name: names[i % names.length], country: countries[i % countries.length], rating: rating, matches: Math.round(10 + Math.random() * 80), runs: isB ? Math.round(50+Math.random()*500) : isA ? Math.round(200+Math.random()*5000) : Math.round(500+Math.random()*10000), wkts: isB ? Math.round(10+Math.random()*150) : isA ? Math.round(5+Math.random()*80) : Math.round(Math.random()*20), avg: (20 + Math.random() * 40).toFixed(1), econ: (3+Math.random()*4).toFixed(1) });
+    if (raw && raw.length >= 5) {
+      ps = raw.map(function(p, i){ return { rank: i+1, name: p[0], country: p[1], rating: p[2], matches: p[3], runs: p[4], wkts: p[5], avg: p[6], econ: p[7], sixes: Math.round((p[4] || 0) * (0.02 + Math.random() * 0.03)) }; });
+    } else {
+      var names = gender === "women" ? CRICKET_NAMES.slice(0, 30) : CRICKET_NAMES;
+      var countries = gender === "women" ? CRICKET_COUNTRIES_W : CRICKET_COUNTRIES;
+      for (var i = 0; i < 100; i++) {
+        var rating = Math.max(1, 700 - Math.floor(i * 6.5));
+        var isB = role === "bowl", isA = role === "ar";
+        var runs = isB ? Math.round(50+Math.random()*500) : isA ? Math.round(200+Math.random()*5000) : Math.round(500+Math.random()*10000);
+        var wkts = isB ? Math.round(10+Math.random()*150) : isA ? Math.round(5+Math.random()*80) : Math.round(Math.random()*20);
+        ps.push({ rank: i+1, name: names[i % names.length], country: countries[i % countries.length], rating: rating, matches: Math.round(10 + Math.random() * 80), runs: runs, wkts: wkts, avg: (20 + Math.random() * 40).toFixed(1), econ: (3+Math.random()*4).toFixed(1), sixes: Math.round(runs * (0.02 + Math.random() * 0.03)) });
+      }
     }
+    // Sort by the requested stat section.
+    if (stat === "wkts") ps.sort(function(a,b){ return b.wkts - a.wkts; });
+    else if (stat === "sixes") ps.sort(function(a,b){ return b.sixes - a.sixes; });
+    else ps.sort(function(a,b){ return b.runs - a.runs; });
+    ps.forEach(function(p, i){ p.rank = i + 1; });
     return ps;
   }
 
@@ -327,6 +337,7 @@ var FALLBACK = (function() {
     var parts = cat.split("_");
     if (parts.length >= 2 && sportData[parts[0] + "_" + parts[1]]) return sportData[parts[0] + "_" + parts[1]];
     if (parts.length >= 3 && sportData[parts[0] + "_" + parts[1] + "_" + parts[2]]) return sportData[parts[0] + "_" + parts[1] + "_" + parts[2]];
+    if (parts.length >= 4 && sportData[parts[0] + "_" + parts[1] + "_" + parts[2] + "_" + parts[3]]) return sportData[parts[0] + "_" + parts[1] + "_" + parts[2] + "_" + parts[3]];
     return null;
   }
 
@@ -351,6 +362,11 @@ var FALLBACK = (function() {
     if (staticData && staticData[sportId]) {
       var sportData = staticData[sportId];
       if (sportData[cat] && sportData[cat].length) return sportData[cat].slice(0, 100);
+      // Try 4-part key (format_role_gender_stat) for cricket
+      var parts = cat.split("_");
+      if (parts.length >= 4 && sportData[parts[0] + "_" + parts[1] + "_" + parts[2] + "_" + parts[3]]) {
+        return sportData[parts[0] + "_" + parts[1] + "_" + parts[2] + "_" + parts[3]].slice(0, 100);
+      }
     }
     switch (sportId) {
       case "cricket": return makeCricketPlayers(sportId, cat);

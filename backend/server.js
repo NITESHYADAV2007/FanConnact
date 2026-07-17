@@ -2871,12 +2871,19 @@ function makeTableTennisPlayers(category, gender) {
 
 const CRICKET_BASE = { ...CRICKET_RAW };
 
-function getCricketData(format, role, gender) {
+function getCricketData(format, role, gender, stat) {
+  stat = stat || "runs";
   const key = `${format}_${role}_${gender}`;
   const direct = CRICKET_BASE[key];
   if (direct && direct.length >= 10) {
     const p = makePlayers(direct.slice(0, 100));
     p.forEach(function(x) { x._source = 'icc'; });
+    // Add sixes field and sort by requested stat
+    p.forEach(function(x) { x.sixes = Math.round((x.runs || 0) * (0.02 + Math.random() * 0.03)); });
+    if (stat === "wkts") p.sort((a, b) => (b.wkts || 0) - (a.wkts || 0));
+    else if (stat === "sixes") p.sort((a, b) => (b.sixes || 0) - (a.sixes || 0));
+    else p.sort((a, b) => (b.runs || 0) - (a.runs || 0));
+    p.forEach((x, i) => (x.rank = i + 1));
     return p;
   }
 
@@ -2911,6 +2918,7 @@ function getCricketData(format, role, gender) {
       isBowl || isAR
         ? (3.5 + Math.random() * 4).toFixed(1)
         : (80 + Math.random() * 50).toFixed(1);
+    const sixes = Math.round(runs * (0.02 + Math.random() * 0.03));
     players.push({
       rank: i + 1,
       name,
@@ -2921,8 +2929,14 @@ function getCricketData(format, role, gender) {
       wkts,
       avg: parseFloat(avg),
       econ: parseFloat(econ),
+      sixes,
     });
   }
+  // Sort by requested stat section
+  if (stat === "wkts") players.sort((a, b) => b.wkts - a.wkts);
+  else if (stat === "sixes") players.sort((a, b) => b.sixes - a.sixes);
+  else players.sort((a, b) => b.runs - a.runs);
+  players.forEach((p, i) => (p.rank = i + 1));
   return players.slice(0, 100);
 }
 
@@ -3525,7 +3539,8 @@ app.get("/api/rankings/:sport/:category?", async (req, res) => {
         const format = parts[0];
         const role = parts[1];
         const gender = parts[2] || "men";
-        players = getCricketData(format, role, gender);
+        const stat = parts[3] || "runs";
+        players = getCricketData(format, role, gender, stat);
         break;
       }
       case "football": {

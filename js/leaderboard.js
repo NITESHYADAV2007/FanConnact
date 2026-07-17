@@ -93,8 +93,9 @@ async function getData() {
   if (leaderboardData) return leaderboardData;
   if (!leaderboardLoaded) {
     leaderboardLoaded = true;
+    // REAL-ONLY: only ever show registered Firestore users. No fake/fallback names.
     var real = await loadRealUsers();
-    leaderboardData = real || generateAllUsers();
+    leaderboardData = real || [];
   }
   return leaderboardData;
 }
@@ -125,16 +126,28 @@ async function renderPodium() {
   ];
   var users = [data[0], data[1], data[2]];
   cards.forEach(function(el, idx) {
-    if (!el || !users[idx]) return;
+    if (!el) return;
+    if (!users[idx]) {
+      // No real user for this podium slot — clear placeholder content.
+      var nameEl = el.querySelector("h2, h3");
+      var imgEl = el.querySelector("img");
+      var levelEl = el.querySelector("[class*='Level']");
+      var xpEl = el.querySelector(".font-black");
+      if (nameEl) nameEl.textContent = "—";
+      if (imgEl) imgEl.src = "assets/images/default-avatar.png?w=150";
+      if (levelEl) levelEl.textContent = "Level 1";
+      if (xpEl) xpEl.textContent = "0 XP";
+      return;
+    }
     var u = users[idx];
-    var nameEl = el.querySelector("h2, h3");
-    var imgEl = el.querySelector("img");
-    var levelEl = el.querySelector("[class*='Level']");
-    var xpEl = el.querySelector(".font-black");
-    if (nameEl) nameEl.textContent = u.name;
-    if (imgEl) imgEl.src = u.img;
-    if (levelEl) levelEl.textContent = "Level " + u.level;
-    if (xpEl) xpEl.textContent = u.xp.toLocaleString() + " XP";
+    var nameEl2 = el.querySelector("h2, h3");
+    var imgEl2 = el.querySelector("img");
+    var levelEl2 = el.querySelector("[class*='Level']");
+    var xpEl2 = el.querySelector(".font-black");
+    if (nameEl2) nameEl2.textContent = u.name;
+    if (imgEl2) imgEl2.src = u.img;
+    if (levelEl2) levelEl2.textContent = "Level " + u.level;
+    if (xpEl2) xpEl2.textContent = u.xp.toLocaleString() + " XP";
     el.classList.add("cursor-pointer");
     el.addEventListener("click", function() { goToPlayer(u); });
   });
@@ -146,6 +159,10 @@ async function renderRows4to6() {
   var data = await getData();
   var rows = data.slice(3, 6);
   container.innerHTML = "";
+  if (!rows.length) {
+    container.innerHTML = '<div class="px-6 py-8 text-center text-slate-400 text-sm">No fans ranked yet.</div>';
+    return;
+  }
   rows.forEach(function(u) {
     var d = document.createElement("div");
     d.className = "hidden md:grid grid-cols-12 items-center px-6 py-4 hover:bg-[#091321] transition border-b border-[#0f1d30] cursor-pointer";
@@ -173,6 +190,10 @@ async function renderTopEarners() {
   var data = await getData();
   var top5 = data.slice(0, 5);
   container.innerHTML = "";
+  if (!top5.length) {
+    container.innerHTML = '<div class="text-center text-slate-400 text-sm py-4">No fans yet.</div>';
+    return;
+  }
   top5.forEach(function(u, idx) {
     var div = document.createElement("div");
     div.className = "flex items-center justify-between cursor-pointer hover:bg-[#0a1628] p-2 rounded-lg transition";
@@ -201,6 +222,12 @@ async function toggleFullLeaderboard() {
   var rows = data.slice(6);
   container.classList.remove("hidden");
   container.innerHTML = "";
+  if (!rows.length) {
+    container.innerHTML = '<div class="px-6 py-8 text-center text-slate-400 text-sm">No more fans to show.</div>';
+    btn.innerHTML = "Hide Full Leaderboard ↑";
+    fullLBExpanded = true;
+    return;
+  }
   var header = document.createElement("div");
   header.className = "hidden md:grid grid-cols-12 px-6 py-3 text-slate-400 text-xs font-semibold border-b border-[#12263f] sticky top-0 bg-[#060d18]";
   header.innerHTML = '<div class="col-span-1">Rank</div><div class="col-span-4">User</div><div class="col-span-2">Level</div><div class="col-span-2 text-right">XP</div><div class="col-span-3 text-right">Coins</div>';
@@ -234,26 +261,86 @@ async function toggleFullLeaderboard() {
 }
 
 document.addEventListener("DOMContentLoaded", async function() {
-  await getData(); // load real registered users (or fallback)
+  await getData(); // load real registered users (real-only)
   await renderPodium();
   await renderRows4to6();
   await renderTopEarners();
+  await renderYourRank();
 });
 
-const userData = {
-  xp: 2850,
-  currentLevel: 12,
-  nextLevelXP: 4000,
-};
+// Populate the "Your Rank" sidebar + "Your Row" with the REAL logged-in user.
+async function renderYourRank() {
+  // Wait for the real profile (set by js/script.js onAuthStateChanged).
+  let profile = null;
+  for (var i = 0; i < 40; i++) {
+    if (window.currentUserProfile && window.currentUserProfile.name) { profile = window.currentUserProfile; break; }
+    await new Promise(function(r){ setTimeout(r, 100); });
+  }
+  if (!profile) profile = { name: "You", username: "", photoURL: "assets/images/default-avatar.png?w=150", level: 1, xp: 0 };
 
-const xpEl = document.getElementById("userXP");
-if (xpEl) xpEl.textContent = userData.xp.toLocaleString() + " XP";
+  // Derive XP + level from the real profile (prefer Firestore xp if present).
+  var xp = parseInt(profile.xp, 10) || 0;
+  var level = (window.LevelSystem && window.LevelSystem.levelFromXP)
+    ? window.LevelSystem.levelFromXP(xp)
+    : (parseInt(profile.level, 10) || 1);
 
-const nextEl = document.getElementById("nextLevel");
-if (nextEl) nextEl.textContent = `Next Level ${userData.currentLevel + 1}`;
+  // Find this user's rank within the real leaderboard data.
+  var data = await getData();
+  var rank = data.findIndex(function(u){ return u.uid && profile.uid && u.uid === profile.uid; });
+  if (rank < 0) {
+    // Match by name as a fallback.
+    rank = data.findIndex(function(u){ return u.name === profile.name; });
+  }
+  rank = rank >= 0 ? rank + 1 : (data.length ? data.length + 1 : 1);
+  var total = data.length || 1;
 
-const remainEl = document.getElementById("xpRemaining");
-if (remainEl) remainEl.textContent = `${(userData.nextLevelXP - userData.xp).toLocaleString()} XP to go`;
+  // Compute next-level progress via LevelSystem.
+  var nextXP = (window.LevelSystem && window.LevelSystem.nextLevelXP) ? window.LevelSystem.nextLevelXP(xp) : (xp + 1000);
+  var toGo = (window.LevelSystem && window.LevelSystem.xpToNextLevel) ? window.LevelSystem.xpToNextLevel(xp) : 1000;
+  var pct = (window.LevelSystem && window.LevelSystem.xpProgress) ? Math.round(window.LevelSystem.xpProgress(xp) * 100) : 0;
 
-const progEl = document.getElementById("xpProgress");
-if (progEl) progEl.style.width = `${(userData.xp / userData.nextLevelXP) * 100}%`;
+  // Sidebar: Your Rank
+  var curRank = document.getElementById("currentRank");
+  if (curRank) curRank.textContent = rank;
+  var totalLabel = document.getElementById("totalUsersLabel");
+  if (totalLabel) totalLabel.textContent = "/ " + total.toLocaleString();
+  var totalXPEl = document.getElementById("totalXP");
+  if (totalXPEl) totalXPEl.textContent = xp.toLocaleString() + " XP";
+  var sProg = document.getElementById("sidebar-xpProgress");
+  if (sProg) sProg.style.width = pct + "%";
+  var sNext = document.getElementById("sidebar-nextLevel");
+  if (sNext) sNext.textContent = "Next Level " + (level + 1);
+  var sRemain = document.getElementById("sidebar-xpRemaining");
+  if (sRemain) sRemain.textContent = toGo.toLocaleString() + " XP to go";
+
+  // Your Row (desktop)
+  var rowRank = document.getElementById("yourRowRank");
+  if (rowRank) rowRank.textContent = rank;
+  var rowName = document.getElementById("yourRowName");
+  if (rowName) rowName.textContent = profile.name + (profile.username ? " (@" + profile.username + ")" : "");
+  var rowLevel = document.getElementById("yourRowLevel");
+  if (rowLevel) rowLevel.textContent = "Level " + level;
+  var rowXP = document.getElementById("yourRowXP");
+  if (rowXP) rowXP.textContent = xp.toLocaleString() + " XP";
+  var rowImg = document.getElementById("yourRowImg");
+  if (rowImg) rowImg.src = profile.photoURL || "assets/images/default-avatar.png?w=150";
+
+  // Your Row (mobile)
+  var rowRankM = document.getElementById("yourRowRankM");
+  if (rowRankM) rowRankM.textContent = "#" + rank;
+  var rowNameM = document.getElementById("yourRowNameM");
+  if (rowNameM) rowNameM.textContent = profile.name + (profile.username ? " (@" + profile.username + ")" : "");
+  var rowLevelM = document.getElementById("yourRowLevelM");
+  if (rowLevelM) rowLevelM.textContent = "Level " + level;
+  var rowImgM = document.getElementById("yourRowImgM");
+  if (rowImgM) rowImgM.src = profile.photoURL || "assets/images/default-avatar.png?w=150";
+
+  var mProg = document.getElementById("xpProgress");
+  if (mProg) mProg.style.width = pct + "%";
+  var mNext = document.getElementById("nextLevel");
+  if (mNext) mNext.textContent = "Next Level " + (level + 1);
+  var mRemain = document.getElementById("xpRemaining");
+  if (mRemain) mRemain.textContent = toGo.toLocaleString() + " XP to go";
+  var mXP = document.getElementById("userXP");
+  if (mXP) mXP.textContent = xp.toLocaleString() + " XP";
+}
