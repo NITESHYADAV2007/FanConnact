@@ -1256,6 +1256,11 @@
     tabs.forEach(tab => {
       tab.addEventListener('click', (e) => {
         e.preventDefault();
+        // Live Chat requires login
+        if (tab.dataset.tab === 'live-chat' && !window.currentUser) {
+          window.location.href = 'login.html';
+          return;
+        }
         activate(tab);
       });
     });

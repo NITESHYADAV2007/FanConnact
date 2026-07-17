@@ -56,14 +56,8 @@
 })();
 
 document.addEventListener("DOMContentLoaded", () => {
-  // Rewrite "Live Matches"/"Matches" links to open the Match Center
-  // (product decision: Live Matches → Match Center, never a game page).
-  try {
-    document.querySelectorAll('a[href="livematches.html"]').forEach((a) => {
-      a.setAttribute("href", "match-center.html");
-    });
-  } catch (e) {}
-
+  // Nav "Matches"/"Live Matches" links point to livematches.html (the matches
+  // list). Individual match cards use m.link → match-center.html directly.
   const themeToggleBtn = document.getElementById("theme-toggle");
   const mobileMenuBtn = document.getElementById("mobile-menu-btn");
   const closeSidebarBtn = document.getElementById("close-sidebar-btn");
@@ -150,7 +144,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Default landing page for unauthenticated users visiting root or protected pages
       if (page === "" || !guestAllowedPages.includes(page)) {
-        window.location.href = "index.html";
+        window.location.href = "login.html";
         return;
       }
     } else if (user) {
@@ -2113,18 +2107,18 @@ document.addEventListener("DOMContentLoaded", () => {
       if (sportPagesRequiringLogin.some((sport) => linkText.includes(sport))) {
         if (!currentUser) {
           e.preventDefault();
-          window.location.href = "index.html";
+          window.location.href = "login.html";
         }
         return;
       }
 
-      // If guest clicks a link to dashboard.html, redirect to landing page instead
+      // If guest clicks a link to dashboard.html, redirect to login page instead
       if (!currentUser && href === "dashboard.html") {
         e.preventDefault();
         if (window.innerWidth < 1024) {
           closeSidebar();
         }
-        window.location.href = "index.html";
+        window.location.href = "login.html";
         return;
       }
 
@@ -2137,7 +2131,7 @@ document.addEventListener("DOMContentLoaded", () => {
         href !== "signup.html"
       ) {
         e.preventDefault();
-        window.location.href = "index.html";
+        window.location.href = "login.html";
         return;
       }
 
