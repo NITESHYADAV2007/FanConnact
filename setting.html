@@ -91,14 +91,18 @@
 <body id="appBody" class="bg-background text-on-surface">
 <script>
   (function() {
-    var isDark = document.documentElement.classList.contains('dark');
     var b = document.getElementById('appBody');
-    if (!b.classList.contains('theme-light') && !b.classList.contains('theme-dark') && !b.classList.contains('theme-stadium') && !b.classList.contains('theme-esports') && !b.classList.contains('theme-royal')) {
+    // Only set a default theme if none is already applied (e.g. from saved settings).
+    var hasTheme = Array.from(b.classList).some(function(c) { return c.indexOf('theme-') === 0; });
+    if (!hasTheme) {
+      var isDark = document.documentElement.classList.contains('dark');
       b.classList.add(isDark ? 'theme-dark' : 'theme-light');
     }
+    // Respect the user's chosen named theme (light/dark/stadium/esports/royal).
+    // Only auto-sync light/dark when the user has NOT picked a named theme.
     var obs = new MutationObserver(function() {
       var d = document.documentElement.classList.contains('dark');
-      var existing = Array.from(b.classList).find(function(c) { return c.startsWith('theme-'); });
+      var existing = Array.from(b.classList).find(function(c) { return c.indexOf('theme-') === 0; });
       if (existing === 'theme-light' || existing === 'theme-dark') {
         b.classList.remove('theme-light', 'theme-dark');
         b.classList.add(d ? 'theme-dark' : 'theme-light');
@@ -160,16 +164,45 @@
   </div>
 </header>
 
-<main class="max-w-[1400px] mx-auto p-lg lg:p-xl space-y-xl">
-  <!-- Header Section -->
-  <section>
-    <h1 class="font-headline-lg text-headline-lg text-on-surface dark:text-white" data-i18n="settings-title">Settings</h1>
-    <p class="font-body-lg text-on-surface-variant dark:text-slate-400" data-i18n="settings-subtitle">Manage your preferences and account settings</p>
+<main class="max-w-[1100px] mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+
+  <!-- Page Header -->
+  <div class="flex items-center gap-3">
+    <button onclick="window.location.href='dashboard.html'" class="w-10 h-10 shrink-0 rounded-full bg-surface-container-low dark:bg-white/5 hover:bg-surface-container-high dark:hover:bg-white/10 flex items-center justify-center transition-colors" title="Back">
+      <span class="material-symbols-outlined text-on-surface-variant dark:text-slate-300">arrow_back</span>
+    </button>
+    <div>
+      <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-on-surface dark:text-white" data-i18n="settings-title">Settings</h1>
+      <p class="text-sm text-on-surface-variant dark:text-slate-400" data-i18n="settings-subtitle">Manage your preferences and account settings</p>
+    </div>
+  </div>
+
+  <!-- Account Overview Card -->
+  <section class="bg-gradient-to-br from-primary/10 to-transparent dark:from-primary/15 border border-outline-variant dark:border-brand-border rounded-2xl p-5 sm:p-6 flex items-center gap-4 card">
+    <img id="accountAvatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDOdWz0yXTAfug92jAlZ-XZtnL5urTJNu8npwz7RIfeTacw2m4yeAoKNMAkf3MLOCIk0iI35_ID8tSabIp6I7MF2N_gez6RO01_i0q1DX3bj656URDlnI8A34wDvyRB5WoPOVTN1qvuyGRfskySDI-pCWAnw3raxBsKX2G6sEhrFHiweAO4TxLdxuB-4_oHoAPBbm9bwmrKrqSGKFEtAeXpM76OE_C1cQQSNmRYmIRT01ZVb4lT2k1tR1xDw6ujXtxiain2IWfiKxim" alt="Profile" class="w-16 h-16 rounded-full border-2 border-primary object-cover shrink-0" />
+    <div class="min-w-0 flex-1">
+      <p id="accountName" class="text-lg font-bold text-on-surface dark:text-white truncate">Nitesh Yadav</p>
+      <p id="accountEmail" class="text-sm text-on-surface-variant dark:text-slate-400 truncate">nitesh.yadav@fanconnact.com</p>
+      <div class="mt-2 flex items-center gap-2">
+        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/15 text-primary text-[11px] font-semibold">
+          <span class="w-1.5 h-1.5 rounded-full bg-primary"></span> Level 28
+        </span>
+        <span class="text-[11px] text-on-surface-variant dark:text-slate-500">Active now</span>
+      </div>
+    </div>
+    <button onclick="window.location.href='profile.html'" class="shrink-0 px-4 py-2 rounded-xl bg-primary text-white text-sm font-semibold hover:opacity-90 transition-opacity">
+      View Profile
+    </button>
   </section>
 
   <!-- Appearance Section -->
   <section class="bg-surface-container-lowest dark:bg-brand-card border border-outline-variant dark:border-brand-border rounded-xl p-lg shadow-sm card">
-    <h2 class="font-headline-md text-headline-md mb-xs text-on-surface dark:text-white" data-i18n="appearance-title">Appearance</h2>
+    <div class="flex items-center gap-3 mb-xs">
+      <span class="w-9 h-9 rounded-xl bg-primary/15 text-primary flex items-center justify-center">
+        <span class="material-symbols-outlined text-xl">palette</span>
+      </span>
+      <h2 class="font-headline-md text-headline-md text-on-surface dark:text-white" data-i18n="appearance-title">Appearance</h2>
+    </div>
     <p class="font-body-sm text-on-surface-variant dark:text-slate-400 mb-lg" data-i18n="appearance-subtitle">Customize the look and feel of FanConnact</p>
     <div class="grid grid-cols-2 md:grid-cols-5 gap-md mb-lg appearance-options">
       <!-- Light Theme -->
@@ -193,25 +226,22 @@
         </div>
       </button>
       <!-- Stadium Theme -->
-      <div data-theme="stadium" class="relative group cursor-pointer border border-outline-variant rounded-lg overflow-hidden h-36 theme-item">
-        <div class="absolute inset-0 bg-cover bg-center" style="background-image:url('https://images.unsplash.com/photo-1459865264687-595d652de67e?w=400&q=80')"></div>
-        <div class="absolute inset-0 bg-black/40 flex flex-col items-center justify-end pb-sm">
+      <div data-theme="stadium" class="relative group cursor-pointer border border-outline-variant rounded-lg overflow-hidden h-36 theme-item" style="background:radial-gradient(circle at 20% 0%, rgba(34,197,94,0.35), transparent 55%), repeating-linear-gradient(115deg, rgba(34,197,94,0.10) 0px, rgba(34,197,94,0.10) 2px, transparent 2px, transparent 26px), #07140f;">
+        <div class="absolute inset-0 bg-black/30 flex flex-col items-center justify-end pb-sm">
           <span class="block font-bold text-body-sm text-white" data-i18n="theme-stadium">Stadium</span>
           <span class="text-[10px] text-white/80" data-i18n="theme-stadium-desc">Feel the game</span>
         </div>
       </div>
       <!-- Esports Theme -->
-      <div data-theme="esports" class="relative group cursor-pointer border border-outline-variant rounded-lg overflow-hidden h-36 theme-item">
-        <div class="absolute inset-0 bg-cover bg-center" style="background-image:url('https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&q=80')"></div>
-        <div class="absolute inset-0 bg-black/40 flex flex-col items-center justify-end pb-sm">
+      <div data-theme="esports" class="relative group cursor-pointer border border-outline-variant rounded-lg overflow-hidden h-36 theme-item" style="background:radial-gradient(circle at 80% 10%, rgba(168,85,247,0.45), transparent 55%), radial-gradient(circle at 10% 90%, rgba(59,130,246,0.35), transparent 50%), #120622;">
+        <div class="absolute inset-0 bg-black/30 flex flex-col items-center justify-end pb-sm">
           <span class="block font-bold text-body-sm text-white" data-i18n="theme-esports">Esports</span>
           <span class="text-[10px] text-white/80" data-i18n="theme-esports-desc">For esports fans</span>
         </div>
       </div>
       <!-- Royal Blue Theme -->
-      <div data-theme="royal" class="relative group cursor-pointer border border-outline-variant rounded-lg overflow-hidden h-36 theme-item">
-        <div class="absolute inset-0 bg-cover bg-center" style="background-image:url('https://images.unsplash.com/photo-1553356084-58ef4a67b2a7?w=400&q=80')"></div>
-        <div class="absolute inset-0 bg-black/40 flex flex-col items-center justify-end pb-sm">
+      <div data-theme="royal" class="relative group cursor-pointer border border-outline-variant rounded-lg overflow-hidden h-36 theme-item" style="background:radial-gradient(circle at 50% 0%, rgba(59,130,246,0.45), transparent 60%), #06142f;">
+        <div class="absolute inset-0 bg-black/30 flex flex-col items-center justify-end pb-sm">
           <span class="block font-bold text-body-sm text-white" data-i18n="theme-royal">Royal Blue</span>
           <span class="text-[10px] text-white/80" data-i18n="theme-royal-desc">Classic and sleek</span>
         </div>
@@ -266,7 +296,12 @@
 
     <!-- Sports Preferences -->
     <section class="bg-surface-container-lowest dark:bg-brand-card border border-outline-variant dark:border-brand-border rounded-xl p-lg shadow-sm card">
-      <h2 class="font-headline-md text-headline-md mb-xs text-on-surface dark:text-white" data-i18n="sports-title">Sports Preferences</h2>
+      <div class="flex items-center gap-3 mb-xs">
+        <span class="w-9 h-9 rounded-xl bg-primary/15 text-primary flex items-center justify-center">
+          <span class="material-symbols-outlined text-xl">sports_soccer</span>
+        </span>
+        <h2 class="font-headline-md text-headline-md text-on-surface dark:text-white" data-i18n="sports-title">Sports Preferences</h2>
+      </div>
       <p class="font-body-sm text-on-surface-variant dark:text-slate-400 mb-lg" data-i18n="sports-subtitle">Select your favorite sports to get personalized updates</p>
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-md">
         <label class="flex items-center justify-between p-sm border border-outline-variant dark:border-brand-border rounded-lg hover:border-primary cursor-pointer transition-all sport-item">
@@ -348,7 +383,12 @@
 
     <!-- Notification Preferences -->
     <section class="bg-surface-container-lowest dark:bg-brand-card border border-outline-variant dark:border-brand-border rounded-xl p-lg shadow-sm card">
-      <h2 class="font-headline-md text-headline-md mb-xs text-on-surface dark:text-white" data-i18n="notif-title">Notification Preferences</h2>
+      <div class="flex items-center gap-3 mb-xs">
+        <span class="w-9 h-9 rounded-xl bg-primary/15 text-primary flex items-center justify-center">
+          <span class="material-symbols-outlined text-xl">notifications</span>
+        </span>
+        <h2 class="font-headline-md text-headline-md text-on-surface dark:text-white" data-i18n="notif-title">Notification Preferences</h2>
+      </div>
       <p class="font-body-sm text-on-surface-variant dark:text-slate-400 mb-lg" data-i18n="notif-subtitle">Choose what you want to be notified about</p>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-xl gap-y-sm">
         <div class="space-y-sm">
@@ -443,7 +483,12 @@
   <div class="grid grid-cols-1 md:grid-cols-3 gap-xl">
     <!-- Security -->
     <section class="bg-surface-container-lowest dark:bg-brand-card border border-outline-variant dark:border-brand-border rounded-xl p-lg shadow-sm card">
-      <h2 class="font-headline-md text-headline-md mb-xs text-on-surface dark:text-white" data-i18n="security-title">Security</h2>
+      <div class="flex items-center gap-3 mb-xs">
+        <span class="w-9 h-9 rounded-xl bg-primary/15 text-primary flex items-center justify-center">
+          <span class="material-symbols-outlined text-xl">shield</span>
+        </span>
+        <h2 class="font-headline-md text-headline-md text-on-surface dark:text-white" data-i18n="security-title">Security</h2>
+      </div>
       <p class="font-body-sm text-on-surface-variant dark:text-slate-400 mb-lg" data-i18n="security-subtitle">Keep your account safe and secure</p>
       <div class="space-y-sm">
         <div id="googleAuthRow" class="flex items-center justify-between p-sm hover:bg-surface-container-low dark:hover:bg-white/5 rounded-lg transition-colors cursor-pointer setting-row">
@@ -499,7 +544,12 @@
 
     <!-- Language & Region -->
     <section class="bg-surface-container-lowest dark:bg-brand-card border border-outline-variant dark:border-brand-border rounded-xl p-lg shadow-sm card">
-      <h2 class="font-headline-md text-headline-md mb-xs text-on-surface dark:text-white" data-i18n="lang-title">Language & Region</h2>
+      <div class="flex items-center gap-3 mb-xs">
+        <span class="w-9 h-9 rounded-xl bg-primary/15 text-primary flex items-center justify-center">
+          <span class="material-symbols-outlined text-xl">translate</span>
+        </span>
+        <h2 class="font-headline-md text-headline-md text-on-surface dark:text-white" data-i18n="lang-title">Language & Region</h2>
+      </div>
       <p class="font-body-sm text-on-surface-variant dark:text-slate-400 mb-lg" data-i18n="lang-subtitle">Manage your language and region preferences</p>
       <div class="space-y-md">
         <div>
@@ -537,7 +587,12 @@
 
     <!-- Support & About -->
     <section class="bg-surface-container-lowest dark:bg-brand-card border border-outline-variant dark:border-brand-border rounded-xl p-lg shadow-sm flex flex-col card">
-      <h2 class="font-headline-md text-headline-md mb-xs text-on-surface dark:text-white" data-i18n="support-title">Support & About</h2>
+      <div class="flex items-center gap-3 mb-xs">
+        <span class="w-9 h-9 rounded-xl bg-primary/15 text-primary flex items-center justify-center">
+          <span class="material-symbols-outlined text-xl">help</span>
+        </span>
+        <h2 class="font-headline-md text-headline-md text-on-surface dark:text-white" data-i18n="support-title">Support & About</h2>
+      </div>
       <p class="font-body-sm text-on-surface-variant dark:text-slate-400 mb-lg" data-i18n="support-subtitle">Help, feedback and app information</p>
       <div class="space-y-sm flex-1">
         <button id="reportBugBtn" class="w-full flex items-center justify-between p-sm hover:bg-surface-container-low dark:hover:bg-white/5 rounded-lg transition-colors group">

@@ -75,15 +75,18 @@
     }
 
     .hero-gradient {
-      background-image: linear-gradient(rgba(11, 14, 17, 0.3), rgba(11, 14, 17, 0.6));
+      background-image: linear-gradient(rgba(11, 14, 17, 0.55), rgba(11, 14, 17, 0.75));
       background-size: cover;
       background-position: center;
+      background-blend-mode: multiply;
     }
 
     :root:not(.dark) .hero-gradient {
       border-color: #e2e8f0;
+      background-image: linear-gradient(rgba(255, 255, 255, 0.55), rgba(241, 245, 249, 0.7));
       background-size: cover;
       background-position: center;
+      background-blend-mode: overlay;
     }
 
     .fan-war-bg {

@@ -1,15 +1,4 @@
-import {
-  onAuthStateChanged,
-  signOut,
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import {
-  doc,
-  getDoc,
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-// Import the initialized auth from your local config file
-import { auth, db } from "./firebase-config.js";
-
-// Apply saved appearance settings globally (compact, large text, reduce animation)
+// Apply saved appearance settings globally (compact, large text, reduce animation, THEME)
 (function() {
   try {
     var saved = JSON.parse(localStorage.getItem('fanconnact-settings'));
@@ -17,8 +6,53 @@ import { auth, db } from "./firebase-config.js";
       if (saved.compact) document.documentElement.classList.add('compact-mode');
       if (saved.largeText) document.documentElement.classList.add('large-text');
       if (saved.reduceAnimation) document.documentElement.classList.add('reduce-animation');
+      // Apply the chosen named theme (light/dark/stadium/esports/royal) on every page
+      var validThemes = ['light', 'dark', 'stadium', 'esports', 'royal'];
+      var theme = saved.theme && validThemes.indexOf(saved.theme) !== -1 ? saved.theme : 'dark';
+      document.body.classList.remove('theme-light', 'theme-dark', 'theme-stadium', 'theme-esports', 'theme-royal');
+      document.body.classList.add('theme-' + theme);
     }
   } catch(e) {}
+})();
+
+// Replace the header notification bell with a Settings (gear) icon on EVERY page.
+// This keeps the top bar consistent and avoids the notification/settings overlap.
+(function () {
+  function swapNotifForSettings() {
+    try {
+      const header = document.querySelector("header");
+      if (!header) return;
+
+      // The notification bell appears as a .notification-trigger element, or as a
+      // button / anchor / span containing the "notifications" material symbol.
+      const found = [];
+      header.querySelectorAll(".notification-trigger").forEach((el) => found.push(el));
+      header.querySelectorAll("button, a, span, i").forEach((el) => {
+        if (/notifications/.test(el.innerHTML) && !found.includes(el)) found.push(el);
+      });
+
+      found.forEach((el) => {
+        const btn = document.createElement("button");
+        btn.setAttribute("type", "button");
+        btn.setAttribute("onclick", "window.location.href='setting.html'");
+        btn.setAttribute("title", "Settings");
+        btn.className =
+          (el.className || "")
+            .replace(/\bnotification-trigger\b/g, "")
+            .trim() +
+          " shrink-0 settings-top-icon";
+        btn.innerHTML =
+          '<span class="material-symbols-outlined text-slate-500 dark:text-gray-400 text-xl sm:text-2xl">settings</span>';
+        if (el.parentNode) el.parentNode.replaceChild(btn, el);
+      });
+    } catch (e) {}
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", swapNotifForSettings);
+  } else {
+    swapNotifForSettings();
+  }
 })();
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -73,8 +107,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let currentUser = null;
 
-  // Monitor Real Auth State
-  onAuthStateChanged(auth, async (user) => {
+  // Monitor Real Auth State (firebase loaded lazily so a network/CDN
+  // failure can never block the rest of this module from running).
+  (async () => {
+    let auth, db, onAuthStateChanged, doc, getDoc, signOut;
+    try {
+      ({ onAuthStateChanged, signOut } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"));
+      ({ doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"));
+      ({ auth, db } = await import("./firebase-config.js"));
+    } catch (e) {
+      console.warn("[script] firebase unavailable:", e);
+      return;
+    }
+    onAuthStateChanged(auth, async (user) => {
     currentUser = user;
     window.currentUser = user;
 
@@ -101,6 +146,7 @@ document.addEventListener("DOMContentLoaded", () => {
         "e-sports.html",
         "livematches.html",
         "match-center.html",
+        "prediction.html",
         "notification.html",
         "profile.html",
         "terms.html",
@@ -216,17 +262,19 @@ document.addEventListener("DOMContentLoaded", () => {
         userAvatarElem.src =
           "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y";
     }
-  });
+    });
+  })();
 
-  // Initialize Sidebar State (Desktop)
-  if (window.innerWidth >= 1024 && sidebar) {
-    const isCollapsed = localStorage.getItem("sidebar-collapsed") === "true";
-    if (isCollapsed) {
-      sidebar.classList.add("sidebar-collapsed");
-      headerLogo?.classList.remove("lg:hidden");
-    } else {
-      headerLogo?.classList.add("lg:hidden");
-    }
+  // Initialize Sidebar State (all screen sizes)
+  if (sidebar) {
+    const stored = localStorage.getItem("sidebar-hidden");
+    // Default: sidebar closed on every page (drawer). Respect a saved choice.
+    const isHidden = stored === null ? true : stored === "true";
+    // On mobile the sidebar is a fixed overlay drawer (per-page Tailwind).
+    // Hidden state == translated off-screen.
+    sidebar.classList.toggle("-translate-x-full", isHidden);
+    // Hide the header logo whenever the sidebar (with its own logo) is visible
+    headerLogo?.classList.toggle("header-logo-hidden", !isHidden);
   }
 
   // --- Active Link Highlighting ---
@@ -1937,26 +1985,22 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // 3. Mobile Sidebar Toggle
+  // 3. Sidebar Toggle (works on every screen size)
   mobileMenuBtn?.addEventListener("click", () => {
-    if (window.innerWidth < 1024) {
-      sidebar?.classList.toggle("-translate-x-full");
-      // Hide header logo if sidebar is visible on mobile
-      const isSidebarOpen = !sidebar?.classList.contains("-translate-x-full");
-      headerLogo?.classList.toggle("hidden", isSidebarOpen);
-    } else {
-      // Desktop: Toggle and persist full sidebar collapse
-      const isCollapsed = sidebar?.classList.toggle("sidebar-collapsed");
-      localStorage.setItem("sidebar-collapsed", isCollapsed);
-      // Toggle whole logo in header on desktop (show when sidebar is collapsed)
-      headerLogo?.classList.toggle("lg:hidden", !isCollapsed);
-    }
+    if (!sidebar) return;
+    const willHide = !sidebar.classList.contains("-translate-x-full");
+    sidebar.classList.toggle("-translate-x-full", willHide);
+    localStorage.setItem("sidebar-hidden", willHide);
+    // Show the header logo only when the sidebar (with its own logo) is hidden
+    headerLogo?.classList.toggle("header-logo-hidden", !willHide);
   });
 
-  // Sidebar Close Button (Mobile)
+  // Sidebar Close Button
   closeSidebarBtn?.addEventListener("click", () => {
-    sidebar?.classList.add("-translate-x-full");
-    headerLogo?.classList.remove("hidden");
+    if (!sidebar) return;
+    sidebar.classList.add("-translate-x-full");
+    localStorage.setItem("sidebar-hidden", "true");
+    headerLogo?.classList.remove("header-logo-hidden");
   });
 
   // 4. Navigation Interceptor & Mobile Sidebar Close
@@ -2013,7 +2057,7 @@ document.addEventListener("DOMContentLoaded", () => {
         e.preventDefault();
         if (window.innerWidth < 1024) {
           sidebar?.classList.add("-translate-x-full");
-          headerLogo?.classList.remove("hidden");
+          headerLogo?.classList.remove("header-logo-hidden");
         }
         window.location.href = "index.html";
         return;
@@ -2034,7 +2078,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (window.innerWidth < 1024) {
         sidebar?.classList.add("-translate-x-full");
-        headerLogo?.classList.remove("hidden");
+        headerLogo?.classList.remove("header-logo-hidden");
       }
     });
   });
@@ -2061,7 +2105,7 @@ document.addEventListener("DOMContentLoaded", () => {
       !mobileMenuBtn.contains(e.target)
     ) {
       sidebar.classList.add("-translate-x-full");
-      headerLogo?.classList.remove("hidden");
+      headerLogo?.classList.remove("header-logo-hidden");
     }
   });
 
@@ -2195,3 +2239,4 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   })();
 });
+

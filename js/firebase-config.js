@@ -578,4 +578,34 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
-export { auth, db, storage, valMsg, v, debounceDb, generateOTP };
+// --- Sport → Background Image Helper (additive feature) ---
+// Returns an actual image from /assets for the given sport. If no
+// sport-specific image is present in the folder, it falls back to the
+// generic background.jpg so every game still gets a real image.
+// Spaces in the filenames are encoded as %20 so they resolve inside CSS url().
+// NOTE: the actual asset filenames contain typos (fotball, kabbadi, .javif) —
+// kept as-is to match the real files on disk.
+const SPORT_IMAGE_MAP = {
+    cricket: "assets/cricket%20bg.jpg",
+    football: "assets/fotball%20bg.jpeg",
+    basketball: "assets/background.jpg",
+    tennis: "assets/tennis%20bg.jpg",
+    baseball: "assets/baseball%20bg.jpg",
+    hockey: "assets/hockey%20bg.jpg",
+    kabaddi: "assets/background.jpg",
+    "e-sports": "assets/esports%20bg.jpg",
+    tabletennis: "assets/tabletennis%20bg.jpg",
+    volleyball: "assets/volleyball%20bg.jpg"
+};
+const DEFAULT_SPORT_IMAGE = "assets/background.jpg";
+
+function sportImage(sport) {
+    if (!sport) return DEFAULT_SPORT_IMAGE;
+    return SPORT_IMAGE_MAP[String(sport).toLowerCase()] || DEFAULT_SPORT_IMAGE;
+}
+
+export { auth, db, storage, valMsg, v, debounceDb, generateOTP, sportImage };
+
+// Expose core Firebase handles on window so non-module scripts
+// (e.g. leaderboard.js loaded as a plain <script>) can read real data.
+window.__FB__ = { auth, db, storage };

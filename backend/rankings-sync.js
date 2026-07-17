@@ -2,8 +2,22 @@ const axios = require('axios');
 const cheerio = require('cheerio');
 const fs = require('fs');
 const path = require('path');
+const quota = require('./api-quota');
 
-const API_SPORTS_KEY = '300dff825662a9fa64617cb19603443b';
+// Minimal .env loader (no external dep). Reads backend/.env (gitignored).
+// The key is NEVER hardcoded in source and NEVER sent to the browser.
+function loadEnv() {
+  const envPath = path.join(__dirname, '.env');
+  try {
+    const txt = fs.readFileSync(envPath, 'utf8');
+    txt.split('\n').forEach(line => {
+      const m = line.match(/^\s*([\w.-]+)\s*=\s*(.*)\s*$/);
+      if (m && !process.env[m[1]]) process.env[m[1]] = m[2].replace(/^["']|["']$/g, '');
+    });
+  } catch { /* no .env — rely on process.env */ }
+}
+loadEnv();
+const API_SPORTS_KEY = process.env.API_SPORTS_KEY || '';
 
 const DATA_DIR = path.join(__dirname, '..', 'data');
 const PLAYER_RANKINGS_PATH = path.join(DATA_DIR, 'player-rankings.json');
@@ -26,14 +40,29 @@ function saveJSON(p, data) {
   fs.writeFileSync(p, JSON.stringify(data, null, 2), 'utf8');
 }
 
+/**
+ * Quota-aware + cached fetch. Every outbound external request goes through
+ * here so the daily 100-call budget is enforced and successful responses are
+ * cached to disk (served to all users without touching the API again).
+ */
 async function fetchWithTimeout(url, opts = {}) {
-  const { timeout = 10000, headers = {}, method = 'GET' } = opts;
-  try {
-    const res = await axios({ method, url, headers, timeout });
-    return res.data;
-  } catch {
-    return null;
+  const { timeout = 10000, headers = {}, method = 'GET', params = null, ttlMs = CACHE_DURATION, cost = 1 } = opts;
+  const result = await quota.cachedFetch(url, params, async () => {
+    try {
+      const res = await axios({ method, url, headers, timeout, params });
+      return res.data;
+    } catch {
+      return null;
+    }
+  }, { ttlMs, cost });
+  if (result.source === 'quota-exhausted') {
+    log(`Quota exhausted — skipping ${url}`);
+  } else if (result.source === 'cache') {
+    log(`Cache hit for ${url} (age ${Math.round((result.ageMs || 0) / 1000)}s)`);
+  } else if (result.source === 'live') {
+    log(`Live fetch OK for ${url}`);
   }
+  return result.data;
 }
 
 async function scrapeICCRankings(format, gender) {
@@ -122,6 +151,27 @@ async function fetchAPISportsRankings(sport, endpoint) {
     return data;
   } catch (e) {
     log(`API-Sports ${sport} failed: ${e.message}`);
+    return null;
+  }
+}
+
+// Cricket "Live Line / Advance" via API-Sports — returns current teams/series.
+// Routed through the quota+cache layer so the 100/day budget is protected.
+async function fetchCricketFromAPISports() {
+  if (!API_SPORTS_KEY) { log('No API-Sports key configured — skipping cricket API'); return null; }
+  try {
+    const res = await fetchAPISportsRankings('cricket', '/teams?search=');
+    if (!res || !res.response) return null;
+    return res.response.slice(0, 50).map((t, i) => ({
+      rank: i + 1,
+      name: t.name || t.team || 'Unknown',
+      code: (t.code || t.id || '').toString().toUpperCase(),
+      country: t.country || '',
+      rating: t.rating != null ? t.rating : 0,
+      _source: 'api-sports-cricket'
+    }));
+  } catch (e) {
+    log(`Cricket API-Sports failed: ${e.message}`);
     return null;
   }
 }
@@ -241,6 +291,17 @@ async function syncPlayerRankings() {
     }).catch(() => {})
   );
 
+  // Cricket via API-Sports (live line / rankings) — budgeted + cached.
+  updates.push(
+    fetchCricketFromAPISports().then(data => {
+      if (data && data.length) {
+        if (!playerData.cricket) playerData.cricket = {};
+        playerData.cricket.api_sports = data;
+        log(`Updated cricket (API-Sports): ${data.length} teams/players`);
+      }
+    }).catch(() => {})
+  );
+
   updates.push(
     fetchESPNRankings('basketball', 'points').then(data => {
       if (data) {
@@ -351,7 +412,8 @@ function getSyncStatus() {
     lastSync: lastSyncTime ? new Date(lastSyncTime).toISOString() : null,
     inProgress: syncInProgress,
     cacheDuration: CACHE_DURATION,
-    nextSync: lastSyncTime ? new Date(lastSyncTime + CACHE_DURATION).toISOString() : 'pending'
+    nextSync: lastSyncTime ? new Date(lastSyncTime + CACHE_DURATION).toISOString() : 'pending',
+    quota: quota.quotaStatus()
   };
 }
 

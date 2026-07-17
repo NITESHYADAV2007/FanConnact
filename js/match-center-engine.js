@@ -33,6 +33,37 @@
   const SERIES_PARAM = params.get('series') || params.get('tournament') || '';
   const FORMAT_PARAM = params.get('format') || '';
 
+  // ---- Real match lookup (from js/matches-data.js) so venue/date/series are real ----
+  const FANCONNECT = window.FANCONNECT_MATCHES;
+  function findRealMatch() {
+    if (!FANCONNECT || !FANCONNECT.MATCHES) return null;
+    const norm = s => (s == null ? '' : String(s)).toLowerCase().replace(/[^a-z0-9]/g, '');
+    let cand = FANCONNECT.MATCHES.filter(m => norm(m.sport) === norm(SPORT) && norm(m.home) === norm(HOME) && norm(m.away) === norm(AWAY));
+    if (!cand.length && SERIES_PARAM) {
+      cand = FANCONNECT.MATCHES.filter(m => norm(m.sport) === norm(SPORT) && norm(m.tournament || m.series) === norm(SERIES_PARAM));
+    }
+    if (!cand.length) return null;
+    if (cand.length === 1) return cand[0];
+    if (SERIES_PARAM) {
+      const s = cand.find(m => norm(m.tournament || m.series) === norm(SERIES_PARAM));
+      if (s) return s;
+    }
+    return cand[0];
+  }
+  const REAL_MATCH = findRealMatch();
+
+  // Backend proxy base (same as highlights.js) for real team rankings
+  const API_PROXY = (location.protocol === 'file:') ? 'http://localhost:3001'
+    : (location.origin.indexOf('localhost') >= 0 ? 'http://localhost:3001' : location.origin);
+
+  function formatDate(iso) {
+    if (!iso) return '';
+    const d = new Date(iso + (iso.length === 10 ? 'T00:00:00' : ''));
+    if (isNaN(d.getTime())) return iso;
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
+  }
+
   // ------------------------------------------------------------------ helpers
   function $(id) { return document.getElementById(id); }
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
@@ -63,6 +94,8 @@
     sl: { name: 'Sri Lanka', flag: '🇱🇰', cc: 'lk', color: '#9333EA' },
     ban: { name: 'Bangladesh', flag: '🇧🇩', cc: 'bd', color: '#C026D3' },
     wi: { name: 'West Indies', flag: '🏝️', cc: 'ag', color: '#DC2626' },
+    'wi-w': { name: 'WI Women', flag: '🏝️', cc: 'ag', color: '#DC2626', rankName: 'West Indies Women' },
+    'ire-w': { name: 'IRE Women', cc: 'ie', color: '#169B62', flag: '🇮🇪', rankName: 'Ireland Women' },
     afg: { name: 'Afghanistan', flag: '🇦🇫', cc: 'af', color: '#2563EB' },
     mi: { name: 'Mumbai Indians', flag: '🦁', cc: null, color: '#045093' },
     csk: { name: 'Chennai Super Kings', flag: '🦁', cc: null, color: '#F9CD05' },
@@ -75,15 +108,29 @@
     ars: { name: 'Arsenal', flag: '🔴', cc: null, color: '#EF0107' },
     real: { name: 'Real Madrid', flag: '👑', cc: null, color: '#FEBE10' },
     bar: { name: 'Barcelona', flag: '🔵', cc: null, color: '#A50044' },
-    lal: { name: 'Los Angeles Lakers', flag: '🟣', cc: null, color: '#552583' },
-    gsw: { name: 'Golden State Warriors', flag: '🌉', cc: null, color: '#1D428A' },
-    bos: { name: 'Boston Celtics', flag: '🍀', cc: null, color: '#007A33' },
+    lal: { name: 'Los Angeles Lakers', flag: '🟣', cc: null, color: '#552583', rankName: 'Los Angeles Lakers' },
+    gsw: { name: 'Golden State Warriors', flag: '🌉', cc: null, color: '#1D428A', rankName: 'Golden State Warriors' },
+    bos: { name: 'Boston Celtics', flag: '🍀', cc: null, color: '#007A33', rankName: 'Boston Celtics' },
     alc: { name: 'Carlos Alcaraz', flag: '🇪🇸', cc: 'es', color: '#C60B1E' },
     djo: { name: 'Novak Djokovic', flag: '🇷🇸', cc: 'rs', color: '#C09A2E' },
     lad: { name: 'LA Dodgers', flag: '🔵', cc: null, color: '#005A9C' },
     nyy: { name: 'NY Yankees', flag: '🔹', cc: null, color: '#0C2340' },
     wsh: { name: 'Washington Capitals', flag: '🔴', cc: null, color: '#C8102E' },
-    vgk: { name: 'Vegas Golden Knights', flag: '⚔️', cc: null, color: '#B4975A' }
+    vgk: { name: 'Vegas Golden Knights', flag: '⚔️', cc: null, color: '#B4975A' },
+    // ---- Football (soccer) national teams ----
+    fra: { name: 'France', flag: '🇫🇷', cc: 'fr', color: '#0055A4', rankName: 'France' },
+    bra: { name: 'Brazil', flag: '🇧🇷', cc: 'br', color: '#009C3B', rankName: 'Brazil' },
+    arg: { name: 'Argentina', flag: '🇦🇷', cc: 'ar', color: '#75AADB', rankName: 'Argentina' },
+    ger: { name: 'Germany', flag: '🇩🇪', cc: 'de', color: '#111111', rankName: 'Germany' },
+    esp: { name: 'Spain', flag: '🇪🇸', cc: 'es', color: '#AA151B', rankName: 'Spain' },
+    por: { name: 'Portugal', flag: '🇵🇹', cc: 'pt', color: '#006600', rankName: 'Portugal' },
+    ned: { name: 'Netherlands', flag: '🇳🇱', cc: 'nl', color: '#FF7A00', rankName: 'Netherlands' },
+    ita: { name: 'Italy', flag: '🇮🇹', cc: 'it', color: '#009246', rankName: 'Italy' },
+    bel: { name: 'Belgium', flag: '🇧🇪', cc: 'be', color: '#E30613', rankName: 'Belgium' },
+    'eng_f': { name: 'England', flag: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', cc: 'gb-eng', color: '#D32F2F', rankName: 'England' },
+    // ---- Basketball national teams ----
+    'usa-bb': { name: 'USA', flag: '🇺🇸', cc: 'us', color: '#002868' },
+    'fra-bb': { name: 'France', flag: '🇫🇷', cc: 'fr', color: '#0055A4' }
   };
 
   // Real player rosters per team (used for squads, scorecard, commentary, live)
@@ -97,6 +144,8 @@
     sl: ['Pathum Nissanka','Kusal Perera','Kusal Mendis','Charith Asalanka','Wanindu Hasaranga','Maheesh Theekshana','Dhananjaya de Silva','Dimuth Karunaratne'],
     ban: ['Litton Das','Najmul Hossain','Shakib Al Hasan','Mushfiqur Rahim','Towhid Hridoy','Taskin Ahmed','Mustafizur Rahman','Mehidy Hasan'],
     wi: ['Brandon King','Shai Hope','Nicholas Pooran','Rovman Powell','Shimron Hetmyer','Andre Russell','Jason Holder','Alzarri Joseph','Akeal Hosein','Shamar Joseph'],
+    'wi-w': ['Hayley Matthews','Shemaine Campbelle','Stafanie Taylor','Chinelle Henry','Chedean Nation','Shabika Gajnabi','Aaliyah Alleyne','Karishma Ramharack','Afy Fletcher','Shamilia Connell'],
+    'ire-w': ['Laura Delany','Gaby Lewis','Orla Prendergast','Leah Paul','Amy Hunter','Caoimhe Bray','Arlene Kelly','Cara Murray','Jane Maguire','Freya Sargent'],
     afg: ['Rahmanullah Gurbaz','Ibrahim Zadran','Hashmatullah Shahidi','Azmatullah Omarzai','Mohammad Nabi','Rashid Khan','Mujeeb Ur Rahman','Fazalhaq Farooqi','Naveen-ul-Haq'],
     mi: ['Rohit Sharma','Ishan Kishan','Suryakumar Yadav','Tilak Varma','Hardik Pandya','Tim David','Jasprit Bumrah','Trent Boult','Piyush Chawla','Gerald Coetzee','Dewald Brevis','Nehal Wadhera'],
     csk: ['Ruturaj Gaikwad','Devon Conway','Ajinkya Rahane','Shivam Dube','MS Dhoni','Ravindra Jadeja','Sam Curran','Deepak Chahar','Matheesha Pathirana','Maheesh Theekshana','Ambati Rayudu'],
@@ -117,12 +166,54 @@
     lad: ['Shohei Ohtani','Mookie Betts','Freddie Freeman','Will Smith','Teoscar Hernandez','Tyler Glasnow','Yoshinobu Yamamoto','Max Muncy'],
     nyy: ['Aaron Judge','Giancarlo Stanton','Juan Soto','Anthony Volpe','Gerrit Cole','Anthony Rizzo','Gleyber Torres','DJ LeMahieu'],
     wsh: ['Alex Ovechkin','Nicklas Backstrom','Tom Wilson','John Carlson','Dylan Strome','Connor McMichael','T.J. Oshie','Martin Fehervary'],
-    vgk: ['Jack Eichel','Mark Stone','William Karlsson','Jonathan Marchessault','Shea Theodore','Adin Hill','Tomas Hertl','Pavel Dorofeyev']
+    vgk: ['Jack Eichel','Mark Stone','William Karlsson','Jonathan Marchessault','Shea Theodore','Adin Hill','Tomas Hertl','Pavel Dorofeyev'],
+    // ---- Football (soccer) national teams ----
+    'eng-fb': ['Harry Kane','Bukayo Saka','Jude Bellingham','Phil Foden','Declan Rice','Harry Maguire','John Stones','Kyle Walker','Kieran Trippier','Jordan Pickford','Marcus Rashford','James Maddison','Conor Gallagher','Ezri Konsa','Cole Palmer'],
+    // rankName maps a short code to the canonical team name used in team-rankings.json
+    'arg': { name: 'Argentina', flag: '🇦🇷', cc: 'ar', color: '#75AADB', rankName: 'Argentina' },
+    'fra_f': { name: 'France', flag: '🇫🇷', cc: 'fr', color: '#0055A4', rankName: 'France' },
+    'bra_f': { name: 'Brazil', flag: '🇧🇷', cc: 'br', color: '#009C3B', rankName: 'Brazil' },
+    'ger_f': { name: 'Germany', flag: '🇩🇪', cc: 'de', color: '#111111', rankName: 'Germany' },
+    'esp_f': { name: 'Spain', flag: '🇪🇸', cc: 'es', color: '#AA151B', rankName: 'Spain' },
+    'por_f': { name: 'Portugal', flag: '🇵🇹', cc: 'pt', color: '#006600', rankName: 'Portugal' },
+    'ned_f': { name: 'Netherlands', flag: '🇳🇱', cc: 'nl', color: '#FF7A00', rankName: 'Netherlands' },
+    'ita_f': { name: 'Italy', flag: '🇮🇹', cc: 'it', color: '#009246', rankName: 'Italy' },
+    'bel_f': { name: 'Belgium', flag: '🇧🇪', cc: 'be', color: '#E30613', rankName: 'Belgium' },
+    'lal': { name: 'LA Lakers', flag: '🟣', cc: null, color: '#552583', rankName: 'Los Angeles Lakers' },
+    'bos': { name: 'Boston Celtics', flag: '🍀', cc: null, color: '#007A33', rankName: 'Boston Celtics' },
+    // rankName maps a short code to the canonical team name used in team-rankings.json
+    'eng_f': { name: 'England', flag: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', cc: 'gb-eng', color: '#D32F2F', rankName: 'England' },
+    'arg': { name: 'Argentina', flag: '🇦🇷', cc: 'ar', color: '#75AADB', rankName: 'Argentina' },
+    'fra_f': { name: 'France', flag: '🇫🇷', cc: 'fr', color: '#0055A4', rankName: 'France' },
+    'bra_f': { name: 'Brazil', flag: '🇧🇷', cc: 'br', color: '#009C3B', rankName: 'Brazil' },
+    'ger_f': { name: 'Germany', flag: '🇩🇪', cc: 'de', color: '#111111', rankName: 'Germany' },
+    'esp_f': { name: 'Spain', flag: '🇪🇸', cc: 'es', color: '#AA151B', rankName: 'Spain' },
+    'por_f': { name: 'Portugal', flag: '🇵🇹', cc: 'pt', color: '#006600', rankName: 'Portugal' },
+    'ned_f': { name: 'Netherlands', flag: '🇳🇱', cc: 'nl', color: '#FF7A00', rankName: 'Netherlands' },
+    'ita_f': { name: 'Italy', flag: '🇮🇹', cc: 'it', color: '#009246', rankName: 'Italy' },
+    'bel_f': { name: 'Belgium', flag: '🇧🇪', cc: 'be', color: '#E30613', rankName: 'Belgium' },
+    'lal': { name: 'LA Lakers', flag: '🟣', cc: null, color: '#552583', rankName: 'Los Angeles Lakers' },
+    'bos': { name: 'Boston Celtics', flag: '🍀', cc: null, color: '#007A33', rankName: 'Boston Celtics' },
+    'fra-fb': ['Kylian Mbappe','Antoine Griezmann','Ousmane Dembele','Aurelien Tchouameni','Eduardo Camavinga','William Saliba','Dayot Upamecano','Theo Hernandez','Mike Maignan','Olivier Giroud','Randal Kolo Muani','Adrien Rabiot','Jules Kounde','N\'Golo Kante','Bradley Barcola'],
+    'bra-fb': ['Neymar Jr','Vinicius Jr','Rodrygo','Bruno Guimaraes','Casemiro','Marquinhos','Eder Militao','Alisson','Gabriel Jesus','Raphinha','Lucas Paqueta','Richarlison','Fred','Alex Sandro','Ederson'],
+    'arg-fb': ['Lionel Messi','Julian Alvarez','Lautaro Martinez','Angel Di Maria','Enzo Fernandez','Alexis Mac Allister','Rodrigo De Paul','Cristian Romero','Nicolas Otamendi','Emiliano Martinez','Giovani Lo Celso','Leandro Paredes','Nahuel Molina','Lisandro Martinez','Nicolas Tagliafico'],
+    'ger-fb': ['Jamal Musiala','Kai Havertz','Florian Wirtz','Ilkay Gundogan','Toni Kroos','Antonio Rudiger','Joshua Kimmich','Leroy Sane','Serge Gnabry','Manuel Neuer','Thomas Muller','Niclas Fullkrug','Nico Schlotterbeck','Emre Can','Robin Gosens'],
+    'esp-fb': ['Rodri','Alvaro Morata','Ferran Torres','Gavi','Pedri','Dani Carvajal','Aymeric Laporte','Unai Simon','Mikel Oyarzabal','Dani Olmo','Fabian Ruiz','Robin Le Normand','Lamine Yamal','Nico Williams','Joselu'],
+    'por-fb': ['Cristiano Ronaldo','Bruno Fernandes','Bernardo Silva','Joao Felix','Ruben Dias','Pepe','Diogo Jota','Joao Cancelo','Rafael Leao','Vitnha','Joao Palhinha','Goncalo Ramos','Danilo Pereira','Diogo Dalot','Rui Patricio'],
+    'ned-fb': ['Virgil van Dijk','Frenkie de Jong','Cody Gakpo','Denzel Dumfries','Matthijs de Ligt','Steven Bergwijn','Teun Koopmeiners','Xavi Simons','Wout Weghorst','Nathan Ake','Daley Blind','Jerdy Schouten','Brian Brobbey','Micky van de Ven','Mark Flekken'],
+    'ita-fb': ['Gianluigi Donnarumma','Federico Chiesa','Nicolo Barella','Marco Verratti','Leonardo Bonucci','Giorgio Chiellini','Lorenzo Insigne','Ciro Immobile','Federico Dimarco','Nicolo Zaniolo','Davide Frattesi','Giacomo Raspadori','Riccardo Calafiori','Andrea Cambiaso','Moise Kean'],
+    'bel-fb': ['Kevin De Bruyne','Romelu Lukaku','Eden Hazard','Youri Tielemans','Jan Vertonghen','Toby Alderweireld','Thibaut Courtois','Leandro Trossard','Jeremy Doku','Amadou Onana','Arthur Theate','Charles De Ketelaere','Dries Mertens','Yannick Carrasco','Thomas Meunier'],
+    // ---- Basketball national teams ----
+    'usa-bb': ['LeBron James','Stephen Curry','Kevin Durant','Joel Embiid','Jayson Tatum','Devin Booker','Anthony Edwards','Bam Adebayo','Tyrese Haliburton','Anthony Davis','Kawhi Leonard','Jrue Holiday','Derrick White','Paolo Banchero','Austin Reaves'],
+    'fra-bb': ['Victor Wembanyama','Rudy Gobert','Evan Fournier','Nicolas Batum','Frank Ntilikina','Guerschon Yabusele','Matthew Strazel','Bilal Coulibaly','Nando de Colo','Mathias Lessort','Isaia Cordinier','Terrence Maledon','Mouhammadou Jaiteh','Sidy Cissoko','Yakhouba Diawara']
   };
 
   // Build a squad (XI + bench) from real players when available
   function squadFor(code, sport) {
-    const real = REAL_PLAYERS[code];
+    // Prefer a sport-specific roster (e.g. 'eng-fb' for football) so cricket and
+    // football teams with the same code don't share players.
+    const sportKey = { football: 'fb', basketball: 'bb', cricket: 'ck', tennis: 'tn', baseball: 'bs', hockey: 'hk', kabaddi: 'kb', 'e-sports': 'es', tabletennis: 'tt', volleyball: 'vb' }[sport] || '';
+    const real = (sportKey && REAL_PLAYERS[code + '-' + sportKey]) ? REAL_PLAYERS[code + '-' + sportKey] : (REAL_PLAYERS[code] || null);
     const names = (real && real.length) ? real.slice() : Array.from({ length: 11 }, () => genName());
     if (sport === 'tennis') {
       const n = names[0] || genName();
@@ -146,7 +237,7 @@
     if (t) {
       const img = t.cc ? ('https://flagcdn.com/w80/' + t.cc + '.png') :
         ('https://ui-avatars.com/api/?name=' + encodeURIComponent(code.toUpperCase()) + '&background=' + t.color.replace('#', '') + '&color=ffffff&size=64&bold=true');
-      return { code: code, name: t.name, flag: t.flag, color: t.color, img: img };
+      return { code: code, name: t.name, flag: t.flag, color: t.color, img: img, rankName: t.rankName || t.name };
     }
     const name = code.toUpperCase();
     const color = '#6B7280';
@@ -170,6 +261,18 @@
     volleyball: { label: 'Volleyball', xUnit: 'Sets', xMax: 5, icon: '🏐', isBall: false }
   };
   const SC = SPORTS[SPORT] || SPORTS.cricket;
+
+  // Format-aware overs: ODI=50, T20=20, Test=unlimited (cap at 90 for the clock)
+  function formatOvers() {
+    const f = (FORMAT_PARAM || '').toUpperCase();
+    if (f.indexOf('T20') >= 0 || f.indexOf('TWENTY') >= 0) return 20;
+    if (f.indexOf('TEST') >= 0) return 90; // effectively unlimited
+    if (f.indexOf('ODI') >= 0 || f.indexOf('ONE DAY') >= 0 || f.indexOf('50') >= 0) return 50;
+    if (f.indexOf('100') >= 0) return 100;
+    if (SC.isCricket) return 50; // default ODI
+    return SC.xMax;
+  }
+  const FORMAT_OVERS = SC.isCricket ? formatOvers() : SC.xMax;
 
   // ------------------------------------------------------------------ rules & regulations (sport-aware, proper for ALL games)
   const RULES = {
@@ -229,7 +332,7 @@
       ]
     },
     hockey: {
-      title: 'Ice Hockey — Rules & Regulations',
+      title: 'Hockey — Rules & Regulations',
       points: [
         'Two teams of six (including a goalie) score by putting the puck in the opponent’s net with a stick.',
         'NHL games are 60 minutes (three 20-minute periods); ties go to overtime then a shootout.',
@@ -303,18 +406,35 @@
   // ------------------------------------------------------------------ build MATCH data
   const M = { sport: SPORT, state: STATE, home: HOME_T, away: AWAY_T };
 
-  // meta
-  const VENUES = ['Edgbaston, Birmingham', 'Wankhede, Mumbai', 'MCG, Melbourne', 'Lord’s, London', 'Old Trafford, Manchester', 'Eden Gardens, Kolkata', 'Anfield, Liverpool', 'Etihad, Manchester', 'Camp Nou, Barcelona', 'Staples Center, LA', 'Yankee Stadium, NY', 'T-Mobile Arena, Vegas'];
+  // meta — venue is sport/team aware so it stays realistic
+  const VENUES = SC.isCricket
+    ? ['Edgbaston, Birmingham', 'Wankhede, Mumbai', 'MCG, Melbourne', 'Lord’s, London', 'Old Trafford, Manchester', 'Eden Gardens, Kolkata', 'Malahide CC Ground, Dublin', 'Stormont, Belfast', 'Sydney Cricket Ground', 'Newlands, Cape Town']
+    : (SPORT === 'football' ? ['Anfield, Liverpool', 'Etihad, Manchester', 'Camp Nou, Barcelona', 'Wembley, London', 'Old Trafford, Manchester', 'Santiago Bernabeu, Madrid', 'Allianz Arena, Munich']
+      : (SPORT === 'basketball' ? ['Staples Center, LA', 'Madison Square Garden, NY', 'TD Garden, Boston', 'Chase Center, SF', 'Accor Arena, Paris']
+        : (SPORT === 'baseball' ? ['Yankee Stadium, NY', 'Dodger Stadium, LA', 'Fenway Park, Boston', 'Wrigley Field, Chicago']
+          : (SPORT === 'tennis' ? ['Centre Court, Wimbledon', 'Arthur Ashe, Flushing Meadows', 'Philippe Chatrier, Roland Garros', 'Rod Laver Arena, Melbourne']
+            : (SPORT === 'hockey' ? ['Wankhede, Mumbai', 'BSMRAU Stadium, Dhaka', 'National Stadium, Karachi']
+              : ['T-Mobile Arena, Vegas', 'The O2, London', 'Indira Gandhi Arena, Delhi'])))));
   const SERIES = ['ICC Series 2026', 'League Round ' + ri(1, 30), 'Champions Trophy', 'World Cup 2026', 'Friendly', 'Playoff Game ' + ri(1, 7)];
+  const REAL_VENUE = REAL_MATCH && REAL_MATCH.venue ? REAL_MATCH.venue : null;
+  const REAL_DATE = REAL_MATCH && REAL_MATCH.date ? REAL_MATCH.date : null;
+  const REAL_TIME = REAL_MATCH && REAL_MATCH.time ? REAL_MATCH.time : null;
+  const REAL_SERIES = (REAL_MATCH && (REAL_MATCH.tournament || REAL_MATCH.series)) ? (REAL_MATCH.tournament || REAL_MATCH.series) : (SERIES_PARAM || SERIES[0]);
   M.meta = {
     title: HOME_T.name + ' vs ' + AWAY_T.name,
-    sub: SC.label + ' · ' + (SERIES_PARAM || SERIES[0]),
-    venue: pick(VENUES),
-    date: STATE === 'upcoming' ? 'Starts in ' + ri(2, 48) + 'h ' + ri(1, 59) + 'm' : 'Played ' + ri(1, 28) + ' ' + pick(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']) + ' 2026',
-    series: SERIES_PARAM || SERIES[0],
+    sub: SC.label + ' · ' + REAL_SERIES,
+    venue: REAL_VENUE || pick(VENUES),
+    date: REAL_DATE
+      ? (STATE === 'upcoming'
+          ? formatDate(REAL_DATE) + (REAL_TIME ? ' · ' + REAL_TIME : '')
+          : (STATE === 'live' ? 'Live · ' + formatDate(REAL_DATE) : 'Played ' + formatDate(REAL_DATE)))
+      : (STATE === 'upcoming' ? 'Starts in ' + ri(2, 48) + 'h ' + ri(1, 59) + 'm' : 'Played ' + ri(1, 28) + ' ' + pick(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']) + ' 2026'),
+    series: REAL_SERIES,
     format: FORMAT_PARAM || SC.label,
     toss: pick([HOME_T.name, AWAY_T.name]) + ' won the toss',
-    umpires: pick(['K Dharmasena, M Burns', 'A Wharf, R Illingworth', 'R Tucker, C Gaffaney', 'M Erasmus, J Wilson'])
+    umpires: pick(['K Dharmasena, M Burns', 'A Wharf, R Illingworth', 'R Tucker, C Gaffaney', 'M Erasmus, J Wilson']),
+    realResult: REAL_MATCH && REAL_MATCH.result ? REAL_MATCH.result : null,
+    realStatusLine: REAL_MATCH && REAL_MATCH.statusLine ? REAL_MATCH.statusLine : null
   };
 
   // scores
@@ -337,26 +457,32 @@
         resultText: 'Match begins soon', subText: M.meta.date, status: 'upcoming', icon: '⏳'
       };
     } else if (STATE === 'live') {
-      const h = genCricketScore(false), aw = genCricketScore(false);
-      const hScore = HS ? HS.score : h.runs, hWk = HS ? HS.wkts : h.wkts;
-      const aScore = AS ? AS.score : aw.runs, aWk = AS ? AS.wkts : aw.wkts;
-      const detail = HS && AS ? (HS.wkts != null ? HS.score + '/' + HS.wkts + ' (' + h.ov + ' ov)' : HS.score + ' (' + h.ov + ' ov)') : h.detail;
+      // Single source of truth: home bats first, away is "Yet to bat" until 1st innings ends.
+      const hScore = HS ? HS.score : ri(180, 320);
+      const hWk = HS ? HS.wkts : ri(2, 7);
+      const hOv = (ri(20, FORMAT_OVERS - 5)) + (Math.random() < 0.5 ? 0 : 0.1 * ri(1, 5));
+      const crr = (parseInt(hScore, 10) / hOv).toFixed(2);
+      const hDetail = (hWk != null ? (hScore + '/' + hWk) : hScore) + ' (' + hOv.toFixed(1) + ' ov) · CRR ' + crr;
       M.score = {
-        home: { score: hScore, sub: hWk != null ? '/' + hWk : '', detail: detail },
-        away: { score: aScore, sub: aWk != null ? '/' + aWk : '', detail: aw.detail },
-        resultText: 'Live', subText: 'Target ' + (Math.max(parseInt(hScore,10), parseInt(aScore,10)) + ri(5, 40)), status: 'live', icon: '🔴'
+        home: { score: hScore, sub: hWk != null ? '/' + hWk : '', detail: hDetail, ov: hOv },
+        away: { score: '—', sub: '', detail: 'Yet to bat' },
+        resultText: 'Live', subText: '1st Innings', status: 'live', icon: '🔴'
       };
     } else {
-      const h = genCricketScore(false), aw = genCricketScore(false);
-      const hScore = HS ? HS.score : h.runs, hWk = HS ? HS.wkts : h.wkts;
-      const aScore = AS ? AS.score : aw.runs, aWk = AS ? AS.wkts : aw.wkts;
-      const homeWon = parseInt(hScore,10) > parseInt(aScore,10);
-      const margin = Math.abs(parseInt(hScore,10) - parseInt(aScore,10));
+      const hScore = HS ? HS.score : ri(220, 340);
+      const hWk = HS ? HS.wkts : ri(6, 10);
+      const aScore = AS ? AS.score : ri(180, 320);
+      const aWk = AS ? AS.wkts : ri(2, 9);
+      const homeWon = parseInt(hScore, 10) > parseInt(aScore, 10);
+      const margin = Math.abs(parseInt(hScore, 10) - parseInt(aScore, 10));
+      const hDet = (hWk != null ? (hScore + '/' + hWk) : hScore) + ' (' + FORMAT_OVERS + ' ov)';
+      const aDet = (aWk != null ? (aScore + '/' + aWk) : aScore) + ' (' + FORMAT_OVERS + ' ov)';
       M.score = {
-        home: { score: hScore, sub: hWk != null ? '/' + hWk : '', detail: h.detail, won: homeWon },
-        away: { score: aScore, sub: aWk != null ? '/' + aWk : '', detail: aw.detail, won: !homeWon },
+        home: { score: hScore, sub: hWk != null ? '/' + hWk : '', detail: hDet, won: homeWon },
+        away: { score: aScore, sub: aWk != null ? '/' + aWk : '', detail: aDet, won: !homeWon },
         resultText: (homeWon ? HOME_T.name : AWAY_T.name) + ' won by ' + margin + ' runs',
-        subText: 'Target ' + (Math.min(parseInt(hScore,10), parseInt(aScore,10)) + ri(1, 30)), status: 'finished', icon: '🏆'
+        subText: (homeWon ? AWAY_T.name : HOME_T.name) + ' ' + (homeWon ? aScore : hScore) + (homeWon ? (aWk != null ? '/' + aWk : '') : (hWk != null ? '/' + hWk : '')),
+        status: 'finished', icon: '🏆'
       };
     }
   } else if (SPORT === 'tennis') {
@@ -389,6 +515,11 @@
         subText: clock + ' · ' + ha + '–' + aa, status: 'finished', icon: '🏆'
       };
     }
+  }
+
+  // Use the real result text from matches-data when available (finished matches)
+  if (STATE === 'finished' && M.meta.realResult) {
+    M.score.resultText = M.meta.realResult;
   }
 
   // squads + players (needed before summary)
@@ -437,6 +568,7 @@
     formHome: Array.from({ length: 5 }, () => pick(['W', 'L', 'D'])),
     formAway: Array.from({ length: 5 }, () => pick(['W', 'L', 'D'])),
     h2h: { home: ri(2, 8), away: ri(2, 8) },
+    realRank: { home: null, away: null },
     weather: { temp: (ri(18, 32)) + '.4', hum: ri(40, 80) + '%', rain: ri(0, 20) + '%', cond: pick(['Sunny', 'Partly Cloudy', 'Clear', 'Humid']) },
     pace: ri(40, 60)
   };
@@ -547,13 +679,44 @@
       h = Math.max(5, Math.min(95, h)); a = Math.max(5, Math.min(95, a));
       home.push({ x, v: Math.round(h) }); away.push({ x, v: Math.round(a) });
     }
+    // Cricket extras: wagon wheel (runs per over), run-rate, partnership
+    let wagon = null, runrate = null, partnership = null;
+    if (SC.isCricket) {
+      const ov = FORMAT_OVERS;
+      wagon = [];
+      let cum = 0;
+      for (let i = 1; i <= ov; i++) {
+        const r = ri(0, 12);
+        cum += r;
+        wagon.push({ over: i, runs: r, total: cum });
+      }
+      runrate = [];
+      let rt = 0;
+      for (let i = 1; i <= ov; i++) {
+        rt += ri(3, 9);
+        runrate.push({ over: i, rr: +(rt / i).toFixed(2) });
+      }
+      partnership = [];
+      let pt = 0;
+      for (let i = 1; i <= ov; i++) {
+        pt += ri(2, 14);
+        partnership.push({ over: i, stand: pt });
+      }
+    }
+    const filters = [
+      { key: 'momentum', label: SC.label + ' Momentum' },
+      { key: 'winprob', label: 'Win Probability' }
+    ];
+    if (SC.isCricket) {
+      filters.push({ key: 'wagon', label: 'Wagon Wheel (Runs/Over)' });
+      filters.push({ key: 'runrate', label: 'Run Rate' });
+      filters.push({ key: 'partnership', label: 'Partnership' });
+    }
     return {
-      filters: [
-        { key: 'momentum', label: SC.label + ' Momentum' },
-        { key: 'winprob', label: 'Win Probability' }
-      ],
+      filters,
       active: 'momentum',
       home, away,
+      wagon, runrate, partnership,
       xMax: SC.xMax, xUnit: SC.xUnit
     };
   }
@@ -580,16 +743,59 @@
 
   // ============================================================ RENDERERS
   function badgeClass(type) {
-    if (type === 'wicket' || type === 'six') return 'bg-red-500 text-white';
+    if (type === 'wicket' || type === 'six' || type === 'out') return 'bg-red-500 text-white';
     if (type === 'four') return 'bg-crexGold text-white';
     if (type === 'milestone') return 'bg-emerald-500 text-white';
+    if (type === 'goal' || type === 'hit') return 'bg-emerald-500 text-white';
+    if (type === 'three') return 'bg-purple-500 text-white';
+    if (type === 'var' || type === 'challenge') return 'bg-amber-500 text-white';
+    if (type === 'card') return 'bg-red-600 text-white';
+    if (type === 'touch' || type === 'bonus' || type === 'raid') return 'bg-crexGold text-white';
+    if (type === 'save' || type === 'pts') return 'bg-sky-500 text-white';
     return 'bg-gray-200 dark:bg-white/10 text-gray-700 dark:text-gray-200';
   }
-  // avatar for a player name (initials fallback, team-colored)
+  // ---- Real player photos from Wikipedia (cached, graceful fallback) ----
+  const _wikiCache = {};
+  function _wikiImg(name) {
+    return Object.prototype.hasOwnProperty.call(_wikiCache, name) ? _wikiCache[name] : null;
+  }
+  // Fetches the Wikipedia thumbnail for a player name and swaps the <img> once
+  // it resolves. Falls back silently (cached as null) if offline / blocked.
+  function loadWikiImage(name, teamCode, imgEl) {
+    if (!name) return;
+    if (Object.prototype.hasOwnProperty.call(_wikiCache, name)) {
+      if (_wikiCache[name] && imgEl) imgEl.src = _wikiCache[name];
+      return;
+    }
+    const variants = [name, name.replace(/\s+Jr\.?$/, ''), name.replace(/'/g, ''), name.replace(/\s+Jr$/, '')];
+    const tryFetch = (i) => {
+      if (i >= variants.length) { _wikiCache[name] = null; return; }
+      const title = (variants[i] || '').trim();
+      if (!title) { tryFetch(i + 1); return; }
+      fetch('https://en.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(title))
+        .then(r => (r && r.ok ? r.json() : null))
+        .then(d => {
+          if (d && d.thumbnail && d.thumbnail.source) {
+            _wikiCache[name] = d.thumbnail.source;
+            if (imgEl) imgEl.src = d.thumbnail.source;
+          } else { tryFetch(i + 1); }
+        })
+        .catch(() => tryFetch(i + 1));
+    };
+    tryFetch(0);
+  }
+  // avatar for a player name — uses a real Wikipedia photo when cached,
+  // otherwise falls back to a team-coloured initials avatar.
   function avatarFor(name, teamCode) {
+    const cached = _wikiImg(name);
+    if (cached) return cached;
     const tm = teamMeta(teamCode);
     const initials = name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
     return 'https://ui-avatars.com/api/?name=' + encodeURIComponent(initials) + '&background=' + tm.color.replace('#', '') + '&color=ffffff&size=64&bold=true&format=png';
+  }
+  function nowStr() {
+    const d = new Date(), p = n => String(n).padStart(2, '0');
+    return p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds());
   }
   // crex-style commentary item with avatars + new-batsman on wicket
   function commItemHtml(it) {
@@ -611,7 +817,8 @@
       '<div class="flex-1 min-w-0"><div class="flex items-center gap-2 mb-1 flex-wrap"><span class="text-xs font-semibold text-gray-800 dark:text-white">' + esc(it.striker) + '</span>' +
       (it.bowler && it.bowler !== '—' && it.bowler !== 'Serve' ? '<span class="text-[10px] text-gray-400">v</span><span class="text-xs font-semibold text-gray-800 dark:text-white">' + esc(it.bowler) + '</span>' : '') +
       '<span class="shrink-0 inline-flex items-center justify-center w-7 h-7 rounded-full ' + badgeClass(it.type) + ' text-xs font-bold">' + esc(it.badge) + '</span></div>' +
-      '<div class="text-sm text-gray-700 dark:text-gray-200 ' + cls + '">' + esc(it.text) + '</div>' + newBat + '</div></div>';
+      '<div class="text-sm text-gray-700 dark:text-gray-200 ' + cls + '">' + esc(it.text) + '</div>' + newBat +
+      (it.time ? '<div class="mt-1 text-[10px] text-gray-400">⏱ ' + esc(it.time) + '</div>' : '') + '</div></div>';
   }
 
   function renderScoreHeader() {
@@ -638,9 +845,10 @@
     };
 
     const clockHtml = st.status === 'live'
-      ? '<div id="live-clock" class="mt-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-500/15 text-red-300 text-[11px] font-bold border border-red-500/30"><span class="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse"></span><span id="live-clock-text">' + esc(st.subText || 'LIVE') + '</span></div>'
+      ? '<div id="live-clock" class="mt-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-500/15 text-red-300 text-[11px] font-bold border border-red-500/30"><span class="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse"></span><span id="live-clock-text">' + esc(SC.isCricket ? clockLabel() : (st.subText || 'LIVE')) + '</span></div>'
       : '';
-    const center = '<div class="flex flex-col items-center justify-center px-4 py-4 md:py-0 md:px-8 border-y md:border-y-0 md:border-x border-gray-200 dark:border-gray-800 bg-slate-50 dark:bg-white/5">' +
+    const center = '<div class="relative flex flex-col items-center justify-center px-4 py-4 md:py-0 md:px-8 border-y md:border-y-0 md:border-x border-gray-200 dark:border-gray-800 bg-slate-50 dark:bg-white/5">' +
+      '<div id="center-anim-host" class="pointer-events-none absolute inset-0 flex items-center justify-center z-10"></div>' +
       '<div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-crexGold/20 mb-2"><span class="text-2xl">' + st.icon + '</span></div>' +
       '<h2 class="text-crexGold text-center text-lg md:text-xl font-bold leading-tight">' + esc(st.resultText) + '</h2>' +
       '<p class="text-[11px] text-slate-500 dark:text-gray-400 mt-1 text-center">' + esc(st.subText || '') + '</p>' + clockHtml + '</div>';
@@ -663,22 +871,222 @@
   function renderCurrentPlayers() {
     const el = $('current-players'); if (!el) return;
     if (STATE !== 'live') { el.innerHTML = ''; return; }
+    // For cricket, reflect the live crease (striker / non-striker / bowler)
+    let homePlayer, awayPlayer, roleHome, roleAway;
+    if (SC.isCricket && liveInnings) {
+      const batting = liveInnings.batting === 'home' ? M.squads.home.xi : M.squads.away.xi;
+      const bowlTeam = liveInnings.batting === 'home' ? M.squads.away.xi : M.squads.home.xi;
+      const striker = batting[liveBatsmen.striker] ? batting[liveBatsmen.striker].n : (batting[0] ? batting[0].n : genName());
+      const nonstriker = batting[liveBatsmen.nonstriker] ? batting[liveBatsmen.nonstriker].n : (batting[1] ? batting[1].n : genName());
+      const bowler = bowlTeam[liveBatsmen.bowler] ? bowlTeam[liveBatsmen.bowler].n : (bowlTeam[0] ? bowlTeam[0].n : genName());
+      homePlayer = striker; awayPlayer = bowler;
+      roleHome = 'Striker · ' + HOME_T.name; roleAway = 'Bowler · ' + AWAY_T.name;
+      el.innerHTML = mkPlayer(striker, roleHome, liveInnings.batting, nonstriker) + mkPlayer(bowler, roleAway, liveInnings.batting === 'home' ? AWAY : HOME, null);
+      return;
+    }
     const homeXI = M.squads.home.xi, awayXI = M.squads.away.xi;
-    const homePlayer = homeXI.length ? homeXI[0].n : (M.players.home.length ? M.players.home[0] : genName());
-    const awayPlayer = awayXI.length ? awayXI[0].n : (M.players.away.length ? M.players.away[0] : genName());
-    const mk = (nm, role, team) => {
-      const tm = teamMeta(team);
-      const initials = nm.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
-      const img = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(initials) + '&background=' + tm.color.replace('#', '') + '&color=ffffff&size=64&bold=true&format=png';
-      return '<div class="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 backdrop-blur"><img alt="' + esc(nm) + '" class="w-9 h-9 rounded-full border border-white/20" src="' + img + '"><div class="text-left leading-tight"><p class="text-xs font-semibold">' + esc(nm) + '</p><p class="text-[10px] text-gray-300">' + esc(role) + '</p></div></div>';
-    };
-    let roleHome = 'Striker', roleAway = 'Bowler';
+    homePlayer = homeXI.length ? homeXI[0].n : (M.players.home.length ? M.players.home[0] : genName());
+    awayPlayer = awayXI.length ? awayXI[0].n : (M.players.away.length ? M.players.away[0] : genName());
+    roleHome = 'Striker'; roleAway = 'Bowler';
     if (SPORT === 'football' || SPORT === 'hockey') { roleHome = 'On Ball'; roleAway = 'Defending'; }
     else if (SPORT === 'basketball') { roleHome = 'With Ball'; roleAway = 'Guarding'; }
     else if (SPORT === 'tennis' || SPORT === 'tabletennis' || SPORT === 'volleyball') { roleHome = 'Serving'; roleAway = 'Receiving'; }
     else if (SPORT === 'kabaddi' || SPORT === 'e-sports') { roleHome = 'Raider'; roleAway = 'Cover'; }
     else if (SPORT === 'baseball') { roleHome = 'At Bat'; roleAway = 'Pitching'; }
-    el.innerHTML = mk(homePlayer, roleHome + ' · ' + HOME_T.name, HOME) + mk(awayPlayer, roleAway + ' · ' + AWAY_T.name, AWAY);
+    el.innerHTML = mkPlayer(homePlayer, roleHome + ' · ' + HOME_T.name, HOME, null) + mkPlayer(awayPlayer, roleAway + ' · ' + AWAY_T.name, AWAY, null);
+  }
+  // Player card with a real Wikipedia photo (loaded async) + optional partner label
+  function mkPlayer(nm, role, team, partnerName) {
+    const tm = teamMeta(team);
+    const img = avatarFor(nm, team);
+    const partner = partnerName ? '<p class="text-[10px] text-gray-400">with ' + esc(partnerName) + '</p>' : '';
+    return '<div class="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 backdrop-blur"><img alt="' + esc(nm) + '" class="w-9 h-9 rounded-full border border-white/20" src="' + img + '" data-wiki-name="' + esc(nm) + '" data-wiki-team="' + esc(team) + '"><div class="text-left leading-tight"><p class="text-xs font-semibold">' + esc(nm) + '</p><p class="text-[10px] text-gray-300">' + esc(role) + '</p>' + partner + '</div></div>';
+  }
+
+  // ---- Real team rankings (from backend team-rankings.json) ----
+  function rankingCategoryFor(sport, format) {
+    if (sport === 'cricket') {
+      const f = (format || '').toUpperCase();
+      if (f.indexOf('TEST') >= 0) return 'Test';
+      if (f.indexOf('T20') >= 0) return 'T20I';
+      return 'ODI';
+    }
+    if (sport === 'football') return 'FIFA';
+    if (sport === 'basketball') return 'NBA';
+    return null;
+  }
+  function genderFor(code, name) {
+    if ((code || '').indexOf('-w') >= 0 || /women/i.test(name || '')) return 'Women';
+    return 'Men';
+  }
+  function rankFormStrip(winPct) {
+    const w = Math.max(0, Math.min(5, Math.round((winPct || 0) / 100 * 5)));
+    let s = '';
+    for (let i = 0; i < 5; i++) s += '<span class="w-6 h-6 rounded flex items-center justify-center text-[10px] text-white ' + (i < w ? 'bg-green-500' : 'bg-red-500') + '">' + (i < w ? 'W' : 'L') + '</span>';
+    return s;
+  }
+  function formRowReal(tm, rank, fallbackArr) {
+    if (!rank) {
+      const arr = fallbackArr || ['W', 'L', 'D', 'W', 'L'];
+      return '<div class="flex items-center justify-between"><div class="flex items-center space-x-3"><img alt="' + esc(tm.name) + '" class="w-6 h-6 rounded-full" src="' + tm.img + '"><span class="font-medium text-gray-700 dark:text-gray-200">' + esc(tm.name) + '</span></div><div class="flex space-x-1">' + arr.map(f => '<span class="w-6 h-6 rounded flex items-center justify-center text-[10px] text-white ' + (f === 'W' ? 'bg-green-500' : f === 'L' ? 'bg-red-500' : 'bg-gray-400') + '">' + f + '</span>').join('') + '</div></div>';
+    }
+    return '<div class="flex items-center justify-between"><div class="flex items-center space-x-3"><img alt="' + esc(tm.name) + '" class="w-6 h-6 rounded-full" src="' + tm.img + '"><span class="font-medium text-gray-700 dark:text-gray-200">' + esc(tm.name) + '</span></div><div class="flex items-center space-x-2"><span class="text-[10px] text-gray-400">#' + rank.rank + ' · ' + rank.rating + '</span><div class="flex space-x-1">' + rankFormStrip(rank.winPct) + '</div></div></div>';
+  }
+  function rankingsCompareHtml() {
+    // Only cricket uses real rankings for now (API provided is cricket only).
+    // No static H2H fallback — if the real ranking isn't available we show a
+    // clean "loading / unavailable" state instead of fake data.
+    if (!SC.isCricket) return '';
+    const h = M.info.realRank.home, a = M.info.realRank.away;
+    if (!h && !a) {
+      return '<section class="bg-white dark:bg-[#12172D] rounded-lg shadow-sm p-6"><div class="flex justify-between items-center mb-6"><h3 class="font-bold text-gray-800 dark:text-white uppercase text-sm tracking-wide">' + esc(HOME_T.code.toUpperCase()) + ' vs ' + esc(AWAY_T.code.toUpperCase()) + ' Team Ranking</h3><span class="text-xs text-gray-400">Real ratings</span></div>' +
+        '<p class="text-sm text-gray-400">Real team rankings are loading from the live data feed…</p></section>';
+    }
+    const cell = (tm, r) => '<div class="flex flex-col items-center"><img class="w-10 h-10 rounded-full mb-1" src="' + tm.img + '"><span class="font-bold text-gray-800 dark:text-white text-sm">' + esc(tm.code.toUpperCase()) + '</span><span class="text-[10px] text-gray-400">' + (r ? ('#' + r.rank + ' · ' + r.rating) : 'N/A') + '</span></div>';
+    const hr = h ? h.rating : 0, ar = a ? a.rating : 0;
+    const hp = (hr + ar) ? Math.round(hr / (hr + ar) * 100) : 50;
+    return '<section class="bg-white dark:bg-[#12172D] rounded-lg shadow-sm p-6"><div class="flex justify-between items-center mb-6"><h3 class="font-bold text-gray-800 dark:text-white uppercase text-sm tracking-wide">' + esc(HOME_T.code.toUpperCase()) + ' vs ' + esc(AWAY_T.code.toUpperCase()) + ' Team Ranking</h3><span class="text-xs text-gray-400">Real ratings</span></div>' +
+      '<div class="flex items-center justify-between mb-8">' + cell(HOME_T, h) + '<div class="flex-1 px-8"><div class="flex justify-between mb-1 text-2xl font-bold"><span class="text-blue-500">' + (h ? h.rating : '—') + '</span><span class="text-gray-300">vs</span><span class="text-blue-500">' + (a ? a.rating : '—') + '</span></div><div class="w-full h-2 bg-gray-100 dark:bg-white/10 rounded-full flex overflow-hidden"><div class="bg-blue-300" style="width:' + hp + '%"></div><div class="bg-blue-600 flex-1"></div></div></div>' + cell(AWAY_T, a) + '</div>' +
+      '<div class="grid grid-cols-3 gap-2 text-center text-xs"><div><p class="text-gray-400">Win %</p><p class="font-bold text-gray-800 dark:text-white">' + (h ? h.winPct + '%' : '—') + '</p></div><div><p class="text-gray-400">Matches</p><p class="font-bold text-gray-800 dark:text-white">' + (h ? h.matches : '—') + '</p></div><div><p class="text-gray-400">Win %</p><p class="font-bold text-gray-800 dark:text-white">' + (a ? a.winPct + '%' : '—') + '</p></div></div></section>';
+  }
+  // ---- Cricket Live Line Advance API (RapidAPI, via backend proxy) ----
+  // Replaces the static scorecard / commentary / wagon-wheel / graph with the
+  // real feed for cricket. If the provider is unreachable we keep the
+  // already-built (real-data) panels — never random data.
+  async function fetchCricketApi() {
+    if (!SC.isCricket) return;
+    if (typeof window.FANCONNECT_CRICKET_API === "undefined") return;
+    const mid = MATCHID && MATCHID.indexOf("-") >= 0 ? null : MATCHID; // only when we have a numeric id
+    try {
+      const match = await window.FANCONNECT_CRICKET_API.getMatch(mid || REAL_MATCH && REAL_MATCH.id || null);
+      if (match && match._raw) {
+        const raw = match._raw;
+        // Scorecard: prefer real batting/bowling arrays if present
+        const sc = raw.scorecard || raw.score_card || raw.innings || raw.score;
+        if (sc) M.scorecard = normalizeApiScorecard(sc) || M.scorecard;
+        // Commentary: prefer real ball-by-ball if present
+        const comm = raw.commentary || raw.ball_by_ball || raw.commentries;
+        if (comm) M.comm = normalizeApiCommentary(comm) || M.comm;
+        // Wagon wheel / run-rate / partnership
+        const w = raw.wagons || raw.wagon_wheel || raw.wagon;
+        if (w) { const g = normalizeApiGraph(w); if (g) { M.graph.wagon = g.wagon; M.graph.runrate = g.runrate; M.graph.partnership = g.partnership; } }
+        renderScorecard(); renderCommentary(); renderGraph();
+      }
+      // Wagon wheel is a separate endpoint
+      const wagons = await window.FANCONNECT_CRICKET_API.getWagons(mid || REAL_MATCH && REAL_MATCH.id || null);
+      if (wagons) {
+        const g = normalizeApiGraph(wagons);
+        if (g) { M.graph.wagon = g.wagon; M.graph.runrate = g.runrate; M.graph.partnership = g.partnership; renderGraph(); }
+      }
+    } catch (e) { /* keep real-data panels */ }
+  }
+  // Normalise whatever shape the provider returns into our scorecard object.
+  function normalizeApiScorecard(sc) {
+    try {
+      const innings = Array.isArray(sc) ? sc : (sc.innings || sc);
+      if (!Array.isArray(innings)) return null;
+      const out = innings.slice(0, 2).map((inn, idx) => {
+        const teamName = inn.team || inn.team_name || (idx === 0 ? HOME_T.name : AWAY_T.name);
+        const bat = (inn.batting || inn.batsmen || inn.bat || []).map(b => ({
+          n: b.name || b.batter || b.player || "—",
+          r: b.runs != null ? b.runs : (b.r != null ? b.r : 0),
+          b: b.balls != null ? b.balls : (b.b != null ? b.b : 0),
+          f: b.fours != null ? b.fours : (b.f != null ? b.f : 0),
+          sx: b.sixes != null ? b.sixes : (b.sx != null ? b.sx : 0),
+          sr: b.strike_rate != null ? b.strike_rate : (b.sr != null ? b.sr : "0.00"),
+          out: b.out != null ? b.out : (b.dismissed != null ? b.dismissed : true)
+        }));
+        const bowl = (inn.bowling || inn.bowlers || inn.bowl || []).map(b => ({
+          n: b.name || b.bowler || b.player || "—",
+          o: b.overs != null ? b.overs : (b.o != null ? b.o : "0.0"),
+          m: b.maidens != null ? b.maidens : (b.m != null ? b.m : 0),
+          r: b.runs != null ? b.runs : (b.r != null ? b.r : 0),
+          w: b.wickets != null ? b.wickets : (b.w != null ? b.w : 0),
+          econ: b.economy != null ? b.economy : (b.econ != null ? b.econ : "0.00")
+        }));
+        const total = inn.total != null ? inn.total : (inn.score != null ? inn.score : bat.reduce((s, x) => s + (parseInt(x.r, 10) || 0), 0));
+        const wkts = inn.wickets != null ? inn.wickets : (inn.wkts != null ? inn.wkts : bat.filter(x => x.out).length);
+        const ov = inn.overs != null ? inn.overs : (inn.ov != null ? inn.ov : "0.0");
+        return { team: { name: teamName, code: (idx === 0 ? HOME : AWAY), img: (idx === 0 ? HOME_T : AWAY_T).img }, label: (idx === 0 ? "1st" : "2nd") + " Innings", bat, bowl, total, wkts, ov, crr: inn.crr || inn.run_rate || "0.00" };
+      });
+      if (!out.length) return null;
+      return { type: "cricket", innings: out };
+    } catch (e) { return null; }
+  }
+  function normalizeApiCommentary(comm) {
+    try {
+      const items = Array.isArray(comm) ? comm : (comm.items || comm.balls || []);
+      if (!Array.isArray(items) || !items.length) return null;
+      const mapped = items.slice(0, 200).map(it => {
+        const txt = it.text || it.comment || it.commentary || it.desc || "";
+        const over = it.over != null ? it.over : (it.ball != null ? it.ball : "");
+        let type = "normal", badge = "•", runs = 0;
+        const low = (txt || "").toLowerCase();
+        if (low.indexOf("wicket") >= 0 || low.indexOf("out") >= 0) { type = "wicket"; badge = "W"; runs = "W"; }
+        else if (low.indexOf("six") >= 0) { type = "six"; badge = "6"; runs = 6; }
+        else if (low.indexOf("four") >= 0 || low.indexOf("boundary") >= 0) { type = "four"; badge = "4"; runs = 4; }
+        else if (low.indexOf("fifty") >= 0 || low.indexOf("century") >= 0 || low.indexOf("milestone") >= 0) { type = "milestone"; badge = "★"; }
+        return {
+          over: String(over),
+          type, runs: badge, badge,
+          text: txt,
+          striker: it.batsman || it.striker || it.batter || "—",
+          bowler: it.bowler || "—",
+          nonstriker: it.nonstriker || "—",
+          newBatsman: it.new_batsman || null,
+          time: it.time || ""
+        };
+      });
+      return { items: mapped, label: "Ball-by-Ball Commentary" };
+    } catch (e) { return null; }
+  }
+  function normalizeApiGraph(w) {
+    try {
+      // Accept either an array of per-over objects or a structured object.
+      const arr = Array.isArray(w) ? w : (w.overs || w.wagons || w.data || []);
+      if (!Array.isArray(arr) || !arr.length) return null;
+      const wagon = [], runrate = [], partnership = [];
+      let cum = 0, rt = 0, pt = 0;
+      arr.forEach((o, i) => {
+        const over = o.over != null ? o.over : (i + 1);
+        const runs = o.runs != null ? o.runs : (o.r != null ? o.r : 0);
+        cum += runs; rt += (o.run_rate != null ? o.run_rate : runs); pt += (o.partnership != null ? o.partnership : runs);
+        wagon.push({ over, runs, total: cum });
+        runrate.push({ over, rr: +(rt / Math.max(1, over)).toFixed(2) });
+        partnership.push({ over, stand: pt });
+      });
+      return { wagon, runrate, partnership };
+    } catch (e) { return null; }
+  }
+
+  async function fetchTeamRankings() {
+    // Only cricket for now — the API provided is cricket (API-Sports Cricket
+    // Live Line Advance). Other sports keep their real-data panels as built.
+    if (!SC.isCricket) return;
+    const backendSport = 'cricket';
+    const cat = rankingCategoryFor(SPORT, FORMAT_PARAM);
+    if (!cat) return;
+    const gender = genderFor(HOME, HOME_T.name);
+    const url = API_PROXY + '/api/leaderboard/' + backendSport + '/' + gender + '/' + cat;
+    try {
+      const res = await fetch(url, { signal: AbortSignal.timeout(5000) });
+      if (!res.ok) return;
+      const data = await res.json();
+      const list = data.rankings || [];
+      // Use the canonical rankName (from TEAM_REGISTRY) so short codes like
+      // "WI Women" map to "West Indies Women" in the rankings data.
+      const hName = (teamMeta(HOME).rankName) || HOME_T.name;
+      const aName = (teamMeta(AWAY).rankName) || AWAY_T.name;
+      function find(name) {
+        if (!name) return null;
+        const n = name.toLowerCase();
+        return list.find(t => t.team && t.team.toLowerCase().indexOf(n) >= 0) || null;
+      }
+      const h = find(hName), a = find(aName);
+      if (h) M.info.realRank.home = h;
+      if (a) M.info.realRank.away = a;
+      renderMatchInfo();
+    } catch (e) { /* keep loading state if feed unavailable */ }
   }
 
   function renderMatchInfo() {
@@ -693,11 +1101,8 @@
       '<div class="mt-4 space-y-2 text-sm text-gray-600 dark:text-gray-300"><div class="flex items-center space-x-3"><span class="w-4">📅</span><span>' + esc(M.meta.date) + '</span></div>' +
       '<div class="flex items-center space-x-3"><span class="w-4">📍</span><span class="text-blue-500">' + esc(M.meta.venue) + '</span></div>' +
       '<div class="flex items-center space-x-3"><span class="w-4">📺</span><span>Broadcast partner</span></div></div></div></section>' +
-      '<section class="bg-white dark:bg-[#12172D] rounded-lg shadow-sm p-6"><div class="flex justify-between items-center mb-6"><h3 class="font-bold text-gray-800 dark:text-white">' + esc(HOME_T.code.toUpperCase()) + ' &amp; ' + esc(AWAY_T.code.toUpperCase()) + ' Team Form</h3><span class="text-xs text-gray-400">(Last 5)</span></div><div class="space-y-4">' + formRow(HOME_T, M.info.formHome) + formRow(AWAY_T, M.info.formAway) + '</div></section>' +
-      '<section class="bg-white dark:bg-[#12172D] rounded-lg shadow-sm p-6"><div class="flex justify-between items-center mb-6"><h3 class="font-bold text-gray-800 dark:text-white uppercase text-sm tracking-wide">' + esc(HOME_T.code.toUpperCase()) + ' vs ' + esc(AWAY_T.code.toUpperCase()) + ' Head to Head</h3><span class="text-xs text-gray-400">(Last 10)</span></div>' +
-      '<div class="flex items-center justify-between mb-8"><div class="flex flex-col items-center"><img class="w-10 h-10 rounded-full mb-1" src="' + HOME_T.img + '"><span class="font-bold text-gray-800 dark:text-white text-sm">' + esc(HOME_T.code.toUpperCase()) + '</span></div>' +
-      '<div class="flex-1 px-8"><div class="flex justify-between mb-1 text-2xl font-bold"><span class="text-blue-500">' + M.info.h2h.home + '</span><span class="text-gray-300">-</span><span class="text-blue-500">' + M.info.h2h.away + '</span></div><div class="w-full h-2 bg-gray-100 dark:bg-white/10 rounded-full flex overflow-hidden"><div class="bg-blue-300" style="width:' + h2hPct + '%"></div><div class="bg-blue-600 flex-1"></div></div></div>' +
-      '<div class="flex flex-col items-center"><img class="w-10 h-10 rounded-full mb-1" src="' + AWAY_T.img + '"><span class="font-bold text-gray-800 dark:text-white text-sm">' + esc(AWAY_T.code.toUpperCase()) + '</span></div></div></section>' +
+      '<section class="bg-white dark:bg-[#12172D] rounded-lg shadow-sm p-6"><div class="flex justify-between items-center mb-6"><h3 class="font-bold text-gray-800 dark:text-white">' + esc(HOME_T.code.toUpperCase()) + ' &amp; ' + esc(AWAY_T.code.toUpperCase()) + ' Team Form</h3><span class="text-xs text-gray-400">' + (M.info.realRank.home || M.info.realRank.away ? 'Real ranking' : 'Last 5') + '</span></div><div class="space-y-4">' + formRowReal(HOME_T, M.info.realRank.home, M.info.formHome) + formRowReal(AWAY_T, M.info.realRank.away, M.info.formAway) + '</div></section>' +
+      rankingsCompareHtml() +
       '<section class="bg-white dark:bg-[#12172D] rounded-lg shadow-sm p-6"><h3 class="font-bold text-gray-800 dark:text-white text-sm uppercase mb-2">' + esc(HOME_T.code.toUpperCase()) + ' vs ' + esc(AWAY_T.code.toUpperCase()) + ' Weather &amp; Pitch Report</h3>' +
       '<p class="text-xs text-gray-500 dark:text-gray-400 mb-6">Weather in ' + esc(M.meta.venue) + ' expected to be ' + M.info.weather.cond + ' with ' + M.info.weather.hum + ' humidity and around ' + M.info.weather.temp + '°C. Rain chance ' + M.info.weather.rain + '.</p>' +
       '<div class="bg-blue-50/50 dark:bg-white/5 rounded-xl p-6 flex flex-wrap items-center justify-between"><div class="flex items-center space-x-4"><div class="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center text-2xl">☀️</div><div><p class="text-xs text-gray-500 dark:text-gray-400 font-medium">' + esc(M.meta.venue) + '</p><h4 class="text-3xl font-bold">' + M.info.weather.temp + ' °C</h4></div></div>' +
@@ -874,6 +1279,42 @@
     requestAnimationFrame(() => t.classList.add('show'));
     setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 400); }, 2600);
   }
+  // Crex-style "Over X complete" banner that slides in when an over ends
+  function showOverBanner(overNo) {
+    let host = $('over-banner-host');
+    if (!host) {
+      host = document.createElement('div');
+      host.id = 'over-banner-host';
+      host.className = 'fixed z-[125] top-20 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 pointer-events-none';
+      document.body.appendChild(host);
+    }
+    const t = document.createElement('div');
+    t.className = 'over-banner px-5 py-2 rounded-full bg-crexHeader text-white text-sm font-bold shadow-lg border border-crexGold/40';
+    t.innerHTML = '<span class="text-crexGold">End of over ' + overNo + '</span>';
+    host.appendChild(t);
+    requestAnimationFrame(() => t.classList.add('show'));
+    setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 500); }, 2200);
+  }
+  // Crex-style innings break / match result banner
+  function showInningsBanner(matchOver, winnerName) {
+    let host = $('over-banner-host');
+    if (!host) {
+      host = document.createElement('div');
+      host.id = 'over-banner-host';
+      host.className = 'fixed z-[125] top-20 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 pointer-events-none';
+      document.body.appendChild(host);
+    }
+    const t = document.createElement('div');
+    t.className = 'over-banner px-6 py-3 rounded-xl bg-crexHeader text-white text-center shadow-xl border border-crexGold/50';
+    if (matchOver) {
+      t.innerHTML = '<div class="text-[10px] uppercase tracking-[0.2em] text-crexGold mb-1">Match Complete</div><div class="text-base font-extrabold">' + esc(winnerName) + ' win!</div>';
+    } else {
+      t.innerHTML = '<div class="text-[10px] uppercase tracking-[0.2em] text-crexGold mb-1">Innings Break</div><div class="text-sm font-bold">Target ' + (liveInnings ? liveInnings.target : '') + ' &middot; ' + (liveInnings ? (liveInnings.batting === 'home' ? AWAY_T.name : HOME_T.name) : '') + ' to bat</div>';
+    }
+    host.appendChild(t);
+    requestAnimationFrame(() => t.classList.add('show'));
+    setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 600); }, 3200);
+  }
   // Pulsing LIVE badge + animated scoreboard header for live matches
   function ensureLiveBanner() {
     const sec = $('score-header'); if (!sec) return;
@@ -901,7 +1342,7 @@
     return String(liveClock.min).padStart(2, '0') + ':' + String(liveClock.sec).padStart(2, '0');
   }
   function clockMaxReached() {
-    if (SC.isCricket) return liveClock.over >= SC.xMax;
+    if (SC.isCricket) return liveClock.over >= FORMAT_OVERS;
     if (SPORT === 'basketball') return liveClock.quarter > 4;
     if (SPORT === 'baseball') return liveClock.inn > 9;
     if (SPORT === 'tennis' || SPORT === 'tabletennis' || SPORT === 'volleyball') return liveClock.set > 3;
@@ -940,13 +1381,36 @@
 
   // ---- Cricket innings state (one team bats at a time) ----
   let liveInnings = null;
+  // Tracks the current crease: indices into the batting/bowling XI so the
+  // striker / non-striker / bowler update correctly when a wicket falls.
+  // `next` is the index of the next batsman yet to come in.
+  let liveBatsmen = { striker: 0, nonstriker: 1, bowler: 0, next: 2 };
   function getWkts(sc) { const m = /(\d+)/.exec(sc.sub || ''); return m ? parseInt(m[1], 10) : 0; }
   function setWkts(sc, w) { sc.sub = '/' + w; }
+  // Keep the scorecard subtext (detail) in sync with the live score/overs so
+  // the big number and the "(x.y ov) · CRR" line never contradict each other.
+  function refreshCricketDetail() {
+    if (!SC.isCricket) return;
+    const ov = (liveClock.over + (liveClock.ball / 10)).toFixed(1);
+    const crr = (parseInt(M.score.home.score, 10) / (parseFloat(ov) || 1)).toFixed(2);
+    const hWk = getWkts(M.score.home);
+    M.score.home.detail = (hWk ? (M.score.home.score + '/' + hWk) : M.score.home.score) + ' (' + ov + ' ov) · CRR ' + crr;
+    if (liveInnings && liveInnings.num === 2) {
+      const aWk = getWkts(M.score.away);
+      M.score.away.detail = (aWk ? (M.score.away.score + '/' + aWk) : M.score.away.score) + ' (' + ov + ' ov) · Need ' + (liveInnings.target - parseInt(M.score.away.score, 10)) + ' from ' + (FORMAT_OVERS - liveClock.over) + ' ov';
+    }
+  }
   function initLiveInnings() {
     if (!SC.isCricket) return;
     liveInnings = { num: 1, batting: 'home', target: null };
+    liveBatsmen = { striker: 0, nonstriker: 1, bowler: 0, next: 2 };
     // Bowling team is yet to bat
     M.score.away.score = '—'; M.score.away.sub = ''; M.score.away.detail = 'Yet to bat';
+    // Sync the live clock to the score's current over so CRR is correct from the start
+    const startOv = M.score.home.ov || 0;
+    liveClock.over = Math.floor(startOv);
+    liveClock.ball = Math.round((startOv - Math.floor(startOv)) * 10);
+    updateClockUI();
   }
   function switchInnings() {
     if (!SC.isCricket || !liveInnings) return;
@@ -955,23 +1419,57 @@
       liveInnings.num = 2;
       liveInnings.batting = 'away';
       liveInnings.target = homeScore + 1;
+      liveInnings._justSwitched = true;
       M.score.away.score = '0'; M.score.away.sub = ''; M.score.away.detail = 'Target ' + liveInnings.target;
       liveClock.over = 0; liveClock.ball = 0; updateClockUI();
     } else {
-      liveInnings = null; // match complete
+      // 2nd innings done — match complete (target chased or overs done)
+      const battingSide = liveInnings.batting;
+      const battingTeam = battingSide === 'home' ? HOME_T : AWAY_T;
+      const batScore = parseInt((battingSide === 'home' ? M.score.home : M.score.away).score, 10) || 0;
+      const won = batScore >= (liveInnings.target || 0);
+      const winnerName = won ? battingTeam.name : (battingSide === 'home' ? AWAY_T.name : HOME_T.name);
+      M.score.resultText = winnerName + ' won';
+      M.score.status = 'finished';
+      M.score.icon = '🏆';
+      liveInnings = null;
+      matchComplete = true;
+      if (liveClockTimer) { clearInterval(liveClockTimer); liveClockTimer = null; }
+      if (liveTimer) { clearInterval(liveTimer); liveTimer = null; }
+      showInningsBanner(true, winnerName);
     }
   }
+  let matchComplete = false;
 
   function startLiveLoop(feedEl) {
     if (liveTimer) return;
     ensureLiveBanner();
     if (SC.isCricket) initLiveInnings();
-    startLiveClock();
+    // The live loop drives the clock (one ball / one tick per cycle) so the
+    // over progression stays slow and in sync with the ball-by-ball widget.
     // Track the current over's balls for the "This Over" widget (Crex-style)
     let overBalls = [];
-    let lastOverNo = -1;
+    let lastOverNo = liveClock.over;
     liveTimer = setInterval(() => {
       liveTick++;
+      // Non-cricket sports end when the clock maxes out. Cricket is driven by
+      // innings: when the allotted overs are up we switch 1st->2nd innings (or
+      // end the match), handled just below.
+      if (!SC.isCricket && clockMaxReached()) { clearInterval(liveTimer); liveTimer = null; return; }
+      if (SC.isCricket && matchComplete) { clearInterval(liveTimer); liveTimer = null; return; }
+      tickClock();
+      updateClockUI();
+      // Cricket: overs complete -> switch innings (or finish the match)
+      if (SC.isCricket && liveInnings && liveClock.over >= FORMAT_OVERS) {
+        switchInnings();
+        if (matchComplete) {
+          syncScorecardLive(); refreshSummaryLive();
+          renderScoreHeader(); renderScorecard(); renderSummary(); renderCurrentPlayers(); updateLivePositions();
+          return;
+        }
+        syncScorecardLive(); refreshSummaryLive();
+        renderScoreHeader(); renderScorecard(); renderSummary(); renderCurrentPlayers(); updateLivePositions();
+      }
       const r = rng();
       let type = 'normal', badge = '•', text, runs = 0;
       const pool = M.players.home.concat(M.players.away);
@@ -982,36 +1480,52 @@
       const isBasket = SPORT === 'basketball';
       const isTennis = SPORT === 'tennis' || SPORT === 'tabletennis' || SPORT === 'volleyball';
       const isKabaddi = SPORT === 'kabaddi' || SPORT === 'e-sports';
+      // ---- Cricket: Crex-style ball-by-ball with appeals, reviews, variations ----
       if (isCricket) {
-        if (r > 0.9) { type = 'six'; badge = '6'; runs = 6; text = striker + ' launches ' + bowler + ' over the ropes for a massive six! '; }
-        else if (r > 0.84) { type = 'four'; badge = '4'; runs = 4; text = striker + ' picks up a boundary off ' + bowler + '!'; }
-        else if (r > 0.8) {
+        const variation = pick(['', '', ' (flighted by the spinner)', ' (fired in quicker)', ' (short and rising)', ' (slow off-cutter)', ' (yorker attempt)']);
+        if (r > 0.92) { type = 'six'; badge = '6'; runs = 6; text = striker + ' picks ' + bowler + ' up and deposits it over the ropes' + variation + ' — SIX!'; }
+        else if (r > 0.86) { type = 'four'; badge = '4'; runs = 4; text = striker + ' finds the gap and races away to the boundary' + variation + ' — FOUR!'; }
+        else if (r > 0.82) {
+          // Wicket with proper dismissal type + appeal + optional DRS review
           type = 'wicket'; badge = 'W'; runs = 'W';
-          const dismissals = ['c ' + bowler + ' b ' + bowler, 'b ' + bowler, 'lbw b ' + bowler, 'run out (' + bowler + ')', 'st ' + bowler + ' b ' + bowler, 'c & b ' + bowler];
+          const dismissals = ['c ' + pick(pool.filter(n => n !== bowler)) + ' b ' + bowler, 'b ' + bowler, 'lbw b ' + bowler, 'run out (' + pick(pool.filter(n => n !== striker)) + ')', 'st ' + pick(pool.filter(n => n !== bowler)) + ' b ' + bowler, 'c & b ' + bowler];
           const d = pick(dismissals);
-          text = striker + ' ' + d + '. Wicket!';
+          const appeal = pick(['', '', ' — huge appeal!', ' — up goes the finger, big shout!']);
+          const review = rng() > 0.6 ? pick(['', ' The batters opt for the DRS review.', ' On-field call referred upstairs.', ' Third umpire called in for a close one.']) : '';
+          text = striker + ' ' + d + '!' + appeal + review + ' WICKET!';
         }
-        else if (r > 0.76) { type = 'milestone'; badge = '★'; text = striker + ' reaches a milestone.'; }
-        else { runs = ri(0, 3); badge = String(runs); text = runs === 0 ? 'Dot ball. ' + bowler + ' lands it on a good length.' : runs + ' run' + (runs > 1 ? 's' : '') + ' taken.'; }
+        else if (r > 0.78) { type = 'milestone'; badge = '★'; text = striker + ' brings up a fine milestone with a clip into the gap.'; }
+        else {
+          runs = ri(0, 3);
+          badge = String(runs);
+          if (runs === 0) text = 'Dot ball. ' + bowler + ' lands it on a good length' + variation + ', ' + striker + ' respects it.';
+          else if (runs === 1) text = 'Tucked away for a quick single' + variation + '.';
+          else if (runs === 2) text = 'Driven crisply, comes back for a comfortable couple.';
+          else text = 'Lofted just over the infield, they scamper back for three!';
+        }
       } else if (isFootball) {
-        if (r > 0.88) { type = 'goal'; badge = '⚽'; text = 'GOAL! ' + striker + ' finds the net past ' + bowler + '!'; }
-        else if (r > 0.82) { type = 'save'; badge = '🧤'; text = 'Brilliant save by ' + bowler + ' to deny ' + striker + '!'; }
-        else if (r > 0.78) { type = 'card'; badge = '🟥'; text = striker + ' shown a card by the referee.'; }
-        else { type = 'normal'; text = 'Play continues. ' + striker + ' with possession.'; }
+        if (r > 0.9) { type = 'goal'; badge = '⚽'; text = 'GOAL! ' + striker + ' finishes past ' + bowler + ' after a slick move!'; }
+        else if (r > 0.85) { type = 'var'; badge = 'VAR'; text = 'VAR check on a ' + striker + ' challenge — referee reviews the monitor.'; }
+        else if (r > 0.8) { type = 'save'; badge = '🧤'; text = 'Brilliant save by ' + bowler + ' to deny ' + striker + '!'; }
+        else if (r > 0.76) { type = 'card'; badge = '🟥'; text = striker + ' shown a card by the referee after a late challenge.'; }
+        else { type = 'normal'; text = 'Play continues. ' + striker + ' with possession, probing the ' + bowler + ' defence.'; }
       } else if (isBasket) {
-        if (r > 0.88) { type = 'goal'; badge = '🏀'; text = 'BASKET! ' + striker + ' scores against ' + bowler + '!'; }
-        else if (r > 0.82) { type = 'pts'; badge = '+' + ri(1, 3); text = striker + ' adds ' + ri(1, 3) + ' points.'; }
-        else { type = 'normal'; text = striker + ' brings the ball up court.'; }
+        if (r > 0.9) { type = 'goal'; badge = '🏀'; text = 'BASKET! ' + striker + ' drains it against ' + bowler + '!'; }
+        else if (r > 0.84) { type = 'pts'; badge = '+' + ri(1, 3); text = striker + ' adds ' + ri(1, 3) + ' points on the break.'; }
+        else if (r > 0.8) { type = 'challenge'; badge = '🤔'; text = striker + ' draws a shooting foul — refs reviewing the contact.'; }
+        else { type = 'normal'; text = striker + ' brings the ball up court, ' + bowler + ' guarding tightly.'; }
       } else if (isTennis) {
-        if (r > 0.88) { type = 'set'; badge = '🎾'; text = striker + ' takes the set off ' + bowler + '!'; }
-        else if (r > 0.82) { type = 'ace'; badge = 'A'; text = striker + ' fires down an ace past ' + bowler + '!'; }
-        else { type = 'normal'; text = striker + ' holds serve against ' + bowler + '.'; }
+        if (r > 0.9) { type = 'set'; badge = '🎾'; text = striker + ' takes the set off ' + bowler + '!'; }
+        else if (r > 0.84) { type = 'ace'; badge = 'A'; text = striker + ' fires down an unreturnable ace past ' + bowler + '!'; }
+        else if (r > 0.8) { type = 'challenge'; badge = '🤔'; text = striker + ' challenges the line call — Hawk-Eye review underway.'; }
+        else { type = 'normal'; text = striker + ' holds serve against ' + bowler + ', long rally won.'; }
       } else if (isKabaddi) {
-        if (r > 0.85) { type = 'raid'; badge = '🟡'; text = 'RAID! ' + striker + ' goes in for the raid against ' + bowler + ' (' + pick(['left corner', 'right corner', 'center', 'mid']) + ').'; }
-        else if (r > 0.8) { type = 'touch'; badge = '✋'; text = striker + ' gets a touch point on ' + bowler + '!'; }
-        else { type = 'normal'; text = 'Raid continues. ' + striker + ' looking for a point.'; }
+        if (r > 0.88) { type = 'raid'; badge = '🟡'; text = 'RAID! ' + striker + ' goes in against ' + bowler + ' (' + pick(['left corner', 'right corner', 'center', 'mid']) + ').'; }
+        else if (r > 0.83) { type = 'touch'; badge = '✋'; text = striker + ' gets a touch point on ' + bowler + ' and escapes!'; }
+        else if (r > 0.79) { type = 'challenge'; badge = '🤔'; text = 'Review! ' + bowler + ' appeals for a block — umpire checks the replay.'; }
+        else { type = 'normal'; text = 'Raid continues. ' + striker + ' looking for a point off ' + bowler + '.'; }
       } else {
-        if (r > 0.9) { type = 'six'; badge = '6'; text = striker + ' launches ' + bowler + ' for a big one! '; }
+        if (r > 0.9) { type = 'hit'; badge = '★'; text = striker + ' finds the breakthrough against ' + bowler + '!'; }
         else if (r > 0.84) { type = 'four'; badge = '4'; text = striker + ' scores!'; }
         else { type = 'normal'; text = 'Play continues. ' + striker + ' with the initiative.'; }
       }
@@ -1023,50 +1537,77 @@
       else if (SPORT === 'baseball') over = 'Inn ' + liveClock.inn;
       else over = clockLabel();
       const newBat = type === 'wicket' ? pick(pool.filter(n => n !== striker)) : null;
-      // sport-aware type labels already set above (goal/save for football, set/ace for tennis, raid for kabaddi)
-      const it = { over, type, runs: badge, badge, text, striker, bowler, nonstriker: pick(pool.filter(n => n !== striker)), newBatsman: newBat };
+      const it = { over, type, runs: badge, badge, text, striker, bowler, nonstriker: pick(pool.filter(n => n !== striker)), newBatsman: newBat, time: nowStr() };
       const wrap = document.createElement('div');
       wrap.innerHTML = commItemHtml(it);
       const item = wrap.firstElementChild;
       item.classList.add('score-flash');
       feedEl.insertBefore(item, feedEl.firstChild);
       // ---- Score update logic (innings-wise for cricket) ----
-      const isGoalLike = (type === 'six' || type === 'four' || type === 'goal' || type === 'set' || type === 'raid' || type === 'pts');
+      const isGoalLike = (type === 'six' || type === 'four' || type === 'goal' || type === 'set' || type === 'raid' || type === 'pts' || type === 'hit');
+      // Wicket: record the fall of wicket (no runs added) and re-render
+      if (type === 'wicket' && SC.isCricket && liveInnings) {
+        const tgt = (liveInnings.batting === 'home') ? M.score.home : M.score.away;
+        const tgtTeam = (liveInnings.batting === 'home') ? HOME_T : AWAY_T;
+        const w = getWkts(tgt) + 1; setWkts(tgt, w);
+        // New batsman replaces the striker at the crease
+        if (liveBatsmen.next < 11) { liveBatsmen.striker = liveBatsmen.next; liveBatsmen.next++; }
+        refreshCricketDetail(); syncScorecardLive(); refreshSummaryLive();
+        renderScoreHeader(); renderScorecard(); renderSummary(); renderCurrentPlayers(); updateLivePositions(); flashScore();
+        animateCenterEvent('wicket', 'W');
+        showScoreToast(tgtTeam.name, 0, 'WICKET');
+      }
       if (isGoalLike) {
         let tgt, tgtTeam, add = 1;
         if (SC.isCricket && liveInnings) {
-          // Only the batting side's score moves
           tgt = (liveInnings.batting === 'home') ? M.score.home : M.score.away;
           tgtTeam = (liveInnings.batting === 'home') ? HOME_T : AWAY_T;
           if (type === 'six') add = 6; else if (type === 'four') add = 4;
           if (!isNaN(parseInt(tgt.score))) tgt.score = parseInt(tgt.score) + add;
-          // Wicket also increments the batting side's wickets
-          if (type === 'wicket') { const w = getWkts(tgt) + 1; setWkts(tgt, w); }
-          // Innings change when target reached (2nd innings) or 50 overs done
           if (liveInnings.num === 2 && liveInnings.target && parseInt(tgt.score, 10) >= liveInnings.target) {
-            switchInnings();
-          } else if (liveClock.over >= SC.xMax) {
+            // Target chased — match won (loop-top handler ends the match next tick)
             switchInnings();
           }
         } else {
           tgt = rng() > 0.5 ? M.score.home : M.score.away;
           tgtTeam = (tgt === M.score.home) ? HOME_T : AWAY_T;
-          if (type === 'six') add = 6; else if (type === 'four' && SC.isCricket) add = 4; else if (type === 'pts') add = ri(1, 3); else if (type === 'set' || type === 'raid') add = 1;
+          if (type === 'six') add = 6; else if (type === 'four' && SC.isCricket) add = 4; else if (type === 'pts') add = ri(1, 3); else if (type === 'set' || type === 'raid' || type === 'hit') add = 1;
           if (!isNaN(parseInt(tgt.score))) tgt.score = parseInt(tgt.score) + add;
         }
+        if (SC.isCricket) { refreshCricketDetail(); syncScorecardLive(); }
+        refreshSummaryLive();
         renderScoreHeader();
+        renderScorecard();
+        renderSummary();
         flashScore();
-        showScoreToast(tgtTeam.name, add, (type === 'six' ? 'SIX' : type === 'four' ? 'FOUR' : type === 'goal' ? 'GOAL' : type === 'set' ? 'SET' : type === 'raid' ? 'RAID' : 'POINT'));
+        if (type === 'six' || type === 'four') animateCenterEvent(type, type === 'six' ? '6' : '4');
+        showScoreToast(tgtTeam.name, add, (type === 'six' ? 'SIX' : type === 'four' ? 'FOUR' : type === 'goal' ? 'GOAL' : type === 'set' ? 'SET' : type === 'raid' ? 'RAID' : type === 'hit' ? 'POINT' : 'POINT'));
+      }
+      // Milestone (fifty/century) gets a centre celebration too
+      if (type === 'milestone' && SC.isCricket) animateCenterEvent('milestone', '★');
+      // ---- Over change banner (Crex-style) ----
+      if (SC.isCricket && liveClock.over !== lastOverNo) {
+        const completedOver = lastOverNo;
+        if (overBalls.length) pushOverHistory(completedOver, overBalls.slice());
+        overBalls = [];
+        lastOverNo = liveClock.over;
+        if (completedOver >= 0) showOverBanner(completedOver);
+        // End of over: batters change ends, a new bowler comes on
+        if (liveInnings) {
+          const t = liveBatsmen.striker; liveBatsmen.striker = liveBatsmen.nonstriker; liveBatsmen.nonstriker = t;
+          const bowlTeam = liveInnings.batting === 'home' ? M.squads.away.xi : M.squads.home.xi;
+          liveBatsmen.bowler = (liveBatsmen.bowler + 1) % Math.max(1, bowlTeam.length);
+          renderCurrentPlayers(); updateLivePositions();
+        }
+      }
+      // ---- Innings break banner ----
+      if (SC.isCricket && liveInnings && liveInnings.num === 2 && liveInnings._justSwitched) {
+        liveInnings._justSwitched = false;
+        showInningsBanner();
       }
       // ---- Crex-style ball animation + "This Over" tracker (cricket) ----
       if (SC.isCricket) {
         const ballLabel = (type === 'six') ? '6' : (type === 'four') ? '4' : (type === 'wicket') ? 'W' : (type === 'milestone') ? '★' : String(runs);
-        if (liveClock.over !== lastOverNo) {
-          // new over started — push previous over's balls into the scorecard history
-          if (overBalls.length) pushOverHistory(lastOverNo, overBalls.slice());
-          overBalls = [];
-          lastOverNo = liveClock.over;
-        }
         overBalls.push({ type, label: ballLabel, runs });
         animateBall(type, ballLabel);
         updateThisOverWidget(liveClock.over, overBalls);
@@ -1075,6 +1616,38 @@
         updateLivePositions();
       }
     }, 3500);
+  }
+
+  // Keep the scorecard innings totals in sync with the live score so the
+  // detailed scorecard reflects every run/wicket (cricket only).
+  function syncScorecardLive() {
+    if (!SC.isCricket || !liveInnings || !M.scorecard.innings) return;
+    const ov = (liveClock.over + liveClock.ball / 10).toFixed(1);
+    const inn0 = M.scorecard.innings[0];
+    if (inn0) { inn0.total = parseInt(M.score.home.score, 10) || 0; inn0.wkts = getWkts(M.score.home); inn0.ov = ov; }
+    if (liveInnings.num === 2) {
+      const inn1 = M.scorecard.innings[1];
+      if (inn1 && M.score.away.score !== '—') { inn1.total = parseInt(M.score.away.score, 10) || 0; inn1.wkts = getWkts(M.score.away); inn1.ov = ov; }
+    }
+  }
+  // Rebuild the summary bullet points from the live score.
+  function refreshSummaryLive() {
+    if (M.summary && M.summary.points && M.summary.points.length >= 4) {
+      M.summary.points[1].t = '<b>' + HOME_T.name + ':</b> ' + (SC.isCricket ? ('Scored ' + M.score.home.score + M.score.home.sub + ' in ' + M.score.home.detail + '.') : ('Put ' + M.score.home.score + ' on the board.'));
+      M.summary.points[2].t = '<b>' + AWAY_T.name + ':</b> ' + (SC.isCricket ? ('Managed ' + M.score.away.score + M.score.away.sub + '.') : ('Finished with ' + M.score.away.score + '.'));
+      M.summary.points[3].t = '<b>Result:</b> ' + M.score.resultText + (M.score.subText ? (' — ' + M.score.subText + '.') : '');
+    }
+    if (M.summary) M.summary.sub = M.meta.sub + ' · ' + M.meta.venue;
+  }
+  // Big centre animation (between the two team scores) on a real score event.
+  function animateCenterEvent(type, label) {
+    const host = $('center-anim-host'); if (!host) return;
+    const el = document.createElement('div');
+    el.className = 'center-event center-event-' + type;
+    el.innerHTML = '<span class="center-event-badge">' + esc(label) + '</span><span class="center-event-time">' + nowStr() + '</span>';
+    host.appendChild(el);
+    requestAnimationFrame(() => el.classList.add('show'));
+    setTimeout(() => { el.classList.remove('show'); setTimeout(() => el.remove(), 400); }, 1500);
   }
 
   // ---- Crex-style floating ball animation ----
@@ -1138,9 +1711,9 @@
       // Two batters at crease + bowler running in
       const batting = liveInnings ? (liveInnings.batting === 'home' ? M.squads.home.xi : M.squads.away.xi) : M.squads.home.xi;
       const bowlTeam = liveInnings ? (liveInnings.batting === 'home' ? M.squads.away.xi : M.squads.home.xi) : M.squads.away.xi;
-      const s1 = batting[0] ? batting[0].n : 'Striker';
-      const s2 = batting[1] ? batting[1].n : 'Non-striker';
-      const bowler = bowlTeam[0] ? bowlTeam[0].n : 'Bowler';
+      const s1 = batting[liveBatsmen.striker] ? batting[liveBatsmen.striker].n : (batting[0] ? batting[0].n : 'Striker');
+      const s2 = batting[liveBatsmen.nonstriker] ? batting[liveBatsmen.nonstriker].n : (batting[1] ? batting[1].n : 'Non-striker');
+      const bowler = bowlTeam[liveBatsmen.bowler] ? bowlTeam[liveBatsmen.bowler].n : (bowlTeam[0] ? bowlTeam[0].n : 'Bowler');
       el.innerHTML = '<div class="pitch-wrap"><div class="cricket-pitch">' +
         '<div class="pos pos-striker" title="' + esc(s1) + '"><span class="pos-dot"></span><span class="pos-label">' + esc(s1) + '</span></div>' +
         '<div class="pos pos-nonstriker" title="' + esc(s2) + '"><span class="pos-dot"></span><span class="pos-label">' + esc(s2) + '</span></div>' +
@@ -1187,20 +1760,48 @@
       s += '<text x="' + (W / 2) + '" y="' + (H - 4) + '" fill="currentColor" font-size="9" text-anchor="middle" opacity="0.6">' + M.graph.xUnit + '</text>';
       s += '<text x="' + (padL - 30) + '" y="' + (padT + (H - padT - padB) / 2) + '" fill="currentColor" font-size="9" text-anchor="middle" opacity="0.6" transform="rotate(-90 ' + (padL - 30) + ' ' + (padT + (H - padT - padB) / 2) + ')">Value</text>';
       s += '<line id="graph-guide" x1="0" y1="' + padT + '" x2="0" y2="' + (H - padB) + '" stroke="rgba(247,148,29,0.6)" stroke-width="1" stroke-dasharray="3 3" style="display:none"/>';
-      const hPts = M.graph.home.map(d => x(d.x) + ',' + y(d.v)).join(' ');
-      const aPts = M.graph.away.map(d => x(d.x) + ',' + y(d.v)).join(' ');
-      s += '<polygon points="' + padL + ',' + y(100) + ' ' + hPts + ' ' + (W - padR) + ',' + y(100) + '" fill="url(#hFill)"/>';
-      s += '<polyline points="' + hPts + '" fill="none" stroke="' + cH + '" stroke-width="2.5" stroke-linejoin="round" filter="url(#glow)"/>';
-      s += '<polygon points="' + padL + ',' + y(0) + ' ' + aPts + ' ' + (W - padR) + ',' + y(0) + '" fill="url(#aFill)"/>';
-      s += '<polyline points="' + aPts + '" fill="none" stroke="' + cA + '" stroke-width="2.5" stroke-linejoin="round" filter="url(#glow)"/>';
-      const series = [
-        { color: cH, label: HOME_T.name, pts: M.graph.home.map(d => ({ px: x(d.x), py: y(d.v), x: d.x, val: d.v, unit: '%' })) },
-        { color: cA, label: AWAY_T.name, pts: M.graph.away.map(d => ({ px: x(d.x), py: y(d.v), x: d.x, val: d.v, unit: '%' })) }
-      ];
+      let series;
+      if (active === 'wagon' && M.graph.wagon) {
+        // Bar chart: runs scored per over (wagon wheel style)
+        const data = M.graph.wagon;
+        const maxR = Math.max(12, ...data.map(d => d.runs));
+        const bw = (W - padL - padR) / data.length * 0.7;
+        const gap = (W - padL - padR) / data.length;
+        data.forEach((d, i) => {
+          const bx = padL + i * gap + (gap - bw) / 2;
+          const bh = (d.runs / maxR) * (H - padT - padB);
+          const by = (H - padB) - bh;
+          s += '<rect x="' + bx + '" y="' + by + '" width="' + bw + '" height="' + bh + '" rx="2" fill="' + cH + '" opacity="0.85"><title>Over ' + d.over + ': ' + d.runs + ' runs (total ' + d.total + ')</title></rect>';
+        });
+        series = [{ color: cH, label: HOME_T.name + ' runs per over', pts: data.map(d => ({ px: padL + d.over * gap - gap / 2, py: (H - padB) - (d.runs / maxR) * (H - padT - padB), x: d.over, val: d.runs, unit: ' runs' })) }];
+      } else if (active === 'runrate' && M.graph.runrate) {
+        const data = M.graph.runrate;
+        const maxRR = Math.max(10, ...data.map(d => d.rr));
+        const pts = data.map(d => x(d.over) + ',' + y((d.rr / maxRR) * 100)).join(' ');
+        s += '<polyline points="' + pts + '" fill="none" stroke="' + cH + '" stroke-width="2.5" stroke-linejoin="round" filter="url(#glow)"/>';
+        series = [{ color: cH, label: HOME_T.name + ' run rate', pts: data.map(d => ({ px: x(d.over), py: y((d.rr / maxRR) * 100), x: d.over, val: d.rr, unit: ' RR' })) }];
+      } else if (active === 'partnership' && M.graph.partnership) {
+        const data = M.graph.partnership;
+        const maxP = Math.max(50, ...data.map(d => d.stand));
+        const pts = data.map(d => x(d.over) + ',' + y((d.stand / maxP) * 100)).join(' ');
+        s += '<polyline points="' + pts + '" fill="none" stroke="' + cA + '" stroke-width="2.5" stroke-linejoin="round" filter="url(#glow)"/>';
+        series = [{ color: cA, label: 'Partnership stand', pts: data.map(d => ({ px: x(d.over), py: y((d.stand / maxP) * 100), x: d.over, val: d.stand, unit: ' runs' })) }];
+      } else {
+        const hPts = M.graph.home.map(d => x(d.x) + ',' + y(d.v)).join(' ');
+        const aPts = M.graph.away.map(d => x(d.x) + ',' + y(d.v)).join(' ');
+        s += '<polygon points="' + padL + ',' + y(100) + ' ' + hPts + ' ' + (W - padR) + ',' + y(100) + '" fill="url(#hFill)"/>';
+        s += '<polyline points="' + hPts + '" fill="none" stroke="' + cH + '" stroke-width="2.5" stroke-linejoin="round" filter="url(#glow)"/>';
+        s += '<polygon points="' + padL + ',' + y(0) + ' ' + aPts + ' ' + (W - padR) + ',' + y(0) + '" fill="url(#aFill)"/>';
+        s += '<polyline points="' + aPts + '" fill="none" stroke="' + cA + '" stroke-width="2.5" stroke-linejoin="round" filter="url(#glow)"/>';
+        series = [
+          { color: cH, label: HOME_T.name, pts: M.graph.home.map(d => ({ px: x(d.x), py: y(d.v), x: d.x, val: d.v, unit: '%' })) },
+          { color: cA, label: AWAY_T.name, pts: M.graph.away.map(d => ({ px: x(d.x), py: y(d.v), x: d.x, val: d.v, unit: '%' })) }
+        ];
+      }
       series.forEach(se => se.pts.forEach(pt => { s += '<circle class="graph-dot" cx="' + pt.px + '" cy="' + pt.py + '" r="12" fill="transparent" style="cursor:pointer"/><circle class="graph-marker" data-color="' + se.color + '" cx="' + pt.px + '" cy="' + pt.py + '" r="3.5" fill="' + se.color + '" stroke="#fff" stroke-width="1.5" style="display:none;pointer-events:none"/>'; }));
       svg.innerHTML = s;
       svg._series = series;
-      legend.innerHTML = '<span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-sm" style="background:' + cH + '"></span> ' + esc(HOME_T.name) + '</span><span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-sm" style="background:' + cA + '"></span> ' + esc(AWAY_T.name) + '</span>';
+      legend.innerHTML = series.map(se => '<span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-sm" style="background:' + se.color + '"></span> ' + esc(se.label) + '</span>').join('');
     }
     filtersEl.innerHTML = '';
     M.graph.filters.forEach(f => {
@@ -1267,9 +1868,22 @@
   }
 
   // ============================================================ init
+  // Sport-specific ambient background (subtle, theme-aware)
+  function applySportBackground() {
+    const body = document.body;
+    body.classList.remove('sport-cricket', 'sport-football', 'sport-basketball', 'sport-tennis', 'sport-baseball', 'sport-hockey', 'sport-kabaddi', 'sport-esports', 'sport-tabletennis', 'sport-volleyball');
+    const cls = 'sport-' + SPORT.replace(/[^a-z]/g, '');
+    body.classList.add(cls);
+    const sec = $('score-header');
+    if (sec) sec.classList.add(cls);
+  }
+
   function init() {
+    try { applySportBackground(); } catch (e) { console.error('bg', e); }
     try { renderScoreHeader(); } catch (e) { console.error('scoreHeader', e); }
     try { renderMatchInfo(); } catch (e) { console.error('matchInfo', e); }
+    try { fetchTeamRankings(); } catch (e) { console.error('teamRankings', e); }
+    try { fetchCricketApi(); } catch (e) { console.error('cricketApi', e); }
     try { renderSummary(); } catch (e) { console.error('summary', e); }
     try { renderScorecard(); } catch (e) { console.error('scorecard', e); }
     try { renderCommentary(); } catch (e) { console.error('commentary', e); }

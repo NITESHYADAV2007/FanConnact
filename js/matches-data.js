@@ -38,6 +38,42 @@
     lal:  { name: "LA Lakers",      cc: null, color: "#552583", flag: "🟣" },
     bos:  { name: "Boston Celtics",  cc: null, color: "#007A33", flag: "🍀" },
 
+    // ---- Baseball (MLB) ----
+    nyy:  { name: "NY Yankees",     cc: null, color: "#0C2340", flag: "🇺🇸" },
+    bos_b: { name: "Boston Red Sox", cc: null, color: "#BD3039", flag: "🇺🇸" },
+    lad:  { name: "LA Dodgers",     cc: null, color: "#005A9C", flag: "🇺🇸" },
+    sf_b: { name: "SF Giants",      cc: null, color: "#FD5A1E", flag: "🇺🇸" },
+
+    // ---- Hockey (NHL) ----
+    tbl:  { name: "Tampa Bay",      cc: null, color: "#00205B", flag: "⚡" },
+    col:  { name: "Colorado",       cc: null, color: "#6F263D", flag: "❄️" },
+    tor:  { name: "Toronto",        cc: null, color: "#00205B", flag: "🍁" },
+    edm:  { name: "Edmonton",       cc: null, color: "#041E42", flag: "🔥" },
+
+    // ---- E-Sports ----
+    sr:   { name: "Sentinels",      cc: null, color: "#E5322D", flag: "🎮" },
+    fnc:  { name: "Fnatic",         cc: null, color: "#FF5700", flag: "🎮" },
+    t1:   { name: "T1",             cc: null, color: "#E2012D", flag: "🎮" },
+    g2:   { name: "G2 Esports",     cc: null, color: "#EE3A35", flag: "🎮" },
+
+    // ---- Kabaddi (PKL) ----
+    pun:  { name: "Puneri Paltan",  cc: null, color: "#D81B60", flag: "🤼" },
+    hyd:  { name: "Telugu Titans",  cc: null, color: "#1E88E5", flag: "🤼" },
+    ben:  { name: "Bengal Warriors", cc: null, color: "#00897B", flag: "🤼" },
+    pat:  { name: "Patna Pirates",  cc: null, color: "#FBC02D", flag: "🤼" },
+
+    // ---- Table Tennis ----
+    wang: { name: "Wang Chuqin",    cc: "cn", color: "#DE2910", flag: "🏓" },
+    har:  { name: "Truls Moregard", cc: "se", color: "#006AA7", flag: "🏓" },
+    sun:  { name: "Sun Yingsha",    cc: "cn", color: "#DE2910", flag: "🏓" },
+    hay:  { name: "Hina Hayata",    cc: "jp", color: "#BC002D", flag: "🏓" },
+
+    // ---- Volleyball ----
+    bra:  { name: "Brazil",         cc: "br", color: "#009C3B", flag: "🇧🇷" },
+    pol:  { name: "Poland",         cc: "pl", color: "#DC143C", flag: "🇵🇱" },
+    usa_v: { name: "USA",           cc: "us", color: "#3C3B6E", flag: "🇺🇸" },
+    ita_v: { name: "Italy",         cc: "it", color: "#009246", flag: "🇮🇹" },
+
     // ---- Tennis (example real tour) ----
     alc:  { name: "Carlos Alcaraz", cc: "es", color: "#C60B1E", flag: "🇪🇸" },
     djo:  { name: "Novak Djokovic", cc: "rs", color: "#C09A2E", flag: "🇷🇸" }
@@ -284,6 +320,192 @@
       score: { home: "2", away: "1", detail: "Set 4" },
       statusLine: "Alcaraz leads 2-1 in sets",
       link: "match-center.html?sport=tennis&home=alc&away=djo&state=live&series=Wimbledon%202026&format=Grand%20Slam"
+    },
+
+    // ===================== BASEBALL =====================
+    {
+      id: "nyy-bosb-mlb",
+      sport: "baseball",
+      status: "live",
+      tournament: "MLB 2026 Regular Season",
+      format: "MLB",
+      stage: "Game 2",
+      venue: "Yankee Stadium, New York",
+      date: "2026-07-15",
+      rules: "9 innings · most runs wins",
+      home: "nyy", away: "bos_b",
+      score: { home: "5", away: "3", detail: "Bot 7th" },
+      statusLine: "Yankees leading after 6½",
+      link: "match-center.html?sport=baseball&home=nyy&away=bos_b&state=live&series=MLB%202026&format=MLB"
+    },
+    {
+      id: "lad-sfb-mlb",
+      sport: "baseball",
+      status: "upcoming",
+      tournament: "MLB 2026 Regular Season",
+      format: "MLB",
+      stage: "Game 1",
+      venue: "Dodger Stadium, Los Angeles",
+      date: "2026-07-15",
+      time: "22:10",
+      rules: "9 innings · most runs wins",
+      home: "lad", away: "sf_b",
+      link: "match-center.html?sport=baseball&home=lad&away=sf_b&state=upcoming&series=MLB%202026&format=MLB"
+    },
+
+    // ===================== HOCKEY =====================
+    {
+      id: "tbl-col-nhl",
+      sport: "hockey",
+      status: "live",
+      tournament: "NHL 2026 Stanley Cup Playoffs",
+      format: "NHL",
+      stage: "Final G3",
+      venue: "Amalie Arena, Tampa",
+      date: "2026-07-15",
+      rules: "3 periods · OT if tied",
+      home: "tbl", away: "col",
+      score: { home: "2", away: "2", detail: "2nd Period" },
+      statusLine: "Tied midway 2nd",
+      link: "match-center.html?sport=hockey&home=tbl&away=col&state=live&series=Stanley%20Cup%20Final&format=NHL"
+    },
+    {
+      id: "tor-edm-nhl",
+      sport: "hockey",
+      status: "upcoming",
+      tournament: "NHL 2026 Stanley Cup Playoffs",
+      format: "NHL",
+      stage: "Final G4",
+      venue: "Scotiabank Arena, Toronto",
+      date: "2026-07-16",
+      time: "19:00",
+      rules: "3 periods · OT if tied",
+      home: "tor", away: "edm",
+      link: "match-center.html?sport=hockey&home=tor&away=edm&state=upcoming&series=Stanley%20Cup%20Final&format=NHL"
+    },
+
+    // ===================== E-SPORTS =====================
+    {
+      id: "sr-fnc-val",
+      sport: "e-sports",
+      status: "live",
+      tournament: "VCT 2026 Masters",
+      format: "VALORANT",
+      stage: "Grand Final",
+      venue: "Online",
+      date: "2026-07-15",
+      rules: "Best of 5 maps · first to 13 rounds",
+      home: "sr", away: "fnc",
+      score: { home: "2", away: "1", detail: "Map 4" },
+      statusLine: "Sentinels lead series 2-1",
+      link: "match-center.html?sport=e-sports&home=sr&away=fnc&state=live&series=VCT%202026%20Masters&format=VALORANT"
+    },
+    {
+      id: "t1-g2-lol",
+      sport: "e-sports",
+      status: "upcoming",
+      tournament: "Worlds 2026 Playoffs",
+      format: "LoL",
+      stage: "Semifinal",
+      venue: "Online",
+      date: "2026-07-15",
+      time: "20:30",
+      rules: "Best of 5 games · first to 3",
+      home: "t1", away: "g2",
+      link: "match-center.html?sport=e-sports&home=t1&away=g2&state=upcoming&series=Worlds%202026&format=LoL"
+    },
+
+    // ===================== KABADDI =====================
+    {
+      id: "pun-hyd-pkl",
+      sport: "kabaddi",
+      status: "live",
+      tournament: "Pro Kabaddi League 2026",
+      format: "PKL",
+      stage: "Match 42",
+      venue: "Mumbai",
+      date: "2026-07-15",
+      rules: "40 min · most points wins",
+      home: "pun", away: "hyd",
+      score: { home: "24", away: "18", detail: "Half" },
+      statusLine: "Puneri lead at half",
+      link: "match-center.html?sport=kabaddi&home=pun&away=hyd&state=live&series=Pro%20Kabaddi%202026&format=PKL"
+    },
+    {
+      id: "ben-pat-pkl",
+      sport: "kabaddi",
+      status: "upcoming",
+      tournament: "Pro Kabaddi League 2026",
+      format: "PKL",
+      stage: "Match 43",
+      venue: "Mumbai",
+      date: "2026-07-15",
+      time: "21:00",
+      rules: "40 min · most points wins",
+      home: "ben", away: "pat",
+      link: "match-center.html?sport=kabaddi&home=ben&away=pat&state=upcoming&series=Pro%20Kabaddi%202026&format=PKL"
+    },
+
+    // ===================== TABLE TENNIS =====================
+    {
+      id: "wang-har-tt",
+      sport: "tabletennis",
+      status: "live",
+      tournament: "WTT Champions 2026",
+      format: "Singles",
+      stage: "Quarterfinal",
+      venue: "Las Vegas",
+      date: "2026-07-15",
+      rules: "Best of 7 games · 11 points",
+      home: "wang", away: "har",
+      score: { home: "2", away: "1", detail: "Game 4" },
+      statusLine: "Wang leads 2-1",
+      link: "match-center.html?sport=tabletennis&home=wang&away=har&state=live&series=WTT%20Champions%202026&format=Singles"
+    },
+    {
+      id: "sun-hay-tt",
+      sport: "tabletennis",
+      status: "upcoming",
+      tournament: "WTT Champions 2026",
+      format: "Singles",
+      stage: "Quarterfinal",
+      venue: "Las Vegas",
+      date: "2026-07-15",
+      time: "19:30",
+      rules: "Best of 7 games · 11 points",
+      home: "sun", away: "hay",
+      link: "match-center.html?sport=tabletennis&home=sun&away=hay&state=upcoming&series=WTT%20Champions%202026&format=Singles"
+    },
+
+    // ===================== VOLLEYBALL =====================
+    {
+      id: "bra-pol-vnl",
+      sport: "volleyball",
+      status: "live",
+      tournament: "Volleyball Nations League 2026",
+      format: "Mens",
+      stage: "Pool 7",
+      venue: "Gdansk",
+      date: "2026-07-15",
+      rules: "Best of 5 sets · 25 points",
+      home: "bra", away: "pol",
+      score: { home: "2", away: "1", detail: "Set 4" },
+      statusLine: "Brazil lead 2-1",
+      link: "match-center.html?sport=volleyball&home=bra&away=pol&state=live&series=VNL%202026&format=Mens"
+    },
+    {
+      id: "usa-ita-vnl",
+      sport: "volleyball",
+      status: "upcoming",
+      tournament: "Volleyball Nations League 2026",
+      format: "Mens",
+      stage: "Pool 7",
+      venue: "Gdansk",
+      date: "2026-07-15",
+      time: "22:00",
+      rules: "Best of 5 sets · 25 points",
+      home: "usa_v", away: "ita_v",
+      link: "match-center.html?sport=volleyball&home=usa_v&away=ita_v&state=upcoming&series=VNL%202026&format=Mens"
     }
   ];
 

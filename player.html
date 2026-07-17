@@ -820,17 +820,23 @@ async function fetchWikipediaImage(name) {
 
 // --- Populate Hero Section ---
 if (player) {
-  // Fill missing personal details first (so hero section has them)
-  if (!player.country) { var ctry = ["India","Australia","England","Pakistan","South Africa","New Zealand","Sri Lanka","West Indies","Bangladesh","Afghanistan","Argentina","Brazil","France","Germany","Spain","USA","Canada","Japan","South Korea","China"]; player.country = ctry[~~(Math.random() * ctry.length)]; }
-  if (!player.age) player.age = 18 + ~~(Math.random() * 15);
-  if (!player.born && !player.birthDate && !player.dob) { var by = new Date().getFullYear() - player.age; var bm = 1+~~(Math.random()*12); var bd = 1+~~(Math.random()*28); player.born = bd + " " + ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][bm-1] + " " + by; }
-  if (!player.height) player.height = (155 + ~~(Math.random() * 35)) + " cm";
-  if (!player.weight) player.weight = (55 + ~~(Math.random() * 30)) + " kg";
-  if (!player.jersey && !player.jerseyNumber && !player.number) player.jersey = String(~~(Math.random() * 99) + 1);
-  if (!player.debut && !player.debutYear) player.debut = String(2005 + ~~(Math.random() * 15));
+  // For Cricket we ONLY use real API data (from the rankings feed). We never
+  // fabricate personal details — missing fields show "—" instead of random
+  // values, per the "no static/random data" requirement.
+  var isCricketProfile = (sportName === "Cricket");
+  if (!isCricketProfile) {
+    // Fill missing personal details first (so hero section has them)
+    if (!player.country) { var ctry = ["India","Australia","England","Pakistan","South Africa","New Zealand","Sri Lanka","West Indies","Bangladesh","Afghanistan","Argentina","Brazil","France","Germany","Spain","USA","Canada","Japan","South Korea","China"]; player.country = ctry[~~(Math.random() * ctry.length)]; }
+    if (!player.age) player.age = 18 + ~~(Math.random() * 15);
+    if (!player.born && !player.birthDate && !player.dob) { var by = new Date().getFullYear() - player.age; var bm = 1+~~(Math.random()*12); var bd = 1+~~(Math.random()*28); player.born = bd + " " + ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][bm-1] + " " + by; }
+    if (!player.height) player.height = (155 + ~~(Math.random() * 35)) + " cm";
+    if (!player.weight) player.weight = (55 + ~~(Math.random() * 30)) + " kg";
+    if (!player.jersey && !player.jerseyNumber && !player.number) player.jersey = String(~~(Math.random() * 99) + 1);
+    if (!player.debut && !player.debutYear) player.debut = String(2005 + ~~(Math.random() * 15));
+  }
   if (sportName === "Cricket") {
-    if (!player.batting && !player.position) player.batting = Math.random() > 0.5 ? "Right Hand" : "Left Hand";
-    if (!player.bowling && !player.style) player.bowling = Math.random() > 0.7 ? "Right Arm Fast" : Math.random() > 0.5 ? "Right Arm Medium" : "Left Arm Spin";
+    if (!player.batting && !player.position) player.batting = player.battingStyle || player.role || null;
+    if (!player.bowling && !player.style) player.bowling = player.bowlingStyle || player.role || null;
   } else if (sportName === "Baseball") {
     if (!player.position) player.position = ["Pitcher","Catcher","First Base","Second Base","Shortstop","Third Base","Outfielder"][~~(Math.random()*7)];
     if (!player.style) player.style = Math.random() > 0.5 ? "Right Hand" : "Left Hand";
@@ -856,7 +862,7 @@ if (player) {
     if (!player.position) player.position = ["Captain","Support","Entry Fragger","AWPer","In-Game Leader"][~~(Math.random()*5)];
     if (!player.style) player.style = Math.random() > 0.3 ? "Mouse & Keyboard" : "Controller";
   }
-  if (!player.team) {
+  if (!player.team && !isCricketProfile) {
     var sportTeamPool = {
       Cricket:["Mumbai Indians","Chennai Super Kings","Royal Challengers Bangalore","Kolkata Knight Riders","Delhi Capitals","Sydney Sixers","Melbourne Stars"],
       Football:["Manchester City","Liverpool","FC Barcelona","Real Madrid","Bayern Munich","Paris Saint-Germain","Juventus"],

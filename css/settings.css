@@ -14,6 +14,14 @@
   --hover: #f4f7fb;
 }
 
+/* =========================
+   NAMED THEMES
+   Each theme overrides the CSS variables used by the
+   global surface/primary/border classes so it applies
+   site-wide and looks visually distinct.
+   ========================= */
+
+/* DARK — deep navy, green accent (default) */
 body.theme-dark {
   --page-bg: #0b1220;
 
@@ -28,8 +36,11 @@ body.theme-dark {
   --primary: #22c55e;
 
   --hover: #162132;
+
+  background-color: var(--page-bg);
 }
 
+/* LIGHT — clean bright, blue accent */
 body.theme-light {
   --page-bg: #f6f8fb;
 
@@ -44,57 +55,67 @@ body.theme-light {
   --primary: #2563eb;
 
   --hover: #f4f7fb;
+
+  background-color: var(--page-bg);
 }
+
+/* STADIUM — green turf, emerald accent, subtle pitch texture */
 body.theme-stadium {
-  --page-bg: #07141b;
+  --page-bg: #07140f;
 
-  --card-bg: rgba(11, 29, 25, 0.92);
+  --card-bg: rgba(11, 32, 22, 0.92);
 
-  --border: #22543d;
+  --border: #1f7a4f;
 
   --text: #ffffff;
 
-  --text-light: #bfd7cb;
+  --text-light: #a9e3c4;
 
   --primary: #22c55e;
 
-  --hover: #17362d;
+  --hover: #0f2c1d;
 
-  background-image: url("assets/images/themes/stadium.jpg");
+  background-color: var(--page-bg);
 
-  background-size: cover;
+  background-image:
+    radial-gradient(circle at 20% 0%, rgba(34, 197, 94, 0.18), transparent 45%),
+    repeating-linear-gradient(115deg, rgba(34, 197, 94, 0.05) 0px, rgba(34, 197, 94, 0.05) 2px, transparent 2px, transparent 26px);
 
   background-attachment: fixed;
 }
 
+/* ESPORTS — purple neon, violet accent */
 body.theme-esports {
   --page-bg: #120622;
 
-  --card-bg: rgba(20, 16, 35, 0.92);
+  --card-bg: rgba(24, 16, 40, 0.92);
 
-  --border: #6d28d9;
+  --border: #7c3aed;
 
   --text: #ffffff;
 
   --text-light: #c7b8f6;
 
-  --primary: #8b5cf6;
+  --primary: #a855f7;
 
-  --hover: #24163e;
+  --hover: #241640;
 
-  background-image: url("assets/images/themes/esports.jpg");
+  background-color: var(--page-bg);
 
-  background-size: cover;
+  background-image:
+    radial-gradient(circle at 80% 10%, rgba(168, 85, 247, 0.22), transparent 50%),
+    radial-gradient(circle at 10% 90%, rgba(59, 130, 246, 0.18), transparent 45%);
 
   background-attachment: fixed;
 }
 
+/* ROYAL — royal blue, blue accent */
 body.theme-royal {
   --page-bg: #06142f;
 
   --card-bg: rgba(9, 24, 58, 0.92);
 
-  --border: #1d4ed8;
+  --border: #2563eb;
 
   --text: #ffffff;
 
@@ -102,11 +123,12 @@ body.theme-royal {
 
   --primary: #3b82f6;
 
-  --hover: #132b5a;
+  --hover: #102a5e;
 
-  background-image: url("assets/images/themes/royal-blue.jpg");
+  background-color: var(--page-bg);
 
-  background-size: cover;
+  background-image:
+    radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.22), transparent 55%);
 
   background-attachment: fixed;
 }
@@ -160,7 +182,9 @@ THEME CARDS
 
   flex-shrink: 0;
 
-  width: 230px;
+  width: 100%;
+
+  max-width: 230px;
 
   height: 170px;
 
@@ -1086,4 +1110,62 @@ REDUCE ANIMATION
   transition: none !important;
 
   scroll-behavior: auto !important;
+}
+
+/*===============================
+SETTINGS PAGE POLISH
+===============================*/
+
+/* Section cards: soft shadow, smooth hover lift, consistent radius */
+.card {
+  border-radius: 20px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  transition: box-shadow 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
+}
+
+.card:hover {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  border-color: var(--primary) !important;
+}
+
+.dark .card:hover {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+}
+
+/* Section heading icon badges */
+section h2 {
+  letter-spacing: -0.01em;
+}
+
+/* Account overview card polish */
+main section .from-primary\/10,
+main section[class*="from-primary"] {
+  background-image: linear-gradient(135deg, rgba(16, 185, 129, 0.12), transparent 70%);
+}
+
+/* Theme grid: keep cards equal and tidy */
+.appearance-options {
+  gap: 14px;
+}
+
+@media (max-width: 640px) {
+  .appearance-options {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .appearance-options .theme-item {
+    height: 150px;
+  }
+}
+
+/* Subtle divider between preference rows */
+.setting-row + .setting-row,
+.notification-item + .notification-item,
+.sport-item {
+  border-radius: 12px;
+}
+
+/* Make toggle/select rows feel premium */
+.setting-row:hover,
+.notification-item:hover {
+  box-shadow: inset 0 0 0 1px var(--outline-variant, #c2c6d6);
 }

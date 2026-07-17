@@ -1,6 +1,10 @@
-// Full leaderboard data — sorted by XP desc, Level desc, then rank
+// Full leaderboard data — real registered users from Firestore (users collection),
+// sorted by XP desc, Level desc, then name. Falls back to generated data if
+// Firebase is unavailable (e.g. opened via file:// or offline).
 var leaderboardData = null;
+var leaderboardLoaded = false;
 
+// Fallback generator (used only when Firestore can't be reached)
 function generateAllUsers() {
   var firstNames = ["Arjun","Rahul","Virat","Rohit","Sachin","Dhoni","Kohli","Sharma","Amit","Sunil",
     "Raj","Ankit","Vikram","Deepak","Manish","Karan","Nitin","Pradeep","Gaurav","Harsh",
@@ -15,14 +19,14 @@ function generateAllUsers() {
   var fixedImgs = ["https://i.pravatar.cc/100?img=10","https://i.pravatar.cc/100?img=12","https://i.pravatar.cc/100?img=15","https://i.pravatar.cc/100?img=12","https://i.pravatar.cc/100?img=20","https://i.pravatar.cc/100?img=15"];
   var data = [];
   for (var i = 0; i < 6; i++) {
-    data.push({ name: fixedNames[i], level: fixedLevels[i], xp: fixedXP[i], img: fixedImgs[i] });
+    data.push({ name: fixedNames[i], level: fixedLevels[i], xp: fixedXP[i], coins: 0, img: fixedImgs[i] });
   }
   for (var i = 7; i <= 56; i++) {
     var idx = (i - 7) % firstNames.length;
     var name = firstNames[idx] + suffixes[Math.floor(Math.random() * suffixes.length)] + Math.floor(Math.random() * 99);
     var xp = Math.max(500, Math.floor(12560 - i * 200 + (Math.random() * 400 - 200)));
     var level = Math.max(1, Math.min(20, Math.floor(xp / 700) + 1));
-    data.push({ name: name, level: level, xp: xp, img: "https://i.pravatar.cc/100?img=" + ((i % 70) + 1) });
+    data.push({ name: name, level: level, xp: xp, coins: 0, img: "https://i.pravatar.cc/100?img=" + ((i % 70) + 1) });
   }
   data.sort(function(a, b) {
     if (a.xp !== b.xp) return b.xp - a.xp;
@@ -35,9 +39,45 @@ function generateAllUsers() {
   return data;
 }
 
-function getData() {
-  if (!leaderboardData) {
-    leaderboardData = generateAllUsers();
+// Load real registered users from Firestore (users collection)
+async function loadRealUsers() {
+  try {
+    if (!window.__FB__ || !window.__FB__.db) throw new Error("Firebase not ready");
+    const { collection, getDocs, query, orderBy, limit } = await import(
+      "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"
+    );
+    const q = query(collection(window.__FB__.db, "users"), orderBy("xp", "desc"), limit(200));
+    const snap = await getDocs(q);
+    var users = [];
+    snap.forEach(function (doc) {
+      var d = doc.data();
+      var xp = parseInt(d.xp, 10) || 0;
+      var level = parseInt(d.level, 10) || 1;
+      var coins = parseInt(d.coins, 10) || 0;
+      var name = d.username || d.fullName || d.email || "Fan";
+      var img = d.photoURL || (d.email ? ("https://i.pravatar.cc/100?u=" + encodeURIComponent(d.email)) : "assets/images/default-avatar.png?w=150");
+      users.push({ name: name, level: level, xp: xp, coins: coins, img: img, uid: d.uid });
+    });
+    if (!users.length) throw new Error("No users");
+    users.sort(function (a, b) {
+      if (a.xp !== b.xp) return b.xp - a.xp;
+      if (a.level !== b.level) return b.level - a.level;
+      return a.name.localeCompare(b.name);
+    });
+    for (var i = 0; i < users.length; i++) users[i].rank = i + 1;
+    return users;
+  } catch (e) {
+    console.warn("[leaderboard] falling back to generated users:", e.message);
+    return null;
+  }
+}
+
+async function getData() {
+  if (leaderboardData) return leaderboardData;
+  if (!leaderboardLoaded) {
+    leaderboardLoaded = true;
+    var real = await loadRealUsers();
+    leaderboardData = real || generateAllUsers();
   }
   return leaderboardData;
 }
@@ -146,19 +186,21 @@ function toggleFullLeaderboard() {
   container.innerHTML = "";
   var header = document.createElement("div");
   header.className = "hidden md:grid grid-cols-12 px-6 py-3 text-slate-400 text-xs font-semibold border-b border-[#12263f] sticky top-0 bg-[#060d18]";
-  header.innerHTML = '<div class="col-span-1">Rank</div><div class="col-span-5">User</div><div class="col-span-3">Level</div><div class="col-span-3 text-right">XP</div>';
+  header.innerHTML = '<div class="col-span-1">Rank</div><div class="col-span-4">User</div><div class="col-span-2">Level</div><div class="col-span-2 text-right">XP</div><div class="col-span-3 text-right">Coins</div>';
   container.appendChild(header);
   rows.forEach(function(f) {
     var row = document.createElement("div");
     row.className = "border-b border-[#0f1d30] hover:bg-[#0a1628] transition cursor-pointer";
     row.addEventListener("click", function() { goToPlayer(f); });
     var rc = f.rank <= 10 ? "text-yellow-400" : "text-white";
+    var coins = (f.coins != null ? f.coins : 0).toLocaleString();
     var desk = document.createElement("div");
     desk.className = "hidden md:grid grid-cols-12 items-center px-6 py-3";
     desk.innerHTML = '<div class="col-span-1 ' + rc + ' font-semibold">#' + f.rank + '</div>' +
-      '<div class="col-span-5 flex items-center gap-3"><img src="' + f.img + '" class="w-8 h-8 rounded-full"><span class="text-white text-sm">' + f.name + '</span></div>' +
-      '<div class="col-span-3"><span class="bg-[#23153e] text-purple-300 px-2 py-1 rounded text-xs">Level ' + f.level + '</span></div>' +
-      '<div class="col-span-3 text-right text-white font-semibold text-sm">' + f.xp.toLocaleString() + ' XP</div>';
+      '<div class="col-span-4 flex items-center gap-3"><img src="' + f.img + '" class="w-8 h-8 rounded-full"><span class="text-white text-sm">' + f.name + '</span></div>' +
+      '<div class="col-span-2"><span class="bg-[#23153e] text-purple-300 px-2 py-1 rounded text-xs">Level ' + f.level + '</span></div>' +
+      '<div class="col-span-2 text-right text-white font-semibold text-sm">' + f.xp.toLocaleString() + ' XP</div>' +
+      '<div class="col-span-3 text-right text-[#f7c948] font-semibold text-sm">' + coins + ' 🪙</div>';
     row.appendChild(desk);
     var mob = document.createElement("div");
     mob.className = "md:hidden p-3";
@@ -166,7 +208,7 @@ function toggleFullLeaderboard() {
       '<img src="' + f.img + '" class="w-8 h-8 rounded-full">' +
       '<div class="flex-1"><div class="text-white text-sm font-medium">' + f.name + '</div>' +
       '<div class="flex justify-between mt-1"><span class="bg-[#23153e] text-purple-300 px-2 py-0.5 rounded text-xs">Level ' + f.level + '</span>' +
-      '<span class="text-white font-semibold text-xs">' + f.xp.toLocaleString() + ' XP</span></div></div></div>';
+      '<span class="text-white font-semibold text-xs">' + f.xp.toLocaleString() + ' XP · ' + coins + ' 🪙</span></div></div></div>';
     row.appendChild(mob);
     container.appendChild(row);
   });
@@ -174,7 +216,8 @@ function toggleFullLeaderboard() {
   fullLBExpanded = true;
 }
 
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", async function() {
+  await getData(); // load real registered users (or fallback)
   renderPodium();
   renderRows4to6();
   renderTopEarners();

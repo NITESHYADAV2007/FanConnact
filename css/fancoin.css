@@ -186,11 +186,11 @@ html:not(.dark) .mobile-subnav a.text-brand-green { color: #059669 !important; }
     width: 70px;
     height: 70px;
     border-radius: 50%;
-    background: #FFC107;
+    background: #2EF06B;
     display: flex;
     justify-content: center;
     align-items: center;
-    color: black;
+    color: #071d4a;
     font-weight: 700;
     font-size: 22px;
 }

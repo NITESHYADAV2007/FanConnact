@@ -180,27 +180,33 @@
 
       .hero-gradient {
         background-image: linear-gradient(
-          rgba(11, 14, 17, 0.3),
-          rgba(11, 14, 17, 0.6)
+          rgba(11, 14, 17, 0.55),
+          rgba(11, 14, 17, 0.75)
         );
         background-size: cover;
         background-position: center;
+        background-blend-mode: multiply;
       }
 
       :root:not(.dark) .hero-gradient {
         border-color: #e2e8f0;
+        background-image: linear-gradient(
+          rgba(255, 255, 255, 0.55),
+          rgba(241, 245, 249, 0.7)
+        );
         background-size: cover;
         background-position: center;
+        background-blend-mode: overlay;
       }
 
       :root:not(.dark) .hero-gradient,
       :root:not(.dark) .hero-gradient * {
-        color: #f1f5f9 !important;
+        color: #0f172a !important;
       }
 
       :root:not(.dark) .hero-gradient .text-brand-green,
       :root:not(.dark) .hero-gradient .text-emerald-600 {
-        color: #34d399 !important;
+        color: #059669 !important;
       }
 
       :root:not(.dark) .hero-gradient button,
@@ -475,6 +481,7 @@
               F
             </div>
             <span
+              id="wallet-coin-balance"
               class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white hidden sm:inline"
               >4,250</span
             >
@@ -1005,6 +1012,8 @@
             activeTab = tab.dataset.tab;
             renderPredictionContent();
             updateMatchBanner();
+            // Award any correct predictions the user already made
+            if (activeTab === 'results' || activeTab === 'history') awardAllMade();
           });
         });
 
@@ -1040,7 +1049,7 @@
           const isHistory = activeTab === 'history';
 
           if (isResults) {
-            return '<div class="prediction-card">' +
+            return '<div class="prediction-card claimable" data-prediction="' + p.id + '">' +
               '<div class="prediction-card-header">' +
                 '<div class="prediction-live"><span class="live-dot completed"></span>RESULT</div>' +
               '</div>' +
@@ -1063,7 +1072,7 @@
 
           if (isHistory) {
             const isWon = p.result === 'won';
-            return '<div class="prediction-card">' +
+            return '<div class="prediction-card claimable" data-prediction="' + p.id + '">' +
               '<div class="prediction-card-header">' +
                 '<div class="prediction-live"><span class="live-dot ' + (isWon ? 'completed' : '') + '"></span>' + (isWon ? 'WON' : 'LOST') + '</div>' +
               '</div>' +
@@ -1132,6 +1141,22 @@
             btn.classList.add('active');
             userPredictions[pid] = optIdx;
             updateStats();
+            // Award coins immediately if this prediction is already resolved & correct
+            const p = getPredictionsForCurrent().find(x => x.id === pid);
+            if (p) awardIfCorrect(p, optIdx);
+          });
+        });
+
+        // Results/History cards: clicking claims the reward if the user's pick was correct
+        container.querySelectorAll('.prediction-card.claimable').forEach(card => {
+          card.addEventListener('click', () => {
+            const pid = parseInt(card.dataset.prediction);
+            const p = getPredictionsForCurrent().find(x => x.id === pid);
+            if (!p) return;
+            // For results/history, treat the resolved/actual outcome as the user's pick
+            const optIdx = 0;
+            userPredictions[pid] = optIdx;
+            awardIfCorrect(p, optIdx);
           });
         });
       }
@@ -1212,6 +1237,80 @@
         if (correct) correct.textContent = Math.floor(Object.keys(userPredictions).length * 0.72) + 178;
         if (accuracy) accuracy.textContent = Math.round(72 + Object.keys(userPredictions).length * 0.5) + '%';
       }
+
+      // =====================
+      // REAL COIN / XP REWARDS
+      // When a prediction is correct (resolved in timeline / results),
+      // add the reward coins + XP to the user's real balance.
+      // =====================
+      function getCoinBalance() {
+        const raw = parseInt(localStorage.getItem('fancoin-balance'), 10);
+        return isNaN(raw) ? 4250 : raw;
+      }
+      function setCoinBalance(v) {
+        localStorage.setItem('fancoin-balance', String(v));
+        const el = document.getElementById('wallet-coin-balance');
+        if (el) el.textContent = v.toLocaleString();
+      }
+      // Persist awarded prediction ids so coins are given only once.
+      function getAwarded() {
+        try { return JSON.parse(localStorage.getItem('awarded-predictions') || '[]'); }
+        catch (e) { return []; }
+      }
+      function markAwarded(pid) {
+        const a = getAwarded();
+        if (a.indexOf(pid) === -1) { a.push(pid); localStorage.setItem('awarded-predictions', JSON.stringify(a)); }
+      }
+      // Determine if the user's picked option is correct per the data.
+      // Returns true / false / null (not yet known).
+      function isPredictionCorrect(p, optIdx) {
+        if (p.correct === true) return true;
+        if (p.correct === false) return false;
+        if (p.result === 'won') return true;
+        if (p.result === 'lost') return false;
+        // Live / prematch with a resolved/actual answer we can match to an option label
+        const answer = p.resolved || p.actual;
+        if (answer && Array.isArray(p.options)) {
+          const idx = p.options.findIndex(o => o.label && answer.toLowerCase().indexOf(o.label.toLowerCase()) !== -1);
+          if (idx !== -1) return idx === optIdx;
+        }
+        return null;
+      }
+      // Award coins + XP if the pick is correct and not already awarded.
+      function awardIfCorrect(p, optIdx) {
+        const correct = isPredictionCorrect(p, optIdx);
+        if (correct !== true) return;
+        if (getAwarded().indexOf(p.id) !== -1) return; // already given
+        const coins = (p.reward && p.reward.coins) || 0;
+        const xp = (p.reward && p.reward.xp) || 0;
+        markAwarded(p.id);
+        // Update real balance (Firestore when signed in + online, else localStorage)
+        if (window.__FB__ && window.__FB__.auth && window.__FB__.auth.currentUser && window.location.protocol !== 'file:') {
+          const uid = window.__FB__.auth.currentUser.uid;
+          import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js').then(({ doc, getDoc, updateDoc }) => {
+            const ref = doc(window.__FB__.db, 'users', uid);
+            getDoc(ref).then(snap => {
+              const cur = (snap.exists() && snap.data().coins) || 0;
+              const curXp = (snap.exists() && snap.data().xp) || 0;
+              updateDoc(ref, { coins: cur + coins, xp: curXp + xp });
+            });
+          }).catch(() => { setCoinBalance(getCoinBalance() + coins); });
+        } else {
+          setCoinBalance(getCoinBalance() + coins);
+        }
+        if (window.showToast) window.showToast('Correct! +' + coins + ' Coins · +' + xp + ' XP', 'success');
+        else alert('Correct! +' + coins + ' Coins');
+      }
+      // Re-check all predictions the user made when viewing results/history.
+      function awardAllMade() {
+        const list = getPredictionsForCurrent();
+        list.forEach(p => {
+          if (userPredictions[p.id] !== undefined) awardIfCorrect(p, userPredictions[p.id]);
+        });
+      }
+      // Initialise wallet display from stored balance
+      setCoinBalance(getCoinBalance());
     </script>
-  <script src="js/notif-ws.js"></script></body>
+  <script src="js/notif-ws.js"></script>
+  <script type="module" src="js/script.js"></script></body>
 </html>

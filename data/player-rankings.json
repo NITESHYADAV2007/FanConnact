@@ -14131,18 +14131,6 @@
       },
       {
         "rank": 9,
-        "name": "Brandon Marsh",
-        "team": "PHI",
-        "position": "LF",
-        "hr": 15,
-        "avg": 0.3008849,
-        "rbi": 46,
-        "ops": 0.8285184,
-        "games": 92,
-        "_source": "espn"
-      },
-      {
-        "rank": 10,
         "name": "Troy Johnston",
         "team": "COL",
         "position": "RF",
@@ -14154,7 +14142,7 @@
         "_source": "espn"
       },
       {
-        "rank": 11,
+        "rank": 10,
         "name": "Josh Jung",
         "team": "TEX",
         "position": "3B",
@@ -14163,6 +14151,18 @@
         "rbi": 34,
         "ops": 0.8194021,
         "games": 87,
+        "_source": "espn"
+      },
+      {
+        "rank": 11,
+        "name": "Brandon Marsh",
+        "team": "PHI",
+        "position": "LF",
+        "hr": 15,
+        "avg": 0.297376,
+        "rbi": 46,
+        "ops": 0.8191148,
+        "games": 93,
         "_source": "espn"
       },
       {
@@ -14239,6 +14239,18 @@
       },
       {
         "rank": 18,
+        "name": "Juan Soto",
+        "team": "NYM",
+        "position": "LF",
+        "hr": 21,
+        "avg": 0.2924187,
+        "rbi": 51,
+        "ops": 0.9756397,
+        "games": 79,
+        "_source": "espn"
+      },
+      {
+        "rank": 19,
         "name": "Pete Crow-Armstrong",
         "team": "CHC",
         "position": "CF",
@@ -14250,7 +14262,7 @@
         "_source": "espn"
       },
       {
-        "rank": 19,
+        "rank": 20,
         "name": "Freddie Freeman",
         "team": "LAD",
         "position": "1B",
@@ -14259,18 +14271,6 @@
         "rbi": 49,
         "ops": 0.8623239,
         "games": 94,
-        "_source": "espn"
-      },
-      {
-        "rank": 20,
-        "name": "Juan Soto",
-        "team": "NYM",
-        "position": "LF",
-        "hr": 21,
-        "avg": 0.289855,
-        "rbi": 51,
-        "ops": 0.9669996,
-        "games": 78,
         "_source": "espn"
       },
       {
@@ -14711,10 +14711,10 @@
         "team": "NYM",
         "position": "RF",
         "hr": 11,
-        "avg": 0.263456,
+        "avg": 0.2633053,
         "rbi": 37,
-        "ops": 0.728691,
-        "games": 94,
+        "ops": 0.7262012,
+        "games": 95,
         "_source": "espn"
       },
       {
@@ -14767,6 +14767,18 @@
       },
       {
         "rank": 62,
+        "name": "Bryce Harper",
+        "team": "PHI",
+        "position": "1B",
+        "hr": 20,
+        "avg": 0.2608695,
+        "rbi": 57,
+        "ops": 0.8650555,
+        "games": 98,
+        "_source": "espn"
+      },
+      {
+        "rank": 63,
         "name": "Wilyer Abreu",
         "team": "BOS",
         "position": "RF",
@@ -14778,7 +14790,7 @@
         "_source": "espn"
       },
       {
-        "rank": 63,
+        "rank": 64,
         "name": "Willi Castro",
         "team": "COL",
         "position": "2B",
@@ -14787,18 +14799,6 @@
         "rbi": 37,
         "ops": 0.7097222,
         "games": 82,
-        "_source": "espn"
-      },
-      {
-        "rank": 64,
-        "name": "Bryce Harper",
-        "team": "PHI",
-        "position": "1B",
-        "hr": 20,
-        "avg": 0.2602339,
-        "rbi": 57,
-        "ops": 0.862272,
-        "games": 97,
         "_source": "espn"
       },
       {
@@ -14911,18 +14911,6 @@
       },
       {
         "rank": 74,
-        "name": "Bo Bichette",
-        "team": "NYM",
-        "position": "SS",
-        "hr": 10,
-        "avg": 0.2552631,
-        "rbi": 51,
-        "ops": 0.6765578,
-        "games": 96,
-        "_source": "espn"
-      },
-      {
-        "rank": 75,
         "name": "Taylor Ward",
         "team": "BAL",
         "position": "LF",
@@ -14934,7 +14922,7 @@
         "_source": "espn"
       },
       {
-        "rank": 76,
+        "rank": 75,
         "name": "Drake Baldwin",
         "team": "ATL",
         "position": "C",
@@ -14946,7 +14934,7 @@
         "_source": "espn"
       },
       {
-        "rank": 77,
+        "rank": 76,
         "name": "Hunter Goodman",
         "team": "COL",
         "position": "C",
@@ -14958,19 +14946,19 @@
         "_source": "espn"
       },
       {
-        "rank": 78,
+        "rank": 77,
         "name": "Kyle Schwarber",
         "team": "PHI",
         "position": "DH",
         "hr": 32,
-        "avg": 0.2542857,
+        "avg": 0.2542372,
         "rbi": 59,
-        "ops": 0.9271497,
-        "games": 93,
+        "ops": 0.9253507,
+        "games": 94,
         "_source": "espn"
       },
       {
-        "rank": 79,
+        "rank": 78,
         "name": "Isaac Paredes",
         "team": "HOU",
         "position": "3B",
@@ -14982,7 +14970,7 @@
         "_source": "espn"
       },
       {
-        "rank": 80,
+        "rank": 79,
         "name": "Cody Bellinger",
         "team": "NYY",
         "position": "LF",
@@ -14994,7 +14982,7 @@
         "_source": "espn"
       },
       {
-        "rank": 81,
+        "rank": 80,
         "name": "Cole Young",
         "team": "SEA",
         "position": "2B",
@@ -15002,6 +14990,18 @@
         "avg": 0.2528735,
         "rbi": 43,
         "ops": 0.706994,
+        "games": 97,
+        "_source": "espn"
+      },
+      {
+        "rank": 81,
+        "name": "Bo Bichette",
+        "team": "NYM",
+        "position": "SS",
+        "hr": 10,
+        "avg": 0.2526041,
+        "rbi": 51,
+        "ops": 0.6697579,
         "games": 97,
         "_source": "espn"
       },
@@ -15079,18 +15079,6 @@
       },
       {
         "rank": 88,
-        "name": "Bryson Stott",
-        "team": "PHI",
-        "position": "2B",
-        "hr": 7,
-        "avg": 0.2492211,
-        "rbi": 42,
-        "ops": 0.7002156,
-        "games": 91,
-        "_source": "espn"
-      },
-      {
-        "rank": 89,
         "name": "Ivan Herrera",
         "team": "STL",
         "position": "DH",
@@ -15102,7 +15090,7 @@
         "_source": "espn"
       },
       {
-        "rank": 90,
+        "rank": 89,
         "name": "Samuel Basallo",
         "team": "BAL",
         "position": "C",
@@ -15114,7 +15102,7 @@
         "_source": "espn"
       },
       {
-        "rank": 91,
+        "rank": 90,
         "name": "Josh Bell",
         "team": "MIN",
         "position": "DH",
@@ -15123,6 +15111,18 @@
         "rbi": 60,
         "ops": 0.735238,
         "games": 94,
+        "_source": "espn"
+      },
+      {
+        "rank": 91,
+        "name": "Bryson Stott",
+        "team": "PHI",
+        "position": "2B",
+        "hr": 7,
+        "avg": 0.2469135,
+        "rbi": 42,
+        "ops": 0.6939735,
+        "games": 92,
         "_source": "espn"
       },
       {
@@ -41496,7 +41496,7 @@
     ]
   },
   "_meta": {
-    "lastSync": "2026-07-15T15:14:03.999Z",
+    "lastSync": "2026-07-17T12:30:01.725Z",
     "syncInterval": "6h"
   }
 }

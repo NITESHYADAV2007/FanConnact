@@ -14,7 +14,12 @@
       var cards = matchesContainer.querySelectorAll('[data-tournament]');
       var anyVisible = false;
       cards.forEach(function (card) {
-        var tMatch = activeTournament === 'All' || card.getAttribute('data-tournament') === activeTournament;
+        // Match by sport name (tab text) OR by tournament name
+        var sport = (card.getAttribute('data-sport') || '').toLowerCase();
+        var tournament = (card.getAttribute('data-tournament') || '').toLowerCase();
+        var tMatch = activeTournament === 'All' ||
+          tournament === activeTournament.toLowerCase() ||
+          sport === activeTournament.toLowerCase();
         var sMatch = activeStatus === 'All' || card.getAttribute('data-status') === activeStatus;
         var show = tMatch && sMatch;
         card.style.display = show ? '' : 'none';

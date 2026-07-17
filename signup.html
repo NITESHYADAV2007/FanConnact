@@ -741,6 +741,14 @@
                   <button class="review-bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="cricket">🏏 Cricket</button>
                   <button class="review-bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="football">⚽ Football</button>
                   <button class="review-bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="basketball">🏀 Basketball</button>
+                  <button class="review-bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="tennis">🎾 Tennis</button>
+                  <button class="review-bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="hockey">🏒 Hockey</button>
+                  <button class="review-bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="kabaddi">🤼 Kabaddi</button>
+                  <button class="review-bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="volleyball">🏐 Volleyball</button>
+                  <button class="review-bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="tabletennis">🏓 Table Tennis</button>
+                  <button class="review-bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="baseball">⚾ Baseball</button>
+                  <button class="review-bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="esports">🎮 Esports</button>
+                  <button class="review-bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="custom">➕ Custom</button>
                 </div>
               </div>
               <div class="mt-2.5 flex justify-center gap-4 sm:gap-3">
@@ -812,7 +820,16 @@
                   <button class="bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="cricket">🏏 Cricket</button>
                   <button class="bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="football">⚽ Football</button>
                   <button class="bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="basketball">🏀 Basketball</button>
+                  <button class="bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="tennis">🎾 Tennis</button>
+                  <button class="bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="hockey">🏒 Hockey</button>
+                  <button class="bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="kabaddi">🤼 Kabaddi</button>
+                  <button class="bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="volleyball">🏐 Volleyball</button>
+                  <button class="bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="tabletennis">🏓 Table Tennis</button>
+                  <button class="bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="baseball">⚾ Baseball</button>
+                  <button class="bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="esports">🎮 Esports</button>
+                  <button class="bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="custom">➕ Custom</button>
                 </div>
+                <input type="file" id="custom-bg-input" accept="image/*" class="hidden" />
               </div>
 
               <!-- Beauty Toggle -->
@@ -1217,9 +1234,11 @@
                 let cameraStream = null;
                 let selectedFilter = "none";
                 let selectedBg = "none";
+                let customBgImage = null;
                 let currentZoom = 1;
                 let segModel = null;
                 let segModelReady = false;
+                let lastSegResults = null;
 
                 const FILTER_MAP = {
                     none: "", vivid: "cam-filter-vivid", warm: "cam-filter-warm",
@@ -1243,6 +1262,7 @@
                             locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/${file}`
                         });
                         segModel.setOptions({ modelSelection: 1, minDetectionConfidence: 0.5 });
+                        segModel.onResults((results) => { lastSegResults = results; });
                         await segModel.initialize();
                         segModelReady = true;
                         return true;
@@ -1254,69 +1274,72 @@
                     }
                 }
 
+                function drawCustomBg(ctx, img, w, h) {
+                    if (!img || !img.width) return false;
+                    const iw = img.width, ih = img.height;
+                    const scale = Math.max(w / iw, h / ih);
+                    const dw = iw * scale, dh = ih * scale;
+                    ctx.drawImage(img, (w - dw) / 2, (h - dh) / 2, dw, dh);
+                    return true;
+                }
+
+                const BG_IMAGES = {
+                  stadium: "assets/background.jpg",
+                  cricket: "assets/cricket bg.jpg",
+                  football: "assets/fotball bg.jpeg",
+                  tennis: "assets/tennis bg.jpg",
+                  hockey: "assets/hockey bg.jpg",
+                  kabaddi: "assets/kabbadi bg.avif",
+                  volleyball: "assets/volleyball bg.jpg",
+                  tabletennis: "assets/table tennis bg.jpg",
+                  baseball: "assets/baseball bg.jpg",
+                  esports: "assets/esports bg.jpg",
+                };
+                const bgImageCache = {};
+                function getBgImage(type) {
+                  const url = BG_IMAGES[type];
+                  if (!url) return null;
+                  if (!bgImageCache[type]) {
+                    const img = new Image();
+                    img.src = encodeURI(url);
+                    bgImageCache[type] = img;
+                  }
+                  return bgImageCache[type];
+                }
+
                 function drawBgGradient(ctx, type, w, h) {
                     if (type === "none") return;
+                    if (type === "custom") { drawCustomBg(ctx, customBgImage, w, h); return; }
 
-                    if (type === "stadium") {
-                        const sky = ctx.createLinearGradient(0, 0, 0, h * 0.45);
-                        sky.addColorStop(0, "#2196f3"); sky.addColorStop(1, "#87ceeb");
-                        ctx.fillStyle = sky; ctx.fillRect(0, 0, w, h * 0.45);
-                        const field = ctx.createLinearGradient(0, h * 0.4, 0, h);
-                        field.addColorStop(0, "#1a8a2e"); field.addColorStop(0.3, "#15803d");
-                        field.addColorStop(0.7, "#166534"); field.addColorStop(1, "#14532d");
-                        ctx.fillStyle = field; ctx.fillRect(0, h * 0.4, w, h * 0.6);
-                        ctx.strokeStyle = "rgba(255,255,255,0.07)";
-                        ctx.lineWidth = 1;
-                        for (let x = 0; x < w; x += 40) { ctx.beginPath(); ctx.moveTo(x, h * 0.38); ctx.lineTo(x - 20, h); ctx.stroke(); }
-                        for (let y = 0; y < 6; y++) { ctx.fillStyle = "rgba(255,255,255,0.03)"; ctx.fillRect(0, h * 0.42 + y * h * 0.08, w, 2); }
-                        return;
-                    }
+                    const img = getBgImage(type);
+                    if (img && img.complete && img.width) { drawCustomBg(ctx, img, w, h); return; }
 
-                    if (type === "cricket") {
-                        const outfield = ctx.createRadialGradient(w / 2, h * 0.8, 0, w / 2, h * 0.8, w * 0.8);
-                        outfield.addColorStop(0, "#22c55e"); outfield.addColorStop(1, "#166534");
-                        ctx.fillStyle = outfield; ctx.fillRect(0, 0, w, h);
-                        ctx.fillStyle = "#a16207"; ctx.fillRect(w * 0.3, 0, w * 0.08, h * 0.7);
-                        ctx.fillStyle = "#ca8a04"; ctx.fillRect(w * 0.32, 0, w * 0.04, h * 0.7);
-                        ctx.fillStyle = "#eab308"; ctx.fillRect(w * 0.33, 0, w * 0.02, h * 0.7);
-                        ctx.fillStyle = "rgba(255,255,255,0.04)";
-                        for (let i = 0; i < w; i += 30) ctx.fillRect(i, 0, 1, h);
-                        return;
-                    }
+                    const G = (stops) => {
+                        const g = ctx.createLinearGradient(0, 0, 0, h);
+                        stops.forEach(s => g.addColorStop(s[0], s[1]));
+                        return g;
+                    };
+                    const fill = (g) => { ctx.fillStyle = g; ctx.fillRect(0, 0, w, h); };
+                    const vignette = () => {
+                        const v = ctx.createRadialGradient(w/2, h/2, Math.min(w,h)*0.2, w/2, h/2, Math.max(w,h)*0.75);
+                        v.addColorStop(0, "rgba(0,0,0,0)"); v.addColorStop(1, "rgba(0,0,0,0.28)");
+                        ctx.fillStyle = v; ctx.fillRect(0, 0, w, h);
+                    };
 
-                    if (type === "football") {
-                        const sky = ctx.createLinearGradient(0, 0, 0, h * 0.4);
-                        sky.addColorStop(0, "#1d4ed8"); sky.addColorStop(1, "#93c5fd");
-                        ctx.fillStyle = sky; ctx.fillRect(0, 0, w, h * 0.4);
-                        const field = ctx.createLinearGradient(0, h * 0.35, 0, h);
-                        field.addColorStop(0, "#16a34a"); field.addColorStop(0.5, "#15803d");
-                        field.addColorStop(1, "#166534");
-                        ctx.fillStyle = field; ctx.fillRect(0, h * 0.35, w, h * 0.65);
-                        ctx.fillStyle = "rgba(255,255,255,0.06)";
-                        for (let x = 0; x < w; x += 60) ctx.fillRect(x, h * 0.35, 4, h * 0.65);
-                        ctx.strokeStyle = "rgba(255,255,255,0.08)";
-                        ctx.lineWidth = 1;
-                        ctx.strokeRect(w * 0.08, h * 0.4, w * 0.84, h * 0.55);
-                        ctx.beginPath();
-                        ctx.arc(w / 2, h * 0.67, 20, 0, Math.PI * 2);
-                        ctx.stroke();
-                        return;
-                    }
-
-                    if (type === "basketball") {
-                        const court = ctx.createLinearGradient(0, 0, w, h);
-                        court.addColorStop(0, "#d97706"); court.addColorStop(0.3, "#b45309");
-                        court.addColorStop(0.5, "#92400e"); court.addColorStop(1, "#78350f");
-                        ctx.fillStyle = court; ctx.fillRect(0, 0, w, h);
-                        ctx.strokeStyle = "rgba(255,255,255,0.08)";
-                        ctx.lineWidth = 2;
-                        ctx.strokeRect(w * 0.05, h * 0.05, w * 0.9, h * 0.9);
-                        ctx.beginPath(); ctx.arc(w / 2, h / 2, 30, 0, Math.PI * 2); ctx.stroke();
-                        ctx.fillStyle = "rgba(255,255,255,0.02)";
-                        ctx.fillRect(0, h * 0.3, w * 0.15, h * 0.4);
-                        ctx.fillRect(w * 0.85, h * 0.3, w * 0.15, h * 0.4);
-                        return;
-                    }
+                    const presets = {
+                        stadium:    G([[0,"#1d4ed8"],[0.32,"#60a5fa"],[0.45,"#15803d"],[0.7,"#166534"],[1,"#052e16"]]),
+                        cricket:    G([[0,"#bbf7d0"],[0.28,"#4ade80"],[0.45,"#16a34a"],[0.7,"#15803d"],[1,"#14532d"]]),
+                        football:   G([[0,"#1e3a8a"],[0.3,"#3b82f6"],[0.45,"#15803d"],[0.7,"#166534"],[1,"#052e16"]]),
+                        basketball: G([[0,"#f59e0b"],[0.3,"#d97706"],[0.5,"#b45309"],[1,"#78350f"]]),
+                        tennis:     G([[0,"#1e3a8a"],[0.3,"#3b82f6"],[0.45,"#15803d"],[0.7,"#166534"],[1,"#052e16"]]),
+                        hockey:     G([[0,"#e0f2fe"],[0.3,"#7dd3fc"],[0.45,"#15803d"],[0.7,"#166534"],[1,"#052e16"]]),
+                        kabaddi:    G([[0,"#fcd34d"],[0.3,"#f59e0b"],[0.5,"#d97706"],[1,"#92400e"]]),
+                        volleyball: G([[0,"#fde68a"],[0.3,"#38bdf8"],[0.45,"#0ea5e9"],[0.7,"#0369a1"],[1,"#0c4a6e"]]),
+                        tabletennis:G([[0,"#1e293b"],[0.3,"#475569"],[0.45,"#dc2626"],[0.7,"#b91c1c"],[1,"#7f1d1d"]]),
+                        baseball:   G([[0,"#1e3a8a"],[0.3,"#2563eb"],[0.45,"#16a34a"],[0.7,"#15803d"],[1,"#052e16"]]),
+                        esports:    G([[0,"#7c3aed"],[0.35,"#a855f7"],[0.6,"#3b82f6"],[1,"#1e1b4b"]]),
+                    };
+                    if (presets[type]) { fill(presets[type]); vignette(); }
                 }
 
                 function applyBeautyCapture(imageData, w, h) {
@@ -1391,16 +1414,14 @@
                     for (let i = 0, p = 0; i < len; i += 4, p++) {
                         const m = Math.min(1, dil[p] / 255);
                         if (m > 0.01) {
-                            const s = 0.75 * m;
+                            const s = 0.5 * m;
                             data[i]   = data[i]   * (1 - s) + blur[i]   * s;
                             data[i+1] = data[i+1] * (1 - s) + blur[i+1] * s;
                             data[i+2] = data[i+2] * (1 - s) + blur[i+2] * s;
-                            const l = 1 + 0.12 * m;
+                            const l = 1 + 0.06 * m;
                             data[i]   = Math.min(255, data[i]   * l);
                             data[i+1] = Math.min(255, data[i+1] * l);
                             data[i+2] = Math.min(255, data[i+2] * l);
-                            data[i]   = Math.min(255, data[i]   * 1.04);
-                            data[i+2] = Math.max(0,   data[i+2] * 0.95);
                         }
                     }
 
@@ -1429,13 +1450,10 @@
                     // ── Step 5: Glow + brightness ──
                     for (let i = 0; i < len; i += 4) {
                         const g = 0.299*data[i] + 0.587*data[i+1] + 0.114*data[i+2];
-                        const sb = 1.15;
+                        const sb = 1.08;
                         data[i]   = Math.min(255, data[i]   * sb - g * (sb - 1));
                         data[i+1] = Math.min(255, data[i+1] * sb - g * (sb - 1));
                         data[i+2] = Math.min(255, data[i+2] * sb - g * (sb - 1));
-                        data[i]   = Math.min(255, data[i]   * 1.06);
-                        data[i+1] = Math.min(255, data[i+1] * 1.06);
-                        data[i+2] = Math.min(255, data[i+2] * 1.06);
                     }
                     return imageData;
                 }
@@ -1461,7 +1479,7 @@
                                 case "dramatic": parts.push("contrast(1.5) brightness(0.85) saturate(1.3)"); break;
                             }
                         }
-                        if (b) parts.push("brightness(1.06) contrast(0.94) saturate(1.15) blur(0.5px) drop-shadow(0 0 2px rgba(255,200,150,0.15))");
+                        if (b) parts.push("saturate(1.08) brightness(1.04) contrast(0.98)");
                         el.style.filter = parts.join(" ");
                     }
                 }
@@ -1497,9 +1515,10 @@
                                     const doSeg = segModelReady && selectedBg !== "none";
                                     if (doSeg) {
                                         try {
-                                            const res = await segModel.send({ image: v });
+                                            await segModel.send({ image: v });
+                                            const ms = lastSegResults && lastSegResults.segmentationMask;
+                                            if (!ms) throw new Error("no mask");
                                             drawBgGradient(ctx, selectedBg, vw, vh);
-                                            const ms = res.segmentationMask;
                                             if (!tempCanvas) {
                                                 tempCanvas = document.createElement("canvas");
                                                 tempCtx = tempCanvas.getContext("2d");
@@ -1603,9 +1622,32 @@
                         });
                         btn.className = "bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white bg-white/10 shrink-0 font-medium";
                         selectedBg = btn.dataset.bg;
+                        if (selectedBg === "custom") { const inp = document.getElementById("custom-bg-input"); if (inp) inp.click(); }
                         applyBgPreview();
                     });
                 });
+
+                const customBgInput = document.getElementById("custom-bg-input");
+                if (customBgInput) {
+                    customBgInput.addEventListener("change", (e) => {
+                        const f = e.target.files && e.target.files[0];
+                        if (!f) return;
+                        const r = new FileReader();
+                        r.onload = (ev) => {
+                            const img = new Image();
+                            img.onload = () => {
+                                customBgImage = img;
+                                selectedBg = "custom";
+                                applyBgPreview();
+                                const rm = document.getElementById("review-modal");
+                                if (rm && !rm.classList.contains("hidden")) renderReviewWithBg("custom");
+                            };
+                            img.src = ev.target.result;
+                        };
+                        r.readAsDataURL(f);
+                        e.target.value = "";
+                    });
+                }
 
                 document.getElementById("beauty-toggle")?.addEventListener("change", applyVideoFilter);
 
@@ -1628,8 +1670,9 @@
                             try {
                                 const ld = document.getElementById("camera-loading");
                                 if (ld) ld.classList.remove("hidden");
-                                const res = await segModel.send({ image: video });
-                                const ms = res.segmentationMask;
+                                await segModel.send({ image: video });
+                                const ms = lastSegResults && lastSegResults.segmentationMask;
+                                if (!ms) throw new Error("no mask");
                                 const t = document.createElement("canvas");
                                 t.width = vw; t.height = vh;
                                 const tc = t.getContext("2d");
@@ -1709,8 +1752,8 @@
                             const vw = raw.width, vh = raw.height;
                             const visW = vw / zoom, visH = vh / zoom;
                             const sx = (vw - visW) / 2, sy = (vh - visH) / 2;
-                            const res = await segModel.send({ image: video });
-                            const mask = res.segmentationMask;
+                            await segModel.send({ image: video });
+                            const mask = lastSegResults && lastSegResults.segmentationMask;
                             const pc = document.createElement("canvas");
                             pc.width = vw; pc.height = vh;
                             const pctx = pc.getContext("2d");
@@ -1765,6 +1808,10 @@
                 function renderReviewWithBg(newBg) {
                     reviewState.bg = newBg;
                     updateReviewCanvas(composeReviewCanvas());
+                    const img = getBgImage(newBg);
+                    if (img && !img.complete) {
+                        img.onload = () => { if (reviewState.bg === newBg) updateReviewCanvas(composeReviewCanvas()); };
+                    }
                 }
 
                 document.getElementById("close-review-modal").addEventListener("click", () => {
@@ -1778,6 +1825,7 @@
                             b.className = "review-bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors";
                         });
                         btn.className = "review-bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white bg-white/10 shrink-0 font-medium";
+                        if (btn.dataset.bg === "custom") { const inp = document.getElementById("custom-bg-input"); if (inp) inp.click(); return; }
                         renderReviewWithBg(btn.dataset.bg);
                     });
                 });
@@ -1976,6 +2024,7 @@
                 });
             </script>
 
+  <script type="module" src="js/script.js"></script>
 </body>
 
 </html>

@@ -10,6 +10,151 @@
     stroke 0.3s ease;
 }
 
+/* =========================
+   NAMED THEME BINDINGS
+   The body.theme-* classes (set by settings.js / script.js)
+   define --page-bg / --card-bg / --border / --text /
+   --text-light / --primary / --hover. These rules bind the
+   global Tailwind surface/brand classes to those variables so
+   every theme looks distinct across the whole site.
+   ========================= */
+body.theme-light,
+body.theme-dark,
+body.theme-stadium,
+body.theme-esports,
+body.theme-royal {
+  background-color: var(--page-bg);
+  color: var(--text);
+}
+
+/* Body element itself carries bg-background / text-on-surface */
+body.theme-light.bg-background,
+body.theme-dark.bg-background,
+body.theme-stadium.bg-background,
+body.theme-esports.bg-background,
+body.theme-royal.bg-background {
+  background-color: var(--page-bg) !important;
+}
+
+body.theme-light.text-on-surface,
+body.theme-dark.text-on-surface,
+body.theme-stadium.text-on-surface,
+body.theme-esports.text-on-surface,
+body.theme-royal.text-on-surface {
+  color: var(--text) !important;
+}
+
+body.theme-light .bg-surface,
+body.theme-dark .bg-surface,
+body.theme-stadium .bg-surface,
+body.theme-esports .bg-surface,
+body.theme-royal .bg-surface,
+body.theme-light .bg-surface-container-lowest,
+body.theme-dark .bg-surface-container-lowest,
+body.theme-stadium .bg-surface-container-lowest,
+body.theme-esports .bg-surface-container-lowest,
+body.theme-royal .bg-surface-container-lowest,
+body.theme-light .bg-surface-container-low,
+body.theme-dark .bg-surface-container-low,
+body.theme-stadium .bg-surface-container-low,
+body.theme-esports .bg-surface-container-low,
+body.theme-royal .bg-surface-container-low,
+body.theme-light .bg-brand-card,
+body.theme-dark .bg-brand-card,
+body.theme-stadium .bg-brand-card,
+body.theme-esports .bg-brand-card,
+body.theme-royal .bg-brand-card {
+  background-color: var(--card-bg) !important;
+}
+
+body.theme-light .bg-background,
+body.theme-dark .bg-background,
+body.theme-stadium .bg-background,
+body.theme-esports .bg-background,
+body.theme-royal .bg-background {
+  background-color: var(--page-bg) !important;
+}
+
+body.theme-light .bg-brand-dark,
+body.theme-dark .bg-brand-dark,
+body.theme-stadium .bg-brand-dark,
+body.theme-esports .bg-brand-dark,
+body.theme-royal .bg-brand-dark {
+  background-color: var(--card-bg) !important;
+}
+
+body.theme-light .border-outline-variant,
+body.theme-dark .border-outline-variant,
+body.theme-stadium .border-outline-variant,
+body.theme-esports .border-outline-variant,
+body.theme-royal .border-outline-variant,
+body.theme-light .border-brand-border,
+body.theme-dark .border-brand-border,
+body.theme-stadium .border-brand-border,
+body.theme-esports .border-brand-border,
+body.theme-royal .border-brand-border {
+  border-color: var(--border) !important;
+}
+
+body.theme-light .text-on-surface,
+body.theme-dark .text-on-surface,
+body.theme-stadium .text-on-surface,
+body.theme-esports .text-on-surface,
+body.theme-royal .text-on-surface,
+body.theme-light .text-on-surface-variant,
+body.theme-dark .text-on-surface-variant,
+body.theme-stadium .text-on-surface-variant,
+body.theme-esports .text-on-surface-variant,
+body.theme-royal .text-on-surface-variant {
+  color: var(--text-light) !important;
+}
+
+body.theme-light .text-primary,
+body.theme-dark .text-primary,
+body.theme-stadium .text-primary,
+body.theme-esports .text-primary,
+body.theme-royal .text-primary,
+body.theme-light .bg-primary,
+body.theme-dark .bg-primary,
+body.theme-stadium .bg-primary,
+body.theme-esports .bg-primary,
+body.theme-royal .bg-primary {
+  color: var(--primary) !important;
+  background-color: var(--primary) !important;
+}
+
+body.theme-light .bg-primary\/10,
+body.theme-dark .bg-primary\/10,
+body.theme-stadium .bg-primary\/10,
+body.theme-esports .bg-primary\/10,
+body.theme-royal .bg-primary\/10 {
+  background-color: color-mix(in srgb, var(--primary) 10%, transparent) !important;
+}
+
+/* Hover surfaces */
+body.theme-light .hover\:bg-surface-container-high:hover,
+body.theme-dark .hover\:bg-surface-container-high:hover,
+body.theme-stadium .hover\:bg-surface-container-high:hover,
+body.theme-esports .hover\:bg-surface-container-high:hover,
+body.theme-royal .hover\:bg-surface-container-high:hover,
+body.theme-light .hover\:bg-white\/5:hover,
+body.theme-dark .hover\:bg-white\/5:hover,
+body.theme-stadium .hover\:bg-white\/5:hover,
+body.theme-esports .hover\:bg-white\/5:hover,
+body.theme-royal .hover\:bg-white\/5:hover {
+  background-color: var(--hover) !important;
+}
+
+/* Logo text follows the active accent (except .text-connect, which is
+   forced blue in light mode and green in dark mode — see below). */
+body.theme-light .text-accent,
+body.theme-dark .text-accent,
+body.theme-stadium .text-accent,
+body.theme-esports .text-accent,
+body.theme-royal .text-accent {
+  color: var(--primary) !important;
+}
+
 /* Custom Scrollbars */
 ::-webkit-scrollbar {
   width: 6px;
@@ -27,6 +172,16 @@
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #6c7a71;
+}
+
+/* Match cards: guarantee a solid surface + border so cards never look
+   "transparent/overlapping" regardless of theme class on <body>. */
+.bg-card-bg,
+.bg-brand-card {
+  background-color: var(--card-bg, #101a2e) !important;
+}
+.border-border-subtle {
+  border-color: var(--border, #25324a) !important;
 }
 
 /* Dark Mode Overrides for Specific Components */
@@ -64,10 +219,15 @@
   color: #ffffff !important;
 }
 /* Fanconnact Logo Text: Connect = blue in light, green in dark */
-:root:not(.dark) .text-connect {
+:root:not(.dark) .text-connect,
+body.theme-light .text-connect,
+body.theme-esports .text-connect,
+body.theme-royal .text-connect {
   color: #2196f3 !important;
 }
-.dark .text-connect {
+.dark .text-connect,
+body.theme-dark .text-connect,
+body.theme-stadium .text-connect {
   color: #10b981 !important;
 }
 
@@ -80,9 +240,87 @@
   padding: 0 !important;
 }
 
+/* =========================
+   SIDEBAR BEHAVIOUR
+   - Desktop (>=1024px): forced visible, static, 256px wide.
+   - Mobile (<1024px): a fixed overlay drawer (per-page Tailwind
+     "fixed -translate-x-full lg:translate-x-0 lg:static"); capped
+     width so it never eats the whole screen.
+   ========================= */
+@media (min-width: 1024px) {
+  #sidebar {
+    position: static !important;
+    transform: none !important;
+    width: 256px !important;
+    min-width: 256px !important;
+    max-width: 80vw !important;
+    overflow-y: auto !important;
+    z-index: 60;
+  }
+  #sidebar .nav-text,
+  #sidebar .logo-text,
+  #sidebar .sidebar-label { display: inline !important; }
+  /* Hide the mobile-only close button on desktop (no drawer) */
+  #sidebar #close-sidebar-btn,
+  #close-sidebar-btn { display: none !important; }
+}
+
+/* Mobile drawer width cap (does not push the main content) */
+@media (max-width: 1023px) {
+  #sidebar {
+    width: 80vw !important;
+    min-width: 80vw !important;
+    max-width: 300px !important;
+  }
+  #sidebar .nav-text,
+  #sidebar .logo-text,
+  #sidebar .sidebar-label { display: inline !important; }
+}
+
+/* Hide the header logo whenever the sidebar (which has its own logo)
+   is visible, on every screen size. script.js toggles this class. */
+.header-logo-hidden { display: none !important; }
+
+/* Hide/show toggle (menu button) — works on every screen size.
+   Collapsing the sidebar to 0 lets the flex-1 main content
+   expand to fill the screen. */
+#sidebar.sidebar-hidden {
+  width: 0 !important;
+  min-width: 0 !important;
+  max-width: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  border-width: 0 !important;
+  overflow: hidden !important;
+  transform: none !important;
+}
+
 /* ==========================
    GLOBAL RESPONSIVE
    ========================== */
+
+/* ── TABLET (768px – 1024px) ──
+   Full sidebar stays visible (with labels) on every screen.
+   Only grids/touch targets tighten; no icon rail, no drawer. */
+@media (min-width: 768px) and (max-width: 1024px) {
+  body { overflow-x: hidden; }
+  img { max-width: 100%; height: auto; }
+  /* Below 1024px the sidebar is a drawer (toggled by hamburger). */
+  #sidebar .nav-text,
+  #sidebar .logo-text,
+  #sidebar .sidebar-label { display: inline !important; }
+  /* Tighten common grids/cards */
+  .grid { gap: 14px; }
+  [class*="gap-xl"] { gap: 16px !important; }
+  [class*="gap-lg"] { gap: 12px !important; }
+  /* Keep headings readable but not huge */
+  h1 { font-size: clamp(24px, 3.4vw, 32px) !important; }
+  h2 { font-size: clamp(20px, 2.8vw, 26px) !important; }
+  /* Bigger tap targets for interactive rows */
+  .setting-row, .notification-item, .sport-item,
+  .flex.items-center.justify-between { min-height: 44px; }
+}
+
 @media (max-width: 768px) {
   body { overflow-x: hidden; }
   img { max-width: 100%; height: auto; }
@@ -93,6 +331,17 @@
   h1 { font-size: clamp(22px, 6vw, 32px) !important; }
   h2 { font-size: clamp(18px, 5vw, 26px) !important; }
   h3 { font-size: clamp(16px, 4vw, 22px) !important; }
+  /* Below 1024px the sidebar is a drawer (toggled by hamburger).
+     Keep labels visible when it opens. */
+  #sidebar .nav-text,
+  #sidebar .logo-text,
+  #sidebar .sidebar-label { display: inline !important; }
+  /* On phones the sidebar must not eat the whole screen — cap its width. */
+  #sidebar {
+    width: 80vw !important;
+    min-width: 80vw !important;
+    max-width: 300px !important;
+  }
 }
 
 @media (max-width: 480px) {
@@ -102,4 +351,68 @@
   h3 { font-size: clamp(14px, 3.5vw, 18px) !important; }
   .hide-xs { display: none !important; }
   .show-xs { display: block !important; }
+  /* Single-column grids on small phones */
+  .grid-cols-2, .grid-cols-3, .grid-cols-4 { grid-template-columns: 1fr !important; }
+}
+
+/* ==========================
+   LOGIN PAGE — TABLET / MOBILE
+   ========================== */
+/* On tablet the hero + form sit side-by-side (md:flex-row).
+   Keep the hero compact and let the form area scroll. */
+@media (min-width: 768px) and (max-width: 1024px) {
+  [data-purpose="hero-content"] {
+    padding: 28px 32px !important;
+  }
+  [data-purpose="hero-content"] h2 {
+    font-size: 2.25rem !important;
+    line-height: 1.05 !important;
+  }
+  [data-purpose="login-form-container"] {
+    padding: 24px !important;
+  }
+  [data-purpose="login-card"] {
+    padding: 24px !important;
+  }
+}
+
+/* Phones: hero shrinks, form fills width, social grid stays 2-col */
+@media (max-width: 640px) {
+  [data-purpose="hero-content"] {
+    min-height: 300px !important;
+    padding: 20px !important;
+  }
+  [data-purpose="hero-content"] h2 {
+    font-size: 1.75rem !important;
+    line-height: 1.1 !important;
+  }
+  [data-purpose="login-form-container"] {
+    padding: 16px !important;
+  }
+  [data-purpose="login-card"] {
+    padding: 20px !important;
+    border-radius: 20px !important;
+  }
+  /* Full-width social buttons stack nicely */
+  [data-purpose="login-card"] .grid-cols-2 {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  [data-purpose="login-card"] input,
+  [data-purpose="login-card"] button[type="submit"] {
+    font-size: 16px; /* prevents iOS zoom-on-focus */
+  }
+}
+
+/* ==========================
+   GLOBAL MOBILE SAFETY
+   Fixes the universal causes of content overlap / cut-off on
+   small screens (flex children overflowing, images wider than
+   viewport, locked scroll). Desktop (>=1024px) is untouched.
+   ========================== */
+/* Prevent accidental horizontal page scroll on small screens only.
+   Deliberately minimal so no desktop/tablet layout is altered. */
+@media (max-width: 1024px) {
+  html, body { overflow-x: hidden !important; }
+  img, video, iframe, canvas, svg { max-width: 100% !important; height: auto; }
 }

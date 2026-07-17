@@ -348,6 +348,37 @@ body { font-family: 'Lexend', sans-serif; background: #f8fafc; color: #0f172a; o
   100% { opacity: 0; transform: translateY(-180px) scale(0.85) rotate(10deg); }
 }
 
+/* ===== BIG CENTER EVENT (between team scores) ===== */
+.center-event {
+  position: fixed;
+  top: 24%; left: 50%;
+  transform: translate(-50%, -50%) scale(0.3);
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  opacity: 0; pointer-events: none;
+  transition: opacity .25s ease, transform .35s cubic-bezier(.2,1.4,.4,1);
+  z-index: 130;
+}
+.center-event.show { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+.center-event-badge {
+  width: 64px; height: 64px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 30px; font-weight: 900; color: #fff;
+  box-shadow: 0 8px 30px rgba(0,0,0,.35);
+  animation: centerPulse .6s ease;
+}
+.center-event-time {
+  font-size: 10px; font-weight: 700; color: #fff;
+  background: rgba(0,0,0,.55); padding: 1px 8px; border-radius: 8px;
+  margin-top: 4px;
+}
+.center-event-six .center-event-badge { background: linear-gradient(135deg,#10b981,#047857); }
+.center-event-four .center-event-badge { background: linear-gradient(135deg,#2196f3,#1565c0); }
+.center-event-wicket .center-event-badge { background: linear-gradient(135deg,#ef4444,#b91c1c); }
+.center-event-milestone .center-event-badge { background: linear-gradient(135deg,#f7941d,#d97706); }
+@keyframes centerPulse {
+  0% { transform: scale(0.6); } 50% { transform: scale(1.12); } 100% { transform: scale(1); }
+}
+
 /* ===== LIVE POSITIONS (pitch / mat / field) ===== */
 .pos { position: absolute; transform: translate(-50%,-50%); display: flex; flex-direction: column; align-items: center; gap: 2px; z-index: 2; }
 .pos-dot { width: 14px; height: 14px; border-radius: 50%; background: #f7941d; border: 2px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,.3); }
@@ -399,3 +430,57 @@ body { font-family: 'Lexend', sans-serif; background: #f8fafc; color: #0f172a; o
 .pitch-line.center { position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; background: rgba(255,255,255,.5); transform: translateX(-50%); }
 .pitch-line.circle { position: absolute; left: 50%; top: 50%; width: 70px; height: 70px; border: 2px solid rgba(255,255,255,.5); border-radius: 50%; transform: translate(-50%,-50%); }
 .football-pitch .pos-dot { background: #fbbf24; }
+
+/* ===== SPORT-SPECIFIC AMBIENT BACKGROUND ===== */
+body.sport-cricket { background:
+  radial-gradient(1200px 600px at 80% -10%, rgba(34,150,243,0.10), transparent 60%),
+  radial-gradient(900px 500px at 0% 0%, rgba(16,185,129,0.08), transparent 55%); }
+body.sport-football { background:
+  radial-gradient(1200px 600px at 80% -10%, rgba(16,185,129,0.12), transparent 60%),
+  radial-gradient(900px 500px at 0% 0%, rgba(34,150,243,0.08), transparent 55%); }
+body.sport-basketball { background:
+  radial-gradient(1200px 600px at 80% -10%, rgba(249,115,22,0.12), transparent 60%),
+  radial-gradient(900px 500px at 0% 0%, rgba(245,158,11,0.08), transparent 55%); }
+body.sport-tennis { background:
+  radial-gradient(1200px 600px at 80% -10%, rgba(234,179,8,0.12), transparent 60%),
+  radial-gradient(900px 500px at 0% 0%, rgba(16,185,129,0.08), transparent 55%); }
+body.sport-baseball { background:
+  radial-gradient(1200px 600px at 80% -10%, rgba(239,68,68,0.10), transparent 60%),
+  radial-gradient(900px 500px at 0% 0%, rgba(148,163,184,0.10), transparent 55%); }
+body.sport-hockey { background:
+  radial-gradient(1200px 600px at 80% -10%, rgba(59,130,246,0.12), transparent 60%),
+  radial-gradient(900px 500px at 0% 0%, rgba(16,185,129,0.08), transparent 55%); }
+body.sport-kabaddi, body.sport-esports { background:
+  radial-gradient(1200px 600px at 80% -10%, rgba(247,148,29,0.12), transparent 60%),
+  radial-gradient(900px 500px at 0% 0%, rgba(239,68,68,0.08), transparent 55%); }
+body.sport-tabletennis, body.sport-volleyball { background:
+  radial-gradient(1200px 600px at 80% -10%, rgba(168,85,247,0.12), transparent 60%),
+  radial-gradient(900px 500px at 0% 0%, rgba(34,150,243,0.08), transparent 55%); }
+html.dark body.sport-cricket, html.dark body.sport-football, html.dark body.sport-basketball,
+html.dark body.sport-tennis, html.dark body.sport-baseball, html.dark body.sport-hockey,
+html.dark body.sport-kabaddi, html.dark body.sport-esports, html.dark body.sport-tabletennis,
+html.dark body.sport-volleyball { background-color: #0b0e11 !important; }
+
+/* ===== OVER / INNINGS BREAK BANNERS (Crex-style) ===== */
+.over-banner {
+  opacity: 0;
+  transform: translateY(-16px) scale(0.92);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.over-banner.show {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* ===== OVER-BALL VARIANTS (Crex-style) ===== */
+.over-ball.three { background: #a855f7; }
+.over-ball.milestone { background: #10b981; }
+.over-ball.hit { background: #10b981; }
+.over-ball.raid { background: #f7941d; }
+.over-ball.touch { background: #f7941d; }
+.over-ball.goal { background: #10b981; }
+.over-ball.save { background: #0ea5e9; }
+.over-ball.pts { background: #0ea5e9; }
+.over-ball.var { background: #f59e0b; }
+.over-ball.challenge { background: #f59e0b; }
+.over-ball.card { background: #dc2626; }

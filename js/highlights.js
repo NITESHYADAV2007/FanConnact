@@ -1,4 +1,9 @@
-const API_SPORTS_KEY = '300dff825662a9fa64617cb19603443b';
+// SECURITY: the API-Sports key lives ONLY in backend/.env (gitignored) and is
+// NEVER exposed to the browser. All live-score calls go through the backend
+// proxy (/api/matches/:sport) which enforces the 100/day quota + cache.
+const API_PROXY_BASE = (location.protocol === 'file:')
+  ? 'http://localhost:3001'
+  : (location.origin.includes('localhost') ? 'http://localhost:3001' : location.origin);
 
 const SPORT_APIS = {
   football: { base: 'https://v3.football.api-sports.io', endpoint: '/fixtures', dateParam: 'date', leagueParam: 'league' },
@@ -44,13 +49,12 @@ async function fetchApiSports(sport, date) {
   const config = SPORT_APIS[sport];
   if (!config) return null;
   try {
-    const url = `${config.base}${config.endpoint}?${config.dateParam}=${date}`;
-    const res = await fetch(url, {
-      headers: { 'x-apisports-key': API_SPORTS_KEY }
-    });
+    // Proxy through backend (key stays server-side, quota + cache applied)
+    const url = `${API_PROXY_BASE}/api/matches/${sport}?date=${encodeURIComponent(date)}`;
+    const res = await fetch(url, { signal: AbortSignal.timeout(5000) });
     if (!res.ok) return null;
     const data = await res.json();
-    return data.response || [];
+    return data.matches || [];
   } catch (e) {
     return null;
   }

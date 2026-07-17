@@ -447,7 +447,7 @@
       <a href="news&update.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">News</a>
     </nav>
     <!-- END: MainHeader -->
-    <div class="flex flex-1 overflow-hidden">
+    <div class="flex flex-1 overflow-hidden page-flex">
       <!-- BEGIN: SidebarNav -->
       <aside
         id="sidebar"
@@ -637,7 +637,7 @@
       <!-- END: SidebarNav -->
       <!-- Main Feed -->
       <main
-        class="flex-1 overflow-y-auto bg-surface-dim custom-scrollbar px-md lg:px-xl py-lg"
+        class="flex-1 overflow-y-auto bg-surface-dim custom-scrollbar px-md lg:px-xl py-lg page-main"
       >
         <div class="max-w-4xl mx-auto">
           <div class="mb-xl">
@@ -706,7 +706,7 @@
       </main>
       <!-- Right Sidebar: Widgets -->
       <aside
-        class="hidden xl:flex flex-col w-[320px] bg-surface-container-low border-l border-outline-variant/30 overflow-y-auto custom-scrollbar p-md"
+        class="xl:flex flex-col w-full xl:w-[320px] bg-surface-container-low border-t xl:border-t-0 xl:border-l border-outline-variant/30 overflow-y-auto custom-scrollbar p-md page-aside"
       >
         <!-- Calendar Widget -->
         <div
@@ -1018,6 +1018,15 @@
   <script src="js/notif-ws.js"></script>
   <script src="js/matches-data.js"></script>
   <script src="js/matches-render.js"></script>
+  <style>
+    /* Show the right-sidebar widgets (Calendar + Rankings) below the
+       match feed on tablet/mobile; keep the right column only on xl. */
+    @media (max-width: 1279px) {
+      .page-flex { flex-direction: column; overflow-y: auto; }
+      .page-main { overflow: visible; flex: none; }
+      .page-aside { display: flex !important; max-height: none !important; order: 2; }
+    }
+  </style>
 </body>
 </html>
 
