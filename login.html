@@ -209,9 +209,18 @@
         }
 
         /* ── Remember me checkbox ── */
+        #remember-me {
+            appearance: auto !important;
+            -webkit-appearance: auto !important;
+            accent-color: #10b981 !important;
+        }
         html:not(.dark) #remember-me {
-            background: #ffffff;
+            background-color: #ffffff;
             border-color: #cbd5e1;
+        }
+        .dark #remember-me {
+            background-color: #0b1220;
+            border-color: #64748b;
         }
 
         /* ── Language button light ── */
@@ -601,7 +610,7 @@
             <div class="flex items-center justify-between px-1">
               <div class="flex items-center">
                 <input
-                  class="h-4 w-4 rounded border-gray-700 text-fan-emerald focus:ring-fan-emerald bg-transparent"
+                  class="h-4 w-4 rounded border-gray-700 text-fan-emerald focus:ring-fan-emerald"
                   id="remember-me"
                   name="remember-me"
                   type="checkbox"
