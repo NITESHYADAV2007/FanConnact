@@ -477,8 +477,13 @@ body.theme-royal nav {
 }
 
 /* Hide the header logo whenever the sidebar (which has its own logo)
-   is visible, on every screen size. script.js toggles this class. */
+   is visible, on every screen size. script.js toggles these classes.
+   The logo text uses .text-fan / .text-connect, so it already follows
+   the light/dark theme toggle. */
 .header-logo-hidden { display: none !important; }
+/* Revealed by script.js when the sidebar is collapsed/hidden, overriding
+   the per-page `lg:hidden` utility so the logo stays visible on desktop too. */
+#header-logo.header-logo-show { display: flex !important; }
 
 /* ── Top bar mobile safety: keep the right-side action cluster from
    ever overlapping the logo / nav. Buttons shrink, never wrap into

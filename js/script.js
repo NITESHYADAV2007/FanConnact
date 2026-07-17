@@ -273,8 +273,10 @@ document.addEventListener("DOMContentLoaded", () => {
     // On mobile the sidebar is a fixed overlay drawer (per-page Tailwind).
     // Hidden state == translated off-screen.
     sidebar.classList.toggle("-translate-x-full", isHidden);
-    // Hide the header logo whenever the sidebar (with its own logo) is visible
+    // Keep the header logo visible whenever the sidebar (with its own logo)
+    // is hidden, on every screen size. It already follows the theme toggle.
     headerLogo?.classList.toggle("header-logo-hidden", !isHidden);
+    headerLogo?.classList.toggle("header-logo-show", isHidden);
   }
 
   // --- Active Link Highlighting ---
@@ -2042,6 +2044,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     localStorage.setItem("sidebar-hidden", "false");
     headerLogo?.classList.add("header-logo-hidden");
+    headerLogo?.classList.remove("header-logo-show");
     sidebarBackdrop?.classList.add("opacity-0", "pointer-events-none");
   }
   function closeSidebar() {
@@ -2054,6 +2057,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     localStorage.setItem("sidebar-hidden", "true");
     headerLogo?.classList.remove("header-logo-hidden");
+    headerLogo?.classList.add("header-logo-show");
     sidebarBackdrop?.classList.add("opacity-0", "pointer-events-none");
   }
 
