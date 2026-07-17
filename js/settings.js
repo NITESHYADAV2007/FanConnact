@@ -141,6 +141,15 @@ themeCards.forEach((card) => {
   });
 });
 
+// Expose applyTheme globally so the inline Custom Theme Builder script
+// (in setting.html) can call window.applyTheme('custom').
+window.applyTheme = applyTheme;
+window.applyCustomTheme = applyCustomTheme;
+window.showToast = showToast;
+// Expose the live settings object so the builder can update it in memory
+// (not just localStorage) and have applyTheme reflect the new values immediately.
+window.settings = settings;
+
 /*=================================
 APPEARANCE TOGGLES
 =================================*/
@@ -165,6 +174,14 @@ SPORTS PREFERENCES
 =================================*/
 const sportCheckboxes = document.querySelectorAll("[data-sport]");
 
+// Defensive: older saved settings may lack the sports array.
+if (!Array.isArray(settings.sports)) {
+  settings.sports = [
+    "cricket", "football", "basketball", "tennis", "hockey",
+    "kabaddi", "volleyball", "tabletennis", "baseball"
+  ];
+}
+
 function loadSports() {
   sportCheckboxes.forEach((cb) => {
     cb.checked = settings.sports.includes(cb.dataset.sport);
@@ -187,6 +204,20 @@ sportCheckboxes.forEach((cb) => {
 NOTIFICATION PREFERENCES
 =================================*/
 const notifCheckboxes = document.querySelectorAll("[data-notif]");
+
+// Defensive: older saved settings may lack the notifications object.
+if (!settings.notifications || typeof settings.notifications !== "object") {
+  settings.notifications = {
+    liveMatchAlerts: true,
+    breakingNews: true,
+    predictionResults: true,
+    communityUpdates: true,
+    emailNotifications: true,
+    pushNotifications: true,
+    mentionsReplies: true,
+    newFollowers: true
+  };
+}
 
 function loadNotifications() {
   notifCheckboxes.forEach((cb) => {

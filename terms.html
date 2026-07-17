@@ -171,7 +171,7 @@
       <div class="flex gap-4 mb-8 border-b border-outline-variant/30 pb-2">
         <button
           id="tab-terms"
-          class="px-4 py-2 text-label-md font-label-md text-primary border-b-2 border-primary transition-colors"
+          class="px-4 py-2 text-label-md font-label-md bg-[#15803d] text-white border-b-2 border-[#15803d] rounded-t-md transition-colors"
         >
           Terms
         </button>
@@ -794,30 +794,34 @@
       function switchTab(tab) {
         if (tab === "privacy") {
           tabPrivacy.classList.add(
-            "text-primary",
             "border-b-2",
-            "border-primary",
+            "border-[#15803d]",
+            "bg-[#15803d]",
+            "text-white",
           );
-          tabPrivacy.classList.remove("text-surface-dim/70");
+          tabPrivacy.classList.remove("text-primary", "text-surface-dim/70");
           tabTerms.classList.remove(
-            "text-primary",
             "border-b-2",
-            "border-primary",
+            "border-[#15803d]",
+            "bg-[#15803d]",
+            "text-white",
           );
           tabTerms.classList.add("text-surface-dim/70");
           termsContent.classList.add("hidden");
           privacyContent.classList.remove("hidden");
         } else {
           tabTerms.classList.add(
-            "text-primary",
             "border-b-2",
-            "border-primary",
+            "border-[#15803d]",
+            "bg-[#15803d]",
+            "text-white",
           );
-          tabTerms.classList.remove("text-surface-dim/70");
+          tabTerms.classList.remove("text-primary", "text-surface-dim/70");
           tabPrivacy.classList.remove(
-            "text-primary",
             "border-b-2",
-            "border-primary",
+            "border-[#15803d]",
+            "bg-[#15803d]",
+            "text-white",
           );
           tabPrivacy.classList.add("text-surface-dim/70");
           privacyContent.classList.add("hidden");

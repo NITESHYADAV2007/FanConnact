@@ -88,8 +88,10 @@
   :root:not(.dark) header, :root:not(.dark) nav.xl\:hidden { background: #ffffff !important; border-color: #e2e8f0 !important; }
   html.dark header, html.dark nav.xl\:hidden { background: #000000 !important; border-color: #1f2937 !important; }
 
-  /* Score header block */
-  :root:not(.dark) section.bg-\[\#1c2e4a\] { background: #f1f5f9 !important; color: #0f172a !important; border-color: #e2e8f0 !important; }
+  /* Score header block — keep it a dark scoreboard in BOTH themes so the
+     white text / player strip stay readable. Only the inner scorecard
+     (bg-white) flips to light. */
+  :root:not(.dark) section.bg-\[\#1c2e4a\] { background: #0b1626 !important; color: #ffffff !important; border-color: #1e293b !important; }
   html.dark section.bg-\[\#1c2e4a\] { background: #0b1626 !important; color: #ffffff !important; border-color: #1e293b !important; }
 
   /* Secondary navigation */
@@ -98,6 +100,19 @@
   :root:not(.dark) nav.bg-\[\#0b1626\] a { color: #475569 !important; }
   :root:not(.dark) nav.bg-\[\#0b1626\] a.text-crexGold { color: #f7941d !important; }
   :root:not(.dark) nav.bg-\[\#0b1626\] a:hover { color: #f7941d !important; }
+
+  /* Scoreboard innings header bars (bg-[#0b1626]) are intentionally dark in
+     both themes. Keep them dark with white text in light mode so the team
+     code / totals stay readable (the .bg-white !important colour rule above
+     would otherwise bleed dark text onto them). */
+  :root:not(.dark) div.bg-\[\#0b1626\] { background: #0b1626 !important; color: #ffffff !important; }
+  :root:not(.dark) div.bg-\[\#0b1626\] .text-gray-300 { color: #cbd5e1 !important; }
+
+  /* crexGold is a bright orange-gold that reads fine on dark panels but is
+     low-contrast on light surfaces (result card, active tab). Darken it in
+     light mode so those texts stay readable. */
+  :root:not(.dark) .text-crexGold { color: #b45309 !important; }
+  :root:not(.dark) .bg-crexGold\/20 { background-color: #fef3c7 !important; }
 
   /* Content cards (bg-white) */
   :root:not(.dark) .bg-white { background-color: #ffffff !important; color: #0f172a !important; border-color: #e2e8f0 !important; }

@@ -160,6 +160,7 @@ document.addEventListener("DOMContentLoaded", () => {
         "login.html",
         "signup.html",
         "forget-password.html",
+        "reset-password.html",
         "terms.html",
       ];
 

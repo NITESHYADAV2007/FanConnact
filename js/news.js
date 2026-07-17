@@ -426,8 +426,8 @@ function renderBreakingTicker(articles) {
   return `
     <div class="breaking-ticker relative bg-gradient-to-r from-red-600/20 via-brand-card to-red-600/5 border-y border-red-900/30 overflow-hidden py-2 mb-6 rounded-lg">
       <div class="flex items-center gap-3 px-3">
-        <span class="flex items-center gap-1.5 text-red-400 font-bold text-xs shrink-0">
-          <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>
+        <span class="flex items-center gap-1.5 bg-red-600 text-white font-bold text-xs shrink-0 px-2 py-0.5 rounded-full">
+          <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
           BREAKING
         </span>
         <div class="overflow-hidden relative flex-1">

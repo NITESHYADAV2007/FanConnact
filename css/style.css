@@ -196,9 +196,11 @@ body.theme-custom .border-outline-variant,
 body.theme-custom .border-brand-border {
   border-color: var(--border) !important;
 }
-body.theme-custom .text-on-surface,
+body.theme-custom .text-on-surface {
+  color: var(--text, #ffffff) !important;
+}
 body.theme-custom .text-on-surface-variant {
-  color: var(--text-light) !important;
+  color: var(--text-light, #94a3b8) !important;
 }
 body.theme-custom .text-primary,
 body.theme-custom .bg-primary {
@@ -230,6 +232,22 @@ body.theme-custom .hover\:bg-white\/5:hover {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #6c7a71;
+}
+
+/* ── GLOBAL CHECKBOX TICK ──
+   Guarantee every checkbox shows a visible tick in every theme.
+   The Tailwind forms plugin sets `appearance: none` and relies on a
+   `text-*` colour for the checkmark; if that colour is missing (or a
+   `bg-transparent` class is used) the tick disappears. This rule forces
+   a native coloured tick via accent-color so it always renders. ── */
+input[type="checkbox"]:not(.sr-only):not(.peer) {
+  accent-color: #10b981 !important;
+}
+body.theme-custom input[type="checkbox"]:not(.sr-only):not(.peer),
+body.theme-stadium input[type="checkbox"]:not(.sr-only):not(.peer),
+body.theme-esports input[type="checkbox"]:not(.sr-only):not(.peer),
+body.theme-royal input[type="checkbox"]:not(.sr-only):not(.peer) {
+  accent-color: var(--primary, #10b981) !important;
 }
 
 /* Match cards: guarantee a solid surface + border so cards never look
@@ -275,8 +293,60 @@ body.theme-custom .hover\:bg-white\/5:hover {
    High specificity so it wins over per-page inline overrides. ── */
 html:root:not(.dark) .text-fan { color: #0f172a !important; }
 html.dark .text-fan { color: #ffffff !important; }
-html:root:not(.dark) .text-connect { color: #2196f3 !important; }
+html:root:not(.dark) .text-connect { color: #1565c0 !important; }
 html.dark .text-connect { color: #10b981 !important; }
+
+/* ── LIGHT MODE: remap hardcoded dark text colours to readable ones ──
+   Many components hardcode Tailwind dark-mode greys (text-gray-300/400/500)
+   and accent colours that become invisible on light backgrounds. In light
+   mode we remap them to dark, high-contrast equivalents. Dark surfaces that
+   intentionally keep light text (e.g. dark cards, theme swatches) override
+   these locally, so we deliberately do NOT blanket-remap .text-white. ── */
+html:not(.dark) .text-gray-100 { color: #1e293b !important; }
+html:not(.dark) .text-gray-200 { color: #334155 !important; }
+html:not(.dark) .text-gray-300 { color: #475569 !important; }
+html:not(.dark) .text-gray-400 { color: #64748b !important; }
+html:not(.dark) .text-gray-500 { color: #64748b !important; }
+html:not(.dark) .text-gray-600 { color: #475569 !important; }
+html:not(.dark) .text-slate-200 { color: #334155 !important; }
+html:not(.dark) .text-slate-300 { color: #475569 !important; }
+html:not(.dark) .text-slate-400 { color: #64748b !important; }
+html:not(.dark) .text-slate-500 { color: #64748b !important; }
+html:not(.dark) .text-yellow-400,
+html:not(.dark) .text-yellow-500 { color: #b45309 !important; }
+html:not(.dark) .text-yellow-600 { color: #b45309 !important; }
+html:not(.dark) .text-fan-emerald { color: #047857 !important; }
+html:not(.dark) .text-brand-green { color: #047857 !important; }
+
+/* Status / source badges use a light-tint background (bg-*-500/20 or
+   bg-*-900/40) with a light accent text (text-*-400). On a light page that
+   combination is low-contrast, so in light mode we darken the *-400 (and
+   *-500) accent text to a deeper shade. We deliberately do NOT remap the
+   *-300 shades — those are used on intentionally DARK panels (scoreboard
+   headers, live/result pills) where light text must stay light. */
+html:not(.dark) .text-blue-400 { color: #1e40af !important; }
+html:not(.dark) .text-emerald-400,
+html:not(.dark) .text-emerald-600 { color: #047857 !important; }
+html:not(.dark) .text-green-400,
+html:not(.dark) .text-green-500 { color: #15803d !important; }
+html:not(.dark) .text-red-400,
+html:not(.dark) .text-red-500 { color: #b91c1c !important; }
+html:not(.dark) .text-amber-400 { color: #b45309 !important; }
+html:not(.dark) .text-purple-400 { color: #6b21a8 !important; }
+html:not(.dark) .text-orange-400 { color: #c2410c !important; }
+html:not(.dark) .text-cyan-400 { color: #155e75 !important; }
+html:not(.dark) .text-lime-400 { color: #3f6212 !important; }
+html:not(.dark) .text-indigo-400 { color: #3730a3 !important; }
+html:not(.dark) .text-fuchsia-400 { color: #86198f !important; }
+html:not(.dark) .text-teal-400 { color: #115e59 !important; }
+html:not(.dark) .text-rose-400 { color: #9f1239 !important; }
+
+/* NOTE: Material-theme token classes (text-surface-dim, text-on-surface,
+   text-primary-fixed-dim, text-body-*, etc.) are intentionally NOT remapped
+   here. Those pages (signup / forget-password / settings) define their own
+   complete light/dark colour systems via CSS variables, and a blanket
+   override would clash with their correct values. Fixes for those pages
+   live in their own <style> blocks. */
 
 /* ── GLASSY SIDEBAR on every page & theme ── */
 #sidebar {
@@ -512,6 +582,28 @@ body.theme-custom nav {
   background-color: rgba(0, 0, 0, 0.35) !important;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+}
+
+/* ── AUTH CARDS (login / signup / forgot-password) ──
+   These cards use bg-white / dark:bg-black which the rule above makes
+   transparent under custom themes. Give them a solid surface fill so the
+   card content (text, inputs) stays readable on any custom background. ── */
+body.theme-custom .login-container-glow,
+body.theme-custom [data-purpose="login-card"],
+body.theme-custom .bg-white.rounded-2xl,
+body.theme-custom .dark\:bg-black.rounded-2xl {
+  background-color: var(--card-bg, #111827) !important;
+  border-color: var(--border, #243347) !important;
+  color: var(--text, #ffffff) !important;
+}
+/* Inputs inside auth cards must use the theme text colour so they're visible */
+body.theme-custom .login-container-glow input,
+body.theme-custom [data-purpose="login-card"] input,
+body.theme-custom .bg-white.rounded-2xl input,
+body.theme-custom .dark\:bg-black.rounded-2xl input {
+  color: var(--text, #ffffff) !important;
+  background-color: color-mix(in srgb, var(--card-bg, #111827) 70%, #000 0%) !important;
+  border-color: var(--border, #243347) !important;
 }
 
 /* COMPACT MODE */

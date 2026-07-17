@@ -64,6 +64,13 @@ const handleSocialLogin = async(provider) => {
 
         if (!userSnap.exists()) {
             const email = user.email;
+            // Check if this email is already registered with another method
+            let alreadyRegistered = false;
+            try {
+                const methods = await fetchSignInMethodsForEmail(auth, email);
+                if (methods.length > 0) alreadyRegistered = true;
+            } catch (_) { /* ignore */ }
+
             const username = email.split("@")[0] + Math.floor(Math.random() * 1000);
             await setDoc(userRef, {
                 fullName: user.displayName || email.split("@")[0],
@@ -75,6 +82,9 @@ const handleSocialLogin = async(provider) => {
                 createdAt: new Date().toISOString(),
             });
             await setDoc(doc(db, "usernames", username), { uid: user.uid });
+            if (alreadyRegistered) {
+                alert("This email is already registered. Your account has been linked and you are now signed in.");
+            }
         }
 
         window.location.href = "dashboard.html";
@@ -143,6 +153,36 @@ loginForm?.addEventListener("submit", async(e) => {
     }
 });
 
+// --- Login email: check if already registered (show immediately) ---
+let loginEmailTimer = null;
+const loginEmailInput = document.getElementById("username");
+const loginEmailMsg = document.getElementById("login-email-msg");
+if (loginEmailInput && loginEmailMsg) {
+    loginEmailInput.addEventListener("input", function () {
+        const val = this.value.trim();
+        if (loginEmailTimer) clearTimeout(loginEmailTimer);
+        loginEmailMsg.className = "text-xs mt-1 ml-1 hidden";
+        loginEmailMsg.textContent = "";
+        if (!val || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) return;
+        loginEmailMsg.className = "text-xs mt-1 ml-1 text-gray-400";
+        loginEmailMsg.textContent = "Checking...";
+        loginEmailTimer = setTimeout(async () => {
+            try {
+                const methods = await fetchSignInMethodsForEmail(auth, val);
+                if (methods.length > 0) {
+                    loginEmailMsg.className = "text-xs mt-1 ml-1 text-brand-green";
+                    loginEmailMsg.textContent = "✓ This email is already registered — you can log in.";
+                } else {
+                    loginEmailMsg.className = "text-xs mt-1 ml-1 text-amber-400";
+                    loginEmailMsg.textContent = "This email is not registered yet. Please sign up first.";
+                }
+            } catch (_) {
+                loginEmailMsg.className = "text-xs mt-1 ml-1 hidden";
+            }
+        }, 500);
+    });
+}
+
 // Sign Up Handler
 const signupForm = document.getElementById("signup-form");
 signupForm?.addEventListener("submit", async(e) => {
@@ -153,7 +193,9 @@ signupForm?.addEventListener("submit", async(e) => {
         .value.trim()
         .toLowerCase();
     const email = document.getElementById("email").value;
-    const mobile = document.getElementById("mobile").value;
+    const countryCode = document.getElementById("country-code")?.value || "+91";
+    const mobileLocal = document.getElementById("mobile").value.replace(/\D/g, '').slice(0, 10);
+    const mobile = countryCode + mobileLocal;
     const dob = document.getElementById("dob").value;
     let dobISO = "";
     if (/^\d{4}-\d{2}-\d{2}$/.test(dob)) {
@@ -185,7 +227,8 @@ signupForm?.addEventListener("submit", async(e) => {
     // All fields compulsory
     if (!fullName) { alert("Full name is required."); return; }
     if (!email) { alert("Email is required."); return; }
-    if (!mobile) { alert("Mobile number is required."); return; }
+    if (!mobileLocal) { alert("Mobile number is required."); return; }
+    if (mobileLocal.length !== 10) { alert("Mobile number must be exactly 10 digits."); return; }
     if (!dob) { alert("Date of birth is required."); return; }
     if (!password || password.length < 8) { alert("Password must be at least 8 characters."); return; }
     if (!/[A-Z]/.test(password)) { alert("Password must contain at least one uppercase letter."); return; }
@@ -380,14 +423,18 @@ document.getElementById('email')?.addEventListener('input', function () {
 
 document.getElementById('mobile')?.addEventListener('input', function () {
     const m = valMsg('mobile');
+    // Strip non-digits so the field holds only the local number
+    this.value = this.value.replace(/\D/g, '').slice(0, 10);
     const val = this.value.trim();
     if (!val) { v(m, '', true); return; }
-    if (!/^\+[1-9]\d{9,14}$/.test(val)) { v(m, 'Format: +91XXXXXXXXXX (10-15 digits)', false); return; }
+    if (val.length !== 10) { v(m, 'Enter exactly 10 digits', false); return; }
+    if (!/^\d{10}$/.test(val)) { v(m, 'Digits only', false); return; }
     v(m, 'Valid format', true);
+    const full = (document.getElementById('country-code')?.value || '+91') + val;
     debounceDb('mobile', async () => {
         v(m, 'Checking...', true);
         try {
-            const snap = await getDoc(doc(db, "mobiles", val));
+            const snap = await getDoc(doc(db, "mobiles", full));
             if (snap.exists()) v(m, 'Already registered', false);
             else v(m, 'Available', true);
         } catch (_) { v(m, 'Check failed', false); }
