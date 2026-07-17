@@ -8,7 +8,7 @@
       if (saved.reduceAnimation) document.documentElement.classList.add('reduce-animation');
       // Apply the chosen named theme (light/dark/stadium/esports/royal/custom) on every page
       var validThemes = ['light', 'dark', 'stadium', 'esports', 'royal', 'custom'];
-      var theme = saved.theme && validThemes.indexOf(saved.theme) !== -1 ? saved.theme : 'dark';
+      var theme = saved.theme && validThemes.indexOf(saved.theme) !== -1 ? saved.theme : 'light';
       document.body.classList.remove('theme-light', 'theme-dark', 'theme-stadium', 'theme-esports', 'theme-royal', 'theme-custom');
       document.body.classList.add('theme-' + theme);
       // Custom theme: apply the user's saved CSS variables to <body>
@@ -238,8 +238,12 @@ document.addEventListener("DOMContentLoaded", () => {
             if (data.frame && data.frame !== "none")
               userAvatarElem.style.borderWidth = "3px";
           }
-          if (userLevelElem)
-            userLevelElem.textContent = `Level ${data.level || 1}`;
+          if (userLevelElem) {
+            const lvl = (window.LevelSystem && window.LevelSystem.levelFromXP)
+              ? window.LevelSystem.levelFromXP(data.xp || 0)
+              : (data.level || 1);
+            userLevelElem.textContent = `Level ${lvl}`;
+          }
 
           if (data.username && userNameElem)
             userNameElem.textContent = `@${data.username}`;
@@ -255,7 +259,9 @@ document.addEventListener("DOMContentLoaded", () => {
             name: data.fullName || data.username || displayIdentity,
             username: data.username || '',
             photoURL: data.photoURL || photo,
-            level: data.level || 1
+            level: (window.LevelSystem && window.LevelSystem.levelFromXP)
+              ? window.LevelSystem.levelFromXP(data.xp || 0)
+              : (data.level || 1)
           };
         }
       } catch (error) {
@@ -276,15 +282,20 @@ document.addEventListener("DOMContentLoaded", () => {
   // Initialize Sidebar State (all screen sizes)
   if (sidebar) {
     const stored = localStorage.getItem("sidebar-hidden");
-    // Default: sidebar closed on every page (drawer). Respect a saved choice.
+    // Default: sidebar CLOSED on every page (drawer). Respect a saved choice.
     const isHidden = stored === null ? true : stored === "true";
-    // On mobile the sidebar is a fixed overlay drawer (per-page Tailwind).
-    // Hidden state == translated off-screen.
-    sidebar.classList.toggle("-translate-x-full", isHidden);
-    // Keep the header logo visible whenever the sidebar (with its own logo)
-    // is hidden, on every screen size. It already follows the theme toggle.
-    headerLogo?.classList.toggle("header-logo-hidden", !isHidden);
-    headerLogo?.classList.toggle("header-logo-show", isHidden);
+    if (isHidden) {
+      // Mobile: slide off-screen. Desktop: collapse to 0 (display:none via CSS).
+      sidebar.classList.add("-translate-x-full");
+      sidebar.classList.add("sidebar-collapsed");
+      headerLogo?.classList.remove("header-logo-hidden");
+      headerLogo?.classList.add("header-logo-show");
+    } else {
+      sidebar.classList.remove("-translate-x-full");
+      sidebar.classList.remove("sidebar-collapsed");
+      headerLogo?.classList.add("header-logo-hidden");
+      headerLogo?.classList.remove("header-logo-show");
+    }
   }
 
   // --- Active Link Highlighting ---

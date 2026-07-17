@@ -77,8 +77,9 @@ const handleSocialLogin = async(provider) => {
                 email: email,
                 username: username,
                 photoURL: user.photoURL,
-                coins: 4250,
+                coins: 100,
                 level: 1,
+                xp: 0,
                 createdAt: new Date().toISOString(),
             });
             await setDoc(doc(db, "usernames", username), { uid: user.uid });
@@ -322,8 +323,9 @@ signupForm?.addEventListener("submit", async(e) => {
             gender,
             frame: selectedFrame,
             favoriteSports,
-            coins: 4250,
-            level: 12,
+            coins: 100,
+            level: 1,
+            xp: 0,
             photoURL: photoURL,
             emailVerified: true,
             createdAt: new Date().toISOString(),

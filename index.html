@@ -17,7 +17,7 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Fanconnact - Live Sports Updates</title>
     <script>
-      if (localStorage.getItem("color-theme") === "dark" || (!("color-theme" in localStorage) && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+      if (localStorage.getItem("color-theme") === "dark") {
         document.documentElement.classList.add("dark");
       } else {
         document.documentElement.classList.remove("dark");
@@ -282,6 +282,7 @@
       </section>
       <!-- END: CTAFooter -->
     </main>
+    <script src="js/level-system.js"></script>
     <script type="module" src="js/script.js"></script>
     <script type="module">
       import { loadNewStyleNews, renderFilterChips, renderLanguageSelector, LANGUAGES } from './js/news.js';
@@ -359,7 +360,7 @@
         const light=document.getElementById('theme-toggle-light-icon');
         const dark=document.getElementById('theme-toggle-dark-icon');
         function render(){
-          const isDark=localStorage.getItem('color-theme')==='dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          const isDark=localStorage.getItem('color-theme')==='dark';
           document.documentElement.classList.toggle('dark',isDark);
           document.documentElement.classList.toggle('light',!isDark);
           if(light) light.classList.toggle('hidden',isDark);

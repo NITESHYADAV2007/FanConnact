@@ -1128,8 +1128,11 @@
               `w-28 sm:w-36 md:w-40 h-28 sm:h-36 md:h-40 rounded-full border-4 p-1 overflow-hidden cursor-pointer frame-${data.frame}`;
             document.getElementById("edit-selected-frame").value = data.frame;
           }
+          var heroLevel = (window.LevelSystem && window.LevelSystem.levelFromXP)
+            ? window.LevelSystem.levelFromXP(data.xp || 0)
+            : (data.level || 1);
           document.getElementById("profile-hero-level").textContent =
-            `LVL ${data.level || 1}`;
+            `LVL ${heroLevel}`;
           document.getElementById("profile-hero-coins").textContent =
             `${data.coins || 0} Coins`;
 
@@ -2252,6 +2255,7 @@
       document.getElementById("mobile-logout-btn")?.addEventListener("click", logoutHandler);
     </script>
     <script type="module" src="js/script.js"></script>
+    <script src="js/level-system.js"></script>
     <script src="js/theme.js"></script>
 </body>
 </html>

@@ -25,7 +25,7 @@ function generateAllUsers() {
     var idx = (i - 7) % firstNames.length;
     var name = firstNames[idx] + suffixes[Math.floor(Math.random() * suffixes.length)] + Math.floor(Math.random() * 99);
     var xp = Math.max(500, Math.floor(12560 - i * 200 + (Math.random() * 400 - 200)));
-    var level = Math.max(1, Math.min(20, Math.floor(xp / 700) + 1));
+    var level = (window.LevelSystem && window.LevelSystem.levelFromXP) ? window.LevelSystem.levelFromXP(xp) : Math.max(1, Math.min(20, Math.floor(xp / 700) + 1));
     data.push({ name: name, level: level, xp: xp, coins: 0, img: "https://i.pravatar.cc/100?img=" + ((i % 70) + 1) });
   }
   data.sort(function(a, b) {
@@ -40,10 +40,23 @@ function generateAllUsers() {
   return data;
 }
 
+// Wait until Firebase handles are exposed on window.__FB__ (set asynchronously
+// by js/script.js -> js/firebase-config.js). Returns true once ready.
+async function waitForFirebase(timeoutMs) {
+  timeoutMs = timeoutMs || 4000;
+  const start = Date.now();
+  while (Date.now() - start < timeoutMs) {
+    if (window.__FB__ && window.__FB__.db && window.__FB__.auth) return true;
+    await new Promise((r) => setTimeout(r, 100));
+  }
+  return !!(window.__FB__ && window.__FB__.db);
+}
+
 // Load real registered users from Firestore (users collection)
 async function loadRealUsers() {
   try {
-    if (!window.__FB__ || !window.__FB__.db) throw new Error("Firebase not ready");
+    const ready = await waitForFirebase();
+    if (!ready) throw new Error("Firebase not ready");
     const { collection, getDocs, query, orderBy, limit } = await import(
       "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"
     );
@@ -53,7 +66,9 @@ async function loadRealUsers() {
     snap.forEach(function (doc) {
       var d = doc.data();
       var xp = parseInt(d.xp, 10) || 0;
-      var level = parseInt(d.level, 10) || 1;
+      var level = (window.LevelSystem && window.LevelSystem.levelFromXP)
+        ? window.LevelSystem.levelFromXP(xp)
+        : (parseInt(d.level, 10) || 1);
       var coins = parseInt(d.coins, 10) || 0;
       var name = d.username || d.fullName || d.email || "Fan";
       var img = d.photoURL || (d.email ? ("https://i.pravatar.cc/100?u=" + encodeURIComponent(d.email)) : "assets/images/default-avatar.png?w=150");
