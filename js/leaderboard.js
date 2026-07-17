@@ -30,6 +30,7 @@ function generateAllUsers() {
   }
   data.sort(function(a, b) {
     if (a.xp !== b.xp) return b.xp - a.xp;
+    if (a.coins !== b.coins) return b.coins - a.coins;
     if (a.level !== b.level) return b.level - a.level;
     return a.name.localeCompare(b.name);
   });
@@ -61,6 +62,7 @@ async function loadRealUsers() {
     if (!users.length) throw new Error("No users");
     users.sort(function (a, b) {
       if (a.xp !== b.xp) return b.xp - a.xp;
+      if (a.coins !== b.coins) return b.coins - a.coins;
       if (a.level !== b.level) return b.level - a.level;
       return a.name.localeCompare(b.name);
     });
@@ -99,8 +101,8 @@ function goToPlayer(u, sport) {
   window.location.href = "player.html";
 }
 
-function renderPodium() {
-  var data = getData();
+async function renderPodium() {
+  var data = await getData();
   var cards = [
     document.getElementById("card-rank1"),
     document.getElementById("card-rank2"),
@@ -123,10 +125,10 @@ function renderPodium() {
   });
 }
 
-function renderRows4to6() {
+async function renderRows4to6() {
   var container = document.getElementById("leaderboard-rows-4-6");
   if (!container) return;
-  var data = getData();
+  var data = await getData();
   var rows = data.slice(3, 6);
   container.innerHTML = "";
   rows.forEach(function(u) {
@@ -150,10 +152,10 @@ function renderRows4to6() {
   });
 }
 
-function renderTopEarners() {
+async function renderTopEarners() {
   var container = document.getElementById("topEarnersList");
   if (!container) return;
-  var data = getData();
+  var data = await getData();
   var top5 = data.slice(0, 5);
   container.innerHTML = "";
   top5.forEach(function(u, idx) {
@@ -170,7 +172,7 @@ function renderTopEarners() {
 
 var fullLBExpanded = false;
 
-function toggleFullLeaderboard() {
+async function toggleFullLeaderboard() {
   var container = document.getElementById("full-leaderboard-container");
   var btn = document.getElementById("full-lb-btn");
   if (!container) return;
@@ -180,7 +182,7 @@ function toggleFullLeaderboard() {
     fullLBExpanded = false;
     return;
   }
-  var data = getData();
+  var data = await getData();
   var rows = data.slice(6);
   container.classList.remove("hidden");
   container.innerHTML = "";
@@ -218,9 +220,9 @@ function toggleFullLeaderboard() {
 
 document.addEventListener("DOMContentLoaded", async function() {
   await getData(); // load real registered users (or fallback)
-  renderPodium();
-  renderRows4to6();
-  renderTopEarners();
+  await renderPodium();
+  await renderRows4to6();
+  await renderTopEarners();
 });
 
 const userData = {

@@ -551,11 +551,11 @@
                 </button>
               </div>
               <!-- Filter & Sort Bar -->
-              <div class="flex items-center justify-between mb-6" data-purpose="status-filters">
-                <div class="flex space-x-3">
+              <div class="flex flex-col gap-3 mb-6 lg:flex-row lg:items-center lg:justify-between" data-purpose="status-filters">
+                <div class="flex space-x-2 overflow-x-auto pb-1 custom-scrollbar sm:space-x-3">
                   <button
                     data-status="live"
-                    class="status-tab bg-[#161d2b] border border-emerald-accent text-emerald-accent px-4 py-1.5 rounded-lg text-sm flex items-center space-x-2"
+                    class="status-tab bg-[#161d2b] border border-emerald-accent text-emerald-accent px-3 py-1.5 rounded-lg text-xs sm:text-sm flex items-center space-x-2 shrink-0"
                   >
                     <span
                       class="w-2 h-2 bg-red-500 rounded-full animate-pulse"
@@ -564,7 +564,7 @@
                   </button>
                   <button
                     data-status="upcoming"
-                    class="status-tab bg-[#161d2b] border border-gray-700 text-gray-400 px-4 py-1.5 rounded-lg text-sm flex items-center space-x-2 hover:text-white"
+                    class="status-tab bg-[#161d2b] border border-gray-700 text-gray-400 px-3 py-1.5 rounded-lg text-xs sm:text-sm flex items-center space-x-2 hover:text-white shrink-0"
                   >
                     <svg
                       class="w-4 h-4"
@@ -583,7 +583,7 @@
                   </button>
                   <button
                     data-status="finished"
-                    class="status-tab bg-[#161d2b] border border-gray-700 text-gray-400 px-4 py-1.5 rounded-lg text-sm flex items-center space-x-2 hover:text-white"
+                    class="status-tab bg-[#161d2b] border border-gray-700 text-gray-400 px-3 py-1.5 rounded-lg text-xs sm:text-sm flex items-center space-x-2 hover:text-white shrink-0"
                   >
                     <svg
                       class="w-4 h-4"
@@ -601,9 +601,9 @@
                     <span class="">Finished (<span data-count="finished">0</span>)</span>
                   </button>
                 </div>
-                <div class="flex space-x-3">
+                <div class="flex space-x-2 sm:space-x-3 shrink-0">
                   <button
-                    class="bg-[#161d2b] border border-gray-700 text-gray-400 px-3 py-1.5 rounded-lg text-sm flex items-center space-x-2"
+                    class="bg-[#161d2b] border border-gray-700 text-gray-400 px-3 py-1.5 rounded-lg text-xs sm:text-sm flex items-center space-x-2"
                   >
                     <svg
                       class="w-4 h-4"
@@ -621,9 +621,9 @@
                     <span class="">Filter</span>
                   </button>
                   <button
-                    class="bg-[#161d2b] border border-gray-700 text-gray-400 px-3 py-1.5 rounded-lg text-sm flex items-center space-x-2"
+                    class="bg-[#161d2b] border border-gray-700 text-gray-400 px-3 py-1.5 rounded-lg text-xs sm:text-sm flex items-center space-x-2"
                   >
-                    <span class="">Sort by: Latest</span>
+                    <span class="whitespace-nowrap">Sort: Latest</span>
                     <svg
                       class="w-4 h-4"
                       fill="none"

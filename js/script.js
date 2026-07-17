@@ -1928,7 +1928,17 @@ document.addEventListener("DOMContentLoaded", () => {
     },
   };
 
+  // Build a reverse map: English text -> key (so we can auto-translate
+  // static UI strings on pages that don't have data-i18n tags).
+  const EN = translations.en || {};
+  const TEXT_TO_KEY = {};
+  Object.keys(EN).forEach((k) => {
+    const v = EN[k];
+    if (typeof v === "string" && v.trim()) TEXT_TO_KEY[v.trim()] = k;
+  });
+
   function applyLanguage(lang) {
+    // 1. Explicit data-i18n elements (settings, login, etc.)
     document.querySelectorAll("[data-i18n]").forEach((el) => {
       const key = el.getAttribute("data-i18n");
       let text = null;
@@ -1947,6 +1957,33 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
     });
+
+    // 2. Auto-translate common static UI strings site-wide (nav, headings,
+    //    buttons, tabs) by matching their visible English text. This makes
+    //    language changes apply across EVERY page without manual tagging.
+    if (lang !== "en" && translations[lang]) {
+      const skipTags = new Set(["SCRIPT", "STYLE", "INPUT", "TEXTAREA", "IMG", "BR", "SVG", "PATH"]);
+      const walk = (root) => {
+        const nodes = root.childNodes;
+        for (let i = 0; i < nodes.length; i++) {
+          const n = nodes[i];
+          if (n.nodeType === 3) { // text node
+            const raw = n.nodeValue.trim();
+            if (!raw) continue;
+            const key = TEXT_TO_KEY[raw];
+            if (key && translations[lang][key]) {
+              n.nodeValue = translations[lang][key];
+            }
+          } else if (n.nodeType === 1 && !skipTags.has(n.tagName) && !n.hasAttribute("data-i18n")) {
+            // Don't descend into elements that hold dynamic match data
+            if (n.hasAttribute("data-match-id") || n.hasAttribute("data-purpose") && /matches|carousel|hero/i.test(n.getAttribute("data-purpose") || "")) continue;
+            walk(n);
+          }
+        }
+      };
+      walk(document.body);
+    }
+
     localStorage.setItem("fanconnect-lang", lang);
     document.documentElement.lang = LANG_CODES[lang] || lang;
   }
@@ -1985,23 +2022,56 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  // --- Sidebar mobile backdrop (created once, shared across all pages) ---
+  let sidebarBackdrop = document.getElementById("sidebar-backdrop");
+  if (!sidebarBackdrop && sidebar) {
+    sidebarBackdrop = document.createElement("div");
+    sidebarBackdrop.id = "sidebar-backdrop";
+    sidebarBackdrop.className =
+      "fixed inset-0 z-[55] bg-black/50 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 lg:hidden";
+    document.body.appendChild(sidebarBackdrop);
+    sidebarBackdrop.addEventListener("click", () => closeSidebar());
+  }
+  function openSidebar() {
+    if (!sidebar) return;
+    if (window.innerWidth >= 1024) {
+      // Desktop: collapse/expand via width (sidebar is static here)
+      sidebar.classList.remove("sidebar-collapsed");
+    } else {
+      sidebar.classList.remove("-translate-x-full");
+    }
+    localStorage.setItem("sidebar-hidden", "false");
+    headerLogo?.classList.add("header-logo-hidden");
+    sidebarBackdrop?.classList.add("opacity-0", "pointer-events-none");
+  }
+  function closeSidebar() {
+    if (!sidebar) return;
+    if (window.innerWidth >= 1024) {
+      // Desktop: collapse the sidebar to 0 width so main content expands
+      sidebar.classList.add("sidebar-collapsed");
+    } else {
+      sidebar.classList.add("-translate-x-full");
+    }
+    localStorage.setItem("sidebar-hidden", "true");
+    headerLogo?.classList.remove("header-logo-hidden");
+    sidebarBackdrop?.classList.add("opacity-0", "pointer-events-none");
+  }
+
   // 3. Sidebar Toggle (works on every screen size)
   mobileMenuBtn?.addEventListener("click", () => {
     if (!sidebar) return;
-    const willHide = !sidebar.classList.contains("-translate-x-full");
-    sidebar.classList.toggle("-translate-x-full", willHide);
-    localStorage.setItem("sidebar-hidden", willHide);
-    // Show the header logo only when the sidebar (with its own logo) is hidden
-    headerLogo?.classList.toggle("header-logo-hidden", !willHide);
+    const isOpen = window.innerWidth >= 1024
+      ? !sidebar.classList.contains("sidebar-collapsed")
+      : !sidebar.classList.contains("-translate-x-full");
+    if (isOpen) {
+      closeSidebar();
+    } else {
+      openSidebar();
+    }
   });
 
   // Sidebar Close Button
-  closeSidebarBtn?.addEventListener("click", () => {
-    if (!sidebar) return;
-    sidebar.classList.add("-translate-x-full");
-    localStorage.setItem("sidebar-hidden", "true");
-    headerLogo?.classList.remove("header-logo-hidden");
-  });
+  closeSidebarBtn?.addEventListener("click", closeSidebar);
 
   // 4. Navigation Interceptor & Mobile Sidebar Close
   const navLinks = document.querySelectorAll(
@@ -2056,8 +2126,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!currentUser && href === "dashboard.html") {
         e.preventDefault();
         if (window.innerWidth < 1024) {
-          sidebar?.classList.add("-translate-x-full");
-          headerLogo?.classList.remove("header-logo-hidden");
+          closeSidebar();
         }
         window.location.href = "index.html";
         return;
@@ -2077,8 +2146,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       if (window.innerWidth < 1024) {
-        sidebar?.classList.add("-translate-x-full");
-        headerLogo?.classList.remove("header-logo-hidden");
+        closeSidebar();
       }
     });
   });
@@ -2104,8 +2172,7 @@ document.addEventListener("DOMContentLoaded", () => {
       mobileMenuBtn &&
       !mobileMenuBtn.contains(e.target)
     ) {
-      sidebar.classList.add("-translate-x-full");
-      headerLogo?.classList.remove("header-logo-hidden");
+      closeSidebar();
     }
   });
 

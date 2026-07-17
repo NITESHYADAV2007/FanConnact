@@ -241,6 +241,205 @@ body.theme-stadium .text-connect {
 }
 
 /* =========================
+   GLOBAL THEME + APPEARANCE
+   These rules are loaded on EVERY page (via css/style.css) so that
+   changes made on the Settings page (theme, compact mode, large text,
+   reduce animation) take effect across the whole site. The classes
+   themselves are applied globally by js/script.js; this is the CSS
+   that gives them visual meaning.
+   ========================= */
+
+:root {
+  --page-bg: #f6f8fb;
+  --card-bg: #ffffff;
+  --border: #dbe3ef;
+  --text: #111827;
+  --text-light: #64748b;
+  --primary: #2563eb;
+  --hover: #f4f7fb;
+}
+
+/* DARK — deep navy, green accent (default) */
+body.theme-dark {
+  --page-bg: #0b1220;
+  --card-bg: #111827;
+  --border: #243347;
+  --text: #ffffff;
+  --text-light: #94a3b8;
+  --primary: #22c55e;
+  --hover: #162132;
+  background-color: var(--page-bg);
+}
+
+/* LIGHT — clean bright, blue accent */
+body.theme-light {
+  --page-bg: #f6f8fb;
+  --card-bg: #ffffff;
+  --border: #d8e1ec;
+  --text: #111827;
+  --text-light: #64748b;
+  --primary: #2563eb;
+  --hover: #f4f7fb;
+  background-color: var(--page-bg);
+}
+
+/* STADIUM — cricket stadium photo background, emerald accent */
+body.theme-stadium {
+  --page-bg: #07140f;
+  --card-bg: rgba(10, 30, 20, 0.55);
+  --border: #1f7a4f;
+  --text: #ffffff;
+  --text-light: #b6eccf;
+  --primary: #22c55e;
+  --hover: rgba(15, 44, 29, 0.7);
+  background-color: var(--page-bg);
+  background-image:
+    linear-gradient(180deg, rgba(7, 20, 15, 0.55) 0%, rgba(6, 18, 13, 0.82) 100%),
+    url("../assets/cricket bg.jpg");
+  background-size: cover;
+  background-position: center top;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+/* ESPORTS — e-sports arena photo background, violet accent */
+body.theme-esports {
+  --page-bg: #120622;
+  --card-bg: rgba(24, 16, 40, 0.55);
+  --border: #7c3aed;
+  --text: #ffffff;
+  --text-light: #c7b8f6;
+  --primary: #a855f7;
+  --hover: rgba(36, 22, 64, 0.7);
+  background-color: var(--page-bg);
+  background-image:
+    linear-gradient(180deg, rgba(18, 6, 34, 0.55) 0%, rgba(10, 3, 20, 0.82) 100%),
+    url("../assets/esports bg.jpg");
+  background-size: cover;
+  background-position: center top;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+/* ROYAL — royal blue arena photo background, blue accent */
+body.theme-royal {
+  --page-bg: #06142f;
+  --card-bg: rgba(9, 24, 58, 0.55);
+  --border: #2563eb;
+  --text: #ffffff;
+  --text-light: #bfd6ff;
+  --primary: #3b82f6;
+  --hover: rgba(16, 42, 94, 0.7);
+  background-color: var(--page-bg);
+  background-image:
+    linear-gradient(180deg, rgba(6, 20, 47, 0.55) 0%, rgba(3, 10, 28, 0.82) 100%),
+    url("../assets/background.jpg");
+  background-size: cover;
+  background-position: center top;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+/* GLASSY CARDS for named themes (stadium / esports / royal) —
+   translucent surfaces + backdrop blur so the themed background
+   shows through, while text stays visible. */
+body.theme-stadium .bg-card-bg,
+body.theme-esports .bg-card-bg,
+body.theme-royal .bg-card-bg,
+body.theme-stadium .bg-brand-card,
+body.theme-esports .bg-brand-card,
+body.theme-royal .bg-brand-card,
+body.theme-stadium .bg-surface,
+body.theme-esports .bg-surface,
+body.theme-royal .bg-surface {
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+}
+body.theme-stadium .hero-gradient,
+body.theme-esports .hero-gradient,
+body.theme-royal .hero-gradient {
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* ── THEME BACKGROUND VISIBLE SITE-WIDE ──
+   Many pages paint opaque backgrounds on <body>/<main>/headers
+   (bg-white dark:bg-black, bg-[#F8F9FF] dark:bg-[#0B0E11], etc.)
+   which hide the themed body background image. For the named
+   themes (stadium / esports / royal) we make those wrappers
+   transparent so the photo background shows through everywhere. ── */
+body.theme-stadium,
+body.theme-esports,
+body.theme-royal {
+  background-color: transparent !important;
+}
+body.theme-stadium main,
+body.theme-esports main,
+body.theme-royal main,
+body.theme-stadium .bg-white,
+body.theme-esports .bg-white,
+body.theme-royal .bg-white,
+body.theme-stadium .dark\:bg-black,
+body.theme-esports .dark\:bg-black,
+body.theme-royal .dark\:bg-black,
+body.theme-stadium .dark\:bg-brand-dark,
+body.theme-esports .dark\:bg-brand-dark,
+body.theme-royal .dark\:bg-brand-dark,
+body.theme-stadium [class*="bg-[#F8F9FF]"],
+body.theme-esports [class*="bg-[#F8F9FF]"],
+body.theme-royal [class*="bg-[#F8F9FF]"],
+body.theme-stadium [class*="bg-[#0B0E11]"],
+body.theme-esports [class*="bg-[#0B0E11]"],
+body.theme-royal [class*="bg-[#0B0E11]"],
+body.theme-stadium [class*="bg-[#0F172A]"],
+body.theme-esports [class*="bg-[#0F172A]"],
+body.theme-royal [class*="bg-[#0F172A]"] {
+  background-color: transparent !important;
+  background-image: none !important;
+}
+/* Keep headers/sub-navs subtly tinted (not fully opaque) so text stays readable */
+body.theme-stadium header,
+body.theme-esports header,
+body.theme-royal header,
+body.theme-stadium nav,
+body.theme-esports nav,
+body.theme-royal nav {
+  background-color: rgba(0, 0, 0, 0.35) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* COMPACT MODE */
+.compact-mode .card { padding: 18px; }
+.compact-mode .sport-item { padding: 8px 10px; min-height: 48px; }
+.compact-mode .notification-item { padding: 8px 0; }
+.compact-mode .setting-row { padding: 10px 0; }
+.compact-mode .theme-item { height: 150px; }
+.compact-mode .appearance-options { gap: 12px; }
+
+/* LARGE TEXT — scales up without breaking layout */
+.large-text { font-size: 1.125rem; line-height: 1.55; }
+.large-text h1 { font-size: clamp(1.75rem, 6vw, 3rem); line-height: 1.15; }
+.large-text h2 { font-size: clamp(1.4rem, 5vw, 2rem); line-height: 1.2; }
+.large-text h3 { font-size: clamp(1.15rem, 4vw, 1.4rem); line-height: 1.25; }
+.large-text p,
+.large-text label,
+.large-text span,
+.large-text button,
+.large-text select,
+.large-text a,
+.large-text div,
+.large-text li { font-size: 1.05rem; }
+.large-text * { overflow-wrap: break-word; word-break: break-word; }
+
+/* REDUCE ANIMATION */
+.reduce-animation * {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+}
+
+/* =========================
    SIDEBAR BEHAVIOUR
    - Desktop (>=1024px): forced visible, static, 256px wide.
    - Mobile (<1024px): a fixed overlay drawer (per-page Tailwind
@@ -281,6 +480,25 @@ body.theme-stadium .text-connect {
    is visible, on every screen size. script.js toggles this class. */
 .header-logo-hidden { display: none !important; }
 
+/* ── Top bar mobile safety: keep the right-side action cluster from
+   ever overlapping the logo / nav. Buttons shrink, never wrap into
+   the logo, and the cluster stays pinned to the right edge. ── */
+[data-purpose="top-navigation"] > div:last-child,
+header > div:last-child {
+  flex-wrap: nowrap !important;
+  min-width: 0 !important;
+}
+[data-purpose="top-navigation"] .flex-1,
+header .flex-1 {
+  min-width: 0 !important;
+}
+@media (max-width: 640px) {
+  [data-purpose="top-navigation"] > div:last-child > *,
+  header > div:last-child > * {
+    flex-shrink: 0 !important;
+  }
+}
+
 /* Hide/show toggle (menu button) — works on every screen size.
    Collapsing the sidebar to 0 lets the flex-1 main content
    expand to fill the screen. */
@@ -288,11 +506,23 @@ body.theme-stadium .text-connect {
   width: 0 !important;
   min-width: 0 !important;
   max-width: 0 !important;
+  flex-basis: 0 !important;
+  flex-grow: 0 !important;
+  flex-shrink: 0 !important;
   padding-left: 0 !important;
   padding-right: 0 !important;
+  margin-left: 0 !important;
   border-width: 0 !important;
   overflow: hidden !important;
   transform: none !important;
+}
+/* On desktop the sidebar is static; ensure the collapse class wins
+   over the per-page w-64 / lg:w-64 utility classes. Use display:none
+   so the flex-1 main content expands instantly (no transition glitch). */
+@media (min-width: 1024px) {
+  #sidebar.sidebar-collapsed {
+    display: none !important;
+  }
 }
 
 /* ==========================
