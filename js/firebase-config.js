@@ -655,4 +655,4 @@ export { auth, db, storage, valMsg, v, debounceDb, generateOTP, sportImage };
 
 // Expose core Firebase handles on window so non-module scripts
 // (e.g. leaderboard.js loaded as a plain <script>) can read real data.
-window.__FB__ = { auth, db, storage };
+window.__FB__ = { auth, db, storage, fetchSignInMethodsForEmail };

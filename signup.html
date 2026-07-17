@@ -917,6 +917,7 @@
                   required
                   type="email"
                 />
+                <span id="signup-email-msg" class="block mt-1.5 text-xs font-medium"></span>
               </div>
             </div>
             <!-- Email OTP Verification -->
@@ -1021,33 +1022,33 @@
             <label class="text-label-md font-label-md text-surface-dim ml-1"
               >Gender</label
             >
-            <div class="flex bg-surface-variant/10 rounded-xl p-1 gap-1">
-              <label class="flex-1 cursor-pointer">
+            <div class="flex bg-surface-variant/10 rounded-xl p-1 gap-1" id="gender-group">
+              <label class="flex-1 cursor-pointer gender-option" data-value="Male">
                 <input
                   checked=""
-                  class="hidden peer"
+                  class="hidden"
                   name="gender"
                   value="Male"
                   type="radio"
                 />
                 <div
-                  class="py-2 text-center text-label-sm font-label-sm rounded-lg text-surface-dim/50 peer-checked:bg-primary-container peer-checked:text-on-primary-container transition-all"
+                  class="gender-card py-2 text-center text-label-sm font-label-sm rounded-lg text-surface-dim/50 border border-transparent transition-all"
                 >
                   Male / पुरुष
                 </div>
               </label>
-              <label class="flex-1 cursor-pointer">
-                <input class="hidden peer" name="gender" value="Female" type="radio" />
+              <label class="flex-1 cursor-pointer gender-option" data-value="Female">
+                <input class="hidden" name="gender" value="Female" type="radio" />
                 <div
-                  class="py-2 text-center text-label-sm font-label-sm rounded-lg text-surface-dim/50 peer-checked:bg-primary-container peer-checked:text-on-primary-container transition-all"
+                  class="gender-card py-2 text-center text-label-sm font-label-sm rounded-lg text-surface-dim/50 border border-transparent transition-all"
                 >
                   Female / महिला
                 </div>
               </label>
-              <label class="flex-1 cursor-pointer">
-                <input class="hidden peer" name="gender" value="Other" type="radio" />
+              <label class="flex-1 cursor-pointer gender-option" data-value="Other">
+                <input class="hidden" name="gender" value="Other" type="radio" />
                 <div
-                  class="py-2 text-center text-label-sm font-label-sm rounded-lg text-surface-dim/50 peer-checked:bg-primary-container peer-checked:text-on-primary-container transition-all"
+                  class="gender-card py-2 text-center text-label-sm font-label-sm rounded-lg text-surface-dim/50 border border-transparent transition-all"
                 >
                   Prefer not to say / नहीं कहना चाहते
                 </div>
@@ -1164,7 +1165,7 @@
           </div>
           <!-- Primary CTA -->
           <button
-            class="w-full bg-gradient-to-r from-primary to-primary-container hover:brightness-110 active:scale-[0.98] transition-all text-on-primary font-headline-sm py-4 rounded-xl flex items-center justify-center gap-base shadow-lg glow-emerald group"
+            class="w-full bg-gradient-to-r from-primary to-primary-fixed-dim hover:brightness-110 active:scale-[0.98] transition-all text-on-primary font-headline-sm py-4 rounded-xl flex items-center justify-center gap-base shadow-lg glow-emerald group"
             type="submit"
           >
             Create Account
@@ -2055,6 +2056,67 @@
                     }
                 });
             </script>
+
+  <script>
+    // --- Gender selection: deterministic, race-free handling ---
+    document.addEventListener('DOMContentLoaded', () => {
+      const genderGroup = document.getElementById('gender-group');
+      if (genderGroup) {
+        const genderOptions = Array.from(genderGroup.querySelectorAll('.gender-option'));
+        const selectGender = (value) => {
+          genderOptions.forEach((opt) => {
+            const inp = opt.querySelector('input');
+            const card = opt.querySelector('.gender-card');
+            const on = inp.value === value;
+            inp.checked = on;
+            card.classList.toggle('bg-primary-container', on);
+            card.classList.toggle('text-on-primary-container', on);
+            card.classList.toggle('border-primary', on);
+            card.classList.toggle('text-surface-dim/50', !on);
+          });
+        };
+        genderOptions.forEach((opt) => {
+          // Drive selection from the label click so the highlight always
+          // matches the chosen value (avoids the hidden-input toggle race).
+          opt.addEventListener('click', (e) => {
+            e.preventDefault();
+            selectGender(opt.dataset.value);
+          });
+        });
+        // Initialize from the pre-checked input.
+        const pre = genderGroup.querySelector('input[name="gender"]:checked');
+        if (pre) selectGender(pre.value);
+      }
+
+      // --- Live "email already registered" check on signup ---
+      const emailInput = document.getElementById('email');
+      const emailMsg = document.getElementById('signup-email-msg');
+      let emailTimer = null;
+      if (emailInput && emailMsg) {
+        emailInput.addEventListener('input', () => {
+          const val = emailInput.value.trim();
+          clearTimeout(emailTimer);
+          emailMsg.textContent = '';
+          emailMsg.className = 'block mt-1.5 text-xs font-medium';
+          if (!val || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) return;
+          emailTimer = setTimeout(async () => {
+            try {
+              const fb = window.__FB__;
+              if (!fb || !fb.fetchSignInMethodsForEmail || !fb.auth) return;
+              const methods = await fb.fetchSignInMethodsForEmail(fb.auth, val);
+              if (methods && methods.length > 0) {
+                emailMsg.textContent = '⚠ This email is already registered. Please log in instead.';
+                emailMsg.className = 'block mt-1.5 text-xs font-medium text-red-500';
+              } else {
+                emailMsg.textContent = '✓ Email is available — you can sign up.';
+                emailMsg.className = 'block mt-1.5 text-xs font-medium text-green-500';
+              }
+            } catch (e) { /* ignore network errors */ }
+          }, 600);
+        });
+      }
+    });
+  </script>
 
   <script type="module" src="js/script.js"></script>
 </body>
