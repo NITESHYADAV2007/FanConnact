@@ -191,7 +191,7 @@
       div[class*="p-4 lg:p-6"] { padding: 0 !important; }
       #fan-content { padding: 0 !important; }
 
-      #podiumWrapper { overflow: hidden !important; aspect-ratio: 16 / 11 !important; min-height: 260px !important; }
+      #podiumWrapper { overflow: visible !important; aspect-ratio: auto !important; min-height: 300px !important; }
       #card-rank1, #card-rank2, #card-rank3 { background: rgba(11,14,23,0.85) !important; border-radius: 12px !important; padding: 8px !important; }
       #htmlOverlay > div:first-child { padding: 10px !important; }
       .right-sidebar-section { padding: 14px !important; }
@@ -405,17 +405,17 @@
 
     <div class="flex-1 p-4 lg:p-6 overflow-visible">
 
-      <!-- FAN-CONTENT-START: everything Fans-mode lives inside this wrapper -->
-      <div id="fan-content" class="space-y-6">
+      <div id="fan-content" class="hidden">
 
         <!-- LEFT SIDE (full width: podium + ranking table) -->
-        <section class="space-y-6 min-w-0">
+        <section class="lg:col-span-12 space-y-6 min-w-0">
 
           <div class="w-full max-w-[850px] mx-auto px-2 sm:px-4">
             <div
-              class="relative w-full bg-[#0B0E11] rounded-2xl border border-[#2A2E35] shadow-2xl overflow-hidden"
-              style="aspect-ratio: 16 / 10;"
+              class="relative w-full bg-[#0B0E11] rounded-2xl border border-[#2A2E35] shadow-2xl overflow-hidden aspect-[14/10] sm:aspect-[16/10] md:aspect-[16/9]"
               id="podiumWrapper">
+
+              <canvas id="podiumCanvas" class="absolute inset-0 w-full h-full z-0 pointer-events-none"></canvas>
 
               <div id="htmlOverlay"
                 class="absolute inset-0 z-10 pointer-events-none font-headline select-none w-full h-full">
@@ -432,7 +432,7 @@
                 </div>
 
                 <div id="card-rank2"
-                  class="absolute flex flex-col items-center origin-bottom -translate-x-1/2" style="width:240px;max-width:42vw;left:27%;bottom:30%;">
+                  class="absolute flex flex-col items-center origin-bottom -translate-x-1/2 -translate-y-full" style="width:240px;max-width:42vw;">
                   <div class="relative mb-1.5 flex items-center justify-center">
                     <div
                       class="absolute -left-4 sm:-left-6 md:-left-7 w-4 h-6 sm:w-5 sm:h-7 md:w-6 md:h-8 bg-gradient-to-b from-slate-300 via-slate-400 to-slate-600 flex items-center justify-center shadow-lg"
@@ -456,7 +456,7 @@
                 </div>
 
                 <div id="card-rank1"
-                  class="absolute flex flex-col items-center origin-bottom -translate-x-1/2" style="width:270px;max-width:46vw;left:50%;bottom:34%;">
+                  class="absolute flex flex-col items-center origin-bottom -translate-x-1/2 -translate-y-full" style="width:270px;max-width:46vw;">
                   <div class="relative mb-2 flex items-center justify-center w-full">
                     <div
                       class="absolute left-[-4px] sm:left-0 md:left-2 top-[-12px] sm:top-[-14px] md:top-[-6px] flex flex-col items-center z-20 scale-75 sm:scale-90 md:scale-100">
@@ -506,7 +506,7 @@
                 </div>
 
                 <div id="card-rank3"
-                  class="absolute flex flex-col items-center origin-bottom -translate-x-1/2" style="width:240px;max-width:42vw;left:73%;bottom:30%;">
+                  class="absolute flex flex-col items-center origin-bottom -translate-x-1/2 -translate-y-full" style="width:240px;max-width:42vw;">
                   <div class="relative mb-1.5 flex items-center justify-center">
                     <div
                       class="w-10 h-10 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-full p-[2px] bg-gradient-to-b from-orange-600 to-amber-800 shadow-[0_0_15px_rgba(234,88,12,0.4)]">
@@ -531,6 +531,180 @@
               </div>
             </div>
           </div>
+
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+          <script>
+            (function () {
+              const box = document.getElementById('podiumWrapper');
+              const canvas = document.getElementById('podiumCanvas');
+
+              const card1 = document.getElementById('card-rank1');
+              const card2 = document.getElementById('card-rank2');
+              const card3 = document.getElementById('card-rank3');
+
+              const scene = new THREE.Scene();
+              const camera = new THREE.PerspectiveCamera(34, box.clientWidth / box.clientHeight, 0.1, 1000);
+
+              const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+              renderer.setSize(box.clientWidth, box.clientHeight);
+              renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+              const ambientLight = new THREE.AmbientLight(0x0f172a, 1.8);
+              scene.add(ambientLight);
+
+              const dirLight = new THREE.DirectionalLight(0xffffff, 0.6);
+              dirLight.position.set(0, 5, 4);
+              scene.add(dirLight);
+
+              function buildPlatform(x, y, z, r, h, baseColor, glowColor) {
+                const group = new THREE.Group();
+                group.position.set(x, y, z);
+
+                const cylGeo = new THREE.CylinderGeometry(r, r + 0.04, h, 64);
+                const cylMat = new THREE.MeshStandardMaterial({
+                  color: baseColor,
+                  metalness: 0.8,
+                  roughness: 0.2
+                });
+                const body = new THREE.Mesh(cylGeo, cylMat);
+                body.position.y = h / 2;
+                group.add(body);
+
+                const torusGeo = new THREE.TorusGeometry(r - 0.01, 0.012, 16, 100);
+                const torusMat = new THREE.MeshBasicMaterial({ color: glowColor });
+                const rim = new THREE.Mesh(torusGeo, torusMat);
+                rim.rotation.x = Math.PI / 2;
+                rim.position.y = h;
+                group.add(rim);
+
+                scene.add(group);
+                return { group, height: h, rim };
+              }
+
+              // Standardized base positions for tracking bounds
+              const stage2 = buildPlatform(-2.1, 0, 0, 0.65, 0.45, 0x1d3557, 0x3b82f6);
+              const stage1 = buildPlatform(0, 0, 0, 0.88, 0.78, 0x5c4008, 0xeab308);
+              const stage3 = buildPlatform(2.1, 0, 0, 0.65, 0.35, 0x5c2414, 0xea580c);
+
+              let beams = [];
+              function buildLightBeam(x, rotationAngle, colorHex) {
+                const beamGeo = new THREE.CylinderGeometry(0.12, 1.2, 8, 32, 1, true);
+                const beamMat = new THREE.MeshBasicMaterial({
+                  color: colorHex,
+                  transparent: true,
+                  opacity: 0.12,
+                  side: THREE.DoubleSide,
+                  blending: THREE.AdditiveBlending,
+                  depthWrite: false
+                });
+                const beam = new THREE.Mesh(beamGeo, beamMat);
+                beam.position.set(x, 3.6, -0.1);
+                beam.rotation.z = rotationAngle;
+                scene.add(beam);
+                beams.push({ mesh: beam, baseAngle: rotationAngle });
+              }
+              buildLightBeam(-2.1, -0.04, 0x3b82f6);
+              buildLightBeam(0, 0, 0xfde047);
+              buildLightBeam(2.1, 0.04, 0xea580c);
+
+              // UPDATED RESPONSIVE LOGIC: Fixing Mobile Projections and Clipping
+              function updateCameraAspect() {
+                const aspect = box.clientWidth / box.clientHeight;
+                camera.aspect = aspect;
+
+                if (aspect < 1.15) {
+                  // Mobile & Narrow Viewport Fixes
+                  const scaleFactor = Math.max(aspect * 0.85, 0.6); // Lock positions safely inside
+                  const newX = 2.1 * scaleFactor;
+
+                  stage2.group.position.x = -newX;
+                  stage3.group.position.x = newX;
+                  if (beams[0]) beams[0].mesh.position.x = -newX;
+                  if (beams[2]) beams[2].mesh.position.x = newX;
+
+                  // Pull camera back proportionally as viewport narrows down
+                  camera.position.set(0, 2.2, 7.5 * (1.15 / aspect));
+                } else {
+                  // Desktop Viewport Configuration
+                  stage2.group.position.x = -2.1;
+                  stage3.group.position.x = 2.1;
+                  if (beams[0]) beams[0].mesh.position.x = -2.1;
+                  if (beams[2]) beams[2].mesh.position.x = 2.1;
+
+                  if (aspect > 1.7) {
+                    camera.position.set(0, 2.0, 5.6 * (aspect / 1.7));
+                  } else {
+                    camera.position.set(0, 2.0, 5.8);
+                  }
+                }
+                camera.lookAt(0, 1.15, 0);
+                camera.updateProjectionMatrix();
+              }
+              updateCameraAspect();
+
+              const pCount = 50;
+              const pGeom = new THREE.BufferGeometry();
+              const pos = new Float32Array(pCount * 3);
+              for (let i = 0; i < pCount * 3; i += 3) {
+                pos[i] = (Math.random() - 0.5) * 6.0;
+                pos[i + 1] = Math.random() * 4.0;
+                pos[i + 2] = (Math.random() - 0.5) * 1.2;
+              }
+              pGeom.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+              const pMat = new THREE.PointsMaterial({
+                size: 0.04,
+                color: 0xfef08a,
+                transparent: true,
+                opacity: 0.5,
+                blending: THREE.AdditiveBlending
+              });
+              const particles = new THREE.Points(pGeom, pMat);
+              scene.add(particles);
+
+              const tempV = new THREE.Vector3();
+              function updateCardPosition(cardDOM, stageObj) {
+                if (!cardDOM) return;
+
+                tempV.set(stageObj.group.position.x, stageObj.height, stageObj.group.position.z);
+                tempV.project(camera);
+
+                const x = (tempV.x * .5 + .5) * box.clientWidth;
+                const y = (tempV.y * -.5 + .5) * box.clientHeight;
+
+                cardDOM.style.left = `${x}px`;
+                cardDOM.style.top = `${y}px`;
+              }
+
+              const resizeObserver = new ResizeObserver(() => {
+                updateCameraAspect();
+                renderer.setSize(box.clientWidth, box.clientHeight);
+              });
+              resizeObserver.observe(box);
+
+              function loop() {
+                requestAnimationFrame(loop);
+                const time = performance.now() * 0.001;
+
+                stage1.rim.rotation.z = time * 0.12;
+                stage2.rim.rotation.z = -time * 0.08;
+                stage3.rim.rotation.z = time * 0.06;
+
+                const pArr = pGeom.attributes.position.array;
+                for (let i = 1; i < pCount * 3; i += 3) {
+                  pArr[i] += 0.003;
+                  if (pArr[i] > 4.0) pArr[i] = 0.1;
+                }
+                pGeom.attributes.position.needsUpdate = true;
+
+                updateCardPosition(card1, stage1);
+                updateCardPosition(card2, stage2);
+                updateCardPosition(card3, stage3);
+
+                renderer.render(scene, camera);
+              }
+              loop();
+            })();
+          </script>
 
           <div id="ranking-table-section">
             <div class="bg-[#060d18] border border-[#12263f] rounded-2xl overflow-hidden"> <!-- Desktop Header -->
@@ -689,24 +863,11 @@ class="w-full flex items-center justify-center rounded-xl border border-purple-5
         </aside>
 
       </div>
-      <!-- FAN-CONTENT-END -->
-
-      <script>
-        // Keep the fan-content layout as a simple stacked block (full width).
-        // The compiled Tailwind CSS does not include lg:col-span-12 /
-        // lg:grid-cols-12, so a 12-col grid would collapse the section to a
-        // single column. We therefore toggle visibility with inline display
-        // only (avoids the .hidden/.grid CSS-order conflict too).
-        (function () {
-          const fanContent = document.getElementById('fan-content');
-          if (fanContent) fanContent.style.display = 'block';
-        })();
-      </script>
 
     </div>
 
     <!-- TEAM CONTENT (hidden by default; shown when Team mode is active) -->
-    <div id="team-content" class="hidden" style="display:none">
+    <div id="team-content" class="hidden">
       <div class="max-w-6xl mx-auto px-4 py-6">
         <!-- Gender Tabs -->
         <div class="flex items-center gap-2 mb-3" id="team-gender-tabs"></div>
@@ -758,8 +919,7 @@ class="w-full flex items-center justify-center rounded-xl border border-purple-5
       }));
     }
 
-    // Pre-load team data in the background (Team mode is available on demand;
-    // Fans mode is the default and is rendered by js/leaderboard.js).
+    // Init: load team data since Team mode is default
     loadTeamSports();
 
     // Filter mode toggle
@@ -777,16 +937,15 @@ class="w-full flex items-center justify-center rounded-xl border border-purple-5
         const teamContent = document.getElementById('team-content');
         if (this.dataset.mode === 'team') {
           wrapper.classList.remove('hidden');
-          // Use inline display to avoid the .hidden/.grid CSS-order conflict.
-          fanContent.style.display = 'none';
-          teamContent.style.display = 'block';
+          fanContent.classList.add('hidden');
+          fanContent.classList.remove('grid', 'grid-cols-1', 'lg:grid-cols-12', 'gap-6', 'items-start');
           teamContent.classList.remove('hidden');
           if (teamSports.length === 0) loadTeamSports();
           else loadTeamRankings();
         } else {
           wrapper.classList.add('hidden');
-          fanContent.style.display = 'block';
-          teamContent.style.display = 'none';
+          fanContent.classList.remove('hidden');
+          fanContent.classList.add('grid', 'grid-cols-1', 'lg:grid-cols-12', 'gap-6', 'items-start');
           teamContent.classList.add('hidden');
         }
       });
