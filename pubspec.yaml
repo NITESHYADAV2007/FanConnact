@@ -10,11 +10,22 @@ dependencies:
   flutter:
     sdk: flutter
   http: ^1.2.0
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.20.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.0
+
+flutter_launcher_icons:
+  android: "ic_launcher"
+  ios: true
+  image_path: "assets/fancoin/fanconnactlogo.png"
+  adaptive_background_color: "#2196F3"
+  min_sdk_android: 21
 
 flutter:
   uses-material-design: true

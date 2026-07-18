@@ -1,4 +1,5 @@
 ﻿import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'theme.dart';
 import 'l10n.dart';
 import 'screens/home_screen.dart';
@@ -29,6 +30,11 @@ class _FanconnactAppState extends State<FanconnactApp> {
       debugShowCheckedModeBanner: false,
       theme: buildTheme(dark: _dark),
       locale: _locale,
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
       supportedLocales: const [Locale('en'), Locale('hi'), Locale('es')],
       home: MainShell(
         onToggleTheme: _toggleTheme,
@@ -277,19 +283,18 @@ class _SettingTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 4),
-      decoration: BoxDecoration(
-        color: isDark ? AppColors.darkCard : Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.withOpacity(0.15)),
-      ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
       child: ListTile(
         leading: Icon(icon, color: AppColors.brandBlue),
         title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
         trailing: trailing ?? const Icon(Icons.chevron_right),
         onTap: onTap,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        tileColor: isDark ? AppColors.darkCard : Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(color: Colors.grey.withOpacity(0.15)),
+        ),
       ),
     );
   }
