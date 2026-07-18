@@ -216,17 +216,19 @@ async function renderRows4to6() {
   });
 }
 
+var topEarnersExpanded = false;
+
 async function renderTopEarners() {
   var container = document.getElementById("topEarnersList");
   if (!container) return;
   var data = await getData();
-  var top5 = data.slice(0, 5);
   container.innerHTML = "";
-  if (!top5.length) {
+  if (!data.length) {
     container.innerHTML = '<div class="text-center text-slate-400 text-sm py-4">No fans yet.</div>';
     return;
   }
-  top5.forEach(function(u, idx) {
+  var list = topEarnersExpanded ? data.slice() : data.slice(0, 5);
+  list.forEach(function(u, idx) {
     var div = document.createElement("div");
     div.className = "flex items-center justify-between cursor-pointer hover:bg-[#0a1628] p-2 rounded-lg transition";
     div.innerHTML = '<div class="flex items-center gap-3"><span class="text-slate-400 w-4">' + (idx + 1) + '</span>' +
@@ -236,6 +238,14 @@ async function renderTopEarners() {
     div.addEventListener("click", function() { goToPlayer(u); });
     container.appendChild(div);
   });
+  var btn = document.getElementById("top-earners-view-all");
+  if (btn) {
+    btn.textContent = topEarnersExpanded ? "Show Less ↑" : "View All Top Earners →";
+    btn.onclick = function() {
+      topEarnersExpanded = !topEarnersExpanded;
+      renderTopEarners();
+    };
+  }
 }
 
 var fullLBExpanded = false;
@@ -295,6 +305,7 @@ document.addEventListener("DOMContentLoaded", async function() {
   await renderPodium();
   await renderRows4to6();
   await renderYourRank();
+  await renderTopEarners();
 });
 
 // Populate the "Your Rank" sidebar + "Your Row" with the REAL logged-in user.
