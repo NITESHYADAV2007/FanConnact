@@ -3734,6 +3734,91 @@ app.get("/api/leaderboard/:sport/:category", (req, res) => {
 
 // ─── SYNC STATUS ─────────────────────────────────────────────────────────────
 
+// ── GLOBAL SEARCH (players + matches) ──────────────────────────────────
+// Searches player rankings (all sports) and the static match list.
+app.get("/api/search", async (req, res) => {
+  const q = (req.query.q || "").toString().trim().toLowerCase();
+  if (!q) return res.json({ players: [], matches: [] });
+
+  // ---- Players: scan all sports/categories in player-rankings.json ----
+  const players = [];
+  try {
+    const pd = loadPlayerRankings();
+    Object.keys(pd).forEach(sportId => {
+      if (sportId === "_meta") return;
+      const sportBlock = pd[sportId];
+      if (!sportBlock) return;
+      Object.keys(sportBlock).forEach(cat => {
+        const list = sportBlock[cat];
+        if (!Array.isArray(list)) return;
+        list.forEach(p => {
+          if (p && p.name && p.name.toString().toLowerCase().includes(q)) {
+            players.push({
+              name: p.name,
+              sport: sportId,
+              category: cat,
+              rank: p.rank || null,
+              team: p.team || p.country || "",
+              stat: p.runs != null ? p.runs
+                : p.goals != null ? p.goals
+                : p.points != null ? p.points
+                : p.wkts != null ? p.wkts
+                : p.rating != null ? p.rating : "",
+            });
+          }
+        });
+      });
+    });
+  } catch (e) { /* ignore */ }
+  // De-dupe by name+sport, sort by rank
+  const seen = new Set();
+  const uniquePlayers = players.filter(p => {
+    const k = p.sport + "|" + p.name;
+    if (seen.has(k)) return false;
+    seen.add(k);
+    return true;
+  }).sort((a, b) => (a.rank || 999) - (b.rank || 999)).slice(0, 8);
+
+  // ---- Matches: scan static match data ----
+  let matches = [];
+  try {
+    const md = require("./../js/matches-data.js");
+  } catch (e) {}
+  // matches-data.js is a browser IIFE; read the file and eval the export instead.
+  try {
+    const fs = require("fs");
+    const path = require("path");
+    const mdPath = path.join(__dirname, "..", "js", "matches-data.js");
+    const src = fs.readFileSync(mdPath, "utf8");
+    // Extract TEAMS and MATCHES via a sandboxed eval
+    const sandbox = { window: {}, module: {}, console };
+    const vm = require("vm");
+    vm.createContext(sandbox);
+    vm.runInContext(src + "\n;__OUT={TEAMS:window.FANCONNECT_MATCHES?window.FANCONNECT_MATCHES.TEAMS:null,MATCHES:window.FANCONNECT_MATCHES?window.FANCONNECT_MATCHES.MATCHES:null};", sandbox);
+    const OUT = sandbox.__OUT || {};
+    const TEAMS = OUT.TEAMS || {};
+    const MATCHES = OUT.MATCHES || [];
+    matches = MATCHES.filter(m => {
+      const h = (TEAMS[m.home] || { name: m.home }).name || "";
+      const a = (TEAMS[m.away] || { name: m.away }).name || "";
+      const t = (m.tournament || "").toString();
+      return (h.toLowerCase().includes(q) || a.toLowerCase().includes(q) || t.toLowerCase().includes(q));
+    }).slice(0, 8).map(m => {
+      const h = (TEAMS[m.home] || { name: m.home }).name || m.home;
+      const a = (TEAMS[m.away] || { name: m.away }).name || m.away;
+      return {
+        id: m.id, sport: m.sport, status: m.status,
+        home: h, away: a,
+        tournament: m.tournament || "",
+        date: m.date || "", time: m.time || "",
+        link: m.link || "match-center.html?id=" + encodeURIComponent(m.id),
+      };
+    });
+  } catch (e) { /* ignore */ }
+
+  res.json({ players: uniquePlayers, matches });
+});
+
 app.get("/api/sync/status", (req, res) => {
   res.json(rankingsSync.getSyncStatus());
 });

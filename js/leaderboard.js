@@ -1,44 +1,8 @@
-// Full leaderboard data — real registered users from Firestore (users collection),
-// sorted by XP desc, Level desc, then name. Falls back to generated data if
-// Firebase is unavailable (e.g. opened via file:// or offline).
+// Full leaderboard data — REAL registered users from Firestore (users collection) ONLY.
+// No static/fake players are ever shown. If Firestore can't be reached, the
+// leaderboard renders empty (never fake names).
 var leaderboardData = null;
 var leaderboardLoaded = false;
-
-// Fallback generator (used only when Firestore can't be reached)
-function generateAllUsers() {
-  var firstNames = ["Arjun","Rahul","Virat","Rohit","Sachin","Dhoni","Kohli","Sharma","Amit","Sunil",
-    "Raj","Ankit","Vikram","Deepak","Manish","Karan","Nitin","Pradeep","Gaurav","Harsh",
-    "Siddharth","Akash","Ravi","Mohan","Kunal","Yash","Aditya","Tushar","Om","Dev",
-    "Krishna","Sameer","Abhishek","Tarun","Uday","Varun","Chirag","Farhan","Hitesh","Jatin",
-    "Lalit","Manoj","Nilesh","Pankaj","Rakesh","Sandeep","Tanmay","Umesh","Vijay","Yogesh",
-    "Aryan","Bhuvan","Chandan","Dinesh","Eshan","Fahad","Girish","Harish","Ishaan","Jivan"];
-  var suffixes = ["_Fan","_Army","_King","_Star","_Pro","_Legend","_Master","_Champ","_Warrior","_Hero"];
-  var fixedNames = ["MI_Army","CricketKing","Virat18","CSK_Rider","BlueArmy","RohitFan_45"];
-  var fixedLevels = [18, 16, 16, 15, 14, 14];
-  var fixedXP = [12560, 9870, 8930, 7450, 6980, 6250];
-  var fixedImgs = ["https://i.pravatar.cc/100?img=10","https://i.pravatar.cc/100?img=12","https://i.pravatar.cc/100?img=15","https://i.pravatar.cc/100?img=12","https://i.pravatar.cc/100?img=20","https://i.pravatar.cc/100?img=15"];
-  var data = [];
-  for (var i = 0; i < 6; i++) {
-    data.push({ name: fixedNames[i], level: fixedLevels[i], xp: fixedXP[i], coins: 0, img: fixedImgs[i] });
-  }
-  for (var i = 7; i <= 56; i++) {
-    var idx = (i - 7) % firstNames.length;
-    var name = firstNames[idx] + suffixes[Math.floor(Math.random() * suffixes.length)] + Math.floor(Math.random() * 99);
-    var xp = Math.max(500, Math.floor(12560 - i * 200 + (Math.random() * 400 - 200)));
-    var level = (window.LevelSystem && window.LevelSystem.levelFromXP) ? window.LevelSystem.levelFromXP(xp) : Math.max(1, Math.min(20, Math.floor(xp / 700) + 1));
-    data.push({ name: name, level: level, xp: xp, coins: 0, img: "https://i.pravatar.cc/100?img=" + ((i % 70) + 1) });
-  }
-  data.sort(function(a, b) {
-    if (a.xp !== b.xp) return b.xp - a.xp;
-    if (a.coins !== b.coins) return b.coins - a.coins;
-    if (a.level !== b.level) return b.level - a.level;
-    return a.name.localeCompare(b.name);
-  });
-  for (var i = 0; i < data.length; i++) {
-    data[i].rank = i + 1;
-  }
-  return data;
-}
 
 // Wait until Firebase handles are exposed on window.__FB__ (set asynchronously
 // by js/script.js -> js/firebase-config.js). Returns true once ready.
@@ -99,6 +63,12 @@ async function getData() {
   }
   return leaderboardData;
 }
+
+// Expose a helper so profile.html can show the user's rank vs ALL registered users.
+window.FANCONNECT_leaderboard = {
+  loadRealUsers: loadRealUsers,
+  getData: getData
+};
 
 function goToPlayer(u, sport) {
   if (!sport) {
