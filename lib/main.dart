@@ -1,5 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 import 'theme.dart';
+import 'l10n.dart';
 import 'screens/home_screen.dart';
 import 'screens/settings_screen.dart';
 
@@ -16,8 +17,10 @@ class FanconnactApp extends StatefulWidget {
 
 class _FanconnactAppState extends State<FanconnactApp> {
   bool _dark = true;
+  Locale _locale = const Locale('en');
 
   void _toggleTheme() => setState(() => _dark = !_dark);
+  void _setLocale(Locale l) => setState(() => _locale = l);
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +28,14 @@ class _FanconnactAppState extends State<FanconnactApp> {
       title: 'Fanconnact',
       debugShowCheckedModeBanner: false,
       theme: buildTheme(dark: _dark),
-      home: MainShell(onToggleTheme: _toggleTheme, isDark: _dark),
+      locale: _locale,
+      supportedLocales: const [Locale('en'), Locale('hi'), Locale('es')],
+      home: MainShell(
+        onToggleTheme: _toggleTheme,
+        isDark: _dark,
+        onLocaleChanged: _setLocale,
+        locale: _locale,
+      ),
     );
   }
 }
@@ -33,11 +43,15 @@ class _FanconnactAppState extends State<FanconnactApp> {
 class MainShell extends StatefulWidget {
   final VoidCallback onToggleTheme;
   final bool isDark;
+  final ValueChanged<Locale> onLocaleChanged;
+  final Locale locale;
 
   const MainShell({
     super.key,
     required this.onToggleTheme,
     required this.isDark,
+    required this.onLocaleChanged,
+    required this.locale,
   });
 
   @override
@@ -70,10 +84,10 @@ class _MainShellState extends State<MainShell> {
     return Scaffold(
       body: IndexedStack(
         index: _index,
-        children: const [
-          HomeScreen(),
-          Center(child: Text('Sports hub - coming soon')),
-          Center(child: Text('Leaderboard - coming soon')),
+        children: [
+          HomeScreen(locale: widget.locale),
+          const Center(child: Text('Sports hub - coming soon')),
+          const Center(child: Text('Leaderboard - coming soon')),
           SettingsScreen(),
         ],
       ),
@@ -87,6 +101,8 @@ class _MainShellState extends State<MainShell> {
                 builder: (_) => SettingsScreenWithTheme(
                   onToggleTheme: widget.onToggleTheme,
                   isDark: widget.isDark,
+                  onLocaleChanged: widget.onLocaleChanged,
+                  locale: widget.locale,
                 ),
               ),
             );
@@ -111,18 +127,67 @@ class _MainShellState extends State<MainShell> {
 class SettingsScreenWithTheme extends StatelessWidget {
   final VoidCallback onToggleTheme;
   final bool isDark;
+  final ValueChanged<Locale> onLocaleChanged;
+  final Locale locale;
 
   const SettingsScreenWithTheme({
     super.key,
     required this.onToggleTheme,
     required this.isDark,
+    required this.onLocaleChanged,
+    required this.locale,
   });
+
+  String _currentLangName() {
+    final code = locale.languageCode;
+    final found = AppStrings.languages.firstWhere(
+      (l) => l['code'] == code,
+      orElse: () => AppStrings.languages.first,
+    );
+    return found['name']!;
+  }
+
+  void _pickLanguage(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(AppStrings.get(locale.languageCode, 'selectLanguage')),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: AppStrings.languages
+              .map(
+                (l) => RadioListTile<String>(
+                  title: Text(l['name']!),
+                  value: l['code']!,
+                  groupValue: locale.languageCode,
+                  activeColor: AppColors.brandBlue,
+                  onChanged: (code) {
+                    if (code != null) {
+                      onLocaleChanged(Locale(code));
+                      Navigator.pop(ctx);
+                    }
+                  },
+                ),
+              )
+              .toList(),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+    final lang = locale.languageCode;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Settings', style: TextStyle(fontWeight: FontWeight.w800)),
+        title: Text(AppStrings.get(lang, 'settings'),
+            style: const TextStyle(fontWeight: FontWeight.w800)),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
@@ -138,26 +203,32 @@ class SettingsScreenWithTheme extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(12),
         children: [
-          _SectionTitle('Appearance'),
+          _SectionTitle(AppStrings.get(lang, 'appearance')),
           _SettingTile(
             icon: Icons.dark_mode_outlined,
-            title: 'Dark Mode',
+            title: AppStrings.get(lang, 'darkMode'),
             trailing: Switch(
               value: isDark,
               activeColor: AppColors.brandBlue,
               onChanged: (_) => onToggleTheme(),
             ),
           ),
-          _SectionTitle('Account'),
-          _SettingTile(icon: Icons.person_outline, title: 'Edit Profile', onTap: () {}),
-          _SettingTile(icon: Icons.notifications_outlined, title: 'Notifications', onTap: () {}),
-          _SettingTile(icon: Icons.security_outlined, title: 'Privacy & Security', onTap: () {}),
-          _SectionTitle('Preferences'),
-          _SettingTile(icon: Icons.sports_cricket_outlined, title: 'Favorite Sports', onTap: () {}),
-          _SettingTile(icon: Icons.language_outlined, title: 'Language', onTap: () {}),
-          _SectionTitle('About'),
-          _SettingTile(icon: Icons.info_outline, title: 'About Fanconnact', onTap: () {}),
-          _SettingTile(icon: Icons.description_outlined, title: 'Terms & Conditions', onTap: () {}),
+          _SectionTitle(AppStrings.get(lang, 'account')),
+          _SettingTile(icon: Icons.person_outline, title: AppStrings.get(lang, 'editProfile'), onTap: () {}),
+          _SettingTile(icon: Icons.notifications_outlined, title: AppStrings.get(lang, 'notifications'), onTap: () {}),
+          _SettingTile(icon: Icons.security_outlined, title: AppStrings.get(lang, 'privacy'), onTap: () {}),
+          _SectionTitle(AppStrings.get(lang, 'preferences')),
+          _SettingTile(icon: Icons.sports_cricket_outlined, title: AppStrings.get(lang, 'favoriteSports'), onTap: () {}),
+          _SettingTile(
+            icon: Icons.language_outlined,
+            title: AppStrings.get(lang, 'language'),
+            trailing: Text(_currentLangName(),
+                style: const TextStyle(color: Colors.grey, fontSize: 13)),
+            onTap: () => _pickLanguage(context),
+          ),
+          _SectionTitle(AppStrings.get(lang, 'aboutSection')),
+          _SettingTile(icon: Icons.info_outline, title: AppStrings.get(lang, 'about'), onTap: () {}),
+          _SettingTile(icon: Icons.description_outlined, title: AppStrings.get(lang, 'terms'), onTap: () {}),
           const SizedBox(height: 12),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 4),

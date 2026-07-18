@@ -1,20 +1,24 @@
 import 'package:flutter/material.dart';
 import '../data.dart';
 import '../theme.dart';
+import '../l10n.dart';
 
 // Horizontal scrollable sport selector. "All Sports" is selected by default.
 class SportSelector extends StatelessWidget {
   final String selectedKey;
   final ValueChanged<String> onSelected;
+  final Locale locale;
 
   const SportSelector({
     super.key,
     required this.selectedKey,
     required this.onSelected,
+    required this.locale,
   });
 
   @override
   Widget build(BuildContext context) {
+    final lang = locale.languageCode;
     return SizedBox(
       height: 44,
       child: ListView.separated(
@@ -25,8 +29,11 @@ class SportSelector extends StatelessWidget {
         itemBuilder: (context, index) {
           final sport = sports[index];
           final selected = sport.key == selectedKey;
+          final name = sport.key == 'all'
+              ? AppStrings.get(lang, 'allSports')
+              : sport.name;
           return ChoiceChip(
-            label: Text('${sport.emoji}  ${sport.name}'),
+            label: Text('${sport.emoji}  $name'),
             selected: selected,
             onSelected: (_) => onSelected(sport.key),
             backgroundColor:

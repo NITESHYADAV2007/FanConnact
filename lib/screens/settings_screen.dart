@@ -19,6 +19,53 @@ class SettingsScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(12),
         children: [
+          // FanCoin promo card with the FanCoin logo
+          Container(
+            margin: const EdgeInsets.only(bottom: 8),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [AppColors.brandBlue, AppColors.brandBlueDark],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Row(
+              children: [
+                Image.asset(
+                  'assets/fancoin/fancoin.png',
+                  height: 44,
+                  width: 44,
+                ),
+                const SizedBox(width: 14),
+                const Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'FanCoin',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      SizedBox(height: 2),
+                      Text(
+                        'Earn coins, unlock rewards & climb the leaderboard',
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(Icons.chevron_right, color: Colors.white70),
+              ],
+            ),
+          ),
           _SectionTitle('Appearance'),
           _SettingTile(
             icon: Icons.dark_mode_outlined,

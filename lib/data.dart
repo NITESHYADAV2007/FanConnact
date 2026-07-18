@@ -30,6 +30,8 @@ class MatchItem {
   final String series;
   final String teamA;
   final String teamB;
+  final String? logoA;
+  final String? logoB;
   final String? scoreA;
   final String? scoreB;
   final String status; // "LIVE", "UPCOMING", "COMPLETED"
@@ -41,11 +43,50 @@ class MatchItem {
     required this.series,
     required this.teamA,
     required this.teamB,
+    this.logoA,
+    this.logoB,
     this.scoreA,
     this.scoreB,
     required this.status,
     required this.time,
   });
+
+  // Build from the backend /api/matches payload (ESPN real data).
+  factory MatchItem.fromApi(Map<String, dynamic> m, {String sportKey = 'all'}) {
+    const emojiMap = {
+      'football': '⚽',
+      'basketball': '🏀',
+      'hockey': '🏑',
+      'baseball': '⚾',
+      'tennis': '🎾',
+      'cricket': '🏏',
+      'volleyball': '🏐',
+      'tabletennis': '🏓',
+      'kabaddi': '🤼',
+      'esports': '🎮',
+    };
+    return MatchItem(
+      sport: sportKey,
+      sportEmoji: emojiMap[sportKey] ?? '🏟️',
+      series: (m['league'] ?? '').toString(),
+      teamA: (m['homeName'] ?? 'TBD').toString(),
+      teamB: (m['awayName'] ?? 'TBD').toString(),
+      logoA: (m['homeLogo'] ?? '').toString().isNotEmpty
+          ? m['homeLogo'].toString()
+          : null,
+      logoB: (m['awayLogo'] ?? '').toString().isNotEmpty
+          ? m['awayLogo'].toString()
+          : null,
+      scoreA: (m['homeScore'] ?? '').toString().isNotEmpty
+          ? m['homeScore'].toString()
+          : null,
+      scoreB: (m['awayScore'] ?? '').toString().isNotEmpty
+          ? m['awayScore'].toString()
+          : null,
+      status: (m['status'] ?? 'UPCOMING').toString(),
+      time: (m['time'] ?? '').toString(),
+    );
+  }
 }
 
 class NewsItem {
@@ -55,6 +96,7 @@ class NewsItem {
   final String source;
   final String timeAgo;
   final String tag;
+  final String? image;
 
   const NewsItem({
     required this.sport,
@@ -63,6 +105,7 @@ class NewsItem {
     required this.source,
     required this.timeAgo,
     required this.tag,
+    this.image,
   });
 }
 

@@ -107,6 +107,7 @@ class MatchCard extends StatelessWidget {
                     Expanded(
                       child: _TeamRow(
                         name: match.teamA,
+                        logo: match.logoA,
                         score: match.scoreA,
                       ),
                     ),
@@ -116,6 +117,7 @@ class MatchCard extends StatelessWidget {
                     Expanded(
                       child: _TeamRow(
                         name: match.teamB,
+                        logo: match.logoB,
                         score: match.scoreB,
                         alignRight: true,
                       ),
@@ -144,23 +146,41 @@ class MatchCard extends StatelessWidget {
 
 class _TeamRow extends StatelessWidget {
   final String name;
+  final String? logo;
   final String? score;
   final bool alignRight;
 
   const _TeamRow({
     required this.name,
+    this.logo,
     this.score,
     this.alignRight = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    final logoWidget = logo != null && logo!.isNotEmpty
+        ? ClipRRect(
+            borderRadius: BorderRadius.circular(6),
+            child: Image.network(
+              logo!,
+              width: 26,
+              height: 26,
+              fit: BoxFit.contain,
+              errorBuilder: (_, __, ___) => const Icon(Icons.sports, size: 22),
+            ),
+          )
+        : const Icon(Icons.sports, size: 22);
+
     final children = [
+      logoWidget,
+      const SizedBox(width: 8),
       Expanded(
         child: Text(
           name,
           style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
           textAlign: alignRight ? TextAlign.right : TextAlign.left,
+          overflow: TextOverflow.ellipsis,
         ),
       ),
       if (score != null) ...[

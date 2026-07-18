@@ -47,6 +47,29 @@ class NewsCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
+              if (item.image != null)
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Image.network(
+                    item.image!,
+                    width: 64,
+                    height: 64,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => Container(
+                      width: 64,
+                      height: 64,
+                      decoration: BoxDecoration(
+                        color: AppColors.brandBlue.withOpacity(0.12),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Center(
+                        child: Icon(Icons.article_outlined,
+                            color: AppColors.brandBlue),
+                      ),
+                    ),
+                  ),
+                ),
+              if (item.image != null) const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
