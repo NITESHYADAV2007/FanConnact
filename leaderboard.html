@@ -925,10 +925,10 @@ class="w-full flex items-center justify-center rounded-xl border border-purple-5
       const fanContent = document.getElementById('fan-content');
       const teamContent = document.getElementById('team-content');
       if (fanContent) {
-        fanContent.classList.remove('hidden');
+        fanContent.style.display = 'grid';
         fanContent.classList.add('grid', 'grid-cols-1', 'lg:grid-cols-12', 'gap-6', 'items-start');
       }
-      if (teamContent) teamContent.classList.add('hidden');
+      if (teamContent) teamContent.style.display = 'none';
     })();
     loadTeamSports();
 
@@ -947,15 +947,17 @@ class="w-full flex items-center justify-center rounded-xl border border-purple-5
         const teamContent = document.getElementById('team-content');
         if (this.dataset.mode === 'team') {
           wrapper.classList.remove('hidden');
-          fanContent.classList.add('hidden');
+          fanContent.style.display = 'none';
           fanContent.classList.remove('grid', 'grid-cols-1', 'lg:grid-cols-12', 'gap-6', 'items-start');
+          teamContent.style.display = 'block';
           teamContent.classList.remove('hidden');
           if (teamSports.length === 0) loadTeamSports();
           else loadTeamRankings();
         } else {
           wrapper.classList.add('hidden');
-          fanContent.classList.remove('hidden');
+          fanContent.style.display = 'grid';
           fanContent.classList.add('grid', 'grid-cols-1', 'lg:grid-cols-12', 'gap-6', 'items-start');
+          teamContent.style.display = 'none';
           teamContent.classList.add('hidden');
         }
       });
