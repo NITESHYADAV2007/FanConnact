@@ -1304,8 +1304,17 @@
           if (userPredictions[p.id] !== undefined) awardIfCorrect(p, userPredictions[p.id]);
         });
       }
-      // Initialise wallet display from stored balance
-      setCoinBalance(getCoinBalance());
+      // Initialise wallet display from the REAL profile coins (default 100),
+      // falling back to any previously stored balance.
+      (function initWallet() {
+        var real = (window.currentUserProfile && window.currentUserProfile.coins);
+        if (typeof real === 'number' && !isNaN(real)) {
+          setCoinBalance(real);
+        } else {
+          var stored = getCoinBalance();
+          setCoinBalance(stored === 4250 ? 100 : stored);
+        }
+      })();
     </script>
   <script src="js/notif-ws.js"></script>
   <script type="module" src="js/script.js"></script></body>

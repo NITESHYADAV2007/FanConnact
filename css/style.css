@@ -324,8 +324,12 @@ body.theme-royal input[type="checkbox"]:not(.sr-only):not(.peer) {
    High specificity so it wins over per-page inline overrides. ── */
 html:root:not(.dark) .text-fan { color: #0f172a !important; }
 html.dark .text-fan { color: #ffffff !important; }
-html:root:not(.dark) .text-connect { color: #d99a00 !important; }
-html.dark .text-connect { color: #f5b301 !important; }
+/* Default (non-royal): Connact = royal blue (light) / green (dark) — as before */
+html:root:not(.dark) .text-connect { color: #1565c0 !important; }
+html.dark .text-connect { color: #10b981 !important; }
+/* Royal blue theme ONLY: Connact = golden */
+html.dark body.theme-royal .text-connect { color: #f5b301 !important; }
+html:root:not(.dark) body.theme-royal .text-connect { color: #f5b301 !important; }
 
 /* ── LIGHT MODE: remap hardcoded dark text colours to readable ones ──
    Many components hardcode Tailwind dark-mode greys (text-gray-300/400/500)

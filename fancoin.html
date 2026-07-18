@@ -110,7 +110,7 @@
                 <p>YOUR FAN COINS</p>
                 <div class="coins">
                   <div class="coin-icon">FC</div>
-                  <h2>1250</h2>
+                  <h2 id="fancoin-balance">100</h2>
                 </div>
                 <div class="buttons">
                   <button type="button" onclick="window.location.href='prediction.html'" class="green-btn">Earn Coins</button>
@@ -212,48 +212,40 @@
         </div>
 
         <script>
-          const TX_DATA = [
-            { label: "Daily Quiz Reward", amount: "+100", type: "plus", date: "2026-07-02" },
-            { label: "Match Prediction", amount: "+250", type: "plus", date: "2026-07-01" },
-            { label: "Fan War Victory", amount: "+500", type: "plus", date: "2026-06-30" },
-            { label: "Community Post", amount: "+50", type: "plus", date: "2026-06-29" },
-            { label: "Redeemed IPL Ticket", amount: "-1200", type: "minus", date: "2026-06-28" },
-            { label: "Daily Quiz Reward", amount: "+100", type: "plus", date: "2026-06-27" },
-            { label: "Match Prediction Win", amount: "+250", type: "plus", date: "2026-06-26" },
-            { label: "Fan War Entry", amount: "-100", type: "minus", date: "2026-06-25" },
-            { label: "Community Post", amount: "+50", type: "plus", date: "2026-06-24" },
-            { label: "Redeemed Merch", amount: "-500", type: "minus", date: "2026-06-23" },
-            { label: "Daily Quiz Reward", amount: "+100", type: "plus", date: "2026-06-22" },
-            { label: "Prediction Bonus", amount: "+300", type: "plus", date: "2026-06-21" },
-            { label: "Fan War Victory", amount: "+500", type: "plus", date: "2026-06-20" },
-            { label: "Redeemed Ticket", amount: "-800", type: "minus", date: "2026-06-19" },
-            { label: "Referral Reward", amount: "+200", type: "plus", date: "2026-06-18" },
-            { label: "Match Prediction", amount: "+250", type: "plus", date: "2026-06-17" },
-            { label: "Community Award", amount: "+150", type: "plus", date: "2026-06-16" },
-            { label: "Daily Quiz Reward", amount: "+100", type: "plus", date: "2026-06-15" },
-            { label: "Redeemed Voucher", amount: "-300", type: "minus", date: "2026-06-14" },
-            { label: "Fan War Victory", amount: "+500", type: "plus", date: "2026-06-13" },
-            { label: "Daily Quiz Reward", amount: "+100", type: "plus", date: "2026-06-12" },
-            { label: "Prediction Correct", amount: "+250", type: "plus", date: "2026-06-11" },
-            { label: "Community Post", amount: "+50", type: "plus", date: "2026-06-10" },
-            { label: "Redeemed IPL Ticket", amount: "-1200", type: "minus", date: "2026-06-09" },
-            { label: "Fan War Victory", amount: "+500", type: "plus", date: "2026-06-08" },
-            { label: "Daily Quiz Reward", amount: "+100", type: "plus", date: "2026-06-07" },
-            { label: "Match Prediction", amount: "+250", type: "plus", date: "2026-06-06" },
-            { label: "Birthday Bonus", amount: "+1000", type: "plus", date: "2026-06-05" },
-            { label: "Redeemed Cash", amount: "-2000", type: "minus", date: "2026-06-04" },
-            { label: "Community Activity", amount: "+50", type: "plus", date: "2026-06-03" },
-            { label: "Fan War Victory", amount: "+500", type: "plus", date: "2026-06-02" },
-            { label: "Daily Quiz", amount: "+100", type: "plus", date: "2026-06-01" },
-            { label: "Prediction Win", amount: "+250", type: "plus", date: "2026-05-31" },
-            { label: "Referral Bonus", amount: "+200", type: "plus", date: "2026-05-30" },
-            { label: "Redeemed Jersey", amount: "-1500", type: "minus", date: "2026-05-29" },
-            { label: "Fan War Victory", amount: "+500", type: "plus", date: "2026-05-28" },
-            { label: "Daily Quiz Reward", amount: "+100", type: "plus", date: "2026-05-27" },
-            { label: "Match Prediction", amount: "+250", type: "plus", date: "2026-05-26" },
-            { label: "Community Post", amount: "+50", type: "plus", date: "2026-05-25" },
-            { label: "Redeemed Voucher", amount: "-300", type: "minus", date: "2026-05-24" },
-          ];
+          // Real balance + transactions for the logged-in user (default 100 coins).
+          // Falls back to a single "Welcome Bonus" entry if no history exists.
+          let TX_DATA = [];
+          (async function loadFanCoin() {
+            let balance = 100;
+            try {
+              if (window.__FB__ && window.__FB__.db) {
+                const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+                let uid = null;
+                if (window.currentUserProfile && window.currentUserProfile.uid) uid = window.currentUserProfile.uid;
+                else if (window.__FB__.auth && window.__FB__.auth.currentUser) uid = window.__FB__.auth.currentUser.uid;
+                if (uid) {
+                  const snap = await getDoc(doc(window.__FB__.db, "users", uid));
+                  if (snap.exists()) {
+                    const d = snap.data();
+                    const c = parseInt(d.coins, 10);
+                    balance = isNaN(c) ? 100 : c;
+                    if (Array.isArray(d.coinHistory)) {
+                      TX_DATA = d.coinHistory.map(function(t) {
+                        const amt = parseInt(t.amount, 10) || 0;
+                        return { label: t.label || "Coin Adjustment", amount: (amt >= 0 ? "+" : "") + amt, type: amt >= 0 ? "plus" : "minus", date: t.date || "" };
+                      });
+                    }
+                  }
+                }
+              }
+            } catch (e) { console.warn("[fancoin] balance load failed:", e.message); }
+            if (!TX_DATA.length) {
+              TX_DATA = [{ label: "Welcome Bonus", amount: "+100", type: "plus", date: new Date().toISOString().slice(0, 10) }];
+            }
+            const balEl = document.getElementById("fancoin-balance");
+            if (balEl) balEl.textContent = balance.toLocaleString();
+            renderTX(txShowAll);
+          })();
 
           function renderTxItem(t) {
             return '<div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.07);font-size:13px;">' +

@@ -216,6 +216,29 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
+    // Update every FanCoin badge across the site with the real balance
+    // (defaults to 100 for every registered user). Safe to call repeatedly.
+    function updateCoinBadges(coins) {
+      var c = parseInt(coins, 10);
+      if (isNaN(c)) c = 100;
+      var formatted = c.toLocaleString();
+      // Top-bar wallet badge (dashboard / prediction / etc.)
+      var wallet = document.getElementById("wallet-coin-balance");
+      if (wallet) wallet.textContent = formatted;
+      // Any element showing a raw coin number next to the wallet icon
+      document.querySelectorAll(".coin-balance-value").forEach(function (el) {
+        el.textContent = formatted;
+      });
+      // Profile hero "X Coins"
+      var hero = document.getElementById("profile-hero-coins");
+      if (hero) hero.textContent = formatted + " Coins";
+      // Generic elements flagged with data-coin-badge
+      document.querySelectorAll("[data-coin-badge]").forEach(function (el) {
+        el.textContent = formatted;
+      });
+    }
+    window.updateCoinBadges = updateCoinBadges;
+
     const userNameElem = document.getElementById("user-name-display");
     const userAvatarElem = document.getElementById("user-profile-img");
     const userLevelElem = document.getElementById("user-level-display");
@@ -241,8 +264,10 @@ document.addEventListener("DOMContentLoaded", () => {
         photoURL: photo,
         level: 1,
         uid: user.uid,
-        xp: 0
+        xp: 0,
+        coins: 100
       };
+      updateCoinBadges(100);
 
       // Fetch extra Firestore details in the background
       try {
@@ -279,6 +304,8 @@ document.addEventListener("DOMContentLoaded", () => {
             welcomeElem.textContent = `Welcome back, ${name}!`;
           }
           // Expose the real database profile for other modules (e.g. chat)
+          const realCoins = parseInt(data.coins, 10);
+          const coins = isNaN(realCoins) ? 100 : realCoins; // default 100 coins for every registered user
           window.currentUserProfile = {
             name: data.fullName || data.username || displayIdentity,
             username: data.username || '',
@@ -287,8 +314,10 @@ document.addEventListener("DOMContentLoaded", () => {
               ? window.LevelSystem.levelFromXP(data.xp || 0)
               : (data.level || 1),
             uid: user.uid,
-            xp: parseInt(data.xp, 10) || 0
+            xp: parseInt(data.xp, 10) || 0,
+            coins: coins
           };
+          updateCoinBadges(coins);
         }
       } catch (error) {
         console.error("Error fetching user data from Firestore:", error);

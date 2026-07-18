@@ -33,7 +33,8 @@ async function loadRealUsers() {
       var level = (window.LevelSystem && window.LevelSystem.levelFromXP)
         ? window.LevelSystem.levelFromXP(xp)
         : (parseInt(d.level, 10) || 1);
-      var coins = parseInt(d.coins, 10) || 0;
+      var coins = parseInt(d.coins, 10);
+      if (isNaN(coins)) coins = 100; // default 100 coins for every registered user
       var name = d.username || d.fullName || d.email || "Fan";
       var img = d.photoURL || (d.email ? ("https://i.pravatar.cc/100?u=" + encodeURIComponent(d.email)) : "assets/images/default-avatar.png?w=150");
       users.push({ name: name, level: level, xp: xp, coins: coins, img: img, uid: d.uid });
@@ -170,7 +171,7 @@ async function renderTopEarners() {
     div.innerHTML = '<div class="flex items-center gap-3"><span class="text-slate-400 w-4">' + (idx + 1) + '</span>' +
       '<img src="' + u.img + '" class="w-10 h-10 rounded-full">' +
       '<span class="text-white">' + u.name + '</span></div>' +
-      '<span class="text-[#f7c948] font-semibold">' + u.xp.toLocaleString() + ' XP</span>';
+      '<span class="text-[#f7c948] font-semibold">' + u.coins.toLocaleString() + ' 🪙</span>';
     div.addEventListener("click", function() { goToPlayer(u); });
     container.appendChild(div);
   });
