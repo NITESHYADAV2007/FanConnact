@@ -4,7 +4,7 @@ FANCONNACT SETTINGS ENGINE
 const STORAGE_KEY = "fanconnact-settings";
 
 const defaultSettings = {
-  theme: "dark",
+  theme: "light",
   compact: false,
   largeText: false,
   reduceAnimation: false,
