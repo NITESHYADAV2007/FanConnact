@@ -18,6 +18,24 @@
    global Tailwind surface/brand classes to those variables so
    every theme looks distinct across the whole site.
    ========================= */
+
+/* ── PLAIN DARK MODE (html.dark, no named theme) ──
+   When the user toggles dark mode via the header toggle, only the
+   `dark` class is added to <html> (no body.theme-dark). The dark
+   surface variables were previously only defined on body.theme-dark,
+   so --card-bg / --page-bg kept their :root light defaults and cards
+   rendered white. These rules guarantee a fully dark surface in plain
+   dark mode too. ── */
+html.dark,
+html.dark body {
+  --page-bg: #0b1220 !important;
+  --card-bg: #111827 !important;
+  --border: #243347 !important;
+  --text: #ffffff !important;
+  --text-light: #94a3b8 !important;
+  --primary: #22c55e !important;
+  --hover: #162132 !important;
+}
 body.theme-light,
 body.theme-dark,
 body.theme-stadium,
@@ -179,6 +197,19 @@ body.theme-custom .text-accent {
   color: var(--primary) !important;
 }
 
+/* ── FANCONNACT LOGO "CONNACT" — GOLDEN ──
+   The brand logo's "Connact" wordmark is golden. This global rule
+   guarantees it stays golden on every page (including dashboard,
+   profile, login, etc. which have no per-page .text-connect rule).
+   Per-page rules in the HTML files override this for their own
+   light/dark variants, but the golden hue is consistent everywhere. ── */
+.text-connect {
+  color: #d99a00 !important;
+}
+html.dark .text-connect {
+  color: #f5b301 !important;
+}
+
 /* ── CUSTOM THEME BINDINGS ──
    A user-built theme (theme-custom) sets the same CSS variables as the
    named themes, so we bind the global surface/primary/border classes to
@@ -288,13 +319,13 @@ body.theme-royal input[type="checkbox"]:not(.sr-only):not(.peer) {
 }
 
 /* ── GLOBAL LOGO TEXT (overrides each page's inline <style>) ──
-   Light theme: Fan = near-black, Connact = blue.
-   Dark theme:  Fan = white,       Connact = green.
+   Light theme: Fan = near-black, Connact = golden.
+   Dark theme:  Fan = white,       Connact = golden (brighter).
    High specificity so it wins over per-page inline overrides. ── */
 html:root:not(.dark) .text-fan { color: #0f172a !important; }
 html.dark .text-fan { color: #ffffff !important; }
-html:root:not(.dark) .text-connect { color: #1565c0 !important; }
-html.dark .text-connect { color: #10b981 !important; }
+html:root:not(.dark) .text-connect { color: #d99a00 !important; }
+html.dark .text-connect { color: #f5b301 !important; }
 
 /* ── LIGHT MODE: remap hardcoded dark text colours to readable ones ──
    Many components hardcode Tailwind dark-mode greys (text-gray-300/400/500)
