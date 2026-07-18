@@ -191,6 +191,11 @@
       div[class*="p-4 lg:p-6"] { padding: 0 !important; }
       #fan-content { padding: 0 !important; }
 
+    /* Hard guarantee: in Team mode the Fans section is never shown, even if
+       JS hasn't finished or the inline display was overridden. */
+    #leaderboard-main[data-mode="team"] #fan-content { display: none !important; }
+    #leaderboard-main[data-mode="fans"] #team-content { display: none !important; }
+
       #podiumWrapper { overflow: visible !important; aspect-ratio: auto !important; min-height: 300px !important; }
       #card-rank1, #card-rank2, #card-rank3 { background: rgba(11,14,23,0.85) !important; border-radius: 12px !important; padding: 8px !important; }
       #htmlOverlay > div:first-child { padding: 10px !important; }
@@ -403,7 +408,7 @@
       </div>
     </div>
 
-    <div class="flex-1 p-4 lg:p-6 overflow-visible">
+    <div id="leaderboard-main" class="flex-1 p-4 lg:p-6 overflow-visible" data-mode="fans">
 
       <div id="fan-content" class="hidden">
 
@@ -922,8 +927,10 @@ class="w-full flex items-center justify-center rounded-xl border border-purple-5
     // Init: Fans mode is the default. Show fan-content as a grid and keep
     // team-content hidden. Team data is still pre-loaded in the background.
     (function initFansView() {
+      const main = document.getElementById('leaderboard-main');
       const fanContent = document.getElementById('fan-content');
       const teamContent = document.getElementById('team-content');
+      if (main) main.setAttribute('data-mode', 'fans');
       if (fanContent) {
         fanContent.style.display = 'grid';
         fanContent.classList.add('grid', 'grid-cols-1', 'lg:grid-cols-12', 'gap-6', 'items-start');
@@ -943,9 +950,11 @@ class="w-full flex items-center justify-center rounded-xl border border-purple-5
         this.classList.remove('bg-white', 'dark:bg-black', 'text-gray-600', 'dark:text-gray-300', 'border-border-subtle');
 
         const wrapper = document.getElementById('game-filter-wrapper');
+        const main = document.getElementById('leaderboard-main');
         const fanContent = document.getElementById('fan-content');
         const teamContent = document.getElementById('team-content');
         if (this.dataset.mode === 'team') {
+          if (main) main.setAttribute('data-mode', 'team');
           wrapper.classList.remove('hidden');
           fanContent.style.display = 'none';
           fanContent.classList.remove('grid', 'grid-cols-1', 'lg:grid-cols-12', 'gap-6', 'items-start');
@@ -954,6 +963,7 @@ class="w-full flex items-center justify-center rounded-xl border border-purple-5
           if (teamSports.length === 0) loadTeamSports();
           else loadTeamRankings();
         } else {
+          if (main) main.setAttribute('data-mode', 'fans');
           wrapper.classList.add('hidden');
           fanContent.style.display = 'grid';
           fanContent.classList.add('grid', 'grid-cols-1', 'lg:grid-cols-12', 'gap-6', 'items-start');
