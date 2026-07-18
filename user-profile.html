@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <script>
+    if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  </script>
+  <title>FanConnect · User Profile</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/fancoin/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/fancoin/favicon-16x16.png" />
+  <link rel="stylesheet" href="css/tailwind.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&family=Hanken+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    body { font-family: "Hanken Grotesk", sans-serif; }
+    .dark body { background-color: #0B0E11; color: #fff; }
+    .light body { background-color: #F8F9FF; color: #0f172a; }
+    .frame-gold { border: 3px solid #eab308 !important; box-shadow: 0 0 10px rgba(234,179,8,0.5); }
+    .frame-emerald { border: 3px solid #10b981 !important; box-shadow: 0 0 10px rgba(16,185,129,0.5); }
+    .frame-diamond { border: 3px solid #22d3ee !important; box-shadow: 0 0 10px rgba(34,211,238,0.5); }
+    .profile-card { background: #060d18; border: 1px solid #12263f; }
+    .dark .profile-card { background: #060d18; border-color: #12263f; }
+    body:not(.dark) .profile-card { background: #fff; border-color: #e5e7eb; }
+    .follower-row { border-bottom: 1px solid #0f1d30; }
+    body:not(.dark) .follower-row { border-color: #e5e7eb; }
+  </style>
+</head>
+<body class="min-h-screen w-full bg-[#F8F9FF] dark:bg-[#0B0E11]">
+  <main class="max-w-2xl mx-auto px-4 py-6">
+    <div class="flex items-center gap-3 mb-4">
+      <button onclick="history.back()" class="p-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/10">
+        <span class="material-symbols-outlined">arrow_back</span>
+      </button>
+      <h1 class="text-xl font-bold font-headline">Fan Profile</h1>
+    </div>
+
+    <!-- Profile Card -->
+    <div id="profileCard" class="profile-card rounded-2xl p-6 mb-4">
+      <div class="flex items-center gap-4">
+        <img id="pAvatar" src="assets/images/default-avatar.png?w=150" class="w-20 h-20 rounded-full border-2 border-emerald-accent object-cover" />
+        <div class="flex-1 min-w-0">
+          <h2 id="pName" class="text-lg font-bold truncate">—</h2>
+          <p id="pUsername" class="text-sm text-slate-400 truncate">@fan</p>
+          <div class="mt-1 flex items-center gap-2">
+            <span id="pLevel" class="bg-[#23153e] text-purple-300 px-2 py-0.5 rounded text-xs">Level 1</span>
+            <span id="pXP" class="text-xs text-slate-400">0 XP</span>
+          </div>
+        </div>
+      </div>
+      <div id="followBtnWrap" class="mt-4"></div>
+    </div>
+
+    <!-- Stats -->
+    <div class="grid grid-cols-3 gap-3 mb-4">
+      <button onclick="showTab('followers')" class="profile-card rounded-xl p-4 text-center cursor-pointer hover:opacity-80 transition">
+        <div id="pFollowers" class="text-2xl font-bold">0</div>
+        <div class="text-xs text-slate-400">Followers</div>
+      </button>
+      <button onclick="showTab('following')" class="profile-card rounded-xl p-4 text-center cursor-pointer hover:opacity-80 transition">
+        <div id="pFollowing" class="text-2xl font-bold">0</div>
+        <div class="text-xs text-slate-400">Following</div>
+      </button>
+      <div class="profile-card rounded-xl p-4 text-center">
+        <div id="pRank" class="text-2xl font-bold">—</div>
+        <div class="text-xs text-slate-400">Rank</div>
+      </div>
+    </div>
+
+    <!-- Coins / Level progress -->
+    <div class="profile-card rounded-2xl p-4 mb-4">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-sm text-slate-400">FanCoins</span>
+        <span id="pCoins" class="text-sm font-bold text-yellow-400">0 🪙</span>
+      </div>
+      <div class="flex items-center justify-between mb-1">
+        <span class="text-xs text-slate-400">Level Progress</span>
+        <span id="pNextLevel" class="text-xs text-slate-400">—</span>
+      </div>
+      <div class="w-full bg-black/30 rounded-full h-2 overflow-hidden">
+        <div id="pLevelBar" class="bg-emerald-500 h-2 rounded-full" style="width:0%"></div>
+      </div>
+    </div>
+
+    <!-- Followers / Following list -->
+    <div id="followListCard" class="profile-card rounded-2xl p-4 hidden">
+      <div class="flex items-center justify-between mb-3">
+        <h3 id="followListTitle" class="font-semibold">Followers</h3>
+        <button onclick="hideTab()" class="text-slate-400 text-sm">Close</button>
+      </div>
+      <div id="followList" class="space-y-1"></div>
+    </div>
+
+    <div id="loadingState" class="text-center text-slate-400 py-10">Loading profile…</div>
+  </main>
+
+  <script src="js/level-system.js"></script>
+  <script type="module" src="js/user-profile.js"></script>
+</body>
+</html>

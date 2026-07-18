@@ -63,29 +63,18 @@ const handleSocialLogin = async(provider) => {
         const userSnap = await getDoc(userRef);
 
         if (!userSnap.exists()) {
-            const email = user.email;
-            // Check if this email is already registered with another method
-            let alreadyRegistered = false;
-            try {
-                const methods = await fetchSignInMethodsForEmail(auth, email);
-                if (methods.length > 0) alreadyRegistered = true;
-            } catch (_) { /* ignore */ }
-
-            const username = email.split("@")[0] + Math.floor(Math.random() * 1000);
-            await setDoc(userRef, {
-                fullName: user.displayName || email.split("@")[0],
-                email: email,
-                username: username,
-                photoURL: user.photoURL,
-                coins: 100,
-                level: 1,
-                xp: 0,
-                createdAt: new Date().toISOString(),
-            });
-            await setDoc(doc(db, "usernames", username), { uid: user.uid });
-            if (alreadyRegistered) {
-                alert("This email is already registered. Your account has been linked and you are now signed in.");
-            }
+            // New Google user — store their basic info in sessionStorage and
+            // send them to the "complete profile" page to fill in the rest
+            // (username, mobile, DOB, gender, sports, avatar, frame). Email is
+            // already known + verified by Google, so it is NOT asked for.
+            sessionStorage.setItem("googleSignup", JSON.stringify({
+                uid: user.uid,
+                email: user.email,
+                fullName: user.displayName || "",
+                photoURL: user.photoURL || "",
+            }));
+            window.location.href = "complete-profile.html";
+            return;
         }
 
         window.location.href = "dashboard.html";

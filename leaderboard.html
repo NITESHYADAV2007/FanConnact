@@ -351,6 +351,13 @@
           <span id="theme-toggle-light-icon" class="material-symbols-outlined hidden text-yellow-400">light_mode</span>
           <span id="theme-toggle-dark-icon" class="material-symbols-outlined text-slate-500 dark:text-slate-400">dark_mode</span>
         </button>
+        <!-- Wallet / FanCoins -->
+        <div onclick="window.location.href='fancoin.html'" class="flex items-center gap-1 bg-gray-100 dark:bg-[#1A1D23] px-1.5 sm:px-3 py-1.5 rounded-full border border-gray-200 dark:border-white/5 cursor-pointer hover:opacity-80 transition shrink-0">
+          <div class="w-5 h-5 bg-yellow-500 rounded-full flex items-center justify-center text-[10px] text-black font-bold">
+            F
+          </div>
+          <span id="wallet-coin-balance" class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white hidden sm:inline">100</span>
+        </div>
         <div class="relative notification-trigger cursor-pointer">
           <span class="material-symbols-outlined text-slate-500 dark:text-gray-300 cursor-pointer">notifications</span>
           <span class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-[10px] flex items-center justify-center font-bold text-white shadow-sm">3</span>
@@ -413,7 +420,9 @@
               <div id="htmlOverlay"
                 class="absolute inset-0 z-10 pointer-events-none font-headline select-none w-full h-full">
 
-                <div class="p-4 md:p-6 w-full">
+                <style>
+                  #htmlOverlay [id^="card-rank"] { pointer-events: auto; }
+                </style>
                   <div class="border-b border-gray-800/50 pb-2 w-full">
                     <span
                       class="text-emerald-400 font-bold tracking-wide text-sm md:text-base border-b-2 border-emerald-400 pb-2 px-1">
@@ -432,17 +441,17 @@
                     </div>
                     <div
                       class="w-10 h-10 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-full p-[2px] bg-gradient-to-b from-blue-400 to-blue-600 shadow-[0_0_15px_rgba(59,130,246,0.4)]">
-                      <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150" alt="Rank 2"
+                      <img src="assets/images/default-avatar.png?w=150" alt="Rank 2"
                         class="w-full h-full object-cover rounded-full bg-slate-800" />
                     </div>
                   </div>
                   <div class="text-center space-y-0.5 w-full">
-                    <h3 class="text-[10px] sm:text-xs font-bold text-slate-200 tracking-wide truncate px-1">CricketKing
+                    <h3 class="text-[10px] sm:text-xs font-bold text-slate-200 tracking-wide truncate px-1">—
                     </h3>
                     <div class="leading-none"><span
-                        class="inline-block px-1.5 py-0.5 rounded bg-purple-950/60 border border-purple-500/30 text-[8px] sm:text-[9px] text-purple-300 scale-90">Level
-                        16</span></div>
-                    <div class="text-[10px] sm:text-xs md:text-sm font-black text-blue-400 pt-0.5">9,870 XP</div>
+                        class="inline-block px-1.5 py-0.5 rounded bg-purple-950/60 border border-purple-500/30 text-[8px] sm:text-[9px] text-purple-300 scale-90 level-badge">Level
+                        1</span></div>
+                    <div class="text-[10px] sm:text-xs md:text-sm font-black text-blue-400 pt-0.5">0 XP</div>
                   </div>
                 </div>
 
@@ -471,7 +480,7 @@
                       </svg>
                       <div
                         class="w-11 h-11 sm:w-15 sm:h-15 md:w-18 md:h-18 rounded-full p-[2.5px] bg-gradient-to-b from-amber-300 via-amber-400 to-amber-600 shadow-[0_0_25px_rgba(234,179,8,0.5)] z-10">
-                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150" alt="Rank 1"
+                        <img src="assets/images/default-avatar.png?w=150" alt="Rank 1"
                           class="w-full h-full object-cover rounded-full bg-slate-800" />
                       </div>
                       <svg
@@ -485,13 +494,13 @@
                   </div>
                   <div class="text-center space-y-0.5 z-10 w-full">
                     <h2 class="text-xs sm:text-sm md:text-base font-black text-white tracking-wide truncate px-1">
-                      MI_Army</h2>
+                      —</h2>
                     <div class="leading-none"><span
-                        class="inline-block px-2 py-0.5 rounded bg-purple-950/60 border border-purple-500/30 text-[8px] sm:text-[9px] font-semibold text-purple-300 scale-90">Level
-                        18</span></div>
+                        class="inline-block px-2 py-0.5 rounded bg-purple-950/60 border border-purple-500/30 text-[8px] sm:text-[9px] font-semibold text-purple-300 scale-90 level-badge">Level
+                        1</span></div>
                     <div
                       class="text-xs sm:text-sm font-black text-amber-300 tracking-wide pt-0.5 drop-shadow-sm">
-                      12,560 XP
+                      0 XP
                     </div>
                   </div>
                 </div>
@@ -501,7 +510,7 @@
                   <div class="relative mb-1.5 flex items-center justify-center">
                     <div
                       class="w-10 h-10 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-full p-[2px] bg-gradient-to-b from-orange-600 to-amber-800 shadow-[0_0_15px_rgba(234,88,12,0.4)]">
-                      <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150" alt="Rank 3"
+                      <img src="assets/images/default-avatar.png?w=150" alt="Rank 3"
                         class="w-full h-full object-cover rounded-full bg-slate-800" />
                     </div>
                     <div
@@ -511,11 +520,11 @@
                     </div>
                   </div>
                   <div class="text-center space-y-0.5 w-full">
-                    <h3 class="text-[10px] sm:text-xs font-bold text-slate-200 tracking-wide truncate px-1">Virat18</h3>
+                    <h3 class="text-[10px] sm:text-xs font-bold text-slate-200 tracking-wide truncate px-1">—</h3>
                     <div class="leading-none"><span
-                        class="inline-block px-1.5 py-0.5 rounded bg-purple-950/50 border border-purple-500/20 text-[8px] sm:text-[9px] text-purple-300 scale-90">Level
-                        16</span></div>
-                    <div class="text-[10px] sm:text-xs md:text-sm font-black text-orange-400 pt-0.5">8,930 XP</div>
+                        class="inline-block px-1.5 py-0.5 rounded bg-purple-950/50 border border-purple-500/20 text-[8px] sm:text-[9px] text-purple-300 scale-90 level-badge">Level
+                        1</span></div>
+                    <div class="text-[10px] sm:text-xs md:text-sm font-black text-orange-400 pt-0.5">0 XP</div>
                   </div>
                 </div>
 
@@ -838,33 +847,16 @@ class="w-full flex items-center justify-center rounded-xl border border-purple-5
 
 </div>
 
-<!-- TOP EARNERS -->
-<div class="bg-[#060d18] border border-[#12263f] rounded-2xl p-5">
-
+<!-- TOP EARNERS (money/coins hidden per request) -->
+<div class="bg-[#060d18] border border-[#12263f] rounded-2xl p-5" style="display:none;">
     <h3 class="text-white text-2xl font-semibold mb-5">
         Top Earners
-        <span class="text-slate-400 text-base">
-            (This Month)
-        </span>
+        <span class="text-slate-400 text-base">(This Month)</span>
     </h3>
-
     <div class="space-y-4" id="topEarnersList"></div>
-
-    <!-- Button -->
-
-    <button
-    class="w-full mt-6 py-4
-           rounded-xl
-           border border-purple-500/40
-           text-purple-300
-           font-medium
-           hover:bg-purple-500/10
-           transition">
-
+    <button class="w-full mt-6 py-4 rounded-xl border border-purple-500/40 text-purple-300 font-medium hover:bg-purple-500/10 transition">
         View All Top Earners →
-
     </button>
-
 </div>
 
 

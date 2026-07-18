@@ -222,9 +222,12 @@ document.addEventListener("DOMContentLoaded", () => {
       var c = parseInt(coins, 10);
       if (isNaN(c)) c = 100;
       var formatted = c.toLocaleString();
-      // Top-bar wallet badge (dashboard / prediction / etc.)
-      var wallet = document.getElementById("wallet-coin-balance");
-      if (wallet) wallet.textContent = formatted;
+      // Top-bar wallet badge(s). Some pages (e.g. dashboard) have MORE THAN ONE
+      // element with id="wallet-coin-balance" (top bar + wallet card), so we
+      // must update every match, not just the first getElementById result.
+      document.querySelectorAll('[id="wallet-coin-balance"]').forEach(function (el) {
+        el.textContent = formatted;
+      });
       // Any element showing a raw coin number next to the wallet icon
       document.querySelectorAll(".coin-balance-value").forEach(function (el) {
         el.textContent = formatted;

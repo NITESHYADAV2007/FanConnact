@@ -354,6 +354,13 @@
           <span class="material-symbols-outlined text-xl">leaderboard</span>
           <span class="text-sm nav-text">Leaderboard</span>
         </a>
+        <a
+          class="flex items-center space-x-3 px-3 py-3 rounded-lg nav-link transition-colors text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:bg-gray-100"
+          href="setting.html"
+        >
+          <span class="material-symbols-outlined text-xl">settings</span>
+          <span class="text-sm nav-text">Settings</span>
+        </a>
       </nav>
       <!-- Side Promo Card: Fan War -->
       <div class="p-4 mt-6 promo-card pb-6 md:pb-6">
@@ -479,19 +486,10 @@
             <span
               id="wallet-coin-balance"
               class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white hidden sm:inline"
-              >4,250</span
+              >100</span
             >
           </div>
 
-          <button
-            class="hidden sm:block p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-all shrink-0"
-            onclick="window.location.href = 'setting.html'"
-          >
-            <span
-              class="material-symbols-outlined text-slate-500 dark:text-gray-400"
-              >settings</span
-            >
-          </button>
           <div class="relative shrink-0 notification-trigger cursor-pointer">
             <span
               class="material-symbols-outlined text-slate-500 dark:text-gray-400 text-xl sm:text-2xl"
@@ -1241,7 +1239,7 @@
       // =====================
       function getCoinBalance() {
         const raw = parseInt(localStorage.getItem('fancoin-balance'), 10);
-        return isNaN(raw) ? 4250 : raw;
+        return isNaN(raw) ? 100 : raw;
       }
       function setCoinBalance(v) {
         localStorage.setItem('fancoin-balance', String(v));

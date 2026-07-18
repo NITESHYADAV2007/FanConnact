@@ -16,16 +16,41 @@ async function waitForFirebase(timeoutMs) {
   return !!(window.__FB__ && window.__FB__.db);
 }
 
+// Wait until Firebase Auth has resolved its initial state. The leaderboard
+// reads the public `users` collection, but the read must not fire before auth
+// finishes initializing (otherwise the SDK may reject it). We wait for
+// onAuthStateChanged to settle, then proceed regardless of login state.
+// Accepts the auth module directly (self-sufficient, no dependency on window.__FB__).
+async function waitForAuthReady(auth, timeoutMs) {
+  timeoutMs = timeoutMs || 6000;
+  if (!auth) return;
+  if (auth.currentUser !== null) return; // already resolved
+  await new Promise((resolve) => {
+    let done = false;
+    const finish = () => { if (!done) { done = true; resolve(); } };
+    const unsub = auth.onAuthStateChanged(function () { finish(); });
+    setTimeout(finish, timeoutMs); // don't hang forever
+    // Best-effort cleanup of the listener
+    setTimeout(function () { try { unsub && unsub(); } catch (e) {} }, timeoutMs + 200);
+  });
+}
+
 // Load real registered users from Firestore (users collection)
 async function loadRealUsers() {
   try {
-    const ready = await waitForFirebase();
-    if (!ready) throw new Error("Firebase not ready");
-    const { collection, getDocs, query, orderBy, limit } = await import(
+    // Self-sufficient: import Firebase handles directly (no race on window.__FB__
+    // being set by script.js). This avoids the "Firebase not ready" failure.
+    const fb = await import("./firebase-config.js");
+    const db = fb.db;
+    const auth = fb.auth;
+    await waitForAuthReady(auth);
+    const { collection, getDocs } = await import(
       "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"
     );
-    const q = query(collection(window.__FB__.db, "users"), orderBy("xp", "desc"), limit(200));
-    const snap = await getDocs(q);
+    // IMPORTANT: do NOT use orderBy("xp") here. Firestore silently drops any
+    // document that lacks the orderBy field, so users without an `xp` field
+    // would never appear. Fetch ALL users, then sort client-side by xp.
+    const snap = await getDocs(collection(db, "users"));
     var users = [];
     snap.forEach(function (doc) {
       var d = doc.data();
@@ -37,9 +62,11 @@ async function loadRealUsers() {
       if (isNaN(coins)) coins = 100; // default 100 coins for every registered user
       var name = d.username || d.fullName || d.email || "Fan";
       var img = d.photoURL || (d.email ? ("https://i.pravatar.cc/100?u=" + encodeURIComponent(d.email)) : "assets/images/default-avatar.png?w=150");
-      users.push({ name: name, level: level, xp: xp, coins: coins, img: img, uid: d.uid });
+      // The document ID IS the uid. The data may NOT contain a `uid` field,
+      // so always use doc.id (this is what makes profile links work).
+      users.push({ name: name, level: level, xp: xp, coins: coins, img: img, uid: doc.id });
     });
-    if (!users.length) throw new Error("No users");
+    if (!users.length) throw new Error("No users in Firestore");
     users.sort(function (a, b) {
       if (a.xp !== b.xp) return b.xp - a.xp;
       if (a.coins !== b.coins) return b.coins - a.coins;
@@ -49,9 +76,27 @@ async function loadRealUsers() {
     for (var i = 0; i < users.length; i++) users[i].rank = i + 1;
     return users;
   } catch (e) {
-    console.warn("[leaderboard] falling back to generated users:", e.message);
+    // Surface the real error so failures are diagnosable (instead of silently
+    // showing empty/static placeholders).
+    console.error("[leaderboard] failed to load registered users:", e);
+    showLeaderboardError(e);
     return null;
   }
+}
+
+// Show a visible error banner in the leaderboard so the user knows the fetch
+// failed (instead of silently showing "—" / "0 XP" placeholders).
+function showLeaderboardError(e) {
+  var banner = document.getElementById("leaderboard-error");
+  if (!banner) {
+    banner = document.createElement("div");
+    banner.id = "leaderboard-error";
+    banner.className = "mx-4 md:mx-8 my-4 px-4 py-3 rounded-xl border border-red-500/40 bg-red-500/10 text-red-300 text-sm";
+    var container = document.querySelector("main") || document.body;
+    container.insertBefore(banner, container.firstChild);
+  }
+  banner.textContent = "Could not load registered users: " + (e && e.message ? e.message : e) +
+    ". Check your connection and Firestore rules (users collection must be readable).";
 }
 
 async function getData() {
@@ -71,7 +116,23 @@ window.FANCONNECT_leaderboard = {
   getData: getData
 };
 
-function goToPlayer(u, sport) {
+async function goToPlayer(u, sport) {
+  // Open the real registered user's profile page (not the sports player page).
+  if (u && u.uid) {
+    // If the clicked user is the viewer themselves, open the full profile.html
+    // (which shows real coins / full details) instead of the public view.
+    try {
+      const fb = await import("./firebase-config.js");
+      const auth = fb.auth;
+      if (auth && auth.currentUser && auth.currentUser.uid === u.uid) {
+        window.location.href = "profile.html";
+        return;
+      }
+    } catch (e) {}
+    sessionStorage.setItem("viewUid", u.uid);
+    window.location.href = "user-profile.html";
+    return;
+  }
   if (!sport) {
     // Try active game filter button on leaderboard page
     var activeGameBtn = document.querySelector('.game-filter-btn.active-filter');
@@ -102,7 +163,7 @@ async function renderPodium() {
       // No real user for this podium slot — clear placeholder content.
       var nameEl = el.querySelector("h2, h3");
       var imgEl = el.querySelector("img");
-      var levelEl = el.querySelector("[class*='Level']");
+      var levelEl = el.querySelector(".level-badge");
       var xpEl = el.querySelector(".font-black");
       if (nameEl) nameEl.textContent = "—";
       if (imgEl) imgEl.src = "assets/images/default-avatar.png?w=150";
@@ -113,7 +174,7 @@ async function renderPodium() {
     var u = users[idx];
     var nameEl2 = el.querySelector("h2, h3");
     var imgEl2 = el.querySelector("img");
-    var levelEl2 = el.querySelector("[class*='Level']");
+    var levelEl2 = el.querySelector(".level-badge");
     var xpEl2 = el.querySelector(".font-black");
     if (nameEl2) nameEl2.textContent = u.name;
     if (imgEl2) imgEl2.src = u.img;
@@ -201,21 +262,19 @@ async function toggleFullLeaderboard() {
   }
   var header = document.createElement("div");
   header.className = "hidden md:grid grid-cols-12 px-6 py-3 text-slate-400 text-xs font-semibold border-b border-[#12263f] sticky top-0 bg-[#060d18]";
-  header.innerHTML = '<div class="col-span-1">Rank</div><div class="col-span-4">User</div><div class="col-span-2">Level</div><div class="col-span-2 text-right">XP</div><div class="col-span-3 text-right">Coins</div>';
+  header.innerHTML = '<div class="col-span-1">Rank</div><div class="col-span-5">User</div><div class="col-span-3">Level</div><div class="col-span-3 text-right">XP</div>';
   container.appendChild(header);
   rows.forEach(function(f) {
     var row = document.createElement("div");
     row.className = "border-b border-[#0f1d30] hover:bg-[#0a1628] transition cursor-pointer";
     row.addEventListener("click", function() { goToPlayer(f); });
     var rc = f.rank <= 10 ? "text-yellow-400" : "text-white";
-    var coins = (f.coins != null ? f.coins : 0).toLocaleString();
     var desk = document.createElement("div");
     desk.className = "hidden md:grid grid-cols-12 items-center px-6 py-3";
     desk.innerHTML = '<div class="col-span-1 ' + rc + ' font-semibold">#' + f.rank + '</div>' +
-      '<div class="col-span-4 flex items-center gap-3"><img src="' + f.img + '" class="w-8 h-8 rounded-full"><span class="text-white text-sm">' + f.name + '</span></div>' +
-      '<div class="col-span-2"><span class="bg-[#23153e] text-purple-300 px-2 py-1 rounded text-xs">Level ' + f.level + '</span></div>' +
-      '<div class="col-span-2 text-right text-white font-semibold text-sm">' + f.xp.toLocaleString() + ' XP</div>' +
-      '<div class="col-span-3 text-right text-[#f7c948] font-semibold text-sm">' + coins + ' 🪙</div>';
+      '<div class="col-span-5 flex items-center gap-3"><img src="' + f.img + '" class="w-8 h-8 rounded-full"><span class="text-white text-sm">' + f.name + '</span></div>' +
+      '<div class="col-span-3"><span class="bg-[#23153e] text-purple-300 px-2 py-1 rounded text-xs">Level ' + f.level + '</span></div>' +
+      '<div class="col-span-3 text-right text-white font-semibold text-sm">' + f.xp.toLocaleString() + ' XP</div>';
     row.appendChild(desk);
     var mob = document.createElement("div");
     mob.className = "md:hidden p-3";
@@ -223,7 +282,7 @@ async function toggleFullLeaderboard() {
       '<img src="' + f.img + '" class="w-8 h-8 rounded-full">' +
       '<div class="flex-1"><div class="text-white text-sm font-medium">' + f.name + '</div>' +
       '<div class="flex justify-between mt-1"><span class="bg-[#23153e] text-purple-300 px-2 py-0.5 rounded text-xs">Level ' + f.level + '</span>' +
-      '<span class="text-white font-semibold text-xs">' + f.xp.toLocaleString() + ' XP · ' + coins + ' 🪙</span></div></div></div>';
+      '<span class="text-white font-semibold text-xs">' + f.xp.toLocaleString() + ' XP</span></div></div></div>';
     row.appendChild(mob);
     container.appendChild(row);
   });
@@ -235,7 +294,6 @@ document.addEventListener("DOMContentLoaded", async function() {
   await getData(); // load real registered users (real-only)
   await renderPodium();
   await renderRows4to6();
-  await renderTopEarners();
   await renderYourRank();
 });
 

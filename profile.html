@@ -450,6 +450,25 @@
                 >
                 Edit Profile
               </button>
+              <!-- Follow / Following button (shown when viewing another user) -->
+              <button
+                id="profile-follow-btn"
+                class="hidden bg-primary text-white px-4 md:px-5 py-2 rounded-full font-label-md hover:opacity-90 transition-opacity flex items-center gap-2 text-sm md:text-base"
+              >
+                <span class="material-symbols-outlined text-[18px] md:text-[20px]" data-icon="person_add">person_add</span>
+                <span id="profile-follow-btn-text">Follow</span>
+              </button>
+            </div>
+            <!-- Followers / Following counts (clickable) -->
+            <div class="flex flex-wrap justify-center md:justify-start gap-4 md:gap-6 pt-1">
+              <button id="profile-following-btn" class="flex items-center gap-1.5 text-sm text-surface-dim hover:text-primary-fixed transition-colors">
+                <span id="profile-following-count" class="font-bold text-gray-900 dark:text-white">0</span>
+                <span>Following</span>
+              </button>
+              <button id="profile-followers-btn" class="flex items-center gap-1.5 text-sm text-surface-dim hover:text-primary-fixed transition-colors">
+                <span id="profile-followers-count" class="font-bold text-gray-900 dark:text-white">0</span>
+                <span>Followers</span>
+              </button>
             </div>
           </div>
         </div>
@@ -531,11 +550,11 @@
                 <p class="text-surface-dim text-label-sm uppercase">
                   Total Predictions
                 </p>
-                <p class="text-headline-md font-headline-md text-gray-900 dark:text-white mt-2">
-                   512
+                <p id="stat-total-predictions" class="text-headline-md font-headline-md text-gray-900 dark:text-white mt-2">
+                   0
                  </p>
                 <p class="text-primary-fixed text-body-sm mt-1">
-                  +12 this week
+                  <span id="stat-predictions-week">0</span> this week
                 </p>
               </div>
               <div
@@ -544,17 +563,17 @@
                 <p class="text-surface-dim text-label-sm uppercase">
                   Win Rate %
                 </p>
-                <p
+                <p id="stat-winrate"
                   class="text-headline-md font-headline-md text-primary-fixed mt-2"
                 >
-                  68.4%
+                  0%
                 </p>
                 <div
                   class="w-full bg-surface-variant/20 h-1 rounded-full mt-3"
                 >
-                  <div
+                  <div id="stat-winrate-bar"
                     class="bg-primary-fixed h-1 rounded-full"
-                    style="width: 68.4%"
+                    style="width: 0%"
                   ></div>
                 </div>
               </div>
@@ -565,17 +584,17 @@
                   <p class="text-surface-dim text-label-sm uppercase">
                     XP Progress
                   </p>
-                  <span class="text-surface-dim text-label-sm">LVL 12</span>
+                  <span id="stat-xp-level" class="text-surface-dim text-label-sm">LVL 1</span>
                 </div>
-                <p class="text-headline-md font-headline-md text-gray-900 dark:text-white mt-2">
-                   1,240 XP
+                <p id="stat-xp" class="text-headline-md font-headline-md text-gray-900 dark:text-white mt-2">
+                   0 XP
                  </p>
                 <div
                   class="w-full bg-surface-variant/20 h-1 rounded-full mt-3 overflow-hidden"
                 >
-                  <div
-                    class="bg-secondary h-1 rounded-full animate-pulse"
-                    style="width: 45%"
+                  <div id="stat-xp-bar"
+                    class="bg-secondary h-1 rounded-full"
+                    style="width: 0%"
                   ></div>
                 </div>
               </div>
@@ -585,12 +604,31 @@
                 <p class="text-surface-dim text-label-sm uppercase">
                   Global Rank
                 </p>
-                <p class="text-headline-md font-headline-md text-gray-900 dark:text-white mt-2">
-                   #1,204
+                <p id="stat-global-rank" class="text-headline-md font-headline-md text-gray-900 dark:text-white mt-2">
+                   #-
                  </p>
                 <p class="text-surface-dim text-body-sm mt-1">
-                  Top 5% Players
+                  <span id="stat-followers-count">0</span> followers
                 </p>
+              </div>
+            </div>
+            <!-- Follow Requests (accept / reject) -->
+            <div
+              id="follow-requests-panel"
+              class="hidden bg-surface-variant/5 border border-outline-variant/10 rounded-[1.5rem] md:rounded-[2rem] overflow-hidden"
+            >
+              <div
+                class="p-4 md:p-6 border-b border-outline-variant/10 flex justify-between items-center"
+              >
+                <h3 class="text-lg md:text-headline-sm font-headline-sm text-gray-900 dark:text-white">
+                  Follow Requests
+                </h3>
+                <span id="follow-requests-count" class="text-primary-fixed text-label-md"></span>
+              </div>
+              <div
+                id="follow-requests-list"
+                class="p-4 md:p-6 space-y-3 max-h-[320px] overflow-y-auto custom-scrollbar"
+              >
               </div>
             </div>
             <!-- Recent Activity (New) -->
@@ -862,6 +900,23 @@
         </div>
       </div>
     </main>
+
+    <!-- Followers / Following List Modal -->
+    <div id="follow-list-modal" class="hidden fixed inset-0 z-[105] bg-black/80 flex items-center justify-center p-4">
+      <div class="bg-inverse-surface rounded-2xl p-6 max-w-md w-full max-h-[85vh] flex flex-col">
+        <div class="flex items-center justify-between mb-4">
+          <h3 id="follow-list-title" class="text-lg font-bold text-white">Followers</h3>
+          <button type="button" id="close-follow-list-modal" class="text-gray-400 hover:text-white p-1">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+            </svg>
+          </button>
+        </div>
+        <div id="follow-list-content" class="flex-1 overflow-y-auto custom-scrollbar space-y-2">
+        </div>
+      </div>
+    </div>
+
     <script type="module" src="js/script.js"></script>
     <!-- Camera Modal -->
     <div
@@ -1081,6 +1136,11 @@
         doc,
         getDoc,
         setDoc,
+        updateDoc,
+        arrayUnion,
+        arrayRemove,
+        collection,
+        getDocs,
       } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
       let profileCropper = null;
@@ -1108,6 +1168,8 @@
           window.location.href = "login.html";
           return;
         }
+
+        CURRENT_UID = user.uid;
 
         const fallbackHandle = user.displayName || user.email.split("@")[0];
         document.getElementById("profile-hero-name").textContent =
@@ -1153,8 +1215,214 @@
             data.mobile || "Not Specified";
           document.getElementById("profile-detail-location").value =
             data.location || "Not Specified";
+
+          // ── Populate real stats (coins/xp/level/rank/followers) ──
+          populateProfileStats(data, user.uid);
+          renderFollowRequests();
         }
       });
+
+      // ── Populate real stats from Firestore ──
+      async function populateProfileStats(data, uid) {
+        const xp = parseInt(data.xp, 10) || 0;
+        const level = (window.LevelSystem && window.LevelSystem.levelFromXP)
+          ? window.LevelSystem.levelFromXP(xp)
+          : (parseInt(data.level, 10) || 1);
+        const coins = parseInt(data.coins, 10) || 0;
+
+        // XP progress bar
+        const xpBar = document.getElementById("stat-xp-bar");
+        const xpLevel = document.getElementById("stat-xp-level");
+        const xpText = document.getElementById("stat-xp");
+        if (window.LevelSystem && window.LevelSystem.xpToNextLevel) {
+          const pct = window.LevelSystem.xpProgress
+            ? window.LevelSystem.xpProgress(xp)
+            : 0;
+          if (xpBar) xpBar.style.width = Math.max(0, Math.min(100, pct)) + "%";
+        } else if (xpBar) {
+          xpBar.style.width = "0%";
+        }
+        if (xpLevel) xpLevel.textContent = "LVL " + level;
+        if (xpText) xpText.textContent = xp.toLocaleString() + " XP";
+
+        // Coins already shown in hero; update followers count in stats grid
+        const followers = Array.isArray(data.followers) ? data.followers : [];
+        const following = Array.isArray(data.following) ? data.following : [];
+        const fc = document.getElementById("stat-followers-count");
+        if (fc) fc.textContent = followers.length;
+        const fcBtn = document.getElementById("profile-followers-count");
+        if (fcBtn) fcBtn.textContent = followers.length;
+        const fgBtn = document.getElementById("profile-following-count");
+        if (fgBtn) fgBtn.textContent = following.length;
+
+        // Predictions / win rate (from stored stats if present, else 0)
+        const totalPred = parseInt(data.totalPredictions, 10) || 0;
+        const correctPred = parseInt(data.correctPredictions, 10) || 0;
+        const winRate = totalPred > 0 ? Math.round((correctPred / totalPred) * 100) : 0;
+        const tp = document.getElementById("stat-total-predictions");
+        if (tp) tp.textContent = totalPred.toLocaleString();
+        const wr = document.getElementById("stat-winrate");
+        if (wr) wr.textContent = winRate + "%";
+        const wrb = document.getElementById("stat-winrate-bar");
+        if (wrb) wrb.style.width = winRate + "%";
+
+        // Global rank: compute by counting users with more xp
+        try {
+          const { collection, getDocs, query, orderBy, limit } = await import(
+            "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"
+          );
+          const snap = await getDocs(collection(db, "users"));
+          let rank = 1;
+          snap.forEach((d) => {
+            const otherXp = parseInt(d.data().xp, 10) || 0;
+            if (otherXp > xp) rank++;
+          });
+          const gr = document.getElementById("stat-global-rank");
+          if (gr) gr.textContent = "#" + rank.toLocaleString();
+        } catch (e) {
+          console.warn("[profile] rank compute failed:", e.message);
+        }
+      }
+
+      // ── Follow / Followers / Follow Requests logic ──
+      let CURRENT_UID = null;
+
+      // Open the followers/following list modal
+      function openFollowList(title, uids) {
+        const modal = document.getElementById("follow-list-modal");
+        const content = document.getElementById("follow-list-content");
+        const titleEl = document.getElementById("follow-list-title");
+        if (!modal || !content) return;
+        titleEl.textContent = title;
+        content.innerHTML = '<div class="text-center text-slate-400 text-sm py-4">Loading…</div>';
+        modal.classList.remove("hidden");
+        document.body.style.overflow = "hidden";
+        if (!uids.length) {
+          content.innerHTML = '<div class="text-center text-slate-400 text-sm py-4">No users yet.</div>';
+          return;
+        }
+        Promise.all(uids.map(async (uid) => {
+          try {
+            const d = await getDoc(doc(db, "users", uid));
+            if (!d.exists()) return null;
+            const dt = d.data();
+            return {
+              uid,
+              name: dt.username || dt.fullName || dt.email || "Fan",
+              img: dt.photoURL || (dt.email ? ("https://i.pravatar.cc/100?u=" + encodeURIComponent(dt.email)) : "assets/images/default-avatar.png?w=150"),
+            };
+          } catch (e) { return null; }
+        })).then((users) => {
+          const valid = users.filter(Boolean);
+          if (!valid.length) {
+            content.innerHTML = '<div class="text-center text-slate-400 text-sm py-4">No users yet.</div>';
+            return;
+          }
+          content.innerHTML = "";
+          valid.forEach((u) => {
+            const row = document.createElement("div");
+            row.className = "flex items-center gap-3 p-2 rounded-xl hover:bg-white/5 cursor-pointer transition";
+            row.innerHTML =
+              '<img src="' + u.img + '" class="w-10 h-10 rounded-full">' +
+              '<span class="text-white font-medium flex-1">' + u.name + '</span>' +
+              '<span class="material-symbols-outlined text-slate-400">chevron_right</span>';
+            row.addEventListener("click", () => {
+              sessionStorage.setItem("viewUid", u.uid);
+              window.location.href = "user-profile.html";
+            });
+            content.appendChild(row);
+          });
+        });
+      }
+
+      document.getElementById("close-follow-list-modal")?.addEventListener("click", () => {
+        document.getElementById("follow-list-modal").classList.add("hidden");
+        document.body.style.overflow = "";
+      });
+      document.getElementById("follow-list-modal")?.addEventListener("click", (e) => {
+        if (e.target === document.getElementById("follow-list-modal")) {
+          document.getElementById("follow-list-modal").classList.add("hidden");
+          document.body.style.overflow = "";
+        }
+      });
+
+      document.getElementById("profile-followers-btn")?.addEventListener("click", async () => {
+        const d = await getDoc(doc(db, "users", CURRENT_UID));
+        const uids = d.exists() ? (d.data().followers || []) : [];
+        openFollowList("Followers", uids);
+      });
+      document.getElementById("profile-following-btn")?.addEventListener("click", async () => {
+        const d = await getDoc(doc(db, "users", CURRENT_UID));
+        const uids = d.exists() ? (d.data().following || []) : [];
+        openFollowList("Following", uids);
+      });
+
+      // Render the Follow Requests panel (only visible to the profile owner)
+      async function renderFollowRequests() {
+        const panel = document.getElementById("follow-requests-panel");
+        const list = document.getElementById("follow-requests-list");
+        const countEl = document.getElementById("follow-requests-count");
+        if (!panel || !list) return;
+        try {
+          const d = await getDoc(doc(db, "users", CURRENT_UID));
+          const requests = d.exists() ? (d.data().followRequests || []) : [];
+          if (!requests.length) {
+            panel.classList.add("hidden");
+            return;
+          }
+          panel.classList.remove("hidden");
+          countEl.textContent = requests.length + " pending";
+          list.innerHTML = "";
+          for (const uid of requests) {
+            let name = "Fan", img = "assets/images/default-avatar.png?w=150";
+            try {
+              const ud = await getDoc(doc(db, "users", uid));
+              if (ud.exists()) {
+                const udt = ud.data();
+                name = udt.username || udt.fullName || udt.email || "Fan";
+                img = udt.photoURL || (udt.email ? ("https://i.pravatar.cc/100?u=" + encodeURIComponent(udt.email)) : img);
+              }
+            } catch (e) {}
+            const row = document.createElement("div");
+            row.className = "flex items-center gap-3 p-2 rounded-xl bg-white/5";
+            row.innerHTML =
+              '<img src="' + img + '" class="w-10 h-10 rounded-full">' +
+              '<span class="text-white font-medium flex-1">' + name + '</span>' +
+              '<button class="accept-req px-3 py-1.5 rounded-lg bg-primary text-white text-sm font-semibold hover:opacity-90">Accept</button>' +
+              '<button class="reject-req px-3 py-1.5 rounded-lg border border-white/20 text-white text-sm hover:bg-white/10">Reject</button>';
+            row.querySelector(".accept-req").addEventListener("click", () => respondToRequest(uid, true));
+            row.querySelector(".reject-req").addEventListener("click", () => respondToRequest(uid, false));
+            list.appendChild(row);
+          }
+        } catch (e) {
+          console.warn("[profile] follow requests render failed:", e.message);
+        }
+      }
+
+      async function respondToRequest(requesterUid, accept) {
+        try {
+          const meRef = doc(db, "users", CURRENT_UID);
+          const meDoc = await getDoc(meRef);
+          if (!meDoc.exists()) return;
+          const requests = meDoc.data().followRequests || [];
+          if (!requests.includes(requesterUid)) return;
+          if (accept) {
+            await updateDoc(meRef, {
+              followRequests: arrayRemove(requesterUid),
+              followers: arrayUnion(requesterUid),
+            });
+            // Add me to the requester's following list
+            const themRef = doc(db, "users", requesterUid);
+            await updateDoc(themRef, { following: arrayUnion(CURRENT_UID) });
+          } else {
+            await updateDoc(meRef, { followRequests: arrayRemove(requesterUid) });
+          }
+          renderFollowRequests();
+          populateProfileStats(meDoc.data(), CURRENT_UID);
+        } catch (e) {
+          console.warn("[profile] respond to request failed:", e.message);
+        }
+      }
 
       // ── DOB mask + validation ──
       document.getElementById("profile-detail-dob")?.addEventListener("input", function () {

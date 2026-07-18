@@ -137,6 +137,16 @@ function clearCustomThemeVars() {
 
 themeCards.forEach((card) => {
   card.addEventListener("click", () => {
+    // The "Custom / Make your own" card opens the builder modal instead of
+    // just re-applying the previously saved custom theme.
+    if (card.dataset.theme === "custom") {
+      if (typeof window.openCustomThemeModal === "function") {
+        window.openCustomThemeModal();
+      } else {
+        applyTheme("custom");
+      }
+      return;
+    }
     applyTheme(card.dataset.theme);
   });
 });

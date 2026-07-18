@@ -248,7 +248,7 @@
         </div>
       </div>
       <!-- Custom Theme -->
-      <div data-theme="custom" class="relative group cursor-pointer border border-outline-variant rounded-lg overflow-hidden h-36 theme-item flex flex-col items-center justify-center gap-1" style="background:conic-gradient(from 180deg at 50% 50%, #22c55e, #3b82f6, #a855f7, #f7941d, #22c55e);">
+      <div id="customThemeCard" data-theme="custom" class="relative group cursor-pointer border border-outline-variant rounded-lg overflow-hidden h-36 theme-item flex flex-col items-center justify-center gap-1" style="background:conic-gradient(from 180deg at 50% 50%, #22c55e, #3b82f6, #a855f7, #f7941d, #22c55e);">
         <div class="absolute inset-0 bg-black/40 flex flex-col items-center justify-center">
           <span class="material-symbols-outlined text-white text-3xl">tune</span>
           <span class="block font-bold text-body-sm text-white mt-1">Custom</span>
@@ -830,6 +830,14 @@
       modal.classList.add('hidden');
       document.body.style.overflow = '';
     }
+
+    // Expose so settings.js (and the "Make your own" card) can open the builder.
+    window.openCustomThemeModal = openModal;
+
+    // The "Custom / Make your own" theme card should OPEN the builder modal
+    // (not just apply the saved custom theme).
+    var customCard = document.getElementById('customThemeCard');
+    if (customCard) customCard.addEventListener('click', openModal);
 
     if (openBtn) openBtn.addEventListener('click', openModal);
     if (closeBtn) closeBtn.addEventListener('click', closeModal);

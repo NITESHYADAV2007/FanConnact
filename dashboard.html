@@ -804,12 +804,9 @@
       }
       if (!window.__FB__ || !window.__FB__.db) throw new Error("Firebase not ready");
       var fs = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
-      var q = fs.query(
-        fs.collection(window.__FB__.db, "users"),
-        fs.orderBy("xp", "desc"),
-        fs.limit(5)
-      );
-      var snap = await fs.getDocs(q);
+      // Do NOT use orderBy("xp") — Firestore silently drops users without an xp
+      // field. Fetch all, then sort client-side (same as leaderboard).
+      var snap = await fs.getDocs(fs.collection(window.__FB__.db, "users"));
       var users = [];
       snap.forEach(function (doc) {
         var d = doc.data();
@@ -819,17 +816,23 @@
           : (parseInt(d.level, 10) || 1);
         var name = d.username || d.fullName || d.email || "Fan";
         var img = d.photoURL || (d.email ? ("https://i.pravatar.cc/150?u=" + encodeURIComponent(d.email)) : "assets/images/default-avatar.png?w=150");
-        users.push({ name: name, level: level, xp: xp, img: img });
+        // doc.id IS the uid — needed for profile links
+        users.push({ name: name, level: level, xp: xp, img: img, uid: doc.id });
       });
+      users.sort(function (a, b) { return b.xp - a.xp; });
+      users = users.slice(0, 5);
       if (!users.length) {
         container.innerHTML = '<div class="text-center text-gray-500 text-sm py-4">No fans yet.</div>';
         return;
       }
-      container.innerHTML = users.map(function (u, i) {
+      container.innerHTML = "";
+      users.forEach(function (u, i) {
         var rank = i + 1;
         var borderCls = rank === 1 ? "border-2 border-brand-green" : "border dark:border-brand-border border-gray-200";
         var rankColor = rank === 1 ? "dark:text-brand-green text-emerald-600" : "text-gray-500";
-        return '<div class="flex items-center justify-between">' +
+        var row = document.createElement("div");
+        row.className = "flex items-center justify-between cursor-pointer hover:bg-gray-100 dark:hover:bg-white/5 rounded-lg px-2 py-1 transition";
+        row.innerHTML =
           '<div class="flex items-center space-x-4">' +
             '<span class="text-xs font-bold ' + rankColor + ' w-6">' + rank + '</span>' +
             '<img class="w-10 h-10 rounded-full ' + borderCls + '" src="' + u.img + '" alt="Fan">' +
@@ -841,9 +844,14 @@
           '<div class="text-right">' +
             '<p class="text-xs font-bold dark:text-brand-green text-emerald-600">' + u.xp.toLocaleString() + '</p>' +
             '<p class="text-[9px] text-gray-500 uppercase">Earned</p>' +
-          '</div>' +
-        '</div>';
-      }).join("");
+          '</div>';
+        row.addEventListener("click", function () {
+          // Open the user's profile. We need the uid — re-fetch to get it.
+          sessionStorage.setItem("viewUid", u.uid || "");
+          window.location.href = "user-profile.html";
+        });
+        container.appendChild(row);
+      });
     } catch (e) {
       console.warn("[dashboard] top fans load failed:", e.message);
       container.innerHTML = '<div class="text-center text-gray-500 text-sm py-4">Could not load fans.</div>';
