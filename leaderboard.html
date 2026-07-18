@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -191,11 +192,6 @@
       div[class*="p-4 lg:p-6"] { padding: 0 !important; }
       #fan-content { padding: 0 !important; }
 
-    /* Hard guarantee: in Team mode the Fans section is never shown, even if
-       JS hasn't finished or the inline display was overridden. */
-    #leaderboard-main[data-mode="team"] #fan-content { display: none !important; }
-    #leaderboard-main[data-mode="fans"] #team-content { display: none !important; }
-
       #podiumWrapper { overflow: visible !important; aspect-ratio: auto !important; min-height: 300px !important; }
       #card-rank1, #card-rank2, #card-rank3 { background: rgba(11,14,23,0.85) !important; border-radius: 12px !important; padding: 8px !important; }
       #htmlOverlay > div:first-child { padding: 10px !important; }
@@ -356,13 +352,6 @@
           <span id="theme-toggle-light-icon" class="material-symbols-outlined hidden text-yellow-400">light_mode</span>
           <span id="theme-toggle-dark-icon" class="material-symbols-outlined text-slate-500 dark:text-slate-400">dark_mode</span>
         </button>
-        <!-- Wallet / FanCoins -->
-        <div onclick="window.location.href='fancoin.html'" class="flex items-center gap-1 bg-gray-100 dark:bg-[#1A1D23] px-1.5 sm:px-3 py-1.5 rounded-full border border-gray-200 dark:border-white/5 cursor-pointer hover:opacity-80 transition shrink-0">
-          <div class="w-5 h-5 bg-yellow-500 rounded-full flex items-center justify-center text-[10px] text-black font-bold">
-            F
-          </div>
-          <span id="wallet-coin-balance" class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white hidden sm:inline">100</span>
-        </div>
         <div class="relative notification-trigger cursor-pointer">
           <span class="material-symbols-outlined text-slate-500 dark:text-gray-300 cursor-pointer">notifications</span>
           <span class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-[10px] flex items-center justify-center font-bold text-white shadow-sm">3</span>
@@ -389,9 +378,9 @@
     <!-- Filter Bar -->
     <div id="leaderboard-filter-bar" class="bg-white dark:bg-black border-b border-gray-200 dark:border-border-subtle px-4 md:px-8 py-3 flex flex-wrap items-center gap-3">
       <span class="text-[10px] sm:text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Mode:</span>
-      <button class="filter-mode-btn px-4 py-1.5 text-xs sm:text-sm font-medium rounded-lg border transition-all bg-white dark:bg-black text-gray-600 dark:text-gray-300 border-border-subtle hover:border-emerald-accent" data-mode="team">Team</button>
-      <button class="filter-mode-btn px-4 py-1.5 text-xs sm:text-sm font-medium rounded-lg border transition-all active-filter bg-emerald-500 text-white border-emerald-500" data-mode="fans">Fans</button>
-      <div id="game-filter-wrapper" class="flex items-center gap-2 ml-2 hidden">
+      <button class="filter-mode-btn px-4 py-1.5 text-xs sm:text-sm font-medium rounded-lg border transition-all active-filter bg-emerald-500 text-white border-emerald-500" data-mode="team">Team</button>
+      <button class="filter-mode-btn px-4 py-1.5 text-xs sm:text-sm font-medium rounded-lg border transition-all bg-white dark:bg-black text-gray-600 dark:text-gray-300 border-border-subtle hover:border-emerald-accent" data-mode="fans">Fans</button>
+      <div id="game-filter-wrapper" class="flex items-center gap-2 ml-2">
         <span class="text-[10px] sm:text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider ml-2">Game:</span>
         <div class="flex flex-wrap gap-1.5" id="game-filter-buttons">
           <button class="game-filter-btn px-3 py-1 text-xs font-medium rounded-lg border transition-all active-filter bg-emerald-500 text-white border-emerald-500" data-game="cricket">Cricket</button>
@@ -408,11 +397,11 @@
       </div>
     </div>
 
-    <div id="leaderboard-main" class="flex-1 p-4 lg:p-6 overflow-visible" data-mode="fans">
+    <div class="flex-1 p-4 lg:p-6 overflow-visible">
 
-      <div id="fan-content" class="hidden">
+      <div id="fan-content" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
-        <!-- LEFT SIDE (podium + ranking table) -->
+        <!-- LEFT SIDE -->
         <section class="lg:col-span-8 space-y-6 min-w-0">
 
           <div class="w-full max-w-[850px] mx-auto px-2 sm:px-4">
@@ -425,9 +414,7 @@
               <div id="htmlOverlay"
                 class="absolute inset-0 z-10 pointer-events-none font-headline select-none w-full h-full">
 
-                <style>
-                  #htmlOverlay [id^="card-rank"] { pointer-events: auto; }
-                </style>
+                <div class="p-4 md:p-6 w-full">
                   <div class="border-b border-gray-800/50 pb-2 w-full">
                     <span
                       class="text-emerald-400 font-bold tracking-wide text-sm md:text-base border-b-2 border-emerald-400 pb-2 px-1">
@@ -437,7 +424,7 @@
                 </div>
 
                 <div id="card-rank2"
-                  class="absolute flex flex-col items-center origin-bottom -translate-x-1/2 -translate-y-full" style="width:240px;max-width:42vw;">
+                  class="absolute flex flex-col items-center origin-bottom -translate-x-1/2 -translate-y-full w-[120px] sm:w-[150px] md:w-[170px]">
                   <div class="relative mb-1.5 flex items-center justify-center">
                     <div
                       class="absolute -left-4 sm:-left-6 md:-left-7 w-4 h-6 sm:w-5 sm:h-7 md:w-6 md:h-8 bg-gradient-to-b from-slate-300 via-slate-400 to-slate-600 flex items-center justify-center shadow-lg"
@@ -446,22 +433,22 @@
                     </div>
                     <div
                       class="w-10 h-10 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-full p-[2px] bg-gradient-to-b from-blue-400 to-blue-600 shadow-[0_0_15px_rgba(59,130,246,0.4)]">
-                      <img src="assets/images/default-avatar.png?w=150" alt="Rank 2"
+                      <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150" alt="Rank 2"
                         class="w-full h-full object-cover rounded-full bg-slate-800" />
                     </div>
                   </div>
                   <div class="text-center space-y-0.5 w-full">
-                    <h3 class="text-[10px] sm:text-xs font-bold text-slate-200 tracking-wide truncate px-1">—
+                    <h3 class="text-[10px] sm:text-xs font-bold text-slate-200 tracking-wide truncate px-1">CricketKing
                     </h3>
                     <div class="leading-none"><span
-                        class="inline-block px-1.5 py-0.5 rounded bg-purple-950/60 border border-purple-500/30 text-[8px] sm:text-[9px] text-purple-300 scale-90 level-badge">Level
-                        1</span></div>
-                    <div class="text-[10px] sm:text-xs md:text-sm font-black text-blue-400 pt-0.5">0 XP</div>
+                        class="inline-block px-1.5 py-0.5 rounded bg-purple-950/60 border border-purple-500/30 text-[8px] sm:text-[9px] text-purple-300 scale-90">Level
+                        16</span></div>
+                    <div class="text-[10px] sm:text-xs md:text-sm font-black text-blue-400 pt-0.5">9,870 XP</div>
                   </div>
                 </div>
 
                 <div id="card-rank1"
-                  class="absolute flex flex-col items-center origin-bottom -translate-x-1/2 -translate-y-full" style="width:270px;max-width:46vw;">
+                  class="absolute flex flex-col items-center origin-bottom -translate-x-1/2 -translate-y-full w-[130px] sm:w-[170px] md:w-[190px]">
                   <div class="relative mb-2 flex items-center justify-center w-full">
                     <div
                       class="absolute left-[-4px] sm:left-0 md:left-2 top-[-12px] sm:top-[-14px] md:top-[-6px] flex flex-col items-center z-20 scale-75 sm:scale-90 md:scale-100">
@@ -485,7 +472,7 @@
                       </svg>
                       <div
                         class="w-11 h-11 sm:w-15 sm:h-15 md:w-18 md:h-18 rounded-full p-[2.5px] bg-gradient-to-b from-amber-300 via-amber-400 to-amber-600 shadow-[0_0_25px_rgba(234,179,8,0.5)] z-10">
-                        <img src="assets/images/default-avatar.png?w=150" alt="Rank 1"
+                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150" alt="Rank 1"
                           class="w-full h-full object-cover rounded-full bg-slate-800" />
                       </div>
                       <svg
@@ -499,23 +486,23 @@
                   </div>
                   <div class="text-center space-y-0.5 z-10 w-full">
                     <h2 class="text-xs sm:text-sm md:text-base font-black text-white tracking-wide truncate px-1">
-                      —</h2>
+                      MI_Army</h2>
                     <div class="leading-none"><span
-                        class="inline-block px-2 py-0.5 rounded bg-purple-950/60 border border-purple-500/30 text-[8px] sm:text-[9px] font-semibold text-purple-300 scale-90 level-badge">Level
-                        1</span></div>
+                        class="inline-block px-2 py-0.5 rounded bg-purple-950/60 border border-purple-500/30 text-[8px] sm:text-[9px] font-semibold text-purple-300 scale-90">Level
+                        18</span></div>
                     <div
                       class="text-xs sm:text-sm font-black text-amber-300 tracking-wide pt-0.5 drop-shadow-sm">
-                      0 XP
+                      12,560 XP
                     </div>
                   </div>
                 </div>
 
                 <div id="card-rank3"
-                  class="absolute flex flex-col items-center origin-bottom -translate-x-1/2 -translate-y-full" style="width:240px;max-width:42vw;">
+                  class="absolute flex flex-col items-center origin-bottom -translate-x-1/2 -translate-y-full w-[120px] sm:w-[150px] md:w-[170px]">
                   <div class="relative mb-1.5 flex items-center justify-center">
                     <div
                       class="w-10 h-10 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-full p-[2px] bg-gradient-to-b from-orange-600 to-amber-800 shadow-[0_0_15px_rgba(234,88,12,0.4)]">
-                      <img src="assets/images/default-avatar.png?w=150" alt="Rank 3"
+                      <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150" alt="Rank 3"
                         class="w-full h-full object-cover rounded-full bg-slate-800" />
                     </div>
                     <div
@@ -525,11 +512,11 @@
                     </div>
                   </div>
                   <div class="text-center space-y-0.5 w-full">
-                    <h3 class="text-[10px] sm:text-xs font-bold text-slate-200 tracking-wide truncate px-1">—</h3>
+                    <h3 class="text-[10px] sm:text-xs font-bold text-slate-200 tracking-wide truncate px-1">Virat18</h3>
                     <div class="leading-none"><span
-                        class="inline-block px-1.5 py-0.5 rounded bg-purple-950/50 border border-purple-500/20 text-[8px] sm:text-[9px] text-purple-300 scale-90 level-badge">Level
-                        1</span></div>
-                    <div class="text-[10px] sm:text-xs md:text-sm font-black text-orange-400 pt-0.5">0 XP</div>
+                        class="inline-block px-1.5 py-0.5 rounded bg-purple-950/50 border border-purple-500/20 text-[8px] sm:text-[9px] text-purple-300 scale-90">Level
+                        16</span></div>
+                    <div class="text-[10px] sm:text-xs md:text-sm font-black text-orange-400 pt-0.5">8,930 XP</div>
                   </div>
                 </div>
 
@@ -637,9 +624,9 @@
                   if (beams[2]) beams[2].mesh.position.x = 2.1;
 
                   if (aspect > 1.7) {
-                    camera.position.set(0, 2.0, 5.6 * (aspect / 1.7));
+                    camera.position.set(0, 2.0, 6.8 * (aspect / 1.7));
                   } else {
-                    camera.position.set(0, 2.0, 5.8);
+                    camera.position.set(0, 2.0, 7.0);
                   }
                 }
                 camera.lookAt(0, 1.15, 0);
@@ -808,7 +795,7 @@ class="w-full flex items-center justify-center rounded-xl border border-purple-5
 
         </section>
 
-        <!-- RIGHT SIDE (Your Rank + Top Earners) -->
+        <!-- RIGHT SIDE -->
         <aside class="lg:col-span-4 space-y-6">
 <div class="bg-[#060d18] border border-[#12263f] rounded-2xl p-6">
 
@@ -854,14 +841,31 @@ class="w-full flex items-center justify-center rounded-xl border border-purple-5
 
 <!-- TOP EARNERS -->
 <div class="bg-[#060d18] border border-[#12263f] rounded-2xl p-5">
+
     <h3 class="text-white text-2xl font-semibold mb-5">
         Top Earners
-        <span class="text-slate-400 text-base">(This Month)</span>
+        <span class="text-slate-400 text-base">
+            (This Month)
+        </span>
     </h3>
+
     <div class="space-y-4" id="topEarnersList"></div>
-    <button id="top-earners-view-all" class="w-full mt-6 py-4 rounded-xl border border-purple-500/40 text-purple-300 font-medium hover:bg-purple-500/10 transition">
+
+    <!-- Button -->
+
+    <button
+    class="w-full mt-6 py-4
+           rounded-xl
+           border border-purple-500/40
+           text-purple-300
+           font-medium
+           hover:bg-purple-500/10
+           transition">
+
         View All Top Earners →
+
     </button>
+
 </div>
 
 
@@ -871,8 +875,8 @@ class="w-full flex items-center justify-center rounded-xl border border-purple-5
 
     </div>
 
-    <!-- TEAM CONTENT (hidden by default; shown when Team mode is active) -->
-    <div id="team-content" class="hidden">
+    <!-- TEAM CONTENT (shown by default when Team mode is active) -->
+    <div id="team-content">
       <div class="max-w-6xl mx-auto px-4 py-6">
         <!-- Gender Tabs -->
         <div class="flex items-center gap-2 mb-3" id="team-gender-tabs"></div>
@@ -924,19 +928,7 @@ class="w-full flex items-center justify-center rounded-xl border border-purple-5
       }));
     }
 
-    // Init: Fans mode is the default. Show fan-content as a grid and keep
-    // team-content hidden. Team data is still pre-loaded in the background.
-    (function initFansView() {
-      const main = document.getElementById('leaderboard-main');
-      const fanContent = document.getElementById('fan-content');
-      const teamContent = document.getElementById('team-content');
-      if (main) main.setAttribute('data-mode', 'fans');
-      if (fanContent) {
-        fanContent.style.display = 'grid';
-        fanContent.classList.add('grid', 'grid-cols-1', 'lg:grid-cols-12', 'gap-6', 'items-start');
-      }
-      if (teamContent) teamContent.style.display = 'none';
-    })();
+    // Init: load team data since Team mode is default
     loadTeamSports();
 
     // Filter mode toggle
@@ -950,24 +942,17 @@ class="w-full flex items-center justify-center rounded-xl border border-purple-5
         this.classList.remove('bg-white', 'dark:bg-black', 'text-gray-600', 'dark:text-gray-300', 'border-border-subtle');
 
         const wrapper = document.getElementById('game-filter-wrapper');
-        const main = document.getElementById('leaderboard-main');
         const fanContent = document.getElementById('fan-content');
         const teamContent = document.getElementById('team-content');
         if (this.dataset.mode === 'team') {
-          if (main) main.setAttribute('data-mode', 'team');
           wrapper.classList.remove('hidden');
-          fanContent.style.display = 'none';
-          fanContent.classList.remove('grid', 'grid-cols-1', 'lg:grid-cols-12', 'gap-6', 'items-start');
-          teamContent.style.display = 'block';
+          fanContent.classList.add('hidden');
           teamContent.classList.remove('hidden');
           if (teamSports.length === 0) loadTeamSports();
           else loadTeamRankings();
         } else {
-          if (main) main.setAttribute('data-mode', 'fans');
           wrapper.classList.add('hidden');
-          fanContent.style.display = 'grid';
-          fanContent.classList.add('grid', 'grid-cols-1', 'lg:grid-cols-12', 'gap-6', 'items-start');
-          teamContent.style.display = 'none';
+          fanContent.classList.remove('hidden');
           teamContent.classList.add('hidden');
         }
       });
