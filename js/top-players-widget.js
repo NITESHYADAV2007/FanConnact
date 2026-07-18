@@ -106,27 +106,45 @@
       "&background=10b981&color=fff&size=64&bold=true";
   }
 
-  function renderWidget(sport, players, statKey, statLabel) {
+  function renderWidget(sport, players, statKey, statLabel, activeCat) {
     const widget = document.querySelector('[data-purpose="top-players-widget"]');
     if (!widget) return;
     const filterBar = widget.querySelector('[data-role="filters"]');
     const list = widget.querySelector('[data-role="list"]');
 
-    // Render filter buttons (all activated).
+    // Render filter buttons only once (or when sport changes).
     if (filterBar && SPORT_FILTERS[sport]) {
-      filterBar.innerHTML = SPORT_FILTERS[sport].map((f, i) =>
-        '<button data-cat="' + f.cat + '" class="flex-1 py-1.5 text-[10px] font-bold rounded-md ' +
-        (i === 0 ? "bg-emerald-accent/10 border border-emerald-accent text-emerald-accent" : "text-gray-500 hover:text-white") +
-        '">' + f.label + '</button>'
-      ).join("");
-      filterBar.querySelectorAll("button").forEach(btn => {
-        btn.addEventListener("click", () => {
-          filterBar.querySelectorAll("button").forEach(b => {
-            b.className = "flex-1 py-1.5 text-[10px] font-bold rounded-md text-gray-500 hover:text-white";
+      // If buttons already exist, just update active state.
+      const existing = filterBar.querySelectorAll("button");
+      if (existing.length === SPORT_FILTERS[sport].length && !activeCat) {
+        // Already rendered, skip re-creating to preserve handlers.
+      } else {
+        filterBar.innerHTML = SPORT_FILTERS[sport].map((f, i) =>
+          '<button data-cat="' + f.cat + '" class="flex-1 py-1.5 text-[10px] font-bold rounded-md ' +
+          (i === 0 ? "bg-emerald-accent/10 border border-emerald-accent text-emerald-accent" : "text-gray-500 hover:text-white") +
+          '">' + f.label + '</button>'
+        ).join("");
+        filterBar.querySelectorAll("button").forEach(btn => {
+          btn.addEventListener("click", () => {
+            // Update active state immediately.
+            filterBar.querySelectorAll("button").forEach(b => {
+              b.className = "flex-1 py-1.5 text-[10px] font-bold rounded-md text-gray-500 hover:text-white";
+            });
+            btn.className = "flex-1 py-1.5 text-[10px] font-bold rounded-md bg-emerald-accent/10 border border-emerald-accent text-emerald-accent";
+            loadAndRender(sport, btn.dataset.cat, btn.dataset.cat);
           });
-          btn.className = "flex-1 py-1.5 text-[10px] font-bold rounded-md bg-emerald-accent/10 border border-emerald-accent text-emerald-accent";
-          loadAndRender(sport, btn.dataset.cat);
         });
+      }
+    }
+
+    // Update active button if activeCat provided.
+    if (filterBar && activeCat) {
+      filterBar.querySelectorAll("button").forEach(b => {
+        if (b.dataset.cat === activeCat) {
+          b.className = "flex-1 py-1.5 text-[10px] font-bold rounded-md bg-emerald-accent/10 border border-emerald-accent text-emerald-accent";
+        } else {
+          b.className = "flex-1 py-1.5 text-[10px] font-bold rounded-md text-gray-500 hover:text-white";
+        }
       });
     }
 
@@ -157,7 +175,7 @@
     }).join("");
   }
 
-  async function loadAndRender(sport, cat) {
+  async function loadAndRender(sport, cat, activeCat) {
     const widget = document.querySelector('[data-purpose="top-players-widget"]');
     const list = widget && widget.querySelector('[data-role="list"]');
     if (list) list.innerHTML = '<div class="text-center text-gray-400 text-xs py-4">Loading...</div>';
@@ -170,13 +188,13 @@
       if (!res.ok) throw new Error("rankings fetch failed");
       const data = await res.json();
       const players = data.players || [];
-      renderWidget(sport, players, statKey, statLabel);
+      renderWidget(sport, players, statKey, statLabel, activeCat || cat);
     } catch (e) {
       // Fallback to static data.
       try {
         if (window.FALLBACK && typeof window.FALLBACK.getPlayers === "function") {
           const fb = window.FALLBACK.getPlayers(sport, cat);
-          if (fb && fb.length) { renderWidget(sport, fb, statKey, statLabel); return; }
+          if (fb && fb.length) { renderWidget(sport, fb, statKey, statLabel, activeCat || cat); return; }
         }
       } catch (_) {}
       if (list) list.innerHTML = '<div class="text-center text-gray-500 text-xs py-4">Data unavailable</div>';
