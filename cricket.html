@@ -1,0 +1,835 @@
+﻿<!doctype html>
+
+<html lang="en">
+  <head>
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/fancoin/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/fancoin/favicon-16x16.png" />
+    <meta property="og:site_name" content="Fanconnact" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="assets/fancoin/fanconnactlogo.png" />
+    <meta property="og:title" content="Fanconnact - Cricket Matches" />
+    <meta property="og:description" content="Join Fanconnact for fantasy sports, predictions, and live matches." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Fanconnact - Cricket Matches" />
+    <meta name="twitter:description" content="Join Fanconnact for fantasy sports, predictions, and live matches." />
+    <meta name="twitter:image" content="assets/fancoin/fanconnactlogo.png" />
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <script>
+      if (localStorage.getItem("color-theme") === "dark") {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
+    </script>
+    <title>Fanconnact - Cricket Matches</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Google Fonts: Lexend -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            fontFamily: {
+              lexend: ["Lexend", "sans-serif"],
+            },
+            colors: {
+              "emerald-accent": "#10b981",
+              "dark-bg": "#000000",
+              "sidebar-bg": "#000000",
+              "card-bg": "#000000",
+              "border-subtle": "#333333",
+            },
+          },
+        },
+      };
+    </script>
+    <style data-purpose="custom-scrollbar">
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #0a0e14;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #1e293b;
+        border-radius: 10px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #10b981;
+      }
+      .sidebar-collapsed #sidebar { width: 0 !important; min-width: 0 !important; border: 0 !important; padding: 0 !important; overflow: hidden !important; }
+      .text-fan { color: #ffffff !important; }
+      :root:not(.dark) .text-connect { color: #d99a00 !important; }
+      .dark .text-connect { color: #f5b301 !important; }
+      :root:not(.dark) .text-fan { color: #374151 !important; }
+      .nav-link-active { font-weight: 500 !important; }
+      .dark .nav-link-active { background-color: rgba(16, 185, 129, 0.2) !important; color: #10b981 !important; border-right: 4px solid #10b981 !important; }
+      .dark .nav-link-active span, .dark .nav-link-active .nav-text { color: #10b981 !important; }
+      :root:not(.dark) .nav-link-active { background-color: #eff6ff !important; color: #1d4ed8 !important; border-right: 4px solid #3b82f6 !important; }
+      :root:not(.dark) #sidebar { background-color: #ffffff !important; }
+      :root:not(.dark) #sidebar a:not(.nav-link-active) { color: #475569 !important; }
+      :root:not(.dark) #sidebar a:not(.nav-link-active):hover { color: #2196f3 !important; }
+
+      :root:not(.dark) .hover\:text-emerald-accent:hover,
+      :root:not(.dark) .nav-link:hover,
+      :root:not(.dark) [class*="hover:text-emerald"] {
+        color: #2196f3 !important;
+      }
+      :root:not(.dark) ::-webkit-scrollbar-track {
+        background: #f1f5f9;
+      }
+      :root:not(.dark) ::-webkit-scrollbar-thumb {
+        background: #2196f3;
+      }
+      :root:not(.dark) ::-webkit-scrollbar-thumb:hover {
+        background: #1e88e5;
+      }
+      .dark ::-webkit-scrollbar-thumb {
+        background: #10b981;
+      }
+      .dark ::-webkit-scrollbar-thumb:hover {
+        background: #34d399;
+      }
+      :root:not(.dark) input:focus {
+        border-color: #2196f3 !important;
+        box-shadow: 0 0 0 2px rgba(33,150,243,0.2) !important;
+      }
+      :root:not(.dark) .bg-card-bg { background: #ffffff !important; }
+      :root:not(.dark) .bg-dark-bg { background: #f1f5f9 !important; }
+      :root:not(.dark) .bg-brand-surface { background: #ffffff !important; }
+      :root:not(.dark) .bg-brand-dark { background: #f8fafc !important; }
+      :root:not(.dark) .bg-gray-800 { background: #ffffff !important; }
+      :root:not(.dark) .bg-gray-800\/40 { background: #f8fafc !important; }
+      :root:not(.dark) .bg-gray-800\/50 { background: #ffffff !important; }
+      :root:not(.dark) [class*="bg-gray-900"] { background: #f8fafc !important; }
+      :root:not(.dark) .from-gray-800 { --tw-gradient-from: #f1f5f9 !important; }
+      :root:not(.dark) .to-gray-900 { --tw-gradient-to: #e2e8f0 !important; }
+      :root:not(.dark) .from-gray-800.to-gray-900 { background: linear-gradient(135deg,#f1f5f9,#e2e8f0) !important; }
+      :root:not(.dark) .bg-gradient-to-br.from-gray-800.to-gray-900 { background: #f8fafc !important; border-color: #e2e8f0 !important; }
+      :root:not(.dark) .text-white { color: #0f172a !important; }
+      :root:not(.dark) .text-gray-400 { color: #64748b !important; }
+      :root:not(.dark) .text-gray-500 { color: #64748b !important; }
+      :root:not(.dark) .text-gray-300 { color: #334155 !important; }
+      :root:not(.dark) .bg-emerald-accent { background: #2196f3 !important; }
+      :root:not(.dark) .bg-emerald-accent\/10 { background: #dbeafe !important; }
+      :root:not(.dark) .border-emerald-accent { border-color: #2196f3 !important; }
+      :root:not(.dark) .text-emerald-accent { color: #2196f3 !important; }
+      :root:not(.dark) .bg-accent-green { background: #dbeafe !important; }
+      :root:not(.dark) .text-accent-green { color: #2196f3 !important; }
+      :root:not(.dark) .border-accent-green { border-color: #2196f3 !important; }
+      :root:not(.dark) .bg-brand-green { background: #2196f3 !important; }
+      :root:not(.dark) .border-gray-700 { border-color: #e2e8f0 !important; }
+      :root:not(.dark) .border-gray-800 { border-color: #e2e8f0 !important; }
+      :root:not(.dark) .border-gray-800\/50 { border-color: #e2e8f0 !important; }
+      :root:not(.dark) .hover\:bg-gray-800:hover { background: #f1f5f9 !important; }
+      :root:not(.dark) .hover\:text-white:hover { color: #0f172a !important; }
+      :root:not(.dark) .dark\:hover\:bg-white\/5:hover { background: #f1f5f9 !important; }
+    </style>
+    <meta
+      name="description"
+      content="Fanconnact sports platform for fans, scores, communities and updates."
+    />
+    <meta property="og:title" content="Fanconnact" />
+    <meta name="robots" content="index,follow" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;"
+    />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+  </head>
+  <body
+    class="h-screen w-full flex flex-col overflow-hidden transition-colors duration-300 bg-white dark:bg-black text-slate-900 dark:text-slate-100"
+  >
+    <!-- BEGIN: MainHeader -->
+    <header
+      class="sticky top-0 z-50 transition-colors duration-300 bg-white dark:bg-black border-b border-gray-200 dark:border-border-subtle px-4 md:px-8 py-4 flex items-center justify-between"
+    >
+      <div class="flex items-center space-x-4 md:space-x-12">
+        <button
+          class="text-gray-400 hover:text-emerald-accent"
+          id="mobile-menu-btn"
+        >
+          <span class="material-symbols-outlined">menu</span>
+        </button>
+
+          <div id="header-logo" class="lg:hidden flex items-center gap-2 ml-2">
+            <img src="assets/fancoin/fanconnactlogo.png" alt="Fanconnact" class="w-7 h-7" />
+            <span class="text-base font-bold whitespace-nowrap"><span class="text-fan">Fan</span><span class="text-connect">Connact</span></span>
+          </div>
+
+        <!-- Top Navigation -->
+        <nav class="hidden xl:flex items-center space-x-6 mx-6 shrink-0">
+          <a
+            class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link"
+            href="dashboard.html"
+            >Home</a
+          >
+          <a
+            class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link"
+            href="livematches.html"
+            >Matches</a
+          >
+          <a
+            class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link"
+            href="prediction.html"
+            >Predictions</a
+          >
+          <a
+            class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link"
+            href="leaderboard.html"
+            >Leaderboard</a
+          >
+          <a
+            class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link"
+            href="news&update.html"
+            >News</a
+          >
+        </nav>
+      </div>
+      <!-- Header Actions -->
+      <div class="flex items-center gap-5 md:gap-8">
+        <div class="relative hidden lg:block">
+          <input
+            class="bg-gray-100 dark:bg-[#1a1a1a] text-slate-900 dark:text-white border-none rounded-xl py-2.5 pl-10 pr-4 text-sm w-64 focus:ring-1 focus:ring-emerald-accent"
+            placeholder="Search teams, matches, players..."
+            type="text"
+          />
+          <span
+            class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl"
+            >search</span
+          >
+        </div>
+        <!-- Theme Toggle -->
+        <button
+          id="theme-toggle"
+          class="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-all active:scale-95"
+        >
+          <span
+            id="theme-toggle-light-icon"
+            class="material-symbols-outlined hidden text-yellow-400"
+            >light_mode</span
+          >
+          <span
+            id="theme-toggle-dark-icon"
+            class="material-symbols-outlined text-slate-500 dark:text-slate-400"
+            >dark_mode</span
+          >
+        </button>
+        <div class="relative notification-trigger cursor-pointer">
+          <span
+            class="material-symbols-outlined text-slate-500 dark:text-gray-300 cursor-pointer"
+            >notifications</span
+          >
+          <span
+            class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-[10px] flex items-center justify-center font-bold text-white shadow-sm"
+            >3</span
+          >
+        </div>
+        <div
+          id="profile-trigger"
+          class="flex items-center space-x-3 cursor-pointer border-l border-gray-200 dark:border-gray-800 pl-4 md:pl-6"
+        >
+          <img
+            id="user-profile-img"
+            alt="User Profile"
+            class="w-9 h-9 md:w-10 md:h-10 rounded-full border-2 border-emerald-accent"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDOdWz0yXTAfug92jAlZ-XZtnL5urTJNu8npwz7RIfeTacw2m4yeAoKNMAkf3MLOCIk0iI35_ID8tSabIp6I7MF2N_gez6RO01_i0q1DX3bj656URDlnI8A34wDvyRB5WoPOVTN1qvuyGRfskySDI-pCWAnw3raxBsKX2G6sEhrFHiweAO4TxLdxuB-4_oHoAPBbm9bwmrKrqSGKFEtAeXpM76OE_C1cQQSNmRYmIRT01ZVb4lT2k1tR1xDw6ujXtxiain2IWfiKxim"
+          />
+          <div class="hidden sm:block">
+            <p
+              id="user-name-display"
+              class="text-sm font-bold text-slate-900 dark:text-white"
+            >
+              NiteshY
+            </p>
+            <p
+              id="user-level-display"
+              class="text-[10px] text-emerald-accent font-bold uppercase tracking-wider"
+            >
+              Level 28
+            </p>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Mobile Sub-Nav -->
+    <nav class="xl:hidden flex overflow-x-auto gap-1 sm:gap-2 px-2 py-1.5 sm:px-4 sm:py-2.5 bg-white dark:bg-black border-b border-gray-200 dark:border-border-subtle scrollbar-none whitespace-nowrap" style="-webkit-overflow-scrolling:touch;scrollbar-width:none;">
+      <a href="dashboard.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Home</a>
+      <a href="livematches.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Matches</a>
+      <a href="prediction.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Predictions</a>
+      <a href="leaderboard.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Leaderboard</a>
+      <a href="news&update.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">News</a>
+    </nav>
+
+    <!-- END: MainHeader -->
+    <div class="flex flex-1 overflow-hidden">
+      <!-- BEGIN: SidebarNav -->
+      <aside
+        id="sidebar"
+        class="w-64 fixed inset-y-0 left-0 z-[60] transition-all duration-300 bg-white dark:bg-black border-r border-gray-200 dark:border-border-subtle p-6 overflow-y-auto -translate-x-full lg:translate-x-0 lg:static h-full"
+      >
+        <!-- Mobile Close Button -->
+        <button
+          id="close-sidebar-btn"
+          class="lg:hidden p-2 absolute top-4 right-4 text-gray-400"
+        >
+          <span class="material-symbols-outlined">close</span>
+        </button>
+        <!-- Logo Container for collapsed state -->
+        <div
+          class="p-6 flex items-center space-x-2 logo-container cursor-pointer"
+          onclick="window.location.href = 'dashboard.html'"
+        >
+          <img src="assets/fancoin/fanconnactlogo.png" alt="Fanconnact" class="w-8 h-8 flex-shrink-0" />
+          <span
+            class="text-xl font-bold tracking-tight font-headline logo-text"
+            ><span class="text-fan">Fan</span><span class="text-connect">Connact</span></span
+          >
+        </div>
+
+
+        <div class="mb-8">
+          <h3
+            class="text-xs font-bold text-slate-500 dark:text-gray-300 uppercase tracking-wider mb-4"
+          >
+            SPORTS
+          </h3>
+          <ul class="space-y-1">
+            <li>
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                href="livematches.html"
+              >
+                <span class="material-symbols-outlined text-xl">grid_view</span>
+                <span class="nav-text">All Sports</span>
+              </a>
+            </li>
+            <li class="">
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link nav-link-active"
+                href="cricket.html"
+              >
+                <span class="material-symbols-outlined text-xl"
+                  >sports_cricket</span
+                >
+                <span class="nav-text">Cricket</span>
+              </a>
+            </li>
+            <li class="">
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                href="football.html"
+              >
+                <span class="material-symbols-outlined text-xl"
+                  >sports_soccer</span
+                >
+                <span class="nav-text">Football</span>
+              </a>
+            </li>
+            <li class="">
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                href="basketball.html"
+              >
+                <span class="material-symbols-outlined text-xl"
+                  >sports_basketball</span
+                >
+                <span class="nav-text">Basketball</span>
+              </a>
+            </li>
+            <li class="">
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                href="tennis.html"
+              >
+                <span class="material-symbols-outlined text-xl"
+                  >sports_tennis</span
+                >
+                <span class="nav-text">Tennis</span>
+              </a>
+            </li>
+            <li class="">
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                href="hockey.html"
+              >
+                <span class="material-symbols-outlined text-xl"
+                  >sports_hockey</span
+                >
+                <span class="nav-text">Hockey</span>
+              </a>
+            </li>
+            <li class="">
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                href="kabbaddi.html"
+              >
+                <span class="material-symbols-outlined text-xl"
+                  >sports_kabaddi</span
+                >
+                <span class="nav-text">Kabaddi</span>
+              </a>
+            </li>
+            <li class="">
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                href="e-sports.html"
+              >
+                <span class="material-symbols-outlined text-xl"
+                  >sports_esports</span
+                >
+                <span class="nav-text">E-Sports</span>
+              </a>
+            </li>
+            <li class="">
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                href="baseball.html"
+              >
+                <span class="material-symbols-outlined text-xl"
+                  >sports_baseball</span
+                >
+                <span class="nav-text">Baseball</span>
+              </a>
+            </li>
+            <li class="">
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                href="vollyeball.html"
+              >
+                <span class="material-symbols-outlined text-xl"
+                  >sports_volleyball</span
+                >
+                <span class="nav-text">Volleyball</span>
+              </a>
+            </li>
+            <li class="">
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                href="tabletennis.html"
+              >
+                <span class="material-symbols-outlined text-xl">sports_tennis</span>
+                <span class="nav-text">Table Tennis</span>
+              </a>
+            </li>
+
+          </ul>
+        </div>
+
+
+
+        <!-- Premium Promo -->
+        <div
+          class="mt-auto bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-5 border border-gray-700 text-center"
+        >
+          <div class="flex justify-center mb-3">
+            <div
+              class="w-10 h-10 bg-yellow-500 rounded-full flex items-center justify-center shadow-lg shadow-yellow-500/20"
+            >
+              <svg
+                class="w-6 h-6 text-black"
+                fill="currentColor"
+                viewbox="0 0 20 20"
+              >
+                <path
+                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                ></path>
+              </svg>
+            </div>
+          </div>
+          <h4 class="font-bold text-sm mb-1">Fanconnact Premium</h4>
+          <p class="text-[11px] text-gray-400 mb-4 leading-tight">
+            Ad-free experience, exclusive badges &amp; more!
+          </p>
+          <button
+            onclick="window.location.href='https://play.google.com/store/apps'"
+            class="w-full bg-emerald-accent text-black font-bold py-2 rounded-lg text-xs hover:bg-emerald-400 transition-colors"
+          >
+            Go Premium
+          </button>
+        </div>
+      </aside>
+      <!-- END: SidebarNav -->
+      <!-- Main Content Area: Use internal scroll to avoid disturbing top bar -->
+      <main class="flex-1 flex flex-col overflow-hidden transition-colors duration-300 bg-white dark:bg-black">
+        <div class="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-6">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          <!-- Center Content Section -->
+          <div class="lg:col-span-9">
+            <div class="mb-6">
+              <h1 class="text-3xl font-bold mb-2 text-slate-900 dark:text-white">Matches</h1>
+              <p class="text-slate-500 dark:text-gray-300 text-sm">
+                Follow your favorite sports and never miss a moment!
+              </p>
+            </div>
+            
+            <!-- Tournament Tabs -->
+            <div
+              class="border-b border-gray-200 dark:border-border-subtle mb-8 flex space-x-8 overflow-x-auto pb-0"
+              data-purpose="tournament-filters"
+            >
+              <button
+                class="pb-4 border-b-2 border-emerald-accent text-emerald-accent font-bold text-sm px-1 shrink-0"
+              >
+                All
+              </button>
+              <button class="pb-4 text-slate-500 dark:text-gray-300 hover:text-emerald-accent transition-colors font-medium text-sm px-1 shrink-0">England vs India Series</button>
+              <button class="pb-4 text-slate-500 dark:text-gray-300 hover:text-emerald-accent transition-colors font-medium text-sm px-1 shrink-0">The Hundred 2026</button>
+              <button class="pb-4 text-slate-500 dark:text-gray-300 hover:text-emerald-accent transition-colors font-medium text-sm px-1 shrink-0">T20 Blast</button>
+              <button id="statsTab" class="pb-4 text-slate-500 dark:text-gray-300 hover:text-emerald-accent transition-colors font-medium text-sm px-1 shrink-0 cursor-pointer" onclick="document.getElementById('statsSection').classList.toggle('hidden');document.getElementById('statsTab').classList.toggle('text-emerald-accent');document.getElementById('statsTab').classList.toggle('border-emerald-accent');document.getElementById('statsTab').style.borderBottom=document.getElementById('statsTab').classList.contains('text-emerald-accent')?'2px solid #10b981':'none'">Stats</button>
+            </div>
+            <!-- Filter & Sort Bar -->
+            <div class="flex items-center justify-between mb-6" data-purpose="status-filters">
+              <div class="flex space-x-3">
+                <button
+                  class="bg-white dark:bg-[#1a1a1a] border border-emerald-accent text-emerald-accent px-4 py-1.5 rounded-lg text-sm flex items-center space-x-2 shadow-lg shadow-emerald-500/20"
+                >
+                  <span
+                    class="w-2 h-2 bg-red-500 rounded-full animate-pulse"
+                  ></span>
+                  <span class="">Live (6)</span>
+                </button>
+                <button
+                  class="bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 text-slate-500 dark:text-gray-300 px-4 py-1.5 rounded-lg text-sm flex items-center space-x-2 hover:text-slate-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
+                >
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    ></path>
+                  </svg>
+                  <span class="">Upcoming (12)</span>
+                </button>
+                <button
+                  class="bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 text-slate-500 dark:text-gray-300 px-4 py-1.5 rounded-lg text-sm flex items-center space-x-2 hover:text-slate-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
+                >
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    ></path>
+                  </svg>
+                  <span class="">Finished (24)</span>
+                </button>
+              </div>
+              <div class="flex space-x-3">
+                <button
+                  class="bg-[#161d2b] border border-gray-700 text-gray-400 px-3 py-1.5 rounded-lg text-sm flex items-center space-x-2"
+                >
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    ></path>
+                  </svg>
+                  <span class="">Filter</span>
+                </button>
+                <button
+                  class="bg-[#161d2b] border border-gray-700 text-gray-400 px-3 py-1.5 rounded-lg text-sm flex items-center space-x-2"
+                >
+                  <span class="">Sort by: Latest</span>
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M19 9l-7 7-7-7"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    ></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <!-- BEGIN: StatsSection -->
+            <div id="statsSection" class="hidden">
+              <div class="bg-card-bg rounded-2xl border border-border-subtle mb-8">
+                <div class="flex items-center justify-between px-6 py-4 border-b border-border-subtle">
+                  <h3 class="font-bold text-sm">Cricket Stats & Rankings</h3>
+                  <span class="text-[10px] text-gray-500">Auto-updated from ICC</span>
+                </div>
+                <div id="sportStatsContainer"></div>
+              </div>
+            </div>
+            <!-- BEGIN: LiveMatchCards -->
+            <div id="matchCardsContainer" class="space-y-6" data-purpose="matches-list" data-filter="cricket">
+              <!-- Real cricket match cards injected from js/matches-data.js -->
+            </div>
+            <!-- END: LiveMatchCards (placeholder removed) -->
+          </div>
+          <!-- Right Sidebar Section -->
+          <div class="lg:col-span-3 space-y-8">
+            <!-- BEGIN: CalendarWidget -->
+            <div class="bg-card-bg rounded-2xl p-6 border border-border-subtle">
+              <div class="flex items-center justify-between mb-6">
+                <h3 class="font-bold">Calendar</h3>
+                <a
+                  class="text-emerald-accent text-xs font-semibold hover:underline"
+                  href="calendar.html?game=cricket"
+                  >View Full Calendar</a
+                >
+              </div>
+              <div class="grid grid-cols-7 gap-2 text-center">
+                <div class="space-y-2">
+                  <p class="text-[10px] text-gray-500 uppercase font-bold">
+                    Mon
+                  </p>
+                  <div
+                    class="h-10 w-10 flex items-center justify-center rounded-lg hover:bg-gray-800 cursor-pointer text-sm"
+                  >
+                    13
+                  </div>
+                </div>
+                <div class="space-y-2">
+                  <p class="text-[10px] text-gray-500 uppercase font-bold">
+                    Tue
+                  </p>
+                  <div
+                    class="h-10 w-10 flex items-center justify-center rounded-lg hover:bg-gray-800 cursor-pointer text-sm"
+                  >
+                    14
+                  </div>
+                </div>
+                <div class="space-y-2">
+                  <p class="text-[10px] text-gray-500 uppercase font-bold">
+                    Wed
+                  </p>
+                  <div
+                    class="h-10 w-10 flex items-center justify-center rounded-lg bg-emerald-accent text-black font-bold text-sm"
+                  >
+                    15
+                  </div>
+                </div>
+                <div class="space-y-2">
+                  <p class="text-[10px] text-gray-500 uppercase font-bold">
+                    Thu
+                  </p>
+                  <div
+                    class="h-10 w-10 flex items-center justify-center rounded-lg hover:bg-gray-800 cursor-pointer text-sm"
+                  >
+                    16
+                  </div>
+                </div>
+                <div class="space-y-2">
+                  <p class="text-[10px] text-gray-500 uppercase font-bold">
+                    Fri
+                  </p>
+                  <div
+                    class="h-10 w-10 flex items-center justify-center rounded-lg hover:bg-gray-800 cursor-pointer text-sm"
+                  >
+                    17
+                  </div>
+                </div>
+                <div class="space-y-2">
+                  <p class="text-[10px] text-gray-500 uppercase font-bold">
+                    Sat
+                  </p>
+                  <div
+                    class="h-10 w-10 flex items-center justify-center rounded-lg hover:bg-gray-800 cursor-pointer text-sm"
+                  >
+                    18
+                  </div>
+                </div>
+                <div class="space-y-2">
+                  <p class="text-[10px] text-gray-500 uppercase font-bold">
+                    Sun
+                  </p>
+                  <div
+                    class="h-10 w-10 flex items-center justify-center rounded-lg hover:bg-gray-800 cursor-pointer text-sm"
+                  >
+                    19
+                  </div>
+                </div>
+              </div>
+              <!-- Mini Match List in Calendar -->
+              <div class="mt-8 space-y-4">
+                <div
+                  class="flex items-center justify-between group cursor-pointer"
+                >
+                  <div class="flex items-center space-x-3">
+                    <img
+                      class="w-6 h-6 rounded"
+                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuD5F4IAkw1Tcq3s82q-6HXUUCMtiuOErKPjyhaUcdL-37MM8XeziLK_571FCMPnzLlHNvGzsWYgaXyVqH4L9Q5lxN_naZ3vna4ipayFNEW1kfZ0uL5mn9XUSTWC5_EfV_RiBYched_rJOEcjRPpiAm_HTCu44QjjNt7WNRiuCq1L8EyYcGkt-UxwWBAUNWxKedZJ4jqpvxGILKeuu2QtBpWiUnmzufAFGe3ThGPCmL09CdD_vq_A5oBbFaOVv5vsKVsdUgu18eRoTAD"
+                    />
+                    <div>
+                      <p
+                        class="text-[10px] text-gray-500 font-bold leading-none mb-1"
+                      >
+                        IPL 2024 - Match 56
+                      </p>
+                      <p class="text-xs font-bold">MI vs CSK</p>
+                    </div>
+                  </div>
+                  <span
+                    class="text-[10px] bg-red-500/10 text-red-500 px-1.5 py-0.5 rounded font-bold uppercase flex items-center"
+                  >
+                    <span class="w-1 h-1 bg-red-500 rounded-full mr-1"></span>
+                    LIVE
+                  </span>
+                </div>
+                <div
+                  class="flex items-center justify-between group cursor-pointer"
+                >
+                  <div class="flex items-center space-x-3">
+                    <img
+                      class="w-6 h-6 rounded"
+                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuDG3xugBAZbkS4xTfCf_BSLMQCIvdK4dOPZSP0vG79Luxedhru9u1NGAK-rNJuaVbiJiA6xU_5dym83gRVQaJFUKxPK8afSkszZ3xBu6L3XGZz620OtKlqVDvtM4kTt9s7psaTc9y557vWS8ewNWd5aL8ASFgIV_lSTUHrdtTLogSOFQjPzXiFuvEggCu9vru28wunCU_cTLHtixOgKBqRjJpT72hw3yxIDfjWQVDtrE35zlkSUbG4W40zzz1Mc5wds0kmf0p2tHmGy"
+                    />
+                    <div>
+                      <p
+                        class="text-[10px] text-gray-500 font-bold leading-none mb-1"
+                      >
+                        T20 WC 2024
+                      </p>
+                      <p class="text-xs font-bold">IND vs AUS</p>
+                    </div>
+                  </div>
+                  <span
+                    class="text-[10px] bg-red-500/10 text-red-500 px-1.5 py-0.5 rounded font-bold uppercase flex items-center"
+                  >
+                    <span class="w-1 h-1 bg-red-500 rounded-full mr-1"></span>
+                    LIVE
+                  </span>
+                </div>
+                <div
+                  class="flex items-center justify-between group cursor-pointer"
+                >
+                  <div class="flex items-center space-x-3">
+                    <img
+                      class="w-6 h-6 rounded"
+                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuBnpPa9a6kcrxOjVSgDsTPLC1b-wy4tkJjWnMRynflIOyEw7kx-W7VkMQm0T8Gl7rss2Wj3bd8-H3tozCn5tQWjFbcjVu8NF0hjq0tTCx0ryM48kEQ7xH8JPwMKsXupzxEUAUqd9BZTCkMfDshAX3Lv6vCuSEz9qPrhhvBcav2nfeNnZXD_9q7pmrQenrOnj8kTbt93qVvbsonRNP53lhS56I_qgtNijlwmfyLkLtCPuxOBuQVtZqICSGkzRhk0DTIEuptMtiJLUbsZ"
+                    />
+                    <div>
+                      <p
+                        class="text-[10px] text-gray-500 font-bold leading-none mb-1"
+                      >
+                        IPL 2024 - Match 57
+                      </p>
+                      <p class="text-xs font-bold">RCB vs SRH</p>
+                    </div>
+                  </div>
+                  <span class="text-[10px] text-gray-500 font-bold"
+                    >7:30 PM</span
+                  >
+                </div>
+                <div
+                  class="flex items-center justify-between group cursor-pointer"
+                >
+                  <div class="flex items-center space-x-3">
+                    <img
+                      class="w-6 h-6 rounded"
+                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuAYnt5XJGsKZ7yYaZMonR1NBZLAW7Xisxphie8zyO6oc-VQD4mPMbNcKdOR9cTtN7Yk90_KcYUUFe1vwhn7zAJHzllXv3OEAO-CQIIYfh0hT_GcMsZCEza-kUbR90z_0lZ9TzFmSLzymS4-bFySo5iNlIpJ3owQCB6fWTbG28RzBlOLnQ271DU7kbVbS7-zcHB0_TS3412h77N58knfrJfV3RDu_gDPonL-56OGerXLlwpMxlA8l3SB8T7g_s9uY_XdTtgritIRG1xd"
+                    />
+                    <div>
+                      <p
+                        class="text-[10px] text-gray-500 font-bold leading-none mb-1"
+                      >
+                        IPL 2024 - Match 58
+                      </p>
+                      <p class="text-xs font-bold">KKR vs RR</p>
+                    </div>
+                  </div>
+                  <span class="text-[10px] text-gray-500 font-bold"
+                    >7:30 PM</span
+                  >
+                </div>
+              </div>
+              <a
+                href="livematches.html"
+                class="w-full mt-6 text-emerald-accent text-[11px] font-bold text-center hover:underline block"
+              >
+                View All Matches
+              </a>
+            </div>
+            <!-- END: CalendarWidget -->
+            <!-- BEGIN: TopPlayersWidget -->
+            <div class="bg-card-bg rounded-2xl p-6 border border-border-subtle" data-purpose="top-players-widget">
+              <div class="flex items-center justify-between mb-6">
+                <h3 class="font-bold">Top Players</h3>
+                <a
+                  class="text-emerald-accent text-xs font-semibold hover:underline"
+                  href="top-players.html?game=cricket"
+                  >View All</a
+                >
+              </div>
+              <div class="flex space-x-2 mb-6 bg-dark-bg p-1 rounded-lg" data-role="filters"></div>
+              <div class="space-y-4" data-role="list">
+                <div class="text-center text-gray-400 text-xs py-4">Loading...</div>
+              </div>
+            </div>
+            <!-- END: TopPlayersWidget -->
+          </div>
+        </div>
+        </div>
+      </main>
+    </div>
+    <script type="module" src="js/script.js"></script>
+    <script src="js/theme.js"></script>
+    <script src="js/sport-stats.js"></script>
+    <script src="js/sport-filters.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        if (typeof initSportStats === 'function') {
+          initSportStats('sportStatsContainer');
+        }
+      });
+    </script>
+    <script>
+    document.addEventListener('DOMContentLoaded',function(){
+      document.querySelectorAll('[onclick*="match-center.html"]').forEach(function(b){
+        var c=b.closest('[data-status]'); if(!c) return;
+        var st=c.getAttribute('data-status')||'live';
+        var se=c.querySelectorAll('.text-4xl,.sm\\:text-2xl,.text-2xl');
+        var hs='',as='';
+        if(se.length>=2){ hs=se[0].textContent.trim(); as=se[1].textContent.trim(); if(hs==='-')hs=''; if(as==='-')as=''; }
+        var oc=b.getAttribute('onclick'); if(!oc) return;
+        var m=oc.match(/'(match-center\.html\?[^']+)'/); if(!m) return;
+        var u=m[1]; if(hs)u+='&hs='+encodeURIComponent(hs); if(as)u+='&as='+encodeURIComponent(as);
+        u+='&state='+st; b.setAttribute('onclick',"window.location.href='"+u+"'");
+      });
+    });
+    </script>
+  <script src="js/notif-ws.js"></script>
+  <script src="js/matches-data.js"></script>
+  <script src="js/matches-render.js"></script>
+  <script src="js/top-players-fallback.js"></script>
+  <script src="js/top-players-widget.js"></script>
+  <script src="js/global-search.js"></script>
+</body>
+</html>

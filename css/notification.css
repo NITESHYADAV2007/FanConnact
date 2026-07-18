@@ -1,0 +1,1299 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Inter", Arial, sans-serif;
+  overflow-x: hidden;
+  transition: background 0.3s, color 0.3s;
+}
+
+.notification-page {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 24px;
+}
+@media (min-width: 1024px) {
+  .notification-page {
+    max-width: 960px;
+    padding: 32px 40px;
+  }
+}
+@media (min-width: 1280px) {
+  .notification-page {
+    max-width: 1100px;
+    padding: 36px 48px;
+  }
+}
+
+/* ==========================
+HEADER
+========================== */
+.notification-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  position: sticky;
+  top: 0;
+  z-index: 99;
+  padding: 12px 0;
+}
+
+.back-btn,
+.settings-btn {
+  border: none;
+  padding: 10px 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+.back-btn:hover,
+.settings-btn:hover {
+  transform: scale(1.05);
+}
+.back-btn:active,
+.settings-btn:active {
+  transform: scale(0.95);
+}
+
+.header-center {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.header-center h1 {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+}
+
+.badge-count {
+  background: #ef4444;
+  min-width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 800;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.35);
+}
+
+/* ==========================
+QUICK ACTIONS
+========================== */
+.quick-actions {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  margin-bottom: 20px;
+  scrollbar-width: none;
+  align-items: center;
+  flex-wrap: wrap;
+  position: relative;
+  overflow: visible !important;
+}
+
+.quick-actions::-webkit-scrollbar {
+  display: none;
+}
+
+.quick-actions button {
+  border: none;
+  padding: 10px 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+.quick-actions button:hover {
+  transform: translateY(-1px);
+}
+.quick-actions button:active {
+  transform: scale(0.96);
+}
+
+/* ==========================
+FILTER
+========================== */
+.filter-wrapper {
+  position: relative;
+  overflow: visible !important;
+}
+
+#filterBtn {
+  border: none;
+  padding: 10px 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+#filterBtn:hover {
+  transform: translateY(-1px);
+}
+
+#filterDropdown {
+  position: absolute;
+  top: 48px;
+  left: 0;
+  width: 170px;
+  border: none;
+  border-radius: 14px;
+  padding: 6px;
+  z-index: 999999;
+  display: none;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+}
+
+#filterDropdown.show {
+  display: block;
+}
+
+#filterDropdown option {
+  display: block;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+/* ==========================
+TABS
+========================== */
+.notification-tabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  margin-bottom: 20px;
+  scrollbar-width: none;
+  padding: 4px;
+}
+
+.notification-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.tab {
+  border: none;
+  padding: 10px 18px;
+  border-radius: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.25s;
+}
+.tab:hover {
+  transform: translateY(-1px);
+}
+.tab:active {
+  transform: scale(0.96);
+}
+
+.tab.active {
+  box-shadow: 0 4px 14px rgba(33, 150, 243, 0.3);
+}
+
+/* ==========================
+BREAKING NEWS
+========================== */
+.breaking-news {
+  padding: 16px 20px;
+  border-radius: 16px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  animation: breakingPulse 2s infinite;
+}
+
+@keyframes breakingPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.3); }
+  50% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+}
+
+.breaking-tag {
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.breaking-news p {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+/* ==========================
+SECTION TITLE
+========================== */
+.section-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 14px;
+  letter-spacing: -0.2px;
+}
+
+/* ==========================
+NOTIFICATION CARDS
+========================== */
+.notification-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.notification-card {
+  border-radius: 18px;
+  padding: 16px 18px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: default;
+}
+
+.notification-card:hover {
+  transform: translateY(-2px);
+}
+
+.notification-card:active {
+  transform: scale(0.99);
+}
+
+.notification-card.read {
+  opacity: 0.55;
+}
+
+.notification-card.pinned {
+  border: 1.5px solid;
+}
+
+.icon {
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  border-radius: 14px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 20px;
+  transition: transform 0.3s;
+}
+
+.notification-card:hover .icon {
+  transform: scale(1.1) rotate(-5deg);
+}
+
+.card-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.card-content h3 {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  letter-spacing: -0.2px;
+}
+
+.card-content p {
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.time {
+  font-size: 12px;
+  white-space: nowrap;
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+@media (max-width: 480px) {
+  .time {
+    white-space: normal;
+    word-break: break-word;
+  }
+}
+
+.reward {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 8px;
+}
+
+.pin-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s;
+  opacity: 0;
+}
+
+.notification-card:hover .pin-btn {
+  opacity: 1;
+}
+
+.pin-btn:hover {
+  transform: scale(1.15);
+}
+
+.pin-btn:active {
+  transform: scale(0.9);
+}
+
+/* ==========================
+WEEKLY SUMMARY
+========================== */
+.weekly-summary {
+  margin-top: 28px;
+  border-radius: 20px;
+  padding: 22px 24px;
+}
+
+.weekly-summary h2 {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.summary-grid div {
+  border-radius: 16px;
+  text-align: center;
+  padding: 18px 12px;
+  transition: transform 0.25s;
+}
+
+.summary-grid div:hover {
+  transform: translateY(-3px);
+}
+
+.summary-grid span {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.summary-grid h3 {
+  margin-top: 8px;
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+/* ==========================
+SETTINGS MODAL
+========================== */
+.settings-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.settings-modal.show {
+  display: flex;
+  animation: fadeIn 0.25s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.settings-box {
+  width: 420px;
+  max-width: 92%;
+  max-height: 85vh;
+  overflow-y: auto;
+  border-radius: 24px;
+  padding: 24px;
+  position: relative;
+}
+
+.settings-box::-webkit-scrollbar {
+  width: 4px;
+}
+
+.settings-box::-webkit-scrollbar-thumb {
+  border-radius: 99px;
+}
+
+.close-settings {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+.close-settings:hover {
+  transform: rotate(90deg);
+}
+
+.setting-box {
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 12px;
+}
+
+.setting-box h3 {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.setting-box label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  padding: 6px 0;
+  cursor: pointer;
+}
+
+.quiet-hours {
+  display: flex;
+  gap: 12px;
+}
+
+.quiet-hours div {
+  flex: 1;
+}
+
+.quiet-hours label {
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.quiet-hours input {
+  width: 100%;
+  height: 42px;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 14px;
+}
+
+/* Interests */
+.interest-title {
+  margin-top: 14px;
+  margin-bottom: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.sports-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.interest-card {
+  border: none;
+  padding: 10px 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.25s;
+}
+
+.interest-card:hover {
+  transform: translateY(-2px);
+}
+
+.interest-card.active {
+  box-shadow: 0 4px 14px rgba(33, 150, 243, 0.3);
+  transform: scale(1.03);
+}
+
+.teams-container {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.team-card {
+  border: none;
+  padding: 8px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.team-card:hover {
+  transform: translateY(-2px);
+}
+
+.team-card.active {
+  font-weight: 700;
+}
+
+#pinnedContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ==========================
+LIGHT MODE
+========================== */
+:root:not(.dark) body {
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+:root:not(.dark) .back-btn,
+:root:not(.dark) .settings-btn {
+  background: #ffffff;
+  color: #0f172a;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+:root:not(.dark) .back-btn:hover,
+:root:not(.dark) .settings-btn:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+:root:not(.dark) .notification-header {
+  background: #f8fafc;
+}
+
+:root:not(.dark) .quick-actions button,
+:root:not(.dark) #filterBtn {
+  background: #ffffff;
+  color: #0f172a;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+:root:not(.dark) .quick-actions button:hover,
+:root:not(.dark) #filterBtn:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+:root:not(.dark) .tab {
+  background: #ffffff;
+  color: #475569;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+:root:not(.dark) .tab:hover {
+  color: #2196f3;
+}
+:root:not(.dark) .tab.active {
+  background: #2196f3;
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(33, 150, 243, 0.35);
+}
+
+:root:not(.dark) .section-title {
+  color: #0f172a;
+}
+
+:root:not(.dark) .notification-card {
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+:root:not(.dark) .notification-card:hover {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+:root:not(.dark) .notification-card.pinned {
+  border-color: #2196f3;
+  box-shadow: 0 0 0 1px rgba(33, 150, 243, 0.15), 0 4px 12px rgba(33, 150, 243, 0.08);
+}
+
+:root:not(.dark) .icon {
+  background: #eff6ff;
+  color: #2196f3;
+}
+
+:root:not(.dark) .card-content p {
+  color: #64748b;
+}
+
+:root:not(.dark) .time {
+  color: #94a3b8;
+}
+
+:root:not(.dark) .reward {
+  background: #eff6ff;
+  color: #2196f3;
+}
+
+:root:not(.dark) .pin-btn {
+  background: #f1f5f9;
+  color: #64748b;
+}
+:root:not(.dark) .pin-btn:hover {
+  background: #2196f3;
+  color: #fff;
+}
+
+:root:not(.dark) .weekly-summary {
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+:root:not(.dark) .summary-grid div {
+  background: #f8fafc;
+}
+:root:not(.dark) .summary-grid div:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+:root:not(.dark) .summary-grid span {
+  color: #64748b;
+}
+
+:root:not(.dark) .settings-box {
+  background: #ffffff;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+}
+:root:not(.dark) .settings-box::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+}
+
+:root:not(.dark) .setting-box {
+  background: #f8fafc;
+}
+
+:root:not(.dark) .close-settings {
+  background: #f1f5f9;
+  color: #64748b;
+}
+:root:not(.dark) .close-settings:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+:root:not(.dark) .setting-box label {
+  color: #334155;
+}
+
+:root:not(.dark) .quiet-hours input {
+  background: #ffffff;
+  color: #0f172a;
+  border: 1px solid #e2e8f0;
+}
+
+:root:not(.dark) .interest-title {
+  color: #64748b;
+}
+
+:root:not(.dark) .interest-card {
+  background: #f1f5f9;
+  color: #334155;
+}
+:root:not(.dark) .interest-card:hover {
+  background: #e2e8f0;
+}
+:root:not(.dark) .interest-card.active {
+  background: #2196f3;
+  color: #ffffff;
+}
+
+:root:not(.dark) .team-card {
+  background: #f1f5f9;
+  color: #334155;
+}
+:root:not(.dark) .team-card:hover {
+  background: #e2e8f0;
+}
+:root:not(.dark) .team-card.active {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+:root:not(.dark) #filterDropdown {
+  background: #ffffff;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+:root:not(.dark) #filterDropdown option {
+  background: transparent;
+  color: #0f172a;
+}
+:root:not(.dark) #filterDropdown option:hover {
+  background: #f1f5f9;
+}
+
+/* ==========================
+DARK MODE
+========================== */
+.dark body {
+  background: #000000;
+  color: #f1f5f9;
+}
+
+.dark .back-btn,
+.dark .settings-btn {
+  background: #111111;
+  color: #f1f5f9;
+  border: 1px solid #1e1e1e;
+}
+.dark .back-btn:hover,
+.dark .settings-btn:hover {
+  background: #1a1a1a;
+}
+
+.dark .notification-header {
+  background: #000000;
+}
+
+.dark .quick-actions button,
+.dark #filterBtn {
+  background: #111111;
+  color: #f1f5f9;
+  border: 1px solid #1e1e1e;
+}
+.dark .quick-actions button:hover,
+.dark #filterBtn:hover {
+  background: #1a1a1a;
+}
+
+.dark .tab {
+  background: #111111;
+  color: #94a3b8;
+  border: 1px solid #1e1e1e;
+}
+.dark .tab:hover {
+  color: #10b981;
+}
+.dark .tab.active {
+  background: #10b981;
+  color: #000000;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+}
+
+.dark .section-title {
+  color: #f1f5f9;
+}
+
+.dark .notification-card {
+  background: #111111;
+  border: 1px solid #1e1e1e;
+}
+.dark .notification-card:hover {
+  border-color: #10b981;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+}
+.dark .notification-card.pinned {
+  border-color: #10b981;
+  box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.1);
+}
+
+.dark .icon {
+  background: #1a1a1a;
+  color: #10b981;
+}
+
+.dark .card-content p {
+  color: #94a3b8;
+}
+
+.dark .time {
+  color: #64748b;
+}
+
+.dark .reward {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+}
+
+.dark .pin-btn {
+  background: #1a1a1a;
+  color: #64748b;
+}
+.dark .pin-btn:hover {
+  background: #10b981;
+  color: #000;
+}
+
+.dark .weekly-summary {
+  background: #111111;
+  border: 1px solid #1e1e1e;
+}
+
+.dark .summary-grid div {
+  background: #0a0a0a;
+}
+.dark .summary-grid div:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.dark .summary-grid span {
+  color: #94a3b8;
+}
+
+.dark .settings-box {
+  background: #111111;
+  border: 1px solid #1e1e1e;
+}
+.dark .settings-box::-webkit-scrollbar-thumb {
+  background: #333333;
+}
+
+.dark .setting-box {
+  background: #0a0a0a;
+}
+
+.dark .close-settings {
+  background: #1a1a1a;
+  color: #94a3b8;
+}
+.dark .close-settings:hover {
+  background: #222222;
+  color: #fff;
+}
+
+.dark .setting-box label {
+  color: #cbd5e1;
+}
+
+.dark .quiet-hours input {
+  background: #000000;
+  color: #f1f5f9;
+  border: 1px solid #222222;
+}
+
+.dark .interest-title {
+  color: #94a3b8;
+}
+
+.dark .interest-card {
+  background: #0a0a0a;
+  color: #cbd5e1;
+}
+.dark .interest-card:hover {
+  background: #1a1a1a;
+}
+.dark .interest-card.active {
+  background: #10b981;
+  color: #000000;
+}
+
+.dark .team-card {
+  background: #0a0a0a;
+  color: #cbd5e1;
+}
+.dark .team-card:hover {
+  background: #1a1a1a;
+}
+.dark .team-card.active {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+}
+
+.dark #filterDropdown {
+  background: #111111;
+  border: 1px solid #1e1e1e;
+}
+.dark #filterDropdown option {
+  background: transparent;
+  color: #f1f5f9;
+}
+.dark #filterDropdown option:hover {
+  background: #1a1a1a;
+}
+
+/* ==========================
+ADVANCED MICRO-INTERACTIONS
+========================== */
+
+/* Smooth card entrance animation */
+.notification-card {
+  animation: cardSlideIn 0.35s ease both;
+}
+.notification-card:nth-child(1) { animation-delay: 0.02s; }
+.notification-card:nth-child(2) { animation-delay: 0.06s; }
+.notification-card:nth-child(3) { animation-delay: 0.10s; }
+.notification-card:nth-child(4) { animation-delay: 0.14s; }
+.notification-card:nth-child(5) { animation-delay: 0.18s; }
+.notification-card:nth-child(6) { animation-delay: 0.22s; }
+
+@keyframes cardSlideIn {
+  from { opacity: 0; transform: translateY(12px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Glow effect on hover for cards */
+:root:not(.dark) .notification-card::after {
+  content: ''; position: absolute; inset: 0;
+  border-radius: inherit; pointer-events: none;
+  opacity: 0; transition: opacity 0.4s;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), 0 8px 30px rgba(33,150,243,0.08);
+}
+:root:not(.dark) .notification-card:hover::after {
+  opacity: 1;
+}
+
+.dark .notification-card::after {
+  content: ''; position: absolute; inset: 0;
+  border-radius: inherit; pointer-events: none;
+  opacity: 0; transition: opacity 0.4s;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.03), 0 8px 30px rgba(16,185,129,0.06);
+}
+.dark .notification-card:hover::after {
+  opacity: 1;
+}
+
+/* Breaking news shimmer */
+.breaking-news {
+  position: relative; overflow: hidden;
+}
+.breaking-news::before {
+  content: ''; position: absolute; top: 0; left: -100%;
+  width: 60%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+  animation: shimmer 3s infinite;
+}
+@keyframes shimmer {
+  0% { left: -100%; }
+  100% { left: 150%; }
+}
+
+/* Smooth tab switch animation */
+.tab {
+  position: relative; overflow: hidden;
+}
+.tab::after {
+  content: ''; position: absolute; inset: 0;
+  border-radius: inherit; pointer-events: none;
+  background: currentColor; opacity: 0;
+  transition: opacity 0.3s;
+}
+.tab:active::after {
+  opacity: 0.08;
+}
+
+/* Settings modal entrance */
+.settings-modal.show {
+  animation: modalIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes modalIn {
+  from { opacity: 0; backdrop-filter: blur(0); }
+  to { opacity: 1; backdrop-filter: blur(8px); }
+}
+.settings-box {
+  animation: modalSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes modalSlideUp {
+  from { opacity: 0; transform: translateY(20px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Summary number counter animation */
+.summary-grid h3 {
+  animation: countIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.summary-grid div:nth-child(1) h3 { animation-delay: 0.1s; }
+.summary-grid div:nth-child(2) h3 { animation-delay: 0.2s; }
+.summary-grid div:nth-child(3) h3 { animation-delay: 0.3s; }
+@keyframes countIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Badge pulse */
+.badge-count {
+  animation: badgePulse 2s infinite;
+}
+@keyframes badgePulse {
+  0%, 100% { box-shadow: 0 2px 8px rgba(239,68,68,0.35); }
+  50% { box-shadow: 0 2px 16px rgba(239,68,68,0.55); }
+}
+
+/* Quick action ripple */
+.quick-actions button, #filterBtn {
+  position: relative; overflow: hidden;
+}
+.quick-actions button::after, #filterBtn::after {
+  content: ''; position: absolute; inset: 0;
+  border-radius: inherit; pointer-events: none;
+  background: currentColor; opacity: 0;
+  transition: opacity 0.3s;
+}
+.quick-actions button:active::after, #filterBtn:active::after {
+  opacity: 0.06;
+}
+
+/* Interest card tilt */
+.interest-card, .team-card {
+  backface-visibility: hidden;
+}
+
+/* Pin button smooth reveal */
+.pin-btn {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Weekly summary glass effect in light mode */
+:root:not(.dark) .weekly-summary {
+  backdrop-filter: blur(10px);
+}
+
+/* Card divider fade */
+.notification-card + .notification-card {
+  position: relative;
+}
+
+/* Smooth progress for active states */
+.tab.active, .interest-card.active {
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ==========================
+RESPONSIVE
+========================== */
+
+/* Tablet */
+@media (max-width: 768px) {
+  .notification-page {
+    padding: 18px;
+  }
+  .header-center h1 {
+    font-size: 22px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .notification-page {
+    padding: 12px;
+  }
+  .notification-header {
+    gap: 8px;
+    padding: 8px 0;
+    margin-bottom: 16px;
+  }
+  .header-center h1 {
+    font-size: 18px;
+  }
+  .badge-count {
+    min-width: 22px;
+    height: 22px;
+    font-size: 10px;
+  }
+  .back-btn,
+  .settings-btn {
+    padding: 8px 12px;
+    font-size: 12px;
+    border-radius: 10px;
+  }
+  .theme-toggle-btn {
+    width: 34px !important;
+    height: 34px !important;
+    border-radius: 10px !important;
+  }
+  .theme-toggle-btn .material-symbols-outlined {
+    font-size: 18px !important;
+  }
+  .quick-actions {
+    gap: 6px;
+    margin-bottom: 14px;
+  }
+  .quick-actions button,
+  #filterBtn {
+    padding: 8px 12px;
+    font-size: 12px;
+    border-radius: 10px;
+  }
+  .notification-tabs {
+    gap: 6px;
+    margin-bottom: 14px;
+  }
+  .tab {
+    padding: 8px 14px;
+    font-size: 12px;
+    border-radius: 10px;
+  }
+  .section-title {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+  .notification-card {
+    padding: 12px 14px;
+    border-radius: 14px;
+    gap: 10px;
+  }
+  .icon {
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    font-size: 16px;
+    border-radius: 10px;
+  }
+  .card-content h3 {
+    font-size: 13px;
+  }
+  .card-content p {
+    font-size: 12px;
+  }
+  .time {
+    font-size: 10px;
+  }
+  .reward {
+    font-size: 11px;
+    padding: 3px 8px;
+    margin-top: 6px;
+  }
+  .pin-btn {
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+    top: 8px;
+    right: 8px;
+    opacity: 1;
+  }
+  .breaking-news {
+    padding: 12px 16px;
+    border-radius: 14px;
+    margin-bottom: 16px;
+    gap: 10px;
+  }
+  .breaking-tag {
+    font-size: 10px;
+  }
+  .breaking-news p {
+    font-size: 13px;
+  }
+  .weekly-summary {
+    margin-top: 20px;
+    padding: 16px 18px;
+    border-radius: 16px;
+  }
+  .weekly-summary h2 {
+    font-size: 16px;
+    margin-bottom: 12px;
+  }
+  .summary-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .summary-grid div {
+    padding: 14px;
+    border-radius: 12px;
+  }
+  .summary-grid span {
+    font-size: 12px;
+  }
+  .summary-grid h3 {
+    font-size: 20px;
+  }
+  .settings-box {
+    padding: 18px;
+    border-radius: 20px;
+  }
+  .setting-box {
+    padding: 14px;
+    border-radius: 14px;
+  }
+  .setting-box h3 {
+    font-size: 14px;
+  }
+  .setting-box label {
+    font-size: 13px;
+  }
+  .quiet-hours {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .quiet-hours input {
+    height: 38px;
+    font-size: 13px;
+  }
+  .sports-grid {
+    gap: 6px;
+  }
+  .interest-card {
+    padding: 8px 12px;
+    font-size: 12px;
+    border-radius: 10px;
+  }
+  .close-settings {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+    top: 12px;
+    right: 12px;
+  }
+}
+
+/* Very small screens */
+@media (max-width: 360px) {
+  .notification-page {
+    padding: 8px;
+  }
+  .quick-actions button,
+  #filterBtn,
+  .tab {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+  .notification-card {
+    padding: 10px 12px;
+    gap: 8px;
+  }
+  .icon {
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    font-size: 14px;
+  }
+}

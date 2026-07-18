@@ -1,0 +1,1038 @@
+﻿<!doctype html>
+
+<html lang="en">
+  <head>
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/fancoin/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/fancoin/favicon-16x16.png" />
+    <meta property="og:site_name" content="Fanconnact" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="assets/fancoin/fanconnactlogo.png" />
+    <meta property="og:title" content="Fanconnact | Table Tennis Dashboard" />
+    <meta property="og:description" content="Join Fanconnact for fantasy sports, predictions, and live matches." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Fanconnact | Table Tennis Dashboard" />
+    <meta name="twitter:description" content="Join Fanconnact for fantasy sports, predictions, and live matches." />
+    <meta name="twitter:image" content="assets/fancoin/fanconnactlogo.png" />
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Fanconnact | Table Tennis Dashboard</title>
+    <script>
+      if (localStorage.getItem("color-theme") === "dark") {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
+    </script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-primary-fixed-variant": "#005226",
+              "surface-bright": "#343941",
+              "on-tertiary-fixed": "#3c0700",
+              "surface-container-low": "#171c23",
+              "error-container": "#93000a",
+              "primary-container": "#00e676",
+              "primary-fixed-dim": "#00e475",
+              "surface-dim": "#0f141b",
+              "on-secondary-container": "#f2f3ff",
+              "on-surface-variant": "#bacbb9",
+              "on-error": "#690005",
+              "surface-container": "#1b2027",
+              primary: "#75ff9e",
+              "secondary-container": "#0068ed",
+              "tertiary-fixed": "#ffdad2",
+              "surface-variant": "#30353d",
+              "surface-tint": "#00e475",
+              secondary: "#b0c6ff",
+              surface: "#0f141b",
+              "on-secondary-fixed-variant": "#00429b",
+              "on-tertiary-container": "#a12300",
+              "surface-container-highest": "#30353d",
+              "inverse-primary": "#006d35",
+              "tertiary-container": "#ffb7a5",
+              outline: "#859585",
+              "on-secondary-fixed": "#001945",
+              "on-surface": "#dee2ec",
+              "outline-variant": "#3b4a3d",
+              "secondary-fixed-dim": "#b0c6ff",
+              "on-background": "#dee2ec",
+              "surface-container-high": "#252a32",
+              "on-tertiary": "#621100",
+              "inverse-on-surface": "#2c3138",
+              background: "#0f141b",
+              "on-secondary": "#002d6e",
+              error: "#ffb4ab",
+              "on-primary-fixed": "#00210b",
+              "secondary-fixed": "#d9e2ff",
+              "on-primary-container": "#00612e",
+              "on-primary": "#003918",
+              "surface-container-lowest": "#090f15",
+              "on-error-container": "#ffdad6",
+              tertiary: "#ffddd5",
+              "primary-fixed": "#62ff96",
+              "tertiary-fixed-dim": "#ffb4a2",
+              "inverse-surface": "#dee2ec",
+              "on-tertiary-fixed-variant": "#8a1d00",
+              "emerald-accent": "#10b981",
+              "dark-bg": "#000000",
+              "sidebar-bg": "#000000",
+              "card-bg": "#000000",
+              "border-subtle": "#333333",
+              "brand-dark": "#000000",
+              "brand-border": "#333333",
+              "brand-card": "#000000",
+            },
+            borderRadius: {
+              DEFAULT: "0.125rem",
+              lg: "0.25rem",
+              xl: "0.5rem",
+              full: "0.75rem",
+            },
+            spacing: {
+              gutter: "20px",
+              xs: "4px",
+              "sidebar-left": "240px",
+              base: "8px",
+              sm: "8px",
+              md: "16px",
+              xl: "32px",
+              lg: "24px",
+              "sidebar-right": "320px",
+            },
+            fontFamily: {
+              "body-lg": ["Inter"],
+              "numeric-data": ["Inter"],
+              "label-caps": ["Inter"],
+              "body-sm": ["Inter"],
+              "display-lg": ["Inter"],
+              "headline-md": ["Inter"],
+              "headline-lg-mobile": ["Inter"],
+              "headline-lg": ["Inter"],
+            },
+            fontSize: {
+              "body-lg": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+              "numeric-data": [
+                "18px",
+                { lineHeight: "24px", fontWeight: "700" },
+              ],
+              "label-caps": [
+                "12px",
+                {
+                  lineHeight: "16px",
+                  letterSpacing: "0.05em",
+                  fontWeight: "700",
+                },
+              ],
+              "body-sm": ["14px", { lineHeight: "20px", fontWeight: "400" }],
+              "display-lg": [
+                "48px",
+                {
+                  lineHeight: "56px",
+                  letterSpacing: "-0.02em",
+                  fontWeight: "800",
+                },
+              ],
+              "headline-md": [
+                "20px",
+                { lineHeight: "28px", fontWeight: "600" },
+              ],
+              "headline-lg-mobile": [
+                "24px",
+                { lineHeight: "32px", fontWeight: "700" },
+              ],
+              "headline-lg": [
+                "32px",
+                {
+                  lineHeight: "40px",
+                  letterSpacing: "-0.01em",
+                  fontWeight: "700",
+                },
+              ],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        overflow-x: hidden;
+      }
+      :root:not(.dark) body {
+        background-color: #ffffff;
+        color: #0f172a;
+      }
+      .dark body {
+        background-color: #090b0e;
+        color: #dee2ec;
+      }
+      .material-symbols-outlined {
+        font-variation-settings:
+          "FILL" 0,
+          "wght" 400,
+          "GRAD" 0,
+          "opsz" 24;
+      }
+      .live-pulse {
+        animation: pulse 1.5s infinite;
+      }
+      @keyframes pulse {
+        0% {
+          opacity: 1;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 0.5;
+          transform: scale(1.2);
+        }
+        100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 4px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: #0f141b;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #3b4a3d;
+        border-radius: 10px;
+      }
+      .match-card:hover {
+        border-color: #ffffff30;
+        transform: translateY(-2px);
+        transition: all 0.3s ease;
+      }
+
+      .sidebar-collapsed #sidebar { width: 0 !important; min-width: 0 !important; border: 0 !important; padding: 0 !important; overflow: hidden !important; }
+      .text-fan { color: #ffffff !important; }
+      :root:not(.dark) .text-connect { color: #1565c0 !important; }
+      .dark .text-connect { color: #10b981 !important; }
+      .dark body.theme-royal .text-connect { color: #f5b301 !important; }
+      :root:not(.dark) body.theme-royal .text-connect { color: #f5b301 !important; }
+      :root:not(.dark) .text-fan { color: #374151 !important; }
+      .nav-link-active { font-weight: 500 !important; }
+      .dark .nav-link-active { background-color: rgba(16, 185, 129, 0.2) !important; color: #10b981 !important; border-right: 4px solid #10b981 !important; }
+      .dark .nav-link-active span, .dark .nav-link-active .nav-text { color: #10b981 !important; }
+      :root:not(.dark) .nav-link-active { background-color: #eff6ff !important; color: #1d4ed8 !important; border-right: 4px solid #3b82f6 !important; }
+      :root:not(.dark) #sidebar { background-color: #ffffff !important; }
+      :root:not(.dark) #sidebar a:not(.nav-link-active) { color: #475569 !important; }
+      :root:not(.dark) #sidebar a:not(.nav-link-active):hover { color: #2196f3 !important; }
+
+      :root:not(.dark) .hover\:text-emerald-accent:hover,
+      :root:not(.dark) .nav-link:hover,
+      :root:not(.dark) [class*="hover:text-emerald"] {
+        color: #2196f3 !important;
+      }
+      :root:not(.dark) ::-webkit-scrollbar-track {
+        background: #f1f5f9;
+      }
+      :root:not(.dark) ::-webkit-scrollbar-thumb {
+        background: #2196f3;
+      }
+      :root:not(.dark) ::-webkit-scrollbar-thumb:hover {
+        background: #1e88e5;
+      }
+      .dark ::-webkit-scrollbar-thumb {
+        background: #10b981;
+      }
+      .dark ::-webkit-scrollbar-thumb:hover {
+        background: #34d399;
+      }
+      :root:not(.dark) input:focus {
+        border-color: #2196f3 !important;
+        box-shadow: 0 0 0 2px rgba(33,150,243,0.2) !important;
+      }
+      :root:not(.dark) .bg-card-bg { background: #ffffff !important; }
+      :root:not(.dark) .bg-dark-bg { background: #f1f5f9 !important; }
+      :root:not(.dark) .bg-brand-surface { background: #ffffff !important; }
+      :root:not(.dark) .bg-brand-dark { background: #f8fafc !important; }
+      :root:not(.dark) .bg-gray-800 { background: #ffffff !important; }
+      :root:not(.dark) .bg-gray-800\/40 { background: #f8fafc !important; }
+      :root:not(.dark) .bg-gray-800\/50 { background: #ffffff !important; }
+      :root:not(.dark) [class*="bg-gray-900"] { background: #f8fafc !important; }
+      :root:not(.dark) .from-gray-800 { --tw-gradient-from: #f1f5f9 !important; }
+      :root:not(.dark) .to-gray-900 { --tw-gradient-to: #e2e8f0 !important; }
+      :root:not(.dark) .from-gray-800.to-gray-900 { background: linear-gradient(135deg,#f1f5f9,#e2e8f0) !important; }
+      :root:not(.dark) .bg-gradient-to-br.from-gray-800.to-gray-900 { background: #f8fafc !important; border-color: #e2e8f0 !important; }
+      :root:not(.dark) .text-white { color: #0f172a !important; }
+      :root:not(.dark) .text-gray-400 { color: #64748b !important; }
+      :root:not(.dark) .text-gray-500 { color: #64748b !important; }
+      :root:not(.dark) .text-gray-300 { color: #334155 !important; }
+      :root:not(.dark) .bg-emerald-accent { background: #2196f3 !important; }
+      :root:not(.dark) .bg-emerald-accent\/10 { background: #dbeafe !important; }
+      :root:not(.dark) .border-emerald-accent { border-color: #2196f3 !important; }
+      :root:not(.dark) .text-emerald-accent { color: #2196f3 !important; }
+      :root:not(.dark) .bg-accent-green { background: #dbeafe !important; }
+      :root:not(.dark) .text-accent-green { color: #2196f3 !important; }
+      :root:not(.dark) .border-accent-green { border-color: #2196f3 !important; }
+      :root:not(.dark) .bg-brand-green { background: #2196f3 !important; }
+      :root:not(.dark) .border-gray-700 { border-color: #e2e8f0 !important; }
+      :root:not(.dark) .border-gray-800 { border-color: #e2e8f0 !important; }
+      :root:not(.dark) .border-gray-800\/50 { border-color: #e2e8f0 !important; }
+      :root:not(.dark) .hover\:bg-gray-800:hover { background: #f1f5f9 !important; }
+      :root:not(.dark) .hover\:text-white:hover { color: #0f172a !important; }
+      :root:not(.dark) .dark\:hover\:bg-white\/5:hover { background: #f1f5f9 !important; }
+      :root:not(.dark) .bg-surface-dim { background: #f8fafc !important; }
+      :root:not(.dark) .bg-surface-container { background: #ffffff !important; }
+      :root:not(.dark) .bg-surface-container-high { background: #f1f5f9 !important; }
+      :root:not(.dark) .bg-surface-container-low { background: #f8fafc !important; }
+      :root:not(.dark) .bg-surface-variant { background: #f1f5f9 !important; }
+      :root:not(.dark) .bg-surface-variant\/40 { background: #e2e8f0 !important; }
+      :root:not(.dark) .bg-surface-container-high\/40 { background: #f1f5f9 !important; }
+      :root:not(.dark) .text-on-surface-variant { color: #64748b !important; }
+      :root:not(.dark) .text-on-surface { color: #0f172a !important; }
+      :root:not(.dark) .text-primary { color: #2196f3 !important; }
+      :root:not(.dark) .text-error { color: #ef4444 !important; }
+      :root:not(.dark) .bg-primary { background: #2196f3 !important; }
+      :root:not(.dark) .bg-primary\/10 { background: #dbeafe !important; }
+      :root:not(.dark) .bg-primary\/20 { background: #bfdbfe !important; }
+      :root:not(.dark) .bg-error\/20 { background: #fecaca !important; }
+      :root:not(.dark) .bg-error\/10 { background: #fee2e2 !important; }
+      :root:not(.dark) .border-outline-variant { border-color: #e2e8f0 !important; }
+      :root:not(.dark) .border-outline-variant\/30 { border-color: #e2e8f0 !important; }
+      :root:not(.dark) .border-outline-variant\/20 { border-color: #e2e8f0 !important; }
+      :root:not(.dark) .border-outline-variant\/10 { border-color: #e2e8f0 !important; }
+      :root:not(.dark) .border-primary\/20 { border-color: #bfdbfe !important; }
+      :root:not(.dark) .border-surface { border-color: #e2e8f0 !important; }
+      :root:not(.dark) .hover\:bg-surface-container-high:hover { background: #f1f5f9 !important; }
+      :root:not(.dark) .hover\:bg-surface-container:hover { background: #ffffff !important; }
+    </style>
+    <meta
+      name="description"
+      content="Fanconnact sports platform for fans, scores, communities and updates."
+    />
+    <meta property="og:title" content="Fanconnact" />
+    <meta name="robots" content="index,follow" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;"
+    />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+  </head>
+  <body class="h-screen w-full flex flex-col overflow-hidden transition-colors duration-300 bg-white dark:bg-black text-slate-900 dark:text-slate-100">
+    <!-- BEGIN: MainHeader -->
+    <header
+      class="sticky top-0 z-50 transition-colors duration-300 bg-white dark:bg-black border-b border-gray-200 dark:border-border-subtle px-4 md:px-8 py-4 flex items-center justify-between"
+    >
+      <div class="flex items-center space-x-4 md:space-x-12">
+        <button
+          class="text-gray-400 hover:text-emerald-accent"
+          id="mobile-menu-btn"
+        >
+          <span class="material-symbols-outlined">menu</span>
+        </button>
+
+          <div id="header-logo" class="lg:hidden flex items-center gap-2 ml-2">
+            <img src="assets/fancoin/fanconnactlogo.png" alt="Fanconnact" class="w-7 h-7" />
+            <span class="text-base font-bold whitespace-nowrap"><span class="text-fan">Fan</span><span class="text-connect">Connact</span></span>
+          </div>
+
+        <!-- Top Navigation -->
+        <nav class="hidden xl:flex items-center space-x-6 mx-6 shrink-0">
+          <a
+            class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link"
+            href="dashboard.html"
+            >Home</a
+          >
+          <a
+            class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link"
+            href="livematches.html"
+            >Matches</a
+          >
+          <a
+            class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link"
+            href="prediction.html"
+            >Predictions</a
+          >
+          <a
+            class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link"
+            href="leaderboard.html"
+            >Leaderboard</a
+          >
+          <a
+            class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link"
+            href="news&update.html"
+            >News</a
+          >
+        </nav>
+      </div>
+      <!-- Header Actions -->
+      <div class="flex items-center gap-5 md:gap-8">
+        <div class="relative hidden lg:block">
+          <input
+            class="bg-gray-100 dark:bg-[#1a1a1a] text-slate-900 dark:text-white border-none rounded-xl py-2.5 pl-10 pr-4 text-sm w-64 focus:ring-1 focus:ring-emerald-accent"
+            placeholder="Search teams, matches, players..."
+            type="text"
+          />
+          <span
+            class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl"
+            >search</span
+          >
+        </div>
+        <!-- Theme Toggle -->
+        <button
+          id="theme-toggle"
+          class="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-all active:scale-95"
+        >
+          <span
+            id="theme-toggle-light-icon"
+            class="material-symbols-outlined hidden text-yellow-400"
+            >light_mode</span
+          >
+          <span
+            id="theme-toggle-dark-icon"
+            class="material-symbols-outlined text-slate-500 dark:text-slate-400"
+            >dark_mode</span
+          >
+        </button>
+        <div class="relative notification-trigger cursor-pointer">
+          <span
+            class="material-symbols-outlined text-slate-500 dark:text-gray-300 cursor-pointer"
+            >notifications</span
+          >
+          <span
+            class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-[10px] flex items-center justify-center font-bold text-white shadow-sm"
+            >3</span
+          >
+        </div>
+        <div
+          id="profile-trigger"
+          class="flex items-center space-x-3 cursor-pointer border-l border-gray-200 dark:border-gray-800 pl-4 md:pl-6"
+        >
+          <img
+            id="user-profile-img"
+            alt="User Profile"
+            class="w-9 h-9 md:w-10 md:h-10 rounded-full border-2 border-emerald-accent"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDtvk-QCgSniwXRflWYIMKqji4dtzlgHLRq9MYl7vdmd57lVL8wCfv9VovGuRS9YlIgfXr-qMsg57iDtKfAcbfF1yhnjhq7v4fF6aLJ6pnQDXwg94JHxnNFKsdmeNMbc-mH7NpjvJVYUGiyTwbxBwyGpMDmzIDn0OS3VHi8ciPJZNO9P3pzsCzQ-WwH5M1v_O-V1QKKCJE36l_N5xfr8FJjhR8E81DvPirMJ9CVJzidpK4fQTOCF9wldgmfBNPdJD7uz46woP-zs7Y"
+          />
+          <div class="hidden sm:block">
+            <p
+              id="user-name-display"
+              class="text-sm font-bold text-slate-900 dark:text-white"
+            >
+              NiteshY
+            </p>
+            <p
+              id="user-level-display"
+              class="text-[10px] text-emerald-accent font-bold uppercase tracking-wider"
+            >
+              Level 28
+            </p>
+          </div>
+        </div>
+      </div>
+    </header>
+    <!-- Mobile Sub-Nav -->
+    <nav class="xl:hidden flex overflow-x-auto gap-1 sm:gap-2 px-2 py-1.5 sm:px-4 sm:py-2.5 bg-white dark:bg-black border-b border-gray-200 dark:border-border-subtle scrollbar-none whitespace-nowrap" style="-webkit-overflow-scrolling:touch;scrollbar-width:none;">
+      <a href="dashboard.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Home</a>
+      <a href="livematches.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Matches</a>
+      <a href="prediction.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Predictions</a>
+      <a href="leaderboard.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Leaderboard</a>
+      <a href="news&update.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">News</a>
+    </nav>
+    <!-- END: MainHeader -->
+    <div class="flex flex-1 overflow-hidden page-flex">
+      <!-- BEGIN: SidebarNav -->
+      <aside
+        id="sidebar"
+        class="w-64 fixed inset-y-0 left-0 z-[60] transition-all duration-300 bg-white dark:bg-black border-r border-gray-200 dark:border-border-subtle p-6 overflow-y-auto -translate-x-full lg:translate-x-0 lg:static h-full"
+      >
+        <!-- Mobile Close Button -->
+        <button
+          id="close-sidebar-btn"
+          class="lg:hidden p-2 absolute top-4 right-4 text-gray-400"
+        >
+          <span class="material-symbols-outlined">close</span>
+        </button>
+        <!-- Logo Container for collapsed state -->
+        <div
+          class="p-6 flex items-center space-x-2 logo-container cursor-pointer"
+          onclick="window.location.href = 'dashboard.html'"
+        >
+          <img src="assets/fancoin/fanconnactlogo.png" alt="Fanconnact" class="w-8 h-8 flex-shrink-0" />
+          <span
+            class="text-xl font-bold tracking-tight font-headline logo-text"
+            ><span class="text-fan">Fan</span><span class="text-connect">Connact</span></span
+          >
+        </div>
+
+
+        <div class="mb-8">
+          <h3
+            class="text-xs font-bold text-slate-500 dark:text-gray-300 uppercase tracking-wider mb-4"
+          >
+            SPORTS
+          </h3>
+          <ul class="space-y-1">
+            <li>
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                href="livematches.html"
+              >
+                <span class="material-symbols-outlined text-xl">grid_view</span>
+                <span class="nav-text">All Sports</span>
+              </a>
+            </li>
+            <li class="">
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                href="cricket.html"
+              >
+                <span class="material-symbols-outlined text-xl"
+                  >sports_cricket</span
+                >
+                <span class="nav-text">Cricket</span>
+              </a>
+            </li>
+            <li class="">
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                href="football.html"
+              >
+                <span class="material-symbols-outlined text-xl"
+                  >sports_soccer</span
+                >
+                <span class="nav-text">Football</span>
+              </a>
+            </li>
+            <li class="">
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                href="basketball.html"
+              >
+                <span class="material-symbols-outlined text-xl"
+                  >sports_basketball</span
+                >
+                <span class="nav-text">Basketball</span>
+              </a>
+            </li>
+            <li class="">
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                href="tennis.html"
+              >
+                <span class="material-symbols-outlined text-xl"
+                  >sports_tennis</span
+                >
+                <span class="nav-text">Tennis</span>
+              </a>
+            </li>
+            <li class="">
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                href="hockey.html"
+              >
+                <span class="material-symbols-outlined text-xl"
+                  >sports_hockey</span
+                >
+                <span class="nav-text">Hockey</span>
+              </a>
+            </li>
+            <li class="">
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                href="kabbaddi.html"
+              >
+                <span class="material-symbols-outlined text-xl"
+                  >sports_kabaddi</span
+                >
+                <span class="nav-text">Kabaddi</span>
+              </a>
+            </li>
+            <li class="">
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                href="e-sports.html"
+              >
+                <span class="material-symbols-outlined text-xl"
+                  >sports_esports</span
+                >
+                <span class="nav-text">E-Sports</span>
+              </a>
+            </li>
+            <li class="">
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                href="baseball.html"
+              >
+                <span class="material-symbols-outlined text-xl"
+                  >sports_baseball</span
+                >
+                <span class="nav-text">Baseball</span>
+              </a>
+            </li>
+            <li class="">
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                href="vollyeball.html"
+              >
+                <span class="material-symbols-outlined text-xl"
+                  >sports_volleyball</span
+                >
+                <span class="nav-text">Volleyball</span>
+              </a>
+            </li>
+            <li class="">
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors group nav-link nav-link-active"
+                href="tabletennis.html"
+              >
+                <span class="material-symbols-outlined text-xl">sports_tennis</span>
+                <span class="nav-text">Table Tennis</span>
+              </a>
+            </li>
+
+          </ul>
+        </div>
+
+
+
+        <!-- Premium Promo -->
+        <div
+          class="mt-auto bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-5 border border-gray-700 text-center"
+        >
+          <div class="flex justify-center mb-3">
+            <div
+              class="w-10 h-10 bg-yellow-500 rounded-full flex items-center justify-center shadow-lg shadow-yellow-500/20"
+            >
+              <svg
+                class="w-6 h-6 text-black"
+                fill="currentColor"
+                viewbox="0 0 20 20"
+              >
+                <path
+                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                ></path>
+              </svg>
+            </div>
+          </div>
+          <h4 class="font-bold text-sm mb-1">Fanconnact Premium</h4>
+          <p class="text-[11px] text-gray-400 mb-4 leading-tight">
+            Ad-free experience, exclusive badges &amp; more!
+          </p>
+          <button
+            onclick="window.location.href='https://play.google.com/store/apps'"
+            class="w-full bg-emerald-accent text-black font-bold py-2 rounded-lg text-xs hover:bg-emerald-400 transition-colors"
+          >
+            Go Premium
+          </button>
+        </div>
+      </aside>
+      <!-- END: SidebarNav -->
+      <!-- Main Feed -->
+      <main
+        class="flex-1 overflow-y-auto bg-surface-dim custom-scrollbar px-md lg:px-xl py-lg page-main"
+      >
+        <div class="max-w-4xl mx-auto">
+          <div class="mb-xl">
+            <h2 class="font-headline-lg text-headline-lg text-on-surface mb-xs">
+              Table Tennis Matches
+            </h2>
+            <p class="font-body-sm text-on-surface-variant">
+              Follow the WTT Champions, ITTF World Cup, and major international
+              tournaments!
+            </p>
+          </div>
+          <!-- Tournament Tabs -->
+          <div
+            class="flex items-center gap-md mb-lg mt-md border-b border-outline-variant/30 pb-sm"
+            data-purpose="tournament-filters"
+          >
+            <button class="text-primary font-bold text-sm border-b-2 border-primary pb-sm px-xs">All</button>
+            <button class="text-on-surface-variant font-body-sm text-sm hover:text-on-surface pb-sm px-xs transition-all">WTT Champions 2026</button>
+            <button class="text-on-surface-variant font-body-sm text-sm hover:text-on-surface pb-sm px-xs transition-all">ITTF World Cup 2026</button>
+            <button id="statsTab" class="text-on-surface-variant font-body-sm text-sm hover:text-primary pb-sm px-xs transition-all cursor-pointer" onclick="document.getElementById('statsSection').classList.toggle('hidden');document.getElementById('statsTab').classList.toggle('text-primary');document.getElementById('statsTab').style.borderBottom=document.getElementById('statsTab').classList.contains('text-primary')?'2px solid var(--primary)':'none'">Stats</button>
+          </div>
+          <!-- Status Filter Bar -->
+          <div
+            class="flex items-center justify-between mb-lg border-b border-outline-variant/30 pb-sm"
+            data-purpose="status-filters"
+          >
+            <div class="flex gap-md">
+              <button class="text-primary font-bold text-sm border-b-2 border-primary pb-sm px-xs">
+                <span class="w-1.5 h-1.5 bg-error rounded-full live-pulse inline-block mr-1"></span>
+                <span>Live (3)</span>
+              </button>
+              <button class="text-on-surface-variant font-body-sm text-sm hover:text-on-surface pb-sm px-xs transition-all">
+                <span>Upcoming (12)</span>
+              </button>
+              <button class="text-on-surface-variant font-body-sm text-sm hover:text-on-surface pb-sm px-xs transition-all">
+                <span>Finished (24)</span>
+              </button>
+            </div>
+            <div class="flex items-center gap-sm">
+              <button class="flex items-center gap-xs px-sm py-xs bg-surface-container text-xs rounded border border-outline-variant/30">
+                <span class="material-symbols-outlined text-sm">filter_list</span>
+                Filter
+              </button>
+              <button class="flex items-center gap-xs px-sm py-xs bg-surface-container text-xs rounded border border-outline-variant/30">
+                Sort by: Latest
+                <span class="material-symbols-outlined text-sm">expand_more</span>
+              </button>
+            </div>
+          </div>
+          <!-- BEGIN: StatsSection -->
+          <div id="statsSection" class="hidden">
+            <div class="bg-card-bg rounded-2xl border border-border-subtle mb-lg">
+              <div class="flex items-center justify-between px-lg py-md border-b border-border-subtle">
+                <h3 class="font-bold text-sm">Table Tennis Stats & Rankings</h3>
+                <span class="text-[10px] text-gray-500">Auto-updated from ITTF</span>
+              </div>
+              <div id="sportStatsContainer"></div>
+            </div>
+          </div>
+          <!-- END: StatsSection -->
+          <!-- Match List -->
+            <div class="space-y-6" data-purpose="matches-list" data-filter="tabletennis">
+              <!-- Real match cards injected from js/matches-data.js -->
+            </div>
+        </div>
+      </main>
+      <!-- Right Sidebar: Widgets -->
+      <aside
+        class="xl:flex flex-col w-full xl:w-[320px] bg-surface-container-low border-t xl:border-t-0 xl:border-l border-outline-variant/30 overflow-y-auto custom-scrollbar p-md page-aside"
+      >
+        <!-- Calendar Widget -->
+        <div
+          class="bg-surface-container rounded-xl p-md border border-outline-variant/20 mb-lg"
+        >
+          <div class="flex items-center justify-between mb-md">
+            <h3 class="font-headline-md text-on-surface text-base">Calendar</h3>
+            <a
+              class="text-[10px] font-bold text-primary uppercase hover:underline"
+              href="calendar.html?game=table-tennis"
+              >View Full Calendar</a
+            >
+          </div>
+          <div class="flex justify-between text-center mb-sm">
+            <div
+              class="flex-1 text-[10px] text-on-surface-variant font-bold opacity-50"
+            >
+              MON
+            </div>
+            <div
+              class="flex-1 text-[10px] text-on-surface-variant font-bold opacity-50"
+            >
+              TUE
+            </div>
+            <div
+              class="flex-1 text-[10px] text-on-surface-variant font-bold opacity-50"
+            >
+              WED
+            </div>
+            <div
+              class="flex-1 text-[10px] text-on-surface-variant font-bold opacity-50"
+            >
+              THU
+            </div>
+            <div
+              class="flex-1 text-[10px] text-on-surface-variant font-bold opacity-50"
+            >
+              FRI
+            </div>
+            <div
+              class="flex-1 text-[10px] text-on-surface-variant font-bold opacity-50"
+            >
+              SAT
+            </div>
+            <div
+              class="flex-1 text-[10px] text-on-surface-variant font-bold opacity-50"
+            >
+              SUN
+            </div>
+          </div>
+          <div class="flex justify-between text-center mb-md">
+            <div class="flex-1 text-sm font-bold p-1">13</div>
+            <div class="flex-1 text-sm font-bold p-1">14</div>
+            <div
+              class="flex-1 text-sm font-bold p-1 bg-primary text-on-primary rounded-lg"
+            >
+              15
+            </div>
+            <div class="flex-1 text-sm font-bold p-1">16</div>
+            <div class="flex-1 text-sm font-bold p-1">17</div>
+            <div class="flex-1 text-sm font-bold p-1">18</div>
+            <div class="flex-1 text-sm font-bold p-1">19</div>
+          </div>
+          <div class="flex flex-col gap-sm">
+            <div
+              class="p-sm bg-surface-container-high rounded border-l-2 border-primary flex gap-sm items-center"
+            >
+              <div
+                class="w-8 h-8 rounded bg-surface-variant flex items-center justify-center overflow-hidden"
+              >
+                <img
+                  alt="Logo"
+                  class="w-6 h-6 object-contain"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7rNzq34GsNy1VaXJZR1s2C7Ee1s8YpLvq7TIo_AJmJJGoYk0Nz6WUqWcvT7NxSjnO6f_dAchw2YbD_E_TJE4020JAyN-il-8iDjtGR6mkfhtNgN4tRhhNXV9HnmuCvYNHz6By2XOZB94olvCObF9O1sjgBLLG_GEvFHg_b_hzFLyM7tMwSe__a9XAMRlURU9_nzd2lN7cl2zfXHWNPcj5uXilIZQy85YSOZ6m_DLmyQPUjbeh91c1Wv8vMEox7U1jDlhYTsHHINI"
+                />
+              </div>
+              <div class="flex-1 min-w-0">
+                <p
+                  class="text-[10px] text-on-surface-variant font-bold uppercase truncate"
+                >
+                  WTT Champions
+                </p>
+                <p class="text-xs font-bold text-on-surface truncate">
+                  Fan Z vs Ma L
+                </p>
+              </div>
+              <span
+                class="text-[10px] font-bold text-error bg-error/10 px-1 rounded"
+                >LIVE</span
+              >
+            </div>
+            <div
+              class="p-sm bg-surface-container-high/40 rounded border-l-2 border-outline-variant flex gap-sm items-center"
+            >
+              <div
+                class="w-8 h-8 rounded bg-surface-variant flex items-center justify-center overflow-hidden"
+              >
+                <img
+                  alt="Logo"
+                  class="w-6 h-6 object-contain"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7rNzq34GsNy1VaXJZR1s2C7Ee1s8YpLvq7TIo_AJmJJGoYk0Nz6WUqWcvT7NxSjnO6f_dAchw2YbD_E_TJE4020JAyN-il-8iDjtGR6mkfhtNgN4tRhhNXV9HnmuCvYNHz6By2XOZB94olvCObF9O1sjgBLLG_GEvFHg_b_hzFLyM7tMwSe__a9XAMRlURU9_nzd2lN7cl2zfXHWNPcj5uXilIZQy85YSOZ6m_DLmyQPUjbeh91c1Wv8vMEox7U1jDlhYTsHHINI"
+                />
+              </div>
+              <div class="flex-1 min-w-0">
+                <p
+                  class="text-[10px] text-on-surface-variant font-bold uppercase truncate"
+                >
+                  World Cup 2024
+                </p>
+                <p class="text-xs font-bold text-on-surface truncate">
+                  Upcoming matches
+                </p>
+              </div>
+              <span class="text-[10px] font-bold text-on-surface-variant"
+                >20:30</span
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Rankings Leaderboard Widget -->
+        <div
+          class="bg-surface-container rounded-xl p-md border border-outline-variant/20"
+        >
+          <div class="flex items-center justify-between mb-md">
+            <h3 class="font-headline-md text-on-surface text-base">
+              ITTF Rankings
+            </h3>
+            <div class="flex gap-xs">
+              <button class="p-xs bg-surface-container-high rounded">
+                <span class="material-symbols-outlined text-xs"
+                  >chevron_left</span
+                >
+              </button>
+              <button class="p-xs bg-surface-container-high rounded">
+                <span class="material-symbols-outlined text-xs"
+                  >chevron_right</span
+                >
+              </button>
+            </div>
+          </div>
+          <div class="flex gap-sm mb-md">
+            <button
+              class="flex-1 py-1 px-xs bg-primary text-on-primary font-bold text-[10px] rounded uppercase"
+            >
+              Men's
+            </button>
+            <button
+              class="flex-1 py-1 px-xs bg-surface-container-high text-on-surface-variant font-bold text-[10px] rounded uppercase"
+            >
+              Women's
+            </button>
+          </div>
+          <div class="flex flex-col">
+            <!-- Rank Item 1 -->
+            <div
+              class="flex items-center gap-md py-sm border-b border-outline-variant/10 group"
+            >
+              <span
+                class="font-numeric-data text-primary italic font-bold w-4 text-center"
+                >1</span
+              >
+              <div
+                class="w-10 h-10 rounded-full bg-surface-variant border border-outline-variant overflow-hidden"
+              >
+                <img
+                  alt="Fan Zhendong"
+                  class="w-full h-full object-cover"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvwPqctXOHVslGftmGZ4xd3ngftFcydIZ8Cudj9zaWozQV4yuYqU6fXFaXFHgL6MQgODRPHNFR5lZft6uE1hrNxYYWCnaTEct-wzK2JMiFtXvCxTJhGV67E8-DnGGap40PRMFvkjh7ZTFW_J4-D5bKUa68Chv1tpWc5DrpA_zAk3DfhtGlFD-xIjwRq4gYF4k7u7VWDBXkB6Xb-LuEIhxmUigasDMsGUCz3Oj3lyNp517a_2vxFH4vmM0ubyu90GBOg9QqSD-BirE"
+                />
+              </div>
+              <div class="flex-1">
+                <p class="text-xs font-bold text-on-surface">Fan Zhendong</p>
+                <p class="text-[10px] text-on-surface-variant">China (CHN)</p>
+              </div>
+              <div class="text-right">
+                <p class="text-xs font-bold text-on-surface">6,410</p>
+                <p class="text-[9px] text-on-surface-variant uppercase">
+                  Points
+                </p>
+              </div>
+            </div>
+            <!-- Rank Item 2 -->
+            <div
+              class="flex items-center gap-md py-sm border-b border-outline-variant/10 group"
+            >
+              <span
+                class="font-numeric-data text-on-surface-variant italic font-bold w-4 text-center"
+                >2</span
+              >
+              <div
+                class="w-10 h-10 rounded-full bg-surface-variant border border-outline-variant overflow-hidden"
+              >
+                <img
+                  alt="Wang Chuqin"
+                  class="w-full h-full object-cover"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuBG2JGtacahIUKNSlQnVB34HUnc-COaj7xzhhQv_6lJxAiaPstKxVOYfHes7_oZnAZ6C2hTq7YGztWPTb8lCAD2E4pB1byF7rJyJ_3T5d5fQqgOGcoa6tkSf1hhWGN0wc2NRbcrZ7YptyOe71BOAjk9IkFx4g2zlCHuqbX_Nxc6ReN34hBS98Ds3CUWjSAlSzNhn-tinKdNR6K9tQhRIEPV7_5g4UxlDiJKEC4hH7lZMp1lw5crxCrN0RPvWEmHOhdkPHMK1sYlORY"
+                />
+              </div>
+              <div class="flex-1">
+                <p class="text-xs font-bold text-on-surface">Wang Chuqin</p>
+                <p class="text-[10px] text-on-surface-variant">China (CHN)</p>
+              </div>
+              <div class="text-right">
+                <p class="text-xs font-bold text-on-surface">5,820</p>
+                <p class="text-[9px] text-on-surface-variant uppercase">
+                  Points
+                </p>
+              </div>
+            </div>
+            <!-- Rank Item 3 -->
+            <div
+              class="flex items-center gap-md py-sm border-b border-outline-variant/10 group"
+            >
+              <span
+                class="font-numeric-data text-on-surface-variant italic font-bold w-4 text-center"
+                >3</span
+              >
+              <div
+                class="w-10 h-10 rounded-full bg-surface-variant border border-outline-variant overflow-hidden"
+              >
+                <img
+                  alt="Ma Long"
+                  class="w-full h-full object-cover"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuAtlJB3lWnPq1WMUjSrSHFLEIm5gqdT14k-Ghdg_6mssqs5SdaRIHzPAOPBn4U9G7l-VKtBF7vuguw70yO_idSbqdLvrDWClMTlcPta3I4-nN7FpzVmQ9SyhdqZ1B_u_zmMOluJsnAYM6I3pX6tM2-5-iteR7YIjg31oe4lBdQkZ_qYGm48tmXsWvhiBZ3GHjupgKtuQuaGzYaUj4aJ_E4Rw3wd9hTWq1rcHkoD-miF4_De-Pz6Tfl4dN849BTE4Pnqajk8wE0a9T8"
+                />
+              </div>
+              <div class="flex-1">
+                <p class="text-xs font-bold text-on-surface">Ma Long</p>
+                <p class="text-[10px] text-on-surface-variant">China (CHN)</p>
+              </div>
+              <div class="text-right">
+                <p class="text-xs font-bold text-on-surface">4,950</p>
+                <p class="text-[9px] text-on-surface-variant uppercase">
+                  Points
+                </p>
+              </div>
+            </div>
+            <!-- Rank Item 4 -->
+            <div
+              class="flex items-center gap-md py-sm border-b border-outline-variant/10 group"
+            >
+              <span
+                class="font-numeric-data text-on-surface-variant italic font-bold w-4 text-center"
+                >4</span
+              >
+              <div
+                class="w-10 h-10 rounded-full bg-surface-variant border border-outline-variant overflow-hidden"
+              >
+                <img
+                  alt="Harimoto"
+                  class="w-full h-full object-cover"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuAYkvFIsFwKtHWEqNMdZ6BGPvB4mXo_6TszDQvmIbLVpEGsXyc_4NQ4BIO-wZHtaGwUekZZcSdC0JySi-esN2yhqBpPQzon_tmqx-kRao4MRBv4lvokcKRZuZH66GDhJOHCuOkTvJ7BuUNsS-eywZYGFp8Flf7ZL2jw7U3CxyYCIK6ErX6rw3RX_jRPdsuJm0KBjnUO1yKnH3g7oImyBbm70erCWPhh1n1UODqTtazbsdlewkrNpIv_Wr20atTyc_brF-AYYDVZfqk"
+                />
+              </div>
+              <div class="flex-1">
+                <p class="text-xs font-bold text-on-surface">T. Harimoto</p>
+                <p class="text-[10px] text-on-surface-variant">Japan (JPN)</p>
+              </div>
+              <div class="text-right">
+                <p class="text-xs font-bold text-on-surface">3,210</p>
+                <p class="text-[9px] text-on-surface-variant uppercase">
+                  Points
+                </p>
+              </div>
+            </div>
+          </div>
+          <button
+            class="w-full mt-md py-sm text-xs font-bold text-on-surface-variant hover:text-on-surface transition-all border border-outline-variant/30 rounded-lg"
+          >
+            View Full Rankings
+          </button>
+        </div>
+      </aside>
+    </div>
+
+    <script>
+      // Simple interactive effects
+      document.querySelectorAll(".match-card").forEach((card) => {
+        card.addEventListener("mouseenter", () => {
+          card.classList.add("shadow-primary/5");
+        });
+        card.addEventListener("mouseleave", () => {
+          card.classList.remove("shadow-primary/5");
+        });
+      });
+
+      // Search bar interaction
+      const searchInput = document.querySelector('input[type="text"]');
+      searchInput.addEventListener("focus", () => {
+        searchInput.parentElement.classList.add("w-80");
+      });
+      searchInput.addEventListener("blur", () => {
+        searchInput.parentElement.classList.remove("w-80");
+      });
+    </script>
+    <script src="js/theme.js"></script>
+    <script src="js/sidebar.js"></script>
+    <script type="module" src="js/script.js"></script>
+    <script src="js/sport-filters.js"></script>
+    <script src="js/sport-stats.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        if (typeof initSportStats === 'function') {
+          initSportStats('sportStatsContainer');
+        }
+      });
+    </script>
+  <script src="js/notif-ws.js"></script>
+  <script src="js/matches-data.js"></script>
+  <script src="js/matches-render.js"></script>
+  <script src="js/top-players-fallback.js"></script>
+  <script src="js/top-players-widget.js"></script>
+  <script src="js/global-search.js"></script>
+  <style>
+    /* Show the right-sidebar widgets (Calendar + Rankings) below the
+       match feed on tablet/mobile; keep the right column only on xl. */
+    @media (max-width: 1279px) {
+      .page-flex { flex-direction: column; overflow-y: auto; }
+      .page-main { overflow: visible; flex: none; }
+      .page-aside { display: flex !important; max-height: none !important; order: 2; }
+    }
+  </style>
+</body>
+</html>
+
+

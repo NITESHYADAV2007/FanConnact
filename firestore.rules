@@ -1,0 +1,40 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /usernames/{username} {
+      allow read: if true;
+      allow create: if request.auth != null;
+    }
+    match /emails/{email} {
+      allow read: if true;
+      allow create: if request.auth != null;
+    }
+    match /mobiles/{mobile} {
+      allow read: if true;
+      allow create: if request.auth != null;
+    }
+   match /users/{userId} {
+
+    // PUBLIC leaderboard + user profiles: every registered fan must be
+    // listable by XP and viewable by anyone (logged in or not). Reads are
+    // public; writes stay restricted to the document owner (so a user can
+    // only edit their own followers/following arrays).
+    allow read: if true;
+
+    // User can edit only his own profile
+    allow write: if request.auth != null
+                 && request.auth.uid == userId;
+
+    // Allow any logged-in user to ADD themselves to another user's
+    // followRequests array (used by the "Follow" button to send a request).
+    // They can only ever add their OWN uid to followRequests — never remove
+    // or modify other fields.
+    allow update: if request.auth != null
+                 && request.resource.data.followRequests.hasAll(resource.data.followRequests)
+                 && request.resource.data.followRequests.removeAll(resource.data.followRequests).size() == 1
+                 && request.resource.data.followRequests.removeAll(resource.data.followRequests)[0] == request.auth.uid
+                 && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['followRequests']);
+
+}
+  }
+}

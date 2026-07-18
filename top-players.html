@@ -1,0 +1,563 @@
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/fancoin/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/fancoin/favicon-16x16.png" />
+    <meta property="og:site_name" content="Fanconnact" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="assets/fancoin/fanconnactlogo.png" />
+    <meta property="og:title" content="Fanconnact - Top Players" />
+    <meta property="og:description" content="Top ranked players across all sports." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Fanconnact - Top Players" />
+    <meta name="twitter:description" content="Top ranked players across all sports." />
+    <meta name="twitter:image" content="assets/fancoin/fanconnactlogo.png" />
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <script>
+      if (localStorage.getItem("color-theme") === "dark") {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
+    </script>
+    <title>Fanconnact - Top Players</title>
+    <link rel="stylesheet" href="css/tailwind.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <style data-purpose="custom-scrollbar">
+      ::-webkit-scrollbar { width: 6px; }
+      ::-webkit-scrollbar-track { background: #0a0e14; }
+      ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+      ::-webkit-scrollbar-thumb:hover { background: #10b981; }
+      .text-fan { color: #ffffff !important; }
+      :root:not(.dark) .text-connect { color: #d99a00 !important; }
+      .dark .text-connect { color: #f5b301 !important; }
+      :root:not(.dark) .text-fan { color: #374151 !important; }
+      .nav-link-active { font-weight: 500 !important; }
+      .dark .nav-link-active { background-color: rgba(16, 185, 129, 0.2) !important; color: #10b981 !important; border-right: 4px solid #10b981 !important; }
+      .dark .nav-link-active span, .dark .nav-link-active .nav-text { color: #10b981 !important; }
+      :root:not(.dark) .nav-link-active { background-color: #eff6ff !important; color: #1d4ed8 !important; border-right: 4px solid #3b82f6 !important; }
+      :root:not(.dark) .hover\:text-emerald-accent:hover,
+      :root:not(.dark) .nav-link:hover,
+      :root:not(.dark) [class*="hover:text-emerald"] { color: #2196f3 !important; }
+      :root:not(.dark) ::-webkit-scrollbar-track { background: #f1f5f9; }
+      :root:not(.dark) ::-webkit-scrollbar-thumb { background: #2196f3; }
+      :root:not(.dark) ::-webkit-scrollbar-thumb:hover { background: #1e88e5; }
+      .dark ::-webkit-scrollbar-thumb { background: #10b981; }
+      .dark ::-webkit-scrollbar-thumb:hover { background: #34d399; }
+      :root:not(.dark) input:focus { border-color: #2196f3 !important; box-shadow: 0 0 0 2px rgba(33,150,243,0.2) !important; }
+      :root:not(.dark) .bg-card-bg { background: #ffffff !important; }
+      :root:not(.dark) .bg-dark-bg { background: #f1f5f9 !important; }
+      :root:not(.dark) .bg-brand-surface { background: #ffffff !important; }
+      :root:not(.dark) .bg-brand-dark { background: #f8fafc !important; }
+      :root:not(.dark) .bg-gray-800 { background: #ffffff !important; }
+      :root:not(.dark) .bg-gray-800\/40 { background: #f8fafc !important; }
+      :root:not(.dark) .bg-gray-800\/50 { background: #ffffff !important; }
+      :root:not(.dark) [class*="bg-gray-900"] { background: #f8fafc !important; }
+      :root:not(.dark) .from-gray-800 { --tw-gradient-from: #f1f5f9 !important; }
+      :root:not(.dark) .to-gray-900 { --tw-gradient-to: #e2e8f0 !important; }
+      :root:not(.dark) .from-gray-800.to-gray-900 { background: linear-gradient(135deg,#f1f5f9,#e2e8f0) !important; }
+      :root:not(.dark) .bg-gradient-to-br.from-gray-800.to-gray-900 { background: #f8fafc !important; border-color: #e2e8f0 !important; }
+      :root:not(.dark) .text-white { color: #0f172a !important; }
+      :root:not(.dark) .text-gray-400 { color: #64748b !important; }
+      :root:not(.dark) .text-gray-500 { color: #64748b !important; }
+      :root:not(.dark) .text-gray-300 { color: #334155 !important; }
+      :root:not(.dark) .bg-emerald-accent { background: #2196f3 !important; }
+      :root:not(.dark) .bg-emerald-accent\/10 { background: #dbeafe !important; }
+      :root:not(.dark) .border-emerald-accent { border-color: #2196f3 !important; }
+      :root:not(.dark) .text-emerald-accent { color: #2196f3 !important; }
+      :root:not(.dark) .bg-accent-green { background: #dbeafe !important; }
+      :root:not(.dark) .text-accent-green { color: #2196f3 !important; }
+      :root:not(.dark) .border-accent-green { border-color: #2196f3 !important; }
+      :root:not(.dark) .bg-brand-green { background: #2196f3 !important; }
+      :root:not(.dark) .border-gray-700 { border-color: #e2e8f0 !important; }
+      :root:not(.dark) .border-gray-800 { border-color: #e2e8f0 !important; }
+      :root:not(.dark) .border-gray-800\/50 { border-color: #e2e8f0 !important; }
+      :root:not(.dark) .hover\:bg-gray-800:hover { background: #f1f5f9 !important; }
+      :root:not(.dark) .hover\:text-white:hover { color: #0f172a !important; }
+      :root:not(.dark) .dark\:hover\:bg-white\/5:hover { background: #f1f5f9 !important; }
+      .sport-btn { transition: all 0.2s; }
+      .sport-btn.active-sport { background-color: #10b981 !important; color: white !important; border-color: #10b981 !important; }
+      :root:not(.dark) .sport-btn.active-sport { background-color: #2196f3 !important; color: white !important; border-color: #2196f3 !important; }
+      .filter-btn.active-filter { background-color: rgba(16,185,129,0.1) !important; color: #10b981 !important; border-color: #10b981 !important; }
+      :root:not(.dark) .filter-btn.active-filter { background-color: #dbeafe !important; color: #2196f3 !important; border-color: #2196f3 !important; }
+#sidebar.sidebar-collapsed { width: 0 !important; min-width: 0 !important; border: 0 !important; padding: 0 !important; overflow: hidden !important; }
+    </style>
+    <meta name="description" content="Fanconnact - Top ranked players across all sports." />
+    <meta property="og:title" content="Fanconnact - Top Players" />
+    <meta name="robots" content="index,follow" />
+    <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+  </head>
+  <body
+    class="h-screen w-full flex flex-col overflow-hidden transition-colors duration-300 bg-white dark:bg-black text-slate-900 dark:text-slate-100"
+  >
+    <!-- BEGIN: MainHeader -->
+    <header
+      class="sticky top-0 z-50 transition-colors duration-300 bg-white dark:bg-black border-b border-gray-200 dark:border-border-subtle px-4 md:px-8 py-4 flex items-center justify-between"
+    >
+      <div class="flex items-center space-x-4 md:space-x-12">
+        <div id="header-logo" class="flex items-center gap-2 ml-2">
+          <img src="assets/fancoin/fanconnactlogo.png" alt="Fanconnact" class="w-7 h-7" />
+          <span class="text-base font-bold whitespace-nowrap"><span class="text-fan">Fan</span><span class="text-connect">Connact</span></span>
+        </div>
+
+        <nav class="hidden xl:flex items-center space-x-6 mx-6 shrink-0">
+          <a class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link" href="dashboard.html">Home</a>
+          <a class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link" href="livematches.html">Matches</a>
+          <a class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link" href="prediction.html">Predictions</a>
+          <a class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link" href="leaderboard.html">Leaderboard</a>
+          <a class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link" href="news&update.html">News</a>
+        </nav>
+      </div>
+      <div class="flex items-center gap-5 md:gap-8">
+        <div class="relative hidden lg:block">
+          <input class="bg-gray-100 dark:bg-[#1a1a1a] text-slate-900 dark:text-white border-none rounded-xl py-2.5 pl-10 pr-4 text-sm w-64 focus:ring-1 focus:ring-emerald-accent" placeholder="Search teams, matches, players..." type="text" />
+          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl">search</span>
+        </div>
+        <button id="theme-toggle" class="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-all active:scale-95">
+          <span id="theme-toggle-light-icon" class="material-symbols-outlined hidden text-yellow-400">light_mode</span>
+          <span id="theme-toggle-dark-icon" class="material-symbols-outlined text-slate-500 dark:text-slate-400">dark_mode</span>
+        </button>
+        <div class="relative notification-trigger cursor-pointer">
+          <span class="material-symbols-outlined text-slate-500 dark:text-gray-300 cursor-pointer">notifications</span>
+          <span class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-[10px] flex items-center justify-center font-bold text-white shadow-sm">3</span>
+        </div>
+        <div id="profile-trigger" class="flex items-center space-x-3 cursor-pointer border-l border-gray-200 dark:border-gray-800 pl-4 md:pl-6">
+          <img id="user-profile-img" alt="User Profile" class="w-9 h-9 md:w-10 md:h-10 rounded-full border-2 border-emerald-accent" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDOdWz0yXTAfug92jAlZ-XZtnL5urTJNu8npwz7RIfeTacw2m4yeAoKNMAkf3MLOCIk0iI35_ID8tSabIp6I7MF2N_gez6RO01_i0q1DX3bj656URDlnI8A34wDvyRB5WoPOVTN1qvuyGRfskySDI-pCWAnw3raxBsKX2G6sEhrFHiweAO4TxLdxuB-4_oHoAPBbm9bwmrKrqSGKFEtAeXpM76OE_C1cQQSNmRYmIRT01ZVb4lT2k1tR1xDw6ujXtxiain2IWfiKxim" />
+          <div class="hidden sm:block">
+            <p id="user-name-display" class="text-sm font-bold text-slate-900 dark:text-white">NiteshY</p>
+            <p id="user-level-display" class="text-[10px] text-emerald-accent font-bold uppercase tracking-wider">Level 28</p>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Mobile Sub-Nav -->
+    <nav class="xl:hidden flex overflow-x-auto gap-1 sm:gap-2 px-2 py-1.5 sm:px-4 sm:py-2.5 bg-white dark:bg-black border-b border-gray-200 dark:border-border-subtle scrollbar-none whitespace-nowrap" style="-webkit-overflow-scrolling:touch;scrollbar-width:none;">
+      <a href="dashboard.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Home</a>
+      <a href="livematches.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Matches</a>
+      <a href="prediction.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Predictions</a>
+      <a href="leaderboard.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Leaderboard</a>
+      <a href="news&update.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">News</a>
+    </nav>
+
+    <div class="flex flex-1 overflow-hidden">
+      <main class="flex-1 flex flex-col overflow-hidden transition-colors duration-300 bg-white dark:bg-black">
+        <div class="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-6">
+          <div class="max-w-7xl mx-auto space-y-4 md:space-y-6">
+
+            <!-- Sport Filter Bar -->
+            <div id="sport-filters" class="flex flex-wrap gap-2">
+              <button class="sport-btn px-3 py-1.5 text-xs sm:text-sm font-medium rounded-lg border border-border-subtle bg-white dark:bg-black text-gray-600 dark:text-gray-300 hover:border-emerald-accent active-sport" data-sport="cricket">
+                <span class="material-symbols-outlined text-base sm:text-lg align-middle mr-1">sports_cricket</span>Cricket
+              </button>
+              <button class="sport-btn px-3 py-1.5 text-xs sm:text-sm font-medium rounded-lg border border-border-subtle bg-white dark:bg-black text-gray-600 dark:text-gray-300 hover:border-emerald-accent" data-sport="football">
+                <span class="material-symbols-outlined text-base sm:text-lg align-middle mr-1">sports_soccer</span>Football
+              </button>
+              <button class="sport-btn px-3 py-1.5 text-xs sm:text-sm font-medium rounded-lg border border-border-subtle bg-white dark:bg-black text-gray-600 dark:text-gray-300 hover:border-emerald-accent" data-sport="basketball">
+                <span class="material-symbols-outlined text-base sm:text-lg align-middle mr-1">sports_basketball</span>Basketball
+              </button>
+              <button class="sport-btn px-3 py-1.5 text-xs sm:text-sm font-medium rounded-lg border border-border-subtle bg-white dark:bg-black text-gray-600 dark:text-gray-300 hover:border-emerald-accent" data-sport="tennis">
+                <span class="material-symbols-outlined text-base sm:text-lg align-middle mr-1">sports_tennis</span>Tennis
+              </button>
+              <button class="sport-btn px-3 py-1.5 text-xs sm:text-sm font-medium rounded-lg border border-border-subtle bg-white dark:bg-black text-gray-600 dark:text-gray-300 hover:border-emerald-accent" data-sport="hockey">
+                <span class="material-symbols-outlined text-base sm:text-lg align-middle mr-1">sports_hockey</span>Hockey
+              </button>
+              <button class="sport-btn px-3 py-1.5 text-xs sm:text-sm font-medium rounded-lg border border-border-subtle bg-white dark:bg-black text-gray-600 dark:text-gray-300 hover:border-emerald-accent" data-sport="kabbaddi">
+                <span class="material-symbols-outlined text-base sm:text-lg align-middle mr-1">sports_kabaddi</span>Kabaddi
+              </button>
+              <button class="sport-btn px-3 py-1.5 text-xs sm:text-sm font-medium rounded-lg border border-border-subtle bg-white dark:bg-black text-gray-600 dark:text-gray-300 hover:border-emerald-accent" data-sport="e-sports">
+                <span class="material-symbols-outlined text-base sm:text-lg align-middle mr-1">sports_esports</span>E-Sports
+              </button>
+              <button class="sport-btn px-3 py-1.5 text-xs sm:text-sm font-medium rounded-lg border border-border-subtle bg-white dark:bg-black text-gray-600 dark:text-gray-300 hover:border-emerald-accent" data-sport="baseball">
+                <span class="material-symbols-outlined text-base sm:text-lg align-middle mr-1">sports_baseball</span>Baseball
+              </button>
+              <button class="sport-btn px-3 py-1.5 text-xs sm:text-sm font-medium rounded-lg border border-border-subtle bg-white dark:bg-black text-gray-600 dark:text-gray-300 hover:border-emerald-accent" data-sport="volleyball">
+                <span class="material-symbols-outlined text-base sm:text-lg align-middle mr-1">sports_volleyball</span>Volleyball
+              </button>
+              <button class="sport-btn px-3 py-1.5 text-xs sm:text-sm font-medium rounded-lg border border-border-subtle bg-white dark:bg-black text-gray-600 dark:text-gray-300 hover:border-emerald-accent" data-sport="table-tennis">
+                <span class="material-symbols-outlined text-base sm:text-lg align-middle mr-1">sports_tennis</span>Table Tennis
+              </button>
+            </div>
+
+            <!-- Title -->
+            <div id="page-title" class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2">
+              <div>
+                <h1 id="title-text" class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">Loading...</h1>
+                <p id="subtitle-text" class="text-gray-500 dark:text-gray-400 text-sm md:text-base mt-1">Fetching rankings data...</p>
+              </div>
+              <a id="team-link-header" href="leaderboard.html" class="hidden shrink-0 self-start sm:self-auto px-3 py-2 rounded-xl text-xs font-bold bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:border-emerald-500/50 transition-all flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-sm">groups</span>
+                <span>View Team Rankings</span>
+                <span class="material-symbols-outlined text-xs">arrow_outward</span>
+              </a>
+            </div>
+
+            <!-- Dynamic Filter Bar -->
+            <div id="filter-bar" class="flex flex-wrap items-center gap-3 bg-white dark:bg-brand-card border border-gray-200 dark:border-border-subtle rounded-xl p-3 md:p-4 min-h-[60px]">
+              <div class="text-gray-400 text-sm">Loading filters...</div>
+            </div>
+
+            <!-- Result Info -->
+            <div id="result-info" class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 px-1">
+              <span id="result-count">Loading...</span>
+              <div class="flex items-center gap-3">
+                <span id="result-badge" class="hidden px-2 py-0.5 rounded-full text-[9px] font-bold uppercase"></span>
+                <span id="result-updated" class="text-gray-400 dark:text-gray-500"></span>
+                <button id="refresh-btn" class="p-1 rounded hover:bg-gray-100 dark:hover:bg-white/10 transition-colors" title="Refresh data">
+                  <span class="material-symbols-outlined text-sm">refresh</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Rankings Table -->
+            <div id="table-container" class="bg-white dark:bg-brand-card border border-gray-200 dark:border-border-subtle rounded-xl overflow-hidden shadow-sm">
+              <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                  <thead id="table-head"></thead>
+                  <tbody id="table-body"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Profile Modal -->
+    <div id="pm" class="hidden fixed inset-0 z-[100] bg-black/60 flex items-center justify-center p-4">
+      <div class="profile-modal bg-white dark:bg-brand-card rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto custom-scrollbar shadow-2xl border border-gray-200 dark:border-border-subtle">
+        <div class="sticky top-0 bg-white dark:bg-brand-card z-10 flex items-center justify-between p-4 md:p-6 border-b border-gray-200 dark:border-border-subtle">
+          <h3 class="text-lg font-bold text-gray-900 dark:text-white">Player Profile</h3>
+          <button id="cm" class="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-white/10 text-gray-400 dark:text-gray-500 transition-colors">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+        <div id="mb" class="p-4 md:p-6 space-y-5"></div>
+      </div>
+    </div>
+
+    <script type="module" src="js/script.js"></script>
+    <script src="js/theme.js"></script>
+    <script src="js/top-players-fallback.js"></script>
+
+    <script>
+      const API_BASE = 'http://localhost:3001';
+      let currentSport = 'cricket';
+      let sportConfig = null;
+      let players = [];
+      let columns = [];
+      let activeFilters = {};
+      let usingServer = true;
+
+      const COUNTRY_FLAGS = {
+        "India":"in","Australia":"au","England":"gb-eng","New Zealand":"nz","South Africa":"za",
+        "Pakistan":"pk","Sri Lanka":"lk","West Indies":"tt","Bangladesh":"bd","Afghanistan":"af",
+        "Zimbabwe":"zw","Ireland":"ie","Netherlands":"nl","Scotland":"gb-sct","Namibia":"na",
+        "Thailand":"th","PNG":"pg","Nepal":"np","Denmark":"dk","China":"cn","Japan":"jp",
+        "Germany":"de","Brazil":"br","Chinese Taipei":"tw","France":"fr","Sweden":"se",
+        "South Korea":"kr","Nigeria":"ng","Egypt":"eg","Portugal":"pt","Slovenia":"si",
+        "Austria":"at","Spain":"es","Argentina":"ar","Croatia":"hr","Puerto Rico":"pr",
+        "Poland":"pl","Romania":"ro","Hungary":"hu","Belgium":"be","Iran":"ir",
+        "Kazakhstan":"kz","Luxembourg":"lu","Singapore":"sg","Hong Kong":"hk","Canada":"ca",
+        "USA":"us","Norway":"no","Serbia":"rs","Greece":"gr","Russia":"ru","Bulgaria":"bg",
+        "Italy":"it","Czech Republic":"cz","Tunisia":"tn","Ukraine":"ua","Chile":"cl",
+        "Qatar":"qa","Cameroon":"cm","Mexico":"mx","Malaysia":"my","Kenya":"ke","Uganda":"ug",
+        "Morocco":"ma","Algeria":"dz","Indonesia":"id","Philippines":"ph","Colombia":"co",
+        "Peru":"pe","Uruguay":"uy","Venezuela":"ve","Cuba":"cu","Jamaica":"jm","Trinidad":"tt",
+        "Ghana":"gh","Senegal":"sn","Mali":"ml","Ivory Coast":"ci","Congo":"cg"
+      };
+      function getFlag(country) { const code = COUNTRY_FLAGS[country] || "in"; return `https://flagcdn.com/16x12/${code}.png`; }
+
+      function showLoading() {
+        document.getElementById('result-count').textContent = 'Loading...';
+        document.getElementById('result-updated').textContent = '';
+        document.getElementById('result-badge').classList.add('hidden');
+        document.getElementById('table-body').innerHTML =
+          '<tr><td colspan="10" class="px-4 py-12 text-center"><div class="inline-block w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div><p class="text-gray-400 mt-2 text-sm">Fetching rankings data...</p></td></tr>';
+      }
+
+      function showError(msg) {
+        document.getElementById('result-count').textContent = 'Error';
+        document.getElementById('result-updated').textContent = '';
+        document.getElementById('table-body').innerHTML =
+          '<tr><td colspan="10" class="px-4 py-12 text-center"><p class="text-red-400 text-sm">' + msg + '</p></td></tr>';
+      }
+
+      async function switchSport(sid) {
+        currentSport = sid;
+        document.querySelectorAll('.sport-btn').forEach(b => b.classList.toggle('active-sport', b.dataset.sport === sid));
+
+        document.getElementById('title-text').textContent = 'Loading...';
+        document.getElementById('subtitle-text').textContent = 'Fetching rankings data...';
+        showLoading();
+
+        // Show team rankings link for this sport
+        var teamHeader = document.getElementById('team-link-header');
+        var sportMap = { 'e-sports': 'esports', 'kabbaddi': 'kabaddi', 'table-tennis': 'table-tennis' };
+        var href = 'leaderboard.html?game=' + (sportMap[sid] || sid);
+        if (teamHeader) { teamHeader.classList.remove('hidden'); teamHeader.href = href; }
+
+        try {
+          const cfgRes = await fetch(API_BASE + '/api/sports/' + sid, { signal: AbortSignal.timeout(4000) });
+          if (!cfgRes.ok) throw new Error('Config fetch failed');
+          sportConfig = await cfgRes.json();
+          usingServer = true;
+
+          document.getElementById('title-text').textContent = sportConfig.title;
+          document.getElementById('subtitle-text').textContent = (sportConfig.tournament ? sportConfig.tournament + ' \u2014 ' : '') + sportConfig.subtitle;
+
+          activeFilters = {};
+          sportConfig.filters.forEach(f => { activeFilters[f.group] = f.options[0].value; });
+          columns = sportConfig.columns;
+          renderFilters();
+          await fetchRankings();
+        } catch (e) {
+          usingServer = false;
+          var fb = FALLBACK.getConfig(sid);
+          if (fb) {
+            sportConfig = fb;
+            document.getElementById('title-text').textContent = sportConfig.title;
+            document.getElementById('subtitle-text').textContent = (sportConfig.tournament ? sportConfig.tournament + ' \u2014 ' : '') + sportConfig.subtitle + ' (offline mode)';
+            activeFilters = {};
+            sportConfig.filters.forEach(function(f) { activeFilters[f.group] = f.options[0].value; });
+            columns = sportConfig.columns;
+            renderFilters();
+            await fetchRankings();
+          } else {
+            showError('Could not load data \u2014 server unreachable.');
+          }
+        }
+      }
+
+      function buildKey() {
+        if (!sportConfig || !sportConfig.filters) return '';
+        return sportConfig.filters.map(f => activeFilters[f.group] || f.options[0].value).join('_');
+      }
+
+      function setSourceBadge(source) {
+        var badge = document.getElementById('result-badge');
+        if (!badge) return;
+        badge.classList.remove('hidden');
+        var classes = {
+          'icc': 'bg-blue-500/20 text-blue-400 border-blue-500/30',
+          'espn': 'bg-red-500/20 text-red-400 border-red-500/30',
+          'fifa': 'bg-purple-500/20 text-purple-400 border-purple-500/30',
+          'sportscore': 'bg-green-500/20 text-green-400 border-green-500/30',
+          'api-sports': 'bg-orange-500/20 text-orange-400 border-orange-500/30',
+          'database': 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
+          'generated': 'bg-gray-500/20 text-gray-400 border-gray-500/30',
+        };
+        var cls = classes[source] || classes['generated'];
+        badge.className = 'px-2 py-0.5 rounded-full text-[9px] font-bold uppercase border ' + cls;
+        var labels = {
+          'icc': 'ICC Official',
+          'espn': 'ESPN',
+          'fifa': 'FIFA',
+          'sportscore': 'SportScore',
+          'api-sports': 'API-Sports',
+          'database': 'Database',
+          'generated': 'Estimated',
+        };
+        badge.textContent = labels[source] || source;
+      }
+
+      async function fetchRankings() {
+        showLoading();
+        if (!usingServer) {
+          var fbPlayers = FALLBACK.getPlayers(currentSport, buildKey());
+          if (fbPlayers && fbPlayers.length) {
+            players = fbPlayers;
+            document.getElementById('result-count').textContent = players.length + ' players';
+            document.getElementById('result-updated').textContent = 'Estimated data (offline mode)';
+            setSourceBadge('generated');
+            renderTable();
+          } else {
+            showError('No data available for this category.');
+          }
+          return;
+        }
+        try {
+          var now = Date.now();
+          const res = await fetch(API_BASE + '/api/rankings/' + currentSport + '/' + buildKey(), { signal: AbortSignal.timeout(5000) });
+          if (!res.ok) throw new Error('Rankings fetch failed');
+          const data = await res.json();
+          players = data.players || [];
+          document.getElementById('result-count').textContent = players.length + ' players';
+          setSourceBadge(data.source || 'generated');
+          if (data._lastSync) {
+            document.getElementById('result-updated').textContent = 'Updated: ' + new Date(data._lastSync).toLocaleString();
+          } else if (data.source === 'sportscore') {
+            document.getElementById('result-updated').innerHTML = 'English Premier League &middot; <a href="https://sportscore.com/" rel="dofollow" target="_blank" class="text-emerald-400 hover:text-emerald-300 underline">SportScore</a>';
+          } else if (data.source === 'espn') {
+            document.getElementById('result-updated').innerHTML = '<a href="https://www.espn.com/" rel="dofollow" target="_blank" class="text-emerald-400 hover:text-emerald-300 underline">ESPN</a>';
+          } else {
+            document.getElementById('result-updated').textContent = 'Data loaded';
+          }
+          renderTable();
+        } catch (e) {
+          usingServer = false;
+          var fbPlayers = FALLBACK.getPlayers(currentSport, buildKey());
+          if (fbPlayers && fbPlayers.length) {
+            players = fbPlayers;
+            document.getElementById('result-count').textContent = players.length + ' players';
+            document.getElementById('result-updated').textContent = 'Estimated data (offline mode)';
+            setSourceBadge('generated');
+            renderTable();
+          } else {
+            showError('Could not load rankings \u2014 server unreachable.');
+          }
+        }
+      }
+
+      function renderFilters() {
+        if (!sportConfig || !sportConfig.filters || !sportConfig.filters.length) {
+          document.getElementById('filter-bar').innerHTML = '<div class="text-gray-400 text-sm">No filters</div>';
+          return;
+        }
+        var html = '';
+        sportConfig.filters.forEach(function(fg, fi) {
+          if (fi > 0) html += '<span class="text-gray-300 dark:text-gray-600 hidden sm:inline mx-2">|</span>';
+          html += '<div class="flex items-center gap-2"><span class="text-[10px] sm:text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider whitespace-nowrap">' + fg.label + ':</span><div class="flex gap-1 bg-gray-100 dark:bg-black/40 rounded-lg p-1">';
+          fg.options.forEach(function(opt) {
+            var isActive = activeFilters[fg.group] === opt.value;
+            html += '<button class="filter-btn px-3 py-1.5 text-xs sm:text-sm font-medium rounded-md transition-all ' + (isActive ? 'active-filter bg-white dark:bg-brand-card shadow-sm text-emerald-600 dark:text-emerald-400' : 'text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white') + '" data-group="' + fg.group + '" data-value="' + opt.value + '">' + opt.label + '</button>';
+          });
+          html += '</div></div>';
+        });
+        document.getElementById('filter-bar').innerHTML = html;
+
+        document.querySelectorAll('.filter-btn').forEach(function(btn) {
+          btn.addEventListener('click', function() {
+            var group = btn.dataset.group;
+            var value = btn.dataset.value;
+            activeFilters[group] = value;
+            document.querySelectorAll('.filter-btn[data-group="' + group + '"]').forEach(function(b) {
+              b.classList.remove('active-filter','bg-white','dark:bg-brand-card','shadow-sm','text-emerald-600','dark:text-emerald-400');
+              b.classList.add('text-gray-600','dark:text-gray-300');
+            });
+            btn.classList.add('active-filter','bg-white','dark:bg-brand-card','shadow-sm','text-emerald-600','dark:text-emerald-400');
+            btn.classList.remove('text-gray-600','dark:text-gray-300');
+            fetchRankings();
+          });
+        });
+      }
+
+      function renderTable() {
+        var head = document.getElementById('table-head');
+        var body = document.getElementById('table-body');
+
+        var hh = '<tr class="bg-gray-50 dark:bg-black/30 text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider"><th class="px-4 py-3 border-b border-gray-200 dark:border-border-subtle font-semibold w-12">Rank</th>';
+        columns.forEach(function(col) {
+          var hide = col.hide ? 'hidden ' + (col.hide === 'sm' ? 'sm:table-cell' : col.hide === 'md' ? 'md:table-cell' : 'lg:table-cell') : '';
+          var align = col.align === 'center' ? 'text-center' : '';
+          hh += '<th class="px-4 py-3 border-b border-gray-200 dark:border-border-subtle font-semibold ' + hide + ' ' + align + '">' + col.label + '</th>';
+        });
+        hh += '</tr>';
+        head.innerHTML = hh;
+
+        if (!players || !players.length) {
+          body.innerHTML = '<tr><td colspan="' + (columns.length + 1) + '" class="px-4 py-12 text-center text-gray-400">No players found</td></tr>';
+          return;
+        }
+
+        var bh = '';
+        players.forEach(function(p, idx) {
+          bh += '<tr class="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors cursor-pointer" data-idx="' + idx + '"><td class="px-4 py-3"><span class="font-bold text-gray-900 dark:text-white text-sm">' + p.rank + '</span></td>';
+          columns.forEach(function(col) {
+            var hide = col.hide ? 'hidden ' + (col.hide === 'sm' ? 'sm:table-cell' : col.hide === 'md' ? 'md:table-cell' : 'lg:table-cell') : '';
+            var align = col.align === 'center' ? 'text-center' : '';
+            var val = p[col.key];
+            if (val === undefined || val === null) val = '-';
+
+            if (col.key === 'name') {
+              bh += '<td class="px-4 py-3 ' + hide + '"><div class="flex items-center gap-3"><div class="w-9 h-9 rounded-full bg-gradient-to-br from-emerald-400/30 to-blue-500/30 flex items-center justify-center text-xs font-bold text-emerald-600 dark:text-emerald-400 flex-shrink-0">' + String(val).charAt(0) + '</div><p class="font-semibold text-gray-900 dark:text-white text-sm leading-tight">' + val + '</p></div></td>';
+            } else if (col.key === 'country') {
+              var displayVal = val || p.team || '';
+              bh += '<td class="px-4 py-3 ' + hide + '"><div class="flex items-center gap-1.5">' + (displayVal ? '<img src="' + getFlag(displayVal) + '" alt="" class="w-4 h-3 rounded-sm" onerror="this.style.display=\'none\'" /><span class="text-xs text-gray-500 dark:text-gray-400">' + displayVal + '</span>' : '<span class="text-xs text-gray-400">-</span>') + '</div></td>';
+            } else {
+              bh += '<td class="px-4 py-3 ' + hide + ' ' + align + '"><span class="text-sm text-gray-600 dark:text-gray-300">' + (col.align === 'center' ? '<span class="font-bold text-emerald-600 dark:text-emerald-400">' + val + '</span>' : val) + '</span></td>';
+            }
+          });
+          bh += '</tr>';
+        });
+        body.innerHTML = bh;
+
+        document.querySelectorAll('#table-body tr[data-idx]').forEach(function(el) {
+          el.addEventListener('click', function() {
+            var idx = parseInt(el.dataset.idx);
+            var p = players[idx];
+            if (p) {
+              var activeBtn = document.querySelector('.sport-btn.active-sport');
+              var rawSport = activeBtn ? (activeBtn.getAttribute('data-sport') || activeBtn.textContent.trim()) : 'Cricket';
+              var sportName = rawSport.charAt(0).toUpperCase() + rawSport.slice(1).toLowerCase();
+              if (sportName === "E-sports") sportName = "E-Sports";
+              if (sportName === "Table-tennis") sportName = "Table Tennis";
+              if (sportName === "Kabbaddi") sportName = "Kabaddi";
+              sessionStorage.setItem('playerSport', sportName);
+              sessionStorage.setItem('playerView', JSON.stringify({ player: p, sport: sportName }));
+              window.location.href = 'player.html';
+            }
+          });
+        });
+      }
+
+      function showProfile(p) {
+        var modal = document.getElementById('pm');
+        var body = document.getElementById('mb');
+        var excluded = ['rank','name','country'];
+        body.innerHTML = '<div class="flex items-center gap-4 pb-4 border-b border-gray-200 dark:border-border-subtle"><div class="w-16 h-16 rounded-full bg-gradient-to-br from-emerald-400/30 to-blue-500/30 flex items-center justify-center text-xl font-bold text-emerald-600 dark:text-emerald-400 flex-shrink-0">' + (p.name||'?').charAt(0) + '</div><div><h2 class="text-xl font-bold text-gray-900 dark:text-white">' + (p.name||'Unknown') + '</h2><div class="flex items-center gap-2 mt-1">' + (p.country ? '<img src="' + getFlag(p.country) + '" alt="" class="w-5 h-4 rounded-sm" onerror="this.style.display=\'none\'" /><span class="text-sm text-gray-500 dark:text-gray-400">' + p.country + '</span>' : '') + (p.rank ? '<span class="text-xs px-2 py-0.5 rounded-full bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-400">Rank #' + p.rank + '</span>' : '') + '</div></div></div><div class="grid grid-cols-2 gap-3">' + Object.entries(p).filter(function(kv){return !excluded.includes(kv[0])}).map(function(kv) {
+          var key = kv[0], val = kv[1];
+          var label = key.charAt(0).toUpperCase() + key.slice(1).replace(/_/g,' ');
+          var display = val !== undefined && val !== null ? val : '-';
+          var big = key === 'rating' || key === 'points' ? 'text-2xl' : 'text-xl';
+          return '<div class="bg-gray-50 dark:bg-white/5 rounded-xl p-3 text-center"><p class="text-xs text-gray-400 dark:text-gray-500 uppercase">' + label + '</p><p class="' + big + ' font-bold text-emerald-600 dark:text-emerald-400 mt-0.5">' + display + '</p></div>';
+        }).join('') + '</div><div class="pt-2"><button onclick="document.getElementById(\'pm\').classList.add(\'hidden\')" class="w-full py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-semibold text-sm transition-colors">Close Profile</button></div>';
+        modal.classList.remove('hidden');
+      }
+
+      document.querySelectorAll('.sport-btn').forEach(btn => {
+        btn.addEventListener('click', () => { switchSport(btn.dataset.sport); });
+      });
+      document.getElementById('cm').addEventListener('click', () => document.getElementById('pm').classList.add('hidden'));
+      document.getElementById('pm').addEventListener('click', e => { if (e.target === document.getElementById('pm')) document.getElementById('pm').classList.add('hidden'); });
+
+      // Refresh button
+      document.getElementById('refresh-btn').addEventListener('click', function() {
+        var btn = this;
+        btn.classList.add('animate-spin');
+        switchSport(currentSport).finally(function() {
+          setTimeout(function() { btn.classList.remove('animate-spin'); }, 500);
+        });
+      });
+
+      // Fetch and display last-updated time
+      fetch(API_BASE + '/api/sync/last-updated', { signal: AbortSignal.timeout(3000) })
+        .then(function(r) { return r.ok ? r.json() : null; })
+        .then(function(d) {
+          if (d && d.lastSync) {
+            var el = document.getElementById('result-updated');
+            if (el && !el.textContent) el.textContent = 'Last sync: ' + d.humanReadable;
+          }
+        })
+        .catch(function() {});
+
+      FALLBACK.loadStaticData().then(function() {
+        const urlSport = new URLSearchParams(window.location.search).get('game');
+        const sportMap = { 'kabaddi': 'kabbaddi' };
+        switchSport(urlSport ? (sportMap[urlSport] || urlSport) : 'cricket');
+      });
+    </script>
+
+  <script src="js/notif-ws.js"></script></body>
+</html>

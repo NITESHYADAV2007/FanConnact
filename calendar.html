@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/fancoin/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/fancoin/favicon-16x16.png" />
+    <meta property="og:site_name" content="Fanconnact" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="assets/fancoin/fanconnactlogo.png" />
+    <meta property="og:title" content="Fanconnact - Match Calendar" />
+    <meta property="og:description" content="View all upcoming matches across sports." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Fanconnact - Match Calendar" />
+    <meta name="twitter:description" content="View all upcoming matches across sports." />
+    <meta name="twitter:image" content="assets/fancoin/fanconnactlogo.png" />
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <script>
+      if (localStorage.getItem("color-theme") === "dark") {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
+    </script>
+    <title>Fanconnact - Match Calendar</title>
+    <link rel="stylesheet" href="css/tailwind.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <style data-purpose="custom-scrollbar">
+      ::-webkit-scrollbar { width: 6px; }
+      ::-webkit-scrollbar-track { background: #0a0e14; }
+      ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+      ::-webkit-scrollbar-thumb:hover { background: #10b981; }
+      .text-fan { color: #ffffff !important; }
+      :root:not(.dark) .text-connect { color: #d99a00 !important; }
+      .dark .text-connect { color: #f5b301 !important; }
+      :root:not(.dark) .text-fan { color: #374151 !important; }
+      .calendar-day { transition: all 0.2s ease; font-weight: 500; }
+      .calendar-day:hover { background: rgba(16,185,129,0.15); }
+      .calendar-day.today { background: #10b981; color: #fff; font-weight: 700; box-shadow: 0 2px 8px rgba(16,185,129,0.4); }
+      :root:not(.dark) .calendar-day.today { color: #000; }
+      .calendar-day.has-event { border: 2px solid #10b981; position: relative; }
+      .calendar-day.has-event::after { content: ''; position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); width: 4px; height: 4px; border-radius: 50%; background: #10b981; }
+      .calendar-day.selected { background: rgba(16,185,129,0.25); color: #059669; font-weight: 700; }
+      .dark .calendar-day.selected { color: #34d399; }
+      .match-card { transition: all 0.2s ease; }
+      .match-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
+      .active-sport-tab { background: rgba(16,185,129,0.15) !important; border-color: #10b981 !important; color: #10b981 !important; font-weight: 600 !important; }
+      .text-muted { color: #6b7280; }
+      .dark .text-muted { color: #9ca3af; }
+      .match-card .team-name { color: #111827; }
+      .dark .match-card .team-name { color: #f3f4f6; }
+    </style>
+  </head>
+  <body class="h-screen w-full flex flex-col overflow-hidden transition-colors duration-300 bg-white dark:bg-black text-slate-900 dark:text-slate-100">
+    <!-- BEGIN: MainHeader -->
+    <header class="sticky top-0 z-50 transition-colors duration-300 bg-white dark:bg-black border-b border-gray-200 dark:border-border-subtle px-4 md:px-8 py-4 flex items-center justify-between">
+      <div class="flex items-center space-x-4 md:space-x-12">
+        <div id="header-logo" class="flex items-center gap-2 ml-2">
+          <img src="assets/fancoin/fanconnactlogo.png" alt="Fanconnact" class="w-7 h-7" />
+          <span class="text-base font-bold whitespace-nowrap"><span class="text-fan">Fan</span><span class="text-connect">Connact</span></span>
+        </div>
+        <nav class="hidden xl:flex items-center space-x-6 mx-6 shrink-0">
+          <a class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link" href="dashboard.html">Home</a>
+          <a class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link" href="livematches.html">Matches</a>
+          <a class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link" href="prediction.html">Predictions</a>
+          <a class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link" href="leaderboard.html">Leaderboard</a>
+          <a class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link" href="news&update.html">News</a>
+        </nav>
+      </div>
+      <div class="flex items-center gap-5 md:gap-8">
+        <div class="relative hidden lg:block">
+          <input class="bg-gray-100 dark:bg-[#1a1a1a] text-slate-900 dark:text-white border-none rounded-xl py-2.5 pl-10 pr-4 text-sm w-64 focus:ring-1 focus:ring-emerald-accent" placeholder="Search teams, matches, players..." type="text" />
+          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl">search</span>
+        </div>
+        <button id="theme-toggle" class="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-all active:scale-95">
+          <span id="theme-toggle-light-icon" class="material-symbols-outlined hidden text-yellow-400">light_mode</span>
+          <span id="theme-toggle-dark-icon" class="material-symbols-outlined text-slate-500 dark:text-slate-400">dark_mode</span>
+        </button>
+        <div class="relative notification-trigger cursor-pointer">
+          <span class="material-symbols-outlined text-slate-500 dark:text-gray-300 cursor-pointer">notifications</span>
+          <span class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-[10px] flex items-center justify-center font-bold text-white shadow-sm">3</span>
+        </div>
+        <div id="profile-trigger" class="flex items-center space-x-3 cursor-pointer border-l border-gray-200 dark:border-gray-800 pl-4 md:pl-6">
+          <img id="user-profile-img" alt="User Profile" class="w-9 h-9 md:w-10 md:h-10 rounded-full border-2 border-emerald-accent" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDOdWz0yXTAfug92jAlZ-XZtnL5urTJNu8npwz7RIfeTacw2m4yeAoKNMAkf3MLOCIk0iI35_ID8tSabIp6I7MF2N_gez6RO01_i0q1DX3bj656URDlnI8A34wDvyRB5WoPOVTN1qvuyGRfskySDI-pCWAnw3raxBsKX2G6sEhrFHiweAO4TxLdxuB-4_oHoAPBbm9bwmrKrqSGKFEtAeXpM76OE_C1cQQSNmRYmIRT01ZVb4lT2k1tR1xDw6ujXtxiain2IWfiKxim" />
+          <div class="hidden sm:block">
+            <p id="user-name-display" class="text-sm font-bold text-slate-900 dark:text-white">NiteshY</p>
+            <p id="user-level-display" class="text-[10px] text-emerald-accent font-bold uppercase tracking-wider">Level 28</p>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Mobile Sub-Nav -->
+    <nav class="xl:hidden flex overflow-x-auto gap-1 sm:gap-2 px-2 py-1.5 sm:px-4 sm:py-2.5 bg-white dark:bg-black border-b border-gray-200 dark:border-border-subtle scrollbar-none whitespace-nowrap" style="-webkit-overflow-scrolling:touch;scrollbar-width:none;">
+      <a href="dashboard.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Home</a>
+      <a href="livematches.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Matches</a>
+      <a href="prediction.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Predictions</a>
+      <a href="leaderboard.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Leaderboard</a>
+      <a href="news&update.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">News</a>
+    </nav>
+
+    <div class="flex flex-1 overflow-hidden">
+      <main class="flex-1 flex flex-col overflow-hidden transition-colors duration-300 bg-white dark:bg-black">
+        <div class="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-6">
+          <div class="max-w-7xl mx-auto space-y-6">
+
+            <!-- Sport Tabs -->
+            <div id="sport-tabs" class="flex flex-wrap gap-2">
+              <button class="sport-tab px-4 py-2 text-xs sm:text-sm font-medium rounded-lg border border-border-subtle bg-white dark:bg-black text-gray-600 dark:text-gray-300 hover:border-emerald-accent active-sport-tab" data-sport="all">
+                <span class="material-symbols-outlined text-base sm:text-lg align-middle mr-1">all_inclusive</span>All Sports
+              </button>
+              <button class="sport-tab px-4 py-2 text-xs sm:text-sm font-medium rounded-lg border border-border-subtle bg-white dark:bg-black text-gray-600 dark:text-gray-300 hover:border-emerald-accent" data-sport="cricket">
+                <span class="material-symbols-outlined text-base sm:text-lg align-middle mr-1">sports_cricket</span>Cricket
+              </button>
+              <button class="sport-tab px-4 py-2 text-xs sm:text-sm font-medium rounded-lg border border-border-subtle bg-white dark:bg-black text-gray-600 dark:text-gray-300 hover:border-emerald-accent" data-sport="football">
+                <span class="material-symbols-outlined text-base sm:text-lg align-middle mr-1">sports_soccer</span>Football
+              </button>
+              <button class="sport-tab px-4 py-2 text-xs sm:text-sm font-medium rounded-lg border border-border-subtle bg-white dark:bg-black text-gray-600 dark:text-gray-300 hover:border-emerald-accent" data-sport="basketball">
+                <span class="material-symbols-outlined text-base sm:text-lg align-middle mr-1">sports_basketball</span>Basketball
+              </button>
+              <button class="sport-tab px-4 py-2 text-xs sm:text-sm font-medium rounded-lg border border-border-subtle bg-white dark:bg-black text-gray-600 dark:text-gray-300 hover:border-emerald-accent" data-sport="tennis">
+                <span class="material-symbols-outlined text-base sm:text-lg align-middle mr-1">sports_tennis</span>Tennis
+              </button>
+              <button class="sport-tab px-4 py-2 text-xs sm:text-sm font-medium rounded-lg border border-border-subtle bg-white dark:bg-black text-gray-600 dark:text-gray-300 hover:border-emerald-accent" data-sport="hockey">
+                <span class="material-symbols-outlined text-base sm:text-lg align-middle mr-1">sports_hockey</span>Hockey
+              </button>
+              <button class="sport-tab px-4 py-2 text-xs sm:text-sm font-medium rounded-lg border border-border-subtle bg-white dark:bg-black text-gray-600 dark:text-gray-300 hover:border-emerald-accent" data-sport="kabbaddi">
+                <span class="material-symbols-outlined text-base sm:text-lg align-middle mr-1">sports_kabaddi</span>Kabaddi
+              </button>
+              <button class="sport-tab px-4 py-2 text-xs sm:text-sm font-medium rounded-lg border border-border-subtle bg-white dark:bg-black text-gray-600 dark:text-gray-300 hover:border-emerald-accent" data-sport="e-sports">
+                <span class="material-symbols-outlined text-base sm:text-lg align-middle mr-1">sports_esports</span>E-Sports
+              </button>
+              <button class="sport-tab px-4 py-2 text-xs sm:text-sm font-medium rounded-lg border border-border-subtle bg-white dark:bg-black text-gray-600 dark:text-gray-300 hover:border-emerald-accent" data-sport="baseball">
+                <span class="material-symbols-outlined text-base sm:text-lg align-middle mr-1">sports_baseball</span>Baseball
+              </button>
+              <button class="sport-tab px-4 py-2 text-xs sm:text-sm font-medium rounded-lg border border-border-subtle bg-white dark:bg-black text-gray-600 dark:text-gray-300 hover:border-emerald-accent" data-sport="volleyball">
+                <span class="material-symbols-outlined text-base sm:text-lg align-middle mr-1">sports_volleyball</span>Volleyball
+              </button>
+              <button class="sport-tab px-4 py-2 text-xs sm:text-sm font-medium rounded-lg border border-border-subtle bg-white dark:bg-black text-gray-600 dark:text-gray-300 hover:border-emerald-accent" data-sport="table-tennis">
+                <span class="material-symbols-outlined text-base sm:text-lg align-middle mr-1">sports_tennis</span>Table Tennis
+              </button>
+            </div>
+
+            <!-- Month Navigation -->
+            <div id="month-nav" class="flex items-center justify-between bg-white dark:bg-brand-card border border-gray-200 dark:border-border-subtle rounded-xl p-4">
+              <button id="prev-month" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 text-gray-500 dark:text-gray-400">
+                <span class="material-symbols-outlined">chevron_left</span>
+              </button>
+              <h2 id="month-title" class="text-lg font-bold text-gray-900 dark:text-white">July 2026</h2>
+              <button id="next-month" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 text-gray-500 dark:text-gray-400">
+                <span class="material-symbols-outlined">chevron_right</span>
+              </button>
+            </div>
+
+            <!-- Calendar Grid -->
+            <div id="calendar-grid" class="bg-white dark:bg-brand-card border border-gray-200 dark:border-border-subtle rounded-xl p-4 md:p-6">
+              <div class="grid grid-cols-7 gap-1 md:gap-2 text-center mb-2">
+                <div class="text-[10px] md:text-xs text-gray-500 dark:text-gray-400 font-bold uppercase py-2">Sun</div>
+                <div class="text-[10px] md:text-xs text-gray-500 dark:text-gray-400 font-bold uppercase py-2">Mon</div>
+                <div class="text-[10px] md:text-xs text-gray-500 dark:text-gray-400 font-bold uppercase py-2">Tue</div>
+                <div class="text-[10px] md:text-xs text-gray-500 dark:text-gray-400 font-bold uppercase py-2">Wed</div>
+                <div class="text-[10px] md:text-xs text-gray-500 dark:text-gray-400 font-bold uppercase py-2">Thu</div>
+                <div class="text-[10px] md:text-xs text-gray-500 dark:text-gray-400 font-bold uppercase py-2">Fri</div>
+                <div class="text-[10px] md:text-xs text-gray-500 dark:text-gray-400 font-bold uppercase py-2">Sat</div>
+              </div>
+              <div id="calendar-days" class="grid grid-cols-7 gap-1 md:gap-2"></div>
+            </div>
+
+            <!-- Selected Date Info -->
+            <div id="date-info" class="flex items-center justify-between">
+              <h3 id="selected-date" class="text-base md:text-lg font-bold text-gray-900 dark:text-white">All Upcoming Matches</h3>
+              <span id="match-count" class="text-xs text-gray-500 dark:text-gray-400"></span>
+            </div>
+
+            <!-- Match Cards -->
+            <div id="matches-container" class="space-y-4"></div>
+
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script type="module" src="js/script.js"></script>
+    <script src="js/theme.js"></script>
+
+    <script>
+      const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+      const SPORT_ICONS = {
+        cricket:'sports_cricket', football:'sports_soccer', basketball:'sports_basketball',
+        tennis:'sports_tennis', hockey:'sports_hockey', kabbaddi:'sports_kabaddi',
+        'e-sports':'sports_esports', baseball:'sports_baseball', volleyball:'sports_volleyball',
+        'table-tennis':'sports_tennis'
+      };
+
+      // Real matches sourced from js/matches-data.js (FANCONNECT_MATCHES)
+      function buildAllMatches() {
+        if (window.FANCONNECT_MATCHES && window.FANCONNECT_MATCHES.MATCHES) {
+          return window.FANCONNECT_MATCHES.MATCHES.map(function (m) {
+            var h = (window.FANCONNECT_MATCHES.TEAMS[m.home] || { name: m.home });
+            var a = (window.FANCONNECT_MATCHES.TEAMS[m.away] || { name: m.away });
+            return {
+              date: m.date || '2026-07-15',
+              sport: m.sport,
+              team1: h.name,
+              team2: a.name,
+              tournament: m.tournament || m.format || '',
+              time: m.time || (m.status === 'live' ? 'LIVE' : 'TBD'),
+              venue: m.venue || '',
+              type: m.format || m.status || ''
+            };
+          });
+        }
+        return [];
+      }
+      const ALL_MATCHES = buildAllMatches();
+
+      let currentDate = new Date();
+      let currentMonth = currentDate.getMonth();
+      let currentYear = currentDate.getFullYear();
+      let selectedDate = null;
+      let selectedSport = 'all';
+
+      function getSportFromURL() {
+        const params = new URLSearchParams(window.location.search);
+        return params.get('game') || 'all';
+      }
+
+      function getDaysInMonth(m, y) { return new Date(y, m + 1, 0).getDate(); }
+      function getFirstDayOfMonth(m, y) { return new Date(y, m, 1).getDay(); }
+
+      function renderCalendar() {
+        const grid = document.getElementById('calendar-days');
+        const title = document.getElementById('month-title');
+        title.textContent = MONTHS[currentMonth] + ' ' + currentYear;
+
+        const days = getDaysInMonth(currentMonth, currentYear);
+        const firstDay = getFirstDayOfMonth(currentMonth, currentYear);
+        const today = new Date();
+
+        grid.innerHTML = '';
+        for (let i = 0; i < firstDay; i++) {
+          const d = document.createElement('div');
+          grid.appendChild(d);
+        }
+        for (let day = 1; day <= days; day++) {
+          const d = document.createElement('div');
+          const dateStr = currentYear + '-' + String(currentMonth + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0');
+          const isToday = dateStr === today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
+          const isSelected = dateStr === selectedDate;
+          const hasEvent = ALL_MATCHES.some(m => m.date === dateStr && (selectedSport === 'all' || m.sport === selectedSport));
+          const classes = ['calendar-day', 'h-8', 'md:h-10', 'flex', 'items-center', 'justify-center', 'rounded-lg', 'cursor-pointer', 'text-xs', 'md:text-sm', 'font-semibold', 'text-gray-800', 'dark:text-gray-100'];
+          if (isToday) classes.push('today');
+          if (isSelected && !isToday) classes.push('selected');
+          if (!isToday && !isSelected) classes.push('hover:bg-gray-100', 'dark:hover:bg-white/10');
+          if (hasEvent && !isToday) classes.push('has-event');
+          d.className = classes.join(' ');
+          d.textContent = day;
+          d.dataset.date = dateStr;
+          d.addEventListener('click', () => {
+            selectedDate = dateStr;
+            renderCalendar();
+            renderMatches();
+          });
+          grid.appendChild(d);
+        }
+      }
+
+      function renderMatches() {
+        const container = document.getElementById('matches-container');
+        const dateInfo = document.getElementById('selected-date');
+        const matchCount = document.getElementById('match-count');
+
+        let matches = selectedSport === 'all' ? ALL_MATCHES : ALL_MATCHES.filter(m => m.sport === selectedSport);
+        if (selectedDate) {
+          matches = matches.filter(m => m.date === selectedDate);
+        }
+
+        if (selectedDate) {
+          const d = new Date(selectedDate + 'T00:00:00');
+          dateInfo.textContent = d.toDateString();
+        } else {
+          dateInfo.textContent = selectedSport === 'all' ? 'All Upcoming Matches' : 'Upcoming ' + selectedSport.charAt(0).toUpperCase() + selectedSport.slice(1) + ' Matches';
+        }
+
+        matchCount.textContent = matches.length + ' match' + (matches.length !== 1 ? 'es' : '');
+
+        if (matches.length === 0) {
+          container.innerHTML = '<div class="bg-white dark:bg-brand-card border border-gray-200 dark:border-border-subtle rounded-xl p-8 text-center"><span class="material-symbols-outlined text-4xl text-gray-400">event_busy</span><p class="text-gray-500 dark:text-gray-400 mt-2">No matches scheduled' + (selectedDate ? ' on this date' : '') + '.</p></div>';
+          return;
+        }
+
+        matches.sort((a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time));
+
+        container.innerHTML = matches.map(m => {
+          const icon = SPORT_ICONS[m.sport] || 'sports';
+          const sportName = m.sport.charAt(0).toUpperCase() + m.sport.slice(1);
+          const d = new Date(m.date + 'T00:00:00');
+          const dateStr = d.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
+          return '<div class="match-card bg-white dark:bg-brand-card border border-gray-200 dark:border-border-subtle rounded-xl p-4 md:p-5 hover:border-emerald-accent/50">' +
+            '<div class="flex items-start justify-between mb-3">' +
+              '<div class="flex items-center gap-2">' +
+                '<span class="material-symbols-outlined text-emerald-accent text-lg">' + icon + '</span>' +
+                '<span class="text-[10px] md:text-[11px] font-bold uppercase tracking-wider text-emerald-accent">' + m.tournament + '</span>' +
+              '</div>' +
+              '<span class="text-[10px] md:text-[11px] text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-white/10 px-2.5 py-1 rounded-md font-semibold">' + m.type + '</span>' +
+            '</div>' +
+            '<div class="flex items-center justify-between py-1">' +
+              '<div class="flex flex-col items-start gap-0.5">' +
+                '<p class="text-sm md:text-base font-bold team-name">' + m.team1 + '</p>' +
+              '</div>' +
+              '<div class="flex flex-col items-center px-2 md:px-4">' +
+                '<div class="text-[10px] md:text-xs font-black text-emerald-accent uppercase tracking-widest bg-emerald-accent/10 px-3 py-1 rounded-full">VS</div>' +
+              '</div>' +
+              '<div class="flex flex-col items-end gap-0.5">' +
+                '<p class="text-sm md:text-base font-bold team-name">' + m.team2 + '</p>' +
+              '</div>' +
+            '</div>' +
+            '<div class="flex flex-wrap items-center gap-x-4 gap-y-1.5 mt-3 pt-3 border-t border-gray-100 dark:border-gray-800 text-[11px] md:text-xs text-gray-600 dark:text-gray-300">' +
+              '<span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-sm text-emerald-accent">calendar_today</span>' + dateStr + '</span>' +
+              '<span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-sm text-emerald-accent">schedule</span>' + m.time + '</span>' +
+              '<span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-sm text-emerald-accent">location_on</span>' + m.venue + '</span>' +
+            '</div>' +
+          '</div>';
+        }).join('');
+      }
+
+      function init() {
+        selectedSport = getSportFromURL();
+        document.querySelectorAll('.sport-tab').forEach(b => {
+          b.classList.toggle('active-sport-tab', b.dataset.sport === selectedSport);
+        });
+        renderCalendar();
+        renderMatches();
+      }
+
+      document.querySelectorAll('.sport-tab').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.sport-tab').forEach(b => b.classList.remove('active-sport-tab'));
+          btn.classList.add('active-sport-tab');
+          selectedSport = btn.dataset.sport;
+          selectedDate = null;
+          renderCalendar();
+          renderMatches();
+        });
+      });
+
+      document.getElementById('prev-month').addEventListener('click', () => {
+        currentMonth--;
+        if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+        selectedDate = null;
+        renderCalendar();
+        renderMatches();
+      });
+
+      document.getElementById('next-month').addEventListener('click', () => {
+        currentMonth++;
+        if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+        selectedDate = null;
+        renderCalendar();
+        renderMatches();
+      });
+
+      document.addEventListener('DOMContentLoaded', init);
+    </script>
+  <script src="js/matches-data.js"></script>
+  <script src="js/notif-ws.js"></script></body>
+</html>

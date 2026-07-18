@@ -1,0 +1,2124 @@
+<!doctype html>
+
+<html class="h-full" lang="en">
+
+<head>
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/fancoin/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/fancoin/favicon-16x16.png" />
+    <meta property="og:site_name" content="Fanconnact" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="assets/fancoin/fanconnactlogo.png" />
+    <meta property="og:title" content="Sign Up | Fanconnact" />
+    <meta property="og:description" content="Join Fanconnact for fantasy sports, predictions, and live matches." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Sign Up | Fanconnact" />
+    <meta name="twitter:description" content="Join Fanconnact for fantasy sports, predictions, and live matches." />
+    <meta name="twitter:image" content="assets/fancoin/fanconnactlogo.png" />
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Sign Up | Fanconnact</title>
+    <style>
+        :root {
+            --inverse-surface: #ffffff; --surface: #ffffff; --surface-dim: #64748b;
+            --surface-container: #f1f5f9; --surface-container-high: #e2e8f0; --surface-container-highest: #cbd5e1;
+            --surface-container-low: #f8fafc; --surface-container-lowest: #ffffff; --surface-bright: #f8fafc;
+            --surface-variant: #f1f5f9; --background: #ffffff; --on-background: #000000;
+            --on-surface: #475569; --on-surface-variant: #334155; --outline: #94a3b8; --outline-variant: #cbd5e1;
+            --primary: #2196f3; --on-primary: #ffffff; --primary-container: #dbeafe; --on-primary-container: #1e3a5f;
+            --primary-fixed: #dbeafe; --on-primary-fixed: #1e3a5f; --primary-fixed-dim: #2196f3;
+            --on-primary-fixed-variant: #1e40af; --secondary: #2196f3; --on-secondary: #ffffff;
+            --secondary-container: #bfdbfe; --on-secondary-container: #1e3a8a; --secondary-fixed: #e0e7ff;
+            --secondary-fixed-dim: #a5b4fc; --on-secondary-fixed: #1e3a8a; --on-secondary-fixed-variant: #3730a3;
+            --tertiary: #475569; --on-tertiary: #000000; --tertiary-container: #e2e8f0; --on-tertiary-container: #0f172a;
+            --tertiary-fixed: #e2e8f0; --tertiary-fixed-dim: #cbd5e1; --on-tertiary-fixed: #0f172a;
+            --on-tertiary-fixed-variant: #334155; --error: #dc2626; --on-error: #ffffff;
+            --error-container: #fee2e2; --on-error-container: #991b1b;
+            --inverse-primary: #2196f3; --inverse-on-surface: #f8faff; --surface-tint: #2196f3;
+        }
+        .dark {
+            --inverse-surface: #0a0a0a; --surface: #111111; --surface-dim: #9ca3af;
+            --surface-container: #1a1a1a; --surface-container-high: #222222; --surface-container-highest: #2a2a2a;
+            --surface-container-low: #141414; --surface-container-lowest: #000000; --surface-bright: #2d2d2d;
+            --surface-variant: #1a1a1a; --background: #000000; --on-background: #ffffff;
+            --on-surface: #e2e8f0; --on-surface-variant: #9ca3af; --outline: #4b5563; --outline-variant: #374151;
+            --primary: #10b981; --on-primary: #ffffff; --primary-container: #064e3b; --on-primary-container: #a7f3d0;
+            --primary-fixed: #064e3b; --on-primary-fixed: #a7f3d0; --primary-fixed-dim: #10b981;
+            --on-primary-fixed-variant: #6ee7b7; --secondary: #34d399; --on-secondary: #000000;
+            --secondary-container: #10b981; --on-secondary-container: #a7f3d0; --secondary-fixed: #a7f3d0;
+            --secondary-fixed-dim: #10b981; --on-secondary-fixed: #000000; --on-secondary-fixed-variant: #6ee7b7;
+            --tertiary: #9ca3af; --on-tertiary: #ffffff; --tertiary-container: #2d2d2d; --on-tertiary-container: #e2e8f0;
+            --tertiary-fixed: #2d2d2d; --tertiary-fixed-dim: #3d3d3d; --on-tertiary-fixed: #e2e8f0;
+            --on-tertiary-fixed-variant: #cbd5e1; --error: #ff6b6b; --on-error: #000000;
+            --error-container: #7f1d1d; --on-error-container: #ffb4ab;
+            --inverse-primary: #10b981; --inverse-on-surface: #e2e8f0; --surface-tint: #10b981;
+        }
+    </style>
+    <style>
+        /* Left panel (brand area) - sophisticated gradient bg + black text in light mode */
+        .bg-on-surface {
+            background: 
+                radial-gradient(ellipse 80% 60% at 0% 0%, rgba(59,130,246,0.12) 0%, transparent 100%),
+                radial-gradient(ellipse 60% 50% at 100% 100%, rgba(99,102,241,0.08) 0%, transparent 100%),
+                linear-gradient(180deg, #f8faff 0%, #eef2ff 50%, #e8ecf8 100%) !important;
+        }
+        .dark .bg-on-surface {
+            background: 
+                radial-gradient(ellipse 80% 60% at 0% 0%, rgba(16,185,129,0.06) 0%, transparent 100%),
+                #000000 !important;
+        }
+        /* H1 "FanConnact" must be readable on both the light gradient and the dark panel */
+        .bg-on-surface .text-primary-fixed { color: #1565c0 !important; }
+        .dark .bg-on-surface .text-primary-fixed { color: #34d399 !important; }
+        .bg-on-surface [class*="text-surface-dim"] {
+            color: #475569;
+        }
+        .bg-on-surface .text-primary-fixed-dim {
+            color: #2196f3;
+        }
+        .bg-on-surface .glow-emerald {
+            box-shadow: 0 0 20px rgba(33,150,243,0.15);
+        }
+        .dark .bg-on-surface [class*="text-surface-dim"] {
+            color: #b0c0d0;
+        }
+        .dark .bg-on-surface .text-primary-fixed-dim {
+            color: #34d399;
+        }
+        .dark .bg-on-surface .glow-emerald {
+            box-shadow: 0 0 20px rgba(16,185,129,0.15);
+        }
+
+        /* Right panel / modal text overrides */
+        .bg-inverse-surface .text-on-tertiary {
+            color: var(--on-background);
+        }
+        .bg-inverse-surface [class*="text-surface-dim"] {
+            color: #475569;
+        }
+        .dark .bg-inverse-surface [class*="text-surface-dim"] {
+            color: #c8d0d8;
+        }
+
+        /* Right panel / modal: remap hardcoded white/dark classes to theme colors */
+        .bg-inverse-surface .text-white { color: var(--on-background); }
+        .bg-inverse-surface .text-gray-400 { color: var(--on-surface-variant); }
+        .bg-inverse-surface .text-white\/60 { color: var(--on-surface-variant); }
+        .bg-inverse-surface .border-white\/20 { border-color: var(--outline-variant); }
+        .bg-inverse-surface .bg-white\/10 { background-color: var(--surface-variant); }
+        .bg-inverse-surface .bg-white\/20 { background-color: var(--surface-container-high); }
+        .bg-inverse-surface .hover\:bg-white\/20:hover { background-color: var(--surface-container-high); }
+        .bg-inverse-surface .hover\:bg-white\/5:hover { background-color: var(--surface-container); }
+        .bg-inverse-surface .hover\:text-white:hover { color: var(--on-background); }
+        .bg-inverse-surface .text-primary-fixed-dim { color: #1e40af; }
+        .dark .bg-inverse-surface .text-white { color: #ffffff; }
+        .dark .bg-inverse-surface .text-gray-400 { color: #9ca3af; }
+        .dark .bg-inverse-surface .text-white\/60 { color: rgba(255,255,255,0.6); }
+        .dark .bg-inverse-surface .border-white\/20 { border-color: rgba(255,255,255,0.2); }
+        .dark .bg-inverse-surface .bg-white\/10 { background-color: rgba(255,255,255,0.1); }
+        .dark .bg-inverse-surface .bg-white\/20 { background-color: rgba(255,255,255,0.2); }
+        .dark .bg-inverse-surface .hover\:bg-white\/20:hover { background-color: rgba(255,255,255,0.2); }
+        .dark .bg-inverse-surface .hover\:bg-white\/5:hover { background-color: rgba(255,255,255,0.05); }
+        .dark .bg-inverse-surface .hover\:text-white:hover { color: #ffffff; }
+        .dark .bg-inverse-surface .text-primary-fixed-dim { color: #34d399; }
+
+        /* Dark mode: input fields get white bg with BLACK text for user entries */
+        .dark .bg-inverse-surface input:not([type="checkbox"]):not([type="radio"]),
+        .dark .bg-inverse-surface select,
+        .dark .bg-inverse-surface textarea {
+            color: #000000 !important;
+            background-color: #ffffff !important;
+            border-color: #64748b !important;
+        }
+        .dark .bg-inverse-surface input::placeholder {
+            color: #94a3b8 !important;
+        }
+        .dark .bg-inverse-surface .material-symbols-outlined.absolute {
+            color: #64748b !important;
+        }
+
+        /* Professional: enhanced glass card effect for left panel bento cards */
+        .bg-on-surface .backdrop-blur-md {
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            transition: all 0.3s ease;
+        }
+        .bg-on-surface .backdrop-blur-md:hover {
+            background: rgba(255,255,255,0.25) !important;
+            border-color: rgba(59,130,246,0.2) !important;
+            box-shadow: 0 8px 32px rgba(59,130,246,0.08);
+            transform: translateY(-2px);
+        }
+        .dark .bg-on-surface .backdrop-blur-md:hover {
+            background: rgba(255,255,255,0.08) !important;
+            border-color: rgba(16,185,129,0.15) !important;
+            box-shadow: 0 8px 32px rgba(16,185,129,0.06);
+        }
+
+        /* Professional input focus state */
+        .bg-inverse-surface input:not([type="checkbox"]):not([type="radio"]):focus,
+        .bg-inverse-surface select:focus,
+        .bg-inverse-surface textarea:focus {
+            box-shadow: 0 0 0 3px rgba(33,150,243,0.1), 0 1px 2px rgba(0,0,0,0.02);
+            border-color: #2196f3 !important;
+        }
+        .dark .bg-inverse-surface input:not([type="checkbox"]):not([type="radio"]):focus,
+        .dark .bg-inverse-surface select:focus,
+        .dark .bg-inverse-surface textarea:focus {
+            box-shadow: 0 0 0 3px rgba(16,185,129,0.15), 0 1px 2px rgba(0,0,0,0.1);
+            border-color: #10b981 !important;
+        }
+
+        /* Elevated primary CTA button */
+        .bg-gradient-to-r.from-primary {
+            box-shadow: 0 4px 20px rgba(33,150,243,0.2);
+            transition: all 0.3s ease;
+        }
+        .bg-gradient-to-r.from-primary:hover {
+            box-shadow: 0 8px 28px rgba(33,150,243,0.3);
+            transform: translateY(-1px);
+        }
+        .dark .bg-gradient-to-r.from-primary {
+            box-shadow: 0 4px 20px rgba(16,185,129,0.15);
+        }
+        .dark .bg-gradient-to-r.from-primary:hover {
+            box-shadow: 0 8px 28px rgba(16,185,129,0.25);
+        }
+
+        /* Subtle right panel background color wash */
+        .bg-inverse-surface {
+            background:
+                radial-gradient(ellipse 40% 30% at 100% 0%, rgba(59,130,246,0.04) 0%, transparent 100%),
+                #ffffff;
+        }
+        .dark .bg-inverse-surface {
+            background:
+                radial-gradient(ellipse 40% 30% at 100% 0%, rgba(16,185,129,0.04) 0%, transparent 100%),
+                #0a0a0a;
+        }
+
+        /* Dark mode: input fields white bg with BLACK user text */
+        .dark .bg-inverse-surface input:not([type="checkbox"]):not([type="radio"]),
+        .dark .bg-inverse-surface select,
+        .dark .bg-inverse-surface textarea {
+            color: #000000 !important;
+            background-color: #ffffff !important;
+            border-color: #64748b !important;
+        }
+        .dark .bg-inverse-surface input::placeholder {
+            color: #94a3b8 !important;
+        }
+        .dark .bg-inverse-surface .material-symbols-outlined.absolute {
+            color: #64748b !important;
+        }
+
+        /* Dark mode: gender/sport selectors compact bg */
+        .dark .bg-inverse-surface .peer-checked\:bg-primary-container {
+            background-color: #064e3b !important;
+        }
+        .dark .bg-inverse-surface .peer-checked\:text-on-primary-container {
+            color: #a7f3d0 !important;
+        }
+    </style>
+    <script>
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link rel="stylesheet" href="css/style.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700;800&amp;family=Hanken+Grotesk:wght@400;600;700&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/selfie_segmentation.js" crossorigin="anonymous"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-secondary-fixed-variant": "var(--on-secondary-fixed-variant)",
+                        "surface-dim": "var(--surface-dim)",
+                        "surface-container-high": "var(--surface-container-high)",
+                        secondary: "var(--secondary)",
+                        "surface-tint": "var(--surface-tint)",
+                        "surface-container-low": "var(--surface-container-low)",
+                        "inverse-primary": "var(--inverse-primary)",
+                        "surface-container": "var(--surface-container)",
+                        "on-tertiary": "var(--on-tertiary)",
+                        "inverse-surface": "var(--inverse-surface)",
+                        "on-secondary-fixed": "var(--on-secondary-fixed)",
+                        "on-error-container": "var(--on-error-container)",
+                        "error-container": "var(--error-container)",
+                        "tertiary-fixed-dim": "var(--tertiary-fixed-dim)",
+                        "tertiary-container": "var(--tertiary-container)",
+                        "on-surface": "var(--on-surface)",
+                        "inverse-on-surface": "var(--inverse-on-surface)",
+                        "on-secondary": "var(--on-secondary)",
+                        "on-error": "var(--on-error)",
+                        "primary-fixed": "var(--primary-fixed)",
+                        error: "var(--error)",
+                        "surface-container-lowest": "var(--surface-container-lowest)",
+                        surface: "var(--surface)",
+                        "on-tertiary-fixed-variant": "var(--on-tertiary-fixed-variant)",
+                        "tertiary-fixed": "var(--tertiary-fixed)",
+                        "outline-variant": "var(--outline-variant)",
+                        "on-background": "var(--on-background)",
+                        "primary-fixed-dim": "var(--primary-fixed-dim)",
+                        "on-surface-variant": "var(--on-surface-variant)",
+                        "surface-container-highest": "var(--surface-container-highest)",
+                        "on-primary-fixed": "var(--on-primary-fixed)",
+                        background: "var(--background)",
+                        "secondary-fixed-dim": "var(--secondary-fixed-dim)",
+                        "on-primary-fixed-variant": "var(--on-primary-fixed-variant)",
+                        "surface-bright": "var(--surface-bright)",
+                        primary: "var(--primary)",
+                        "on-secondary-container": "var(--on-secondary-container)",
+                        "primary-container": "var(--primary-container)",
+                        outline: "var(--outline)",
+                        "on-primary": "var(--on-primary)",
+                        "on-primary-container": "var(--on-primary-container)",
+                        "on-tertiary-container": "var(--on-tertiary-container)",
+                        "secondary-fixed": "var(--secondary-fixed)",
+                        "secondary-container": "var(--secondary-container)",
+                        tertiary: "var(--tertiary)",
+                        "surface-variant": "var(--surface-variant)",
+                        "on-tertiary-fixed": "var(--on-tertiary-fixed)",
+                        "brand-green": "var(--primary)",
+                        "emerald-accent": "var(--primary)",
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.25rem",
+                        lg: "0.5rem",
+                        xl: "0.75rem",
+                        full: "9999px",
+                    },
+                    spacing: {
+                        lg: "40px",
+                        "max-width": "1440px",
+                        xs: "4px",
+                        sm: "12px",
+                        "margin-mobile": "16px",
+                        "margin-desktop": "32px",
+                        gutter: "24px",
+                        base: "8px",
+                        xl: "64px",
+                        md: "24px",
+                    },
+                    fontFamily: {
+                        "headline-lg-mobile": ["Lexend"],
+                        "label-md": ["Hanken Grotesk"],
+                        "headline-lg": ["Lexend"],
+                        "body-lg": ["Hanken Grotesk"],
+                        "headline-sm": ["Lexend"],
+                        "headline-md": ["Lexend"],
+                        "body-md": ["Hanken Grotesk"],
+                        "headline-xl": ["Lexend"],
+                        "body-sm": ["Hanken Grotesk"],
+                        "label-sm": ["Hanken Grotesk"],
+                    },
+                    fontSize: {
+                        "headline-lg-mobile": [
+                            "24px", {
+                                lineHeight: "32px",
+                                fontWeight: "700"
+                            },
+                        ],
+                        "label-md": [
+                            "14px", {
+                                lineHeight: "16px",
+                                letterSpacing: "0.05em",
+                                fontWeight: "600",
+                            },
+                        ],
+                        "headline-lg": [
+                            "32px", {
+                                lineHeight: "40px",
+                                letterSpacing: "-0.01em",
+                                fontWeight: "700",
+                            },
+                        ],
+                        "body-lg": ["18px", {
+                            lineHeight: "28px",
+                            fontWeight: "400"
+                        }],
+                        "headline-sm": [
+                            "20px", {
+                                lineHeight: "28px",
+                                fontWeight: "600"
+                            },
+                        ],
+                        "headline-md": [
+                            "24px", {
+                                lineHeight: "32px",
+                                fontWeight: "600"
+                            },
+                        ],
+                        "body-md": ["16px", {
+                            lineHeight: "24px",
+                            fontWeight: "400"
+                        }],
+                        "headline-xl": [
+                            "40px", {
+                                lineHeight: "48px",
+                                letterSpacing: "-0.02em",
+                                fontWeight: "700",
+                            },
+                        ],
+                        "body-sm": ["14px", {
+                            lineHeight: "20px",
+                            fontWeight: "400"
+                        }],
+                        "label-sm": ["12px", {
+                            lineHeight: "14px",
+                            fontWeight: "700"
+                        }],
+                    },
+                },
+            },
+        };
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+        }
+        
+        .glow-emerald {
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+        }
+        
+        .bg-split-gradient {
+            background: linear-gradient( 135deg, rgba(33, 49, 69, 1) 0%, rgba(11, 28, 48, 1) 100%);
+        }
+        
+        .nav-suppressed {
+            display: none !important;
+        }
+        
+        .sidebar-collapsed #sidebar {
+            width: 0!important;
+            min-width: 0!important;
+            border: 0!important;
+            padding: 0!important;
+            overflow: hidden!important;
+        }
+    </style>
+    <style>
+        /* Camera filter styles */
+        .cam-filter-none { filter: none; }
+        .cam-filter-vivid { filter: saturate(1.5) contrast(1.1) brightness(1.03); }
+        .cam-filter-warm { filter: sepia(0.35) saturate(1.3) hue-rotate(-8deg) brightness(1.05); }
+        .cam-filter-cool { filter: saturate(0.85) hue-rotate(12deg) brightness(1.08) contrast(0.95); }
+        .cam-filter-noir { filter: grayscale(1) contrast(1.25) brightness(0.95); }
+        .cam-filter-retro { filter: sepia(0.5) saturate(0.7) contrast(0.85) brightness(1.1); }
+        .cam-filter-dramatic { filter: contrast(1.5) brightness(0.85) saturate(1.3); }
+        .cam-beauty { filter: brightness(1.06) contrast(0.94) saturate(1.15) blur(0.5px) drop-shadow(0 0 2px rgba(255,200,150,0.15)); }
+        .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+        .scrollbar-none::-webkit-scrollbar { display: none; }
+        .zoom-range { -webkit-appearance: none; appearance: none; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; outline: none; }
+        .zoom-range::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 16px; height: 16px; border-radius: 50%; background: #10b981; cursor: pointer; border: 2px solid white; }
+        .zoom-range::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; background: #10b981; cursor: pointer; border: 2px solid white; }
+    </style>
+    <meta name="description" content="Fanconnact sports platform for fans, scores, communities and updates.">
+    <meta property="og:title" content="Fanconnact">
+    <meta name="robots" content="index,follow">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+</head>
+
+<body class="bg-inverse-surface font-body-md text-on-surface h-screen overflow-hidden flex flex-col md:flex-row">
+    <!-- Left Side: Hero Brand Area -->
+    <div class="relative hidden md:flex md:w-5/12 h-full overflow-hidden bg-on-surface">
+        <div class="absolute inset-0 bg-gradient-to-t from-inverse-surface via-transparent to-transparent"></div>
+        <div class="relative z-10 p-xl flex flex-col h-full justify-between">
+            <!-- Brand Logo -->
+            <div class="flex items-center gap-base">
+                <img src="assets/fancoin/fanconnactlogo.png" alt="Fanconnact" class="w-12 h-12" />
+                <div>
+                    <h1 class="font-headline-md text-headline-md text-primary-fixed tracking-tight leading-none">
+                        <span class="text-fan">Fan</span><span class="text-connect">Connact</span>
+                    </h1>
+                    <p class="text-label-sm font-label-sm text-surface-dim uppercase tracking-widest mt-1">
+                        Connect. Predict. Win.
+                    </p>
+                </div>
+            </div>
+            <!-- Main Value Proposition -->
+            <div class="space-y-md">
+                <div class="space-y-xs">
+                    <h2 class="font-headline-xl text-headline-xl text-on-tertiary uppercase leading-tight">
+                        FOR FANS. <br /> BY FANS. <br />
+                        <span class="text-primary-fixed-dim">ALWAYS FOR CRICKET.</span>
+                    </h2>
+                    <p class="font-body-lg text-body-lg text-surface-dim max-w-md">
+                        Join 100K+ cricket fans. <br /> Predict. Compete. Connect. Win!
+                    </p>
+                </div>
+                <!-- Feature Bento Grid -->
+                <div class="grid grid-cols-2 gap-base mt-lg">
+                    <div class="bg-on-surface/40 backdrop-blur-md p-md rounded-xl border border-outline-variant/10 group hover:border-primary-fixed/30 transition-all duration-300">
+                        <span class="material-symbols-outlined text-primary-fixed-dim mb-xs">sensors</span
+              >
+              <h3 class="font-label-md text-label-md text-on-tertiary">
+                Live Scores
+              </h3>
+              <p class="font-body-sm text-body-sm text-surface-dim/60">
+                Real-time Updates
+              </p>
+            </div>
+            <div
+              class="bg-on-surface/40 backdrop-blur-md p-md rounded-xl border border-outline-variant/10 group hover:border-primary-fixed/30 transition-all duration-300"
+            >
+              <span
+                class="material-symbols-outlined text-primary-fixed-dim mb-xs"
+                >emoji_events</span
+              >
+              <h3 class="font-label-md text-label-md text-on-tertiary">
+                Predict &amp; Win
+              </h3>
+              <p class="font-body-sm text-body-sm text-surface-dim/60">
+                Use your skills
+              </p>
+            </div>
+            <div
+              class="bg-on-surface/40 backdrop-blur-md p-md rounded-xl border border-outline-variant/10 group hover:border-primary-fixed/30 transition-all duration-300"
+            >
+              <span
+                class="material-symbols-outlined text-primary-fixed-dim mb-xs"
+                >groups</span
+              >
+              <h3 class="font-label-md text-label-md text-on-tertiary">
+                Communities
+              </h3>
+              <p class="font-body-sm text-body-sm text-surface-dim/60">
+                Connect &amp; Chat
+              </p>
+            </div>
+            <div
+              class="bg-on-surface/40 backdrop-blur-md p-md rounded-xl border border-outline-variant/10 group hover:border-primary-fixed/30 transition-all duration-300"
+            >
+              <span
+                class="material-symbols-outlined text-primary-fixed-dim mb-xs"
+                >leaderboard</span
+              >
+              <h3 class="font-label-md text-label-md text-on-tertiary">
+                Leaderboards
+              </h3>
+              <p class="font-body-sm text-body-sm text-surface-dim/60">
+                Compete &amp; Climb
+              </p>
+            </div>
+          </div>
+        </div>
+        <!-- Social Proof -->
+        <div class="flex items-center gap-md">
+          <div class="flex -space-x-2">
+            <img
+              alt="Fan"
+              class="w-8 h-8 rounded-full border-2 border-on-surface"
+              data-alt="Close up portrait of a young cricket fan smiling, wearing a team jersey, professional photography style, sharp focus, natural lighting."
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuCr8uUQjI5hRTNcdz90jJC0p7fCZilNCn5r5dbES42EHiDXFxlJ8eHPPUMiBNFhOlReKAAeY0LX3G0AEMWesCJ6hWyhezBe3ZFWbvlBUlM4EaeUSuHf4JWBGpPt7vQuDP1bTjwFB37U3amuA6snU-yrFWIgGC_dvL7l5Pa5eGMQM9fypHqlkOzGpnSwGUHIPMqa-ClpG9K1VVxiP6Yj3EeVDXKunkalI5dfIZpSmiQnnzWkrVuoXSVBmfCEjdTiRSCHEuX8oogLbSBa"
+            />
+            <img
+              alt="Fan"
+              class="w-8 h-8 rounded-full border-2 border-on-surface"
+              data-alt="Portrait of a diverse man with short beard, cinematic lighting, corporate modern aesthetic, soft background blur."
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuABiXqsijNO6EvI8MN_-wrLKNSXq8QfdjzxrVjGHDTTHdyQTeYOfFVTjJoMo5jUFbR4LaS7GAjLxbqDOM7rdOgM_YG2aAdjX3yKE3xeixPperiKxmwA4d_p7tmgM72wadrTg95vcsnls1mskHNY65ccr5GTG-VlutJ6rwNOwqPqSreeQQ5Is9VQyuuto71CoKhMY61JUIY_tnZ1BUFSYCuYxrVp3RBhBbktmJB8uzgT_ZMPcQgg5VI00QtFpx87e6N1_2Q2QIr3uiBW"
+            />
+            <img
+              alt="Fan"
+              class="w-8 h-8 rounded-full border-2 border-on-surface"
+              data-alt="Smiling man looking at camera, lifestyle photography, neutral tones, high clarity, fan engagement concept."
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuCWGB6ky4slvYqnFf5Ip-X7rrC4YHbbESbQ1IVnH7UhAYWdXYB1IoXvH-v-jhEEEnsNCCPCoiRN7gmRtqXWTbbBxv7AwAzbS6EuLHNjzUKYM_bssp-uJUI8x7pQvlskaPW3oWdGJ1FojMqBwCVdI-AYlRQERXVsrAp78_upKhpwrTiftnk9L5G5rlnUK1Vzb5y7dsqqXOCD21_2ygRsjZI43tuTouF4-nxxYHYjSWL64Vd-DaLBA9C1xataqcfQ5uSwwAYUE3us3XVY"
+            />
+            <div
+              class="w-8 h-8 rounded-full bg-primary-container text-on-primary-container text-[10px] font-bold flex items-center justify-center border-2 border-on-surface"
+            >
+              100K+
+            </div>
+          </div>
+          <div class="text-body-sm text-surface-dim/80">
+            <span class="block font-bold">Trusted by 100K+</span> Cricket Fans globally
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Right Side: Sign-Up Form -->
+        <div class="flex-1 h-full bg-inverse-surface overflow-y-auto px-margin-mobile md:px-xl flex flex-col items-center relative">
+            <button id="theme-toggle" class="absolute top-4 right-4 z-10 p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-all active:scale-95">
+        <span
+          id="theme-toggle-light-icon"
+          class="material-symbols-outlined hidden text-yellow-400"
+          >light_mode</span
+        >
+        <span
+          id="theme-toggle-dark-icon"
+          class="material-symbols-outlined text-slate-500 dark:text-slate-400"
+          >dark_mode</span
+        >
+      </button>
+            <div class="w-full max-w-md space-y-lg py-lg md:py-xl my-auto">
+                <!-- Header -->
+                <div class="text-center md:text-left space-y-xs">
+                    <div class="md:hidden flex justify-center mb-md">
+                        <div class="w-12 h-12 bg-primary rounded-lg flex items-center justify-center glow-emerald">
+                            <span class="material-symbols-outlined text-primary-fixed" style="font-variation-settings: &quot;FILL&quot; 1">shield</span
+              >
+            </div>
+          </div>
+          <h2 class="font-headline-lg text-headline-lg text-on-tertiary">
+            Join the Stadium! 🏟️
+          </h2>
+          <p class="font-body-md text-body-md text-surface-dim">
+            Create your account to start winning.
+          </p>
+        </div>
+        <!-- Registration Form -->
+        <form id="signup-form" class="space-y-md">
+          <!-- Profile Upload Placeholder -->
+          <div class="flex flex-col items-center gap-sm">
+            <div class="relative cursor-pointer" id="avatar-preview-wrapper">
+              <input
+                type="file"
+                id="profile-upload"
+                class="hidden"
+                accept="image/*"
+              />
+              <div
+                class="w-24 h-24 rounded-full border-2 border-dashed border-outline-variant/30 bg-surface-variant/5 flex items-center justify-center overflow-hidden"
+              >
+                <img
+                  id="profile-preview"
+                  class="w-full h-full object-cover hidden"
+                />
+                <span
+                  id="upload-icon"
+                  class="material-symbols-outlined text-surface-dim text-4xl"
+                  >add_a_photo</span
+                >
+              </div>
+            </div>
+            <div class="flex gap-3 mt-1">
+              <button
+                type="button"
+                id="gallery-btn"
+                class="px-4 py-2 bg-surface-variant border border-outline-variant rounded-xl text-label-md font-label-md text-on-surface-variant hover:bg-surface-container transition-colors flex items-center gap-2"
+              >
+                <span class="material-symbols-outlined text-base">photo_library</span>
+                Gallery
+              </button>
+              <button
+                type="button"
+                id="camera-capture-btn"
+                class="px-4 py-2 bg-primary/20 border border-primary/40 rounded-xl text-label-md font-label-md text-primary hover:bg-primary/30 transition-colors flex items-center gap-2"
+              >
+                <span class="material-symbols-outlined text-base">camera_alt</span>
+                Camera
+              </button>
+            </div>
+          </div>
+
+          <!-- Default Avatars Selection -->
+          <div class="space-y-sm">
+            <label class="text-label-md font-label-md text-surface-dim ml-1"
+              >Or Choose a Default Avatar</label
+            >
+            <div
+              class="flex gap-3 overflow-x-auto pb-2 custom-scrollbar"
+              id="default-avatars-list"
+            >
+              <img
+                src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix"
+                class="w-12 h-12 rounded-full cursor-pointer border-2 border-transparent hover:border-primary-fixed-dim transition-all default-avatar-item"
+                data-url="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix"
+                onerror="this.src='https://ui-avatars.com/api/?name=FX&background=10b981&color=fff&size=48'"
+              />
+              <img
+                src="https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka"
+                class="w-12 h-12 rounded-full cursor-pointer border-2 border-transparent hover:border-primary-fixed-dim transition-all default-avatar-item"
+                data-url="https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka"
+                onerror="this.src='https://ui-avatars.com/api/?name=AN&background=10b981&color=fff&size=48'"
+              />
+              <img
+                src="https://api.dicebear.com/7.x/avataaars/svg?seed=George"
+                class="w-12 h-12 rounded-full cursor-pointer border-2 border-transparent hover:border-primary-fixed-dim transition-all default-avatar-item"
+                data-url="https://api.dicebear.com/7.x/avataaars/svg?seed=George"
+                onerror="this.src='https://ui-avatars.com/api/?name=GR&background=10b981&color=fff&size=48'"
+              />
+              <img
+                src="https://api.dicebear.com/7.x/avataaars/svg?seed=Spooky"
+                class="w-12 h-12 rounded-full cursor-pointer border-2 border-transparent hover:border-primary-fixed-dim transition-all default-avatar-item"
+                data-url="https://api.dicebear.com/7.x/avataaars/svg?seed=Spooky"
+                onerror="this.src='https://ui-avatars.com/api/?name=SP&background=10b981&color=fff&size=48'"
+              />
+            </div>
+          </div>
+
+          <!-- Frame Selection -->
+          <div class="space-y-sm">
+            <label class="text-label-md font-label-md text-surface-dim ml-1"
+              >Choose a Profile Frame</label
+            >
+            <div
+              class="flex gap-3 overflow-x-auto pb-2 custom-scrollbar"
+              id="frames-list"
+            >
+              <div
+                class="frame-item w-12 h-12 rounded-full border-2 border-outline-variant/20 flex items-center justify-center cursor-pointer hover:border-primary-fixed-dim transition-all selected"
+                data-frame="none"
+              >
+                <span
+                  class="text-[10px] uppercase font-bold text-surface-dim/40"
+                  >None</span
+                >
+              </div>
+              <div
+                class="frame-item w-12 h-12 rounded-full border-4 border-yellow-500 shadow-[0_0_8px_rgba(234,179,8,0.4)] cursor-pointer"
+                data-frame="gold"
+              ></div>
+              <div
+                class="frame-item w-12 h-12 rounded-full border-4 border-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)] cursor-pointer"
+                data-frame="emerald"
+              ></div>
+              <div
+                class="frame-item w-12 h-12 rounded-full border-4 border-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.4)] cursor-pointer"
+                data-frame="diamond"
+              ></div>
+            </div>
+            <input type="hidden" id="selected-frame" value="none" />
+            <input type="hidden" id="selected-default-avatar" value="" />
+          </div>
+
+          <!-- Crop Modal -->
+          <div
+            id="crop-modal"
+            class="hidden fixed inset-0 z-[100] bg-black/80 flex items-center justify-center p-4"
+          >
+            <div class="bg-inverse-surface rounded-2xl p-6 max-w-lg w-full">
+              <h3 class="text-xl font-bold text-white mb-4">
+                Crop Profile Picture
+              </h3>
+              <div class="max-h-[300px] overflow-hidden rounded-xl">
+                <img id="crop-image" src="" class="max-w-full" />
+              </div>
+              <div class="flex justify-end gap-4 mt-6">
+                <button
+                  type="button"
+                  id="cancel-crop"
+                  class="px-6 py-2 rounded-xl border border-outline-variant/20 text-surface-dim"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  id="confirm-crop"
+                  class="px-6 py-2 rounded-xl bg-primary text-white"
+                >
+                  Apply Crop
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Review Modal -->
+          <div id="review-modal" class="hidden fixed inset-0 z-[100] bg-black/90 flex items-center justify-center p-2 sm:p-4">
+            <div class="bg-inverse-surface rounded-2xl p-4 sm:p-6 max-w-lg w-full max-h-[95vh] overflow-y-auto custom-scrollbar">
+              <div class="flex items-center justify-between mb-3">
+                <h3 class="text-lg font-bold text-white">Review Photo</h3>
+                <button type="button" id="close-review-modal" class="text-gray-400 hover:text-white p-1">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                  </svg>
+                </button>
+              </div>
+              <div class="rounded-xl overflow-hidden bg-black max-h-[200px] sm:max-h-[300px] flex items-center justify-center">
+                <canvas id="review-canvas" class="max-w-full max-h-[200px] sm:max-h-[300px] object-contain"></canvas>
+              </div>
+              <div class="mt-3">
+                <p class="text-[10px] text-gray-400 mb-1.5 uppercase tracking-wider font-medium">Background</p>
+                <div class="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none" id="review-bg-options">
+                  <button class="review-bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white bg-white/10 shrink-0 font-medium" data-bg="none">None</button>
+                  <button class="review-bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="stadium">🏟 Stadium</button>
+                  <button class="review-bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="cricket">🏏 Cricket</button>
+                  <button class="review-bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="football">⚽ Football</button>
+                  <button class="review-bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="basketball">🏀 Basketball</button>
+                  <button class="review-bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="tennis">🎾 Tennis</button>
+                  <button class="review-bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="hockey">🏒 Hockey</button>
+                  <button class="review-bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="kabaddi">🤼 Kabaddi</button>
+                  <button class="review-bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="volleyball">🏐 Volleyball</button>
+                  <button class="review-bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="tabletennis">🏓 Table Tennis</button>
+                  <button class="review-bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="baseball">⚾ Baseball</button>
+                  <button class="review-bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="esports">🎮 Esports</button>
+                  <button class="review-bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="custom">➕ Custom</button>
+                </div>
+              </div>
+              <div class="mt-2.5 flex justify-center gap-4 sm:gap-3">
+                <button type="button" id="review-rotate-left" class="w-12 h-12 sm:w-10 sm:h-10 rounded-full bg-white/10 text-white hover:bg-white/20 transition flex items-center justify-center active:scale-90" title="Rotate Left">
+                  <svg class="w-6 h-6 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M1 4v6h6M3.51 15a9 9 0 102.13-9.36L1 10" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+                </button>
+                <button type="button" id="review-rotate-right" class="w-12 h-12 sm:w-10 sm:h-10 rounded-full bg-white/10 text-white hover:bg-white/20 transition flex items-center justify-center active:scale-90" title="Rotate Right">
+                  <svg class="w-6 h-6 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M23 4v6h-6M20.49 15a9 9 0 11-2.12-9.36L23 10" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+                </button>
+                <button type="button" id="review-flip-h" class="w-12 h-12 sm:w-10 sm:h-10 rounded-full bg-white/10 text-white hover:bg-white/20 transition flex items-center justify-center active:scale-90" title="Flip Horizontal">
+                  <svg class="w-6 h-6 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 3v18M3 12h18M8 8l-4 4 4 4M16 8l4 4-4 4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+                </button>
+              </div>
+              <div class="mt-4 flex flex-col gap-3 sm:gap-2">
+                <button type="button" id="review-crop-btn" class="w-full py-3 sm:py-2.5 rounded-xl bg-white/10 text-white text-sm font-medium hover:bg-white/20 transition-colors active:scale-[0.98]">✂ Crop Photo</button>
+                <button type="button" id="review-download-btn" class="w-full py-3 sm:py-2.5 rounded-xl bg-white/10 text-white text-sm font-medium hover:bg-white/20 transition-colors active:scale-[0.98]">⬇ Download</button>
+                <button type="button" id="review-use-btn" class="w-full py-3 sm:py-2.5 rounded-xl bg-primary text-white text-sm font-semibold hover:brightness-110 transition-all active:scale-[0.98]">Use as Profile Photo</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Camera Modal -->
+          <div
+            id="camera-modal"
+            class="hidden fixed inset-0 z-[100] bg-black/90 flex items-center justify-center p-2 sm:p-4"
+          >
+            <div class="bg-inverse-surface rounded-2xl p-4 sm:p-6 max-w-lg w-full max-h-[95vh] overflow-y-auto custom-scrollbar">
+              <div class="flex items-center justify-between mb-3">
+                <h3 class="text-lg font-bold text-white">Take a Photo</h3>
+                <button type="button" id="close-camera-modal" class="text-gray-400 hover:text-white p-1">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                  </svg>
+                </button>
+              </div>
+
+              <!-- Video Preview -->
+              <div class="relative rounded-xl overflow-hidden bg-black" id="camera-video-wrapper">
+                <video id="camera-preview" autoplay playsinline class="w-full object-contain max-h-[350px] hidden"></video>
+                <canvas id="camera-composited" class="w-full object-contain max-h-[350px]"></canvas>
+                <div id="camera-loading" class="hidden absolute inset-0 flex items-center justify-center bg-black/60">
+                  <div class="flex flex-col items-center gap-2">
+                    <svg class="animate-spin h-8 w-8 text-brand-green" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                    <span class="text-xs text-gray-300">Applying background...</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Filters -->
+              <div class="mt-3">
+                <p class="text-[10px] text-gray-400 mb-1.5 uppercase tracking-wider font-medium">Filters</p>
+                <div class="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none" id="filter-options">
+                  <button class="filter-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white bg-white/10 shrink-0 font-medium" data-filter="none">Original</button>
+                  <button class="filter-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-filter="vivid">Vivid</button>
+                  <button class="filter-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-filter="warm">Warm</button>
+                  <button class="filter-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-filter="cool">Cool</button>
+                  <button class="filter-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-filter="noir">Noir</button>
+                  <button class="filter-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-filter="retro">Retro</button>
+                  <button class="filter-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-filter="dramatic">Dramatic</button>
+                </div>
+              </div>
+
+              <!-- Backgrounds -->
+              <div class="mt-2.5">
+                <p class="text-[10px] text-gray-400 mb-1.5 uppercase tracking-wider font-medium">Sports Background</p>
+                <div class="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none" id="bg-options">
+                  <button class="bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white bg-white/10 shrink-0 font-medium" data-bg="none">None</button>
+                  <button class="bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="stadium">🏟 Stadium</button>
+                  <button class="bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="cricket">🏏 Cricket</button>
+                  <button class="bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="football">⚽ Football</button>
+                  <button class="bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="basketball">🏀 Basketball</button>
+                  <button class="bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="tennis">🎾 Tennis</button>
+                  <button class="bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="hockey">🏒 Hockey</button>
+                  <button class="bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="kabaddi">🤼 Kabaddi</button>
+                  <button class="bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="volleyball">🏐 Volleyball</button>
+                  <button class="bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="tabletennis">🏓 Table Tennis</button>
+                  <button class="bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="baseball">⚾ Baseball</button>
+                  <button class="bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="esports">🎮 Esports</button>
+                  <button class="bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors" data-bg="custom">➕ Custom</button>
+                </div>
+                <input type="file" id="custom-bg-input" accept="image/*" class="hidden" />
+              </div>
+
+              <!-- Beauty Toggle -->
+              <div class="mt-2.5 flex items-center justify-between px-1">
+                <span class="text-[10px] text-gray-400 uppercase tracking-wider font-medium">Beauty Mode</span>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" id="beauty-toggle" class="sr-only peer">
+                  <div class="w-9 h-5 bg-white/20 rounded-full peer peer-checked:bg-primary after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-full"></div>
+                </label>
+              </div>
+
+              <!-- Zoom Slider -->
+              <div class="mt-2.5 px-1">
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-[10px] text-gray-400 uppercase tracking-wider font-medium">Zoom</span>
+                  <span class="text-[11px] text-white font-medium" id="zoom-label">1.0x</span>
+                </div>
+                <input type="range" id="zoom-range" min="1" max="4" step="0.1" value="1" class="zoom-range w-full">
+              </div>
+
+              <!-- Capture Button -->
+              <div class="flex justify-center gap-6 mt-4">
+                <button type="button" id="capture-photo-btn" class="w-16 h-16 rounded-full bg-white flex items-center justify-center shadow-lg hover:bg-gray-200 transition-colors active:scale-95">
+                  <div class="w-14 h-14 rounded-full border-4 border-black"></div>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-base">
+            <!-- Full Name -->
+            <div class="md:col-span-2 space-y-xs">
+              <label class="text-label-md font-label-md text-surface-dim ml-1"
+                >Full Name</label
+              >
+              <div class="relative flex items-center">
+                <span
+                  class="material-symbols-outlined absolute left-4 text-surface-dim/50"
+                  >person</span
+                >
+                <input
+                  id="full-name"
+                  class="w-full bg-surface-variant/5 border border-outline-variant/20 rounded-xl py-3 pl-12 pr-4 text-on-tertiary placeholder:text-surface-dim/30 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+                  placeholder="Enter your full name"
+                  required
+                  type="text"
+                />
+              </div>
+            </div>
+            <!-- Username -->
+            <div class="md:col-span-2 space-y-xs">
+              <label class="text-label-md font-label-md text-surface-dim ml-1"
+                >Username</label
+              >
+              <div class="relative flex items-center">
+                <span
+                  class="material-symbols-outlined absolute left-4 text-surface-dim/50"
+                  >alternate_email</span
+                >
+                <input
+                  id="signup-username"
+                  class="w-full bg-surface-variant/5 border border-outline-variant/20 rounded-xl py-3 pl-12 pr-4 text-on-tertiary placeholder:text-surface-dim/30 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+                  placeholder="Leave blank for auto-generate"
+                  type="text"
+                />
+              </div>
+            </div>
+            <!-- Email -->
+            <div class="md:col-span-2 space-y-xs">
+              <label class="text-label-md font-label-md text-surface-dim ml-1"
+                >Email Address</label
+              >
+              <div class="relative flex items-center">
+                <span
+                  class="material-symbols-outlined absolute left-4 text-surface-dim/50"
+                  >mail</span
+                >
+                <input
+                  id="email"
+                  class="w-full bg-surface-variant/5 border border-outline-variant/20 rounded-xl py-3 pl-12 pr-4 text-on-tertiary placeholder:text-surface-dim/30 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+                  placeholder="name@example.com"
+                  required
+                  type="email"
+                />
+                <span id="signup-email-msg" class="block mt-1.5 text-xs font-medium"></span>
+              </div>
+            </div>
+            <!-- Email OTP Verification -->
+            <div class="md:col-span-2">
+              <div class="flex flex-wrap items-center gap-2">
+                <input id="email-otp-input" type="text" maxlength="6" placeholder="Enter 6-digit OTP" class="w-32 bg-surface-variant/5 border border-outline-variant/20 rounded-xl py-3 px-4 text-sm text-on-tertiary placeholder:text-surface-dim/30 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all" disabled />
+                <button type="button" id="send-email-otp-btn" class="px-4 py-3 text-sm bg-primary/20 text-primary rounded-xl hover:bg-primary/30 transition-colors disabled:opacity-50 whitespace-nowrap">Send Email OTP</button>
+                <button type="button" id="verify-email-otp-btn" class="px-4 py-3 text-sm bg-primary text-on-primary rounded-xl hover:brightness-110 transition-colors disabled:opacity-50 whitespace-nowrap" disabled>Verify</button>
+                <span id="email-otp-status" class="text-xs text-surface-dim/70"></span>
+              </div>
+            </div>
+            <!-- Mobile Number -->
+            <div class="space-y-xs">
+              <label class="text-label-md font-label-md text-surface-dim ml-1"
+                >Mobile Number</label
+              >
+              <div class="relative flex items-center">
+                <span
+                  class="material-symbols-outlined absolute left-4 text-surface-dim/50"
+                  >call</span
+                >
+                <select
+                  id="country-code"
+                  aria-label="Country code"
+                  class="absolute left-11 bg-transparent text-on-tertiary text-sm font-medium outline-none border-0 cursor-pointer appearance-none"
+                  style="padding-right: 4px;"
+                >
+                  <option value="+91" data-digits="10">🇮🇳 +91</option>
+                  <option value="+1" data-digits="10">🇺🇸 +1</option>
+                  <option value="+44" data-digits="10">🇬🇧 +44</option>
+                  <option value="+61" data-digits="9">🇦🇺 +61</option>
+                  <option value="+971" data-digits="9">🇦🇪 +971</option>
+                  <option value="+92" data-digits="10">🇵🇰 +92</option>
+                  <option value="+880" data-digits="10">🇧🇩 +880</option>
+                  <option value="+977" data-digits="10">🇳🇵 +977</option>
+                  <option value="+94" data-digits="9">🇱🇰 +94</option>
+                  <option value="+27" data-digits="9">🇿🇦 +27</option>
+                  <option value="+65" data-digits="8">🇸🇬 +65</option>
+                  <option value="+971" data-digits="9">🇸🇦 +966</option>
+                </select>
+                <input
+                  id="mobile"
+                  class="w-full bg-surface-variant/5 border border-outline-variant/20 rounded-xl py-3 pl-28 pr-4 text-on-tertiary placeholder:text-surface-dim/30 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+                  placeholder="XXXXXXXXXX"
+                  required
+                  type="tel"
+                  inputmode="numeric"
+                  maxlength="10"
+                />
+              </div>
+            </div>
+            <!-- Date of Birth -->
+            <div class="space-y-xs">
+              <label class="text-label-md font-label-md text-surface-dim ml-1"
+                >Date of Birth</label
+              >
+              <div class="relative flex items-center">
+                <span
+                  id="dob-icon"
+                  class="material-symbols-outlined absolute left-4 text-surface-dim/50 cursor-pointer"
+                  >calendar_month</span
+                >
+                <input
+                  id="dob"
+                  class="w-full bg-surface-variant/5 border border-outline-variant/20 rounded-xl py-3 pl-12 pr-4 text-on-tertiary focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+                  type="date"
+                  required
+                />
+              </div>
+            </div>
+            <!-- Password -->
+            <div class="md:col-span-2 space-y-xs">
+              <label class="text-label-md font-label-md text-surface-dim ml-1"
+                >Create Password</label
+              >
+              <div class="relative flex items-center">
+                <span
+                  class="material-symbols-outlined absolute left-4 text-surface-dim/50"
+                  >lock</span
+                >
+                <input
+                  id="password"
+                  class="w-full bg-surface-variant/5 border border-outline-variant/20 rounded-xl py-3 pl-12 pr-12 text-on-tertiary placeholder:text-surface-dim/30 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+                  placeholder="8+ chars, A-Z, a-z, @ # _"
+                  required
+                  type="password"
+                />
+                <button
+                  type="button"
+                  id="toggle-password"
+                  class="absolute right-4 text-surface-dim/50 hover:text-surface-dim transition-colors cursor-pointer"
+                  onclick="togglePasswordVisibility()"
+                  aria-label="Toggle password visibility"
+                >
+                  <span class="material-symbols-outlined" id="password-eye">visibility</span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <!-- Gender Selection -->
+          <div class="space-y-xs">
+            <label class="text-label-md font-label-md text-surface-dim ml-1"
+              >Gender</label
+            >
+            <div class="flex bg-surface-variant/10 rounded-xl p-1 gap-1" id="gender-group">
+              <label class="flex-1 cursor-pointer gender-option" data-value="Male">
+                <input
+                  checked=""
+                  class="hidden"
+                  name="gender"
+                  value="Male"
+                  type="radio"
+                />
+                <div
+                  class="gender-card py-2 text-center text-label-sm font-label-sm rounded-lg text-surface-dim/50 border border-transparent transition-all"
+                >
+                  Male / पुरुष
+                </div>
+              </label>
+              <label class="flex-1 cursor-pointer gender-option" data-value="Female">
+                <input class="hidden" name="gender" value="Female" type="radio" />
+                <div
+                  class="gender-card py-2 text-center text-label-sm font-label-sm rounded-lg text-surface-dim/50 border border-transparent transition-all"
+                >
+                  Female / महिला
+                </div>
+              </label>
+              <label class="flex-1 cursor-pointer gender-option" data-value="Other">
+                <input class="hidden" name="gender" value="Other" type="radio" />
+                <div
+                  class="gender-card py-2 text-center text-label-sm font-label-sm rounded-lg text-surface-dim/50 border border-transparent transition-all"
+                >
+                  Prefer not to say / नहीं कहना चाहते
+                </div>
+              </label>
+            </div>
+          </div>
+          <div class="space-y-sm">
+            <label class="text-label-md font-label-md text-surface-dim block"
+              >Favorite Sports</label
+            >
+            <div
+              class="flex flex-wrap gap-2"
+              id="sports-container"
+            >
+              <label
+                class="sport-checkbox cursor-pointer px-4 py-2 rounded-xl border border-outline-variant/30 text-body-sm text-surface-dim/70 transition-all has-[:checked]:bg-primary-container has-[:checked]:text-on-primary-container has-[:checked]:border-primary"
+              >
+                <input type="checkbox" name="sports" value="cricket" class="hidden" />
+                🏏 Cricket
+              </label>
+              <label
+                class="sport-checkbox cursor-pointer px-4 py-2 rounded-xl border border-outline-variant/30 text-body-sm text-surface-dim/70 transition-all has-[:checked]:bg-primary-container has-[:checked]:text-on-primary-container has-[:checked]:border-primary"
+              >
+                <input type="checkbox" name="sports" value="football" class="hidden" />
+                ⚽ Football
+              </label>
+              <label
+                class="sport-checkbox cursor-pointer px-4 py-2 rounded-xl border border-outline-variant/30 text-body-sm text-surface-dim/70 transition-all has-[:checked]:bg-primary-container has-[:checked]:text-on-primary-container has-[:checked]:border-primary"
+              >
+                <input type="checkbox" name="sports" value="basketball" class="hidden" />
+                🏀 Basketball
+              </label>
+              <label
+                class="sport-checkbox cursor-pointer px-4 py-2 rounded-xl border border-outline-variant/30 text-body-sm text-surface-dim/70 transition-all has-[:checked]:bg-primary-container has-[:checked]:text-on-primary-container has-[:checked]:border-primary"
+              >
+                <input type="checkbox" name="sports" value="tennis" class="hidden" />
+                🎾 Tennis
+              </label>
+              <label
+                class="sport-checkbox cursor-pointer px-4 py-2 rounded-xl border border-outline-variant/30 text-body-sm text-surface-dim/70 transition-all has-[:checked]:bg-primary-container has-[:checked]:text-on-primary-container has-[:checked]:border-primary"
+              >
+                <input type="checkbox" name="sports" value="baseball" class="hidden" />
+                ⚾ Baseball
+              </label>
+              <label
+                class="sport-checkbox cursor-pointer px-4 py-2 rounded-xl border border-outline-variant/30 text-body-sm text-surface-dim/70 transition-all has-[:checked]:bg-primary-container has-[:checked]:text-on-primary-container has-[:checked]:border-primary"
+              >
+                <input type="checkbox" name="sports" value="hockey" class="hidden" />
+                🏑 Hockey
+              </label>
+              <label
+                class="sport-checkbox cursor-pointer px-4 py-2 rounded-xl border border-outline-variant/30 text-body-sm text-surface-dim/70 transition-all has-[:checked]:bg-primary-container has-[:checked]:text-on-primary-container has-[:checked]:border-primary"
+              >
+                <input type="checkbox" name="sports" value="esports" class="hidden" />
+                🎮 E-Sports
+              </label>
+              <label
+                class="sport-checkbox cursor-pointer px-4 py-2 rounded-xl border border-outline-variant/30 text-body-sm text-surface-dim/70 transition-all has-[:checked]:bg-primary-container has-[:checked]:text-on-primary-container has-[:checked]:border-primary"
+              >
+                <input type="checkbox" name="sports" value="kabaddi" class="hidden" />
+                🤼 Kabaddi
+              </label>
+              <label
+                class="sport-checkbox cursor-pointer px-4 py-2 rounded-xl border border-outline-variant/30 text-body-sm text-surface-dim/70 transition-all has-[:checked]:bg-primary-container has-[:checked]:text-on-primary-container has-[:checked]:border-primary"
+              >
+                <input type="checkbox" name="sports" value="tabletennis" class="hidden" />
+                🏓 Table Tennis
+              </label>
+              <label
+                class="sport-checkbox cursor-pointer px-4 py-2 rounded-xl border border-outline-variant/30 text-body-sm text-surface-dim/70 transition-all has-[:checked]:bg-primary-container has-[:checked]:text-on-primary-container has-[:checked]:border-primary"
+              >
+                <input type="checkbox" name="sports" value="volleyball" class="hidden" />
+                🏐 Volleyball
+              </label>
+            </div>
+            <input type="hidden" id="selected-sports" value="" />
+          </div>
+
+          <!-- Terms -->
+          <div class="flex items-start gap-sm py-xs">
+            <div class="mt-1">
+              <input
+                class="rounded bg-surface-variant/10 border-outline-variant/20 text-primary focus:ring-primary/20"
+                id="terms"
+                type="checkbox"
+              />
+            </div>
+            <label
+              class="text-body-sm text-surface-dim/70 leading-snug"
+              for="terms"
+            >
+              I agree to the
+              <button type="button" class="text-primary-fixed-dim underline cursor-pointer hover:brightness-110" onclick="openTermsModal('terms')">Terms of Service</button>
+              and
+              <button type="button" class="text-primary-fixed-dim underline cursor-pointer hover:brightness-110" onclick="openTermsModal('privacy')">Privacy Policy</button>.
+            </label>
+          </div>
+          <!-- Terms Modal -->
+          <div id="terms-modal" class="hidden fixed inset-0 z-[200] bg-black/80 flex items-center justify-center p-4">
+            <div class="bg-inverse-surface rounded-2xl w-full max-w-2xl max-h-[85vh] flex flex-col overflow-hidden">
+              <div class="flex items-center justify-between p-4 border-b border-outline-variant/20">
+                <h3 class="text-lg font-bold text-on-tertiary" id="terms-modal-title">Terms of Service</h3>
+                <button type="button" onclick="closeTermsModal()" class="text-surface-dim hover:text-on-tertiary p-1">
+                  <span class="material-symbols-outlined">close</span>
+                </button>
+              </div>
+              <div class="flex-1 overflow-y-auto p-4">
+                <iframe id="terms-iframe" src="" class="w-full h-[60vh] rounded-lg border-0 bg-white"></iframe>
+              </div>
+              <div class="p-4 border-t border-outline-variant/20 flex justify-end">
+                <button type="button" onclick="closeTermsModal()" class="px-6 py-2 rounded-xl bg-primary text-on-primary font-semibold hover:brightness-110 transition-all">Close</button>
+              </div>
+            </div>
+          </div>
+          <!-- Primary CTA -->
+          <button
+            class="w-full bg-gradient-to-r from-primary to-primary-fixed-dim hover:brightness-110 active:scale-[0.98] transition-all text-on-primary font-headline-sm py-4 rounded-xl flex items-center justify-center gap-base shadow-lg glow-emerald group"
+            type="submit"
+          >
+            Create Account
+            <span
+              class="material-symbols-outlined group-hover:translate-x-1 transition-transform"
+              >arrow_forward</span
+            >
+          </button>
+        </form>
+        <!-- Bottom Link -->
+        <div class="text-center">
+          <p class="text-body-md text-surface-dim">
+            Already have an account?
+            <a
+              class="text-primary-fixed-dim font-bold hover:underline"
+              href="login.html"
+              >Login</a
+            >
+          </p>
+        </div>
+      </div>
+      <!-- Language and Utilities (Floating Footer) -->
+      <div class="mt-xl flex items-center justify-center gap-lg opacity-40">
+        <button class="flex items-center gap-xs text-label-sm text-surface-dim">
+          <span class="material-symbols-outlined text-sm">language</span> English
+                    </button>
+                    <button class="flex items-center gap-xs text-label-sm text-surface-dim">
+          <span class="material-symbols-outlined text-sm">help</span>
+          Support
+        </button>
+                </div>
+            </div>
+            <!-- Background Decoration for Right Side -->
+            <div class="absolute right-0 top-0 pointer-events-none overflow-hidden h-full w-full hidden md:block">
+                <div class="absolute -top-1/4 -right-1/4 w-[500px] h-[500px] bg-primary/10 blur-[120px] rounded-full"></div>
+                <div class="absolute -bottom-1/4 -right-1/4 w-[400px] h-[400px] bg-secondary/5 blur-[100px] rounded-full"></div>
+            </div>
+            <script>
+                // Simple interactivity for gender selection (visual only since we use peer classes)
+                console.log("Fanconnact Sign Up initialized.");
+
+                // Micro-interaction for inputs
+                document.querySelectorAll("input").forEach((input) => {
+                    input.addEventListener("focus", () => {
+                        input.parentElement
+                            .querySelector(".material-symbols-outlined")
+                            ?.classList.add("text-primary-fixed-dim");
+                    });
+                    input.addEventListener("blur", () => {
+                        input.parentElement
+                            .querySelector(".material-symbols-outlined")
+                            ?.classList.remove("text-primary-fixed-dim");
+                    });
+                });
+
+                // Profile Image Preview & Crop Logic
+                let cropper = null;
+                window.croppedProfileBase64 = null;
+
+                document.getElementById("gallery-btn").addEventListener("click", () => {
+                    document.getElementById("profile-upload").click();
+                });
+
+                document.getElementById("avatar-preview-wrapper").addEventListener("click", () => {
+                    document.getElementById("profile-upload").click();
+                });
+
+                document
+                    .getElementById("profile-upload")
+                    .addEventListener("change", function(e) {
+                        const file = e.target.files[0];
+                        if (file) {
+                            const reader = new FileReader();
+                            reader.onload = function(event) {
+                                const cropModal = document.getElementById("crop-modal");
+                                const cropImage = document.getElementById("crop-image");
+                                cropImage.src = event.target.result;
+                                cropModal.classList.remove("hidden");
+                                if (cropper) cropper.destroy();
+                                cropper = new Cropper(cropImage, {
+                                    aspectRatio: NaN,
+                                    viewMode: 2,
+                                    autoCropArea: 0.8
+                                });
+                            };
+                            reader.readAsDataURL(file);
+                        }
+                    });
+
+                // Camera Capture Logic
+                let cameraStream = null;
+                let selectedFilter = "none";
+                let selectedBg = "none";
+                let customBgImage = null;
+                let currentZoom = 1;
+                let segModel = null;
+                let segModelReady = false;
+                let lastSegResults = null;
+
+                const FILTER_MAP = {
+                    none: "", vivid: "cam-filter-vivid", warm: "cam-filter-warm",
+                    cool: "cam-filter-cool", noir: "cam-filter-noir",
+                    retro: "cam-filter-retro", dramatic: "cam-filter-dramatic",
+                };
+
+                const BG_GRADIENTS = {
+                    none: "",
+                    stadium: "linear-gradient(180deg, #4a90d9 0%, #87ceeb 35%, #1a8a2e 45%, #0d5e1a 70%, #1a3a1a 100%)",
+                    cricket: "linear-gradient(180deg, #87ceeb 0%, #b8e0b8 30%, #2d8a2d 45%, #8b6914 48%, #c4a44a 50%, #8b6914 52%, #2d8a2d 55%, #1a6e1a 100%)",
+                    football: "linear-gradient(180deg, #4a90d9 0%, #87ceeb 30%, #1e7a2e 40%, #3a9a3a 50%, #1e7a2e 60%, #0d5e1a 100%)",
+                    basketball: "linear-gradient(135deg, #d4952e 0%, #c4721a 20%, #8b4513 40%, #a0522d 55%, #8b4513 75%, #6b3410 100%)",
+                };
+
+                async function initSegModel() {
+                    if (segModelReady) return true;
+                    try {
+                        if (typeof SelfieSegmentation === "undefined") return false;
+                        segModel = new SelfieSegmentation({
+                            locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/${file}`
+                        });
+                        segModel.setOptions({ modelSelection: 1, minDetectionConfidence: 0.5 });
+                        segModel.onResults((results) => { lastSegResults = results; });
+                        await segModel.initialize();
+                        segModelReady = true;
+                        return true;
+                    } catch (e) {
+                        console.warn("Background removal unavailable:", e);
+                        segModel = null;
+                        segModelReady = false;
+                        return false;
+                    }
+                }
+
+                function drawCustomBg(ctx, img, w, h) {
+                    if (!img || !img.width) return false;
+                    const iw = img.width, ih = img.height;
+                    const scale = Math.max(w / iw, h / ih);
+                    const dw = iw * scale, dh = ih * scale;
+                    ctx.drawImage(img, (w - dw) / 2, (h - dh) / 2, dw, dh);
+                    return true;
+                }
+
+                const BG_IMAGES = {
+                  stadium: "assets/background.jpg",
+                  cricket: "assets/cricket bg.jpg",
+                  football: "assets/fotball bg.jpeg",
+                  tennis: "assets/tennis bg.jpg",
+                  hockey: "assets/hockey bg.jpg",
+                  kabaddi: "assets/kabbadi bg.avif",
+                  volleyball: "assets/volleyball bg.jpg",
+                  tabletennis: "assets/table tennis bg.jpg",
+                  baseball: "assets/baseball bg.jpg",
+                  esports: "assets/esports bg.jpg",
+                };
+                const bgImageCache = {};
+                function getBgImage(type) {
+                  const url = BG_IMAGES[type];
+                  if (!url) return null;
+                  if (!bgImageCache[type]) {
+                    const img = new Image();
+                    img.src = encodeURI(url);
+                    bgImageCache[type] = img;
+                  }
+                  return bgImageCache[type];
+                }
+
+                function drawBgGradient(ctx, type, w, h) {
+                    if (type === "none") return;
+                    if (type === "custom") { drawCustomBg(ctx, customBgImage, w, h); return; }
+
+                    const img = getBgImage(type);
+                    if (img && img.complete && img.width) { drawCustomBg(ctx, img, w, h); return; }
+
+                    const G = (stops) => {
+                        const g = ctx.createLinearGradient(0, 0, 0, h);
+                        stops.forEach(s => g.addColorStop(s[0], s[1]));
+                        return g;
+                    };
+                    const fill = (g) => { ctx.fillStyle = g; ctx.fillRect(0, 0, w, h); };
+                    const vignette = () => {
+                        const v = ctx.createRadialGradient(w/2, h/2, Math.min(w,h)*0.2, w/2, h/2, Math.max(w,h)*0.75);
+                        v.addColorStop(0, "rgba(0,0,0,0)"); v.addColorStop(1, "rgba(0,0,0,0.28)");
+                        ctx.fillStyle = v; ctx.fillRect(0, 0, w, h);
+                    };
+
+                    const presets = {
+                        stadium:    G([[0,"#1d4ed8"],[0.32,"#60a5fa"],[0.45,"#15803d"],[0.7,"#166534"],[1,"#052e16"]]),
+                        cricket:    G([[0,"#bbf7d0"],[0.28,"#4ade80"],[0.45,"#16a34a"],[0.7,"#15803d"],[1,"#14532d"]]),
+                        football:   G([[0,"#1e3a8a"],[0.3,"#3b82f6"],[0.45,"#15803d"],[0.7,"#166534"],[1,"#052e16"]]),
+                        basketball: G([[0,"#f59e0b"],[0.3,"#d97706"],[0.5,"#b45309"],[1,"#78350f"]]),
+                        tennis:     G([[0,"#1e3a8a"],[0.3,"#3b82f6"],[0.45,"#15803d"],[0.7,"#166534"],[1,"#052e16"]]),
+                        hockey:     G([[0,"#e0f2fe"],[0.3,"#7dd3fc"],[0.45,"#15803d"],[0.7,"#166534"],[1,"#052e16"]]),
+                        kabaddi:    G([[0,"#fcd34d"],[0.3,"#f59e0b"],[0.5,"#d97706"],[1,"#92400e"]]),
+                        volleyball: G([[0,"#fde68a"],[0.3,"#38bdf8"],[0.45,"#0ea5e9"],[0.7,"#0369a1"],[1,"#0c4a6e"]]),
+                        tabletennis:G([[0,"#1e293b"],[0.3,"#475569"],[0.45,"#dc2626"],[0.7,"#b91c1c"],[1,"#7f1d1d"]]),
+                        baseball:   G([[0,"#1e3a8a"],[0.3,"#2563eb"],[0.45,"#16a34a"],[0.7,"#15803d"],[1,"#052e16"]]),
+                        esports:    G([[0,"#7c3aed"],[0.35,"#a855f7"],[0.6,"#3b82f6"],[1,"#1e1b4b"]]),
+                    };
+                    if (presets[type]) { fill(presets[type]); vignette(); }
+                }
+
+                function applyBeautyCapture(imageData, w, h) {
+                    const data = imageData.data;
+                    const len = data.length;
+
+                    // ── Step 1: Skin mask (RGB heuristic) ──
+                    const skin = new Uint8Array(w * h);
+                    for (let i = 0, p = 0; i < len; i += 4, p++) {
+                        const r = data[i], g = data[i+1], b = data[i+2];
+                        const max = Math.max(r, g, b), min = Math.min(r, g, b);
+                        skin[p] = (r > 50 && g > 20 && b > 10 && r > g && r > b &&
+                                   r - g > 8 && max - min > 12) ? 255 : 0;
+                    }
+
+                    // Dilate 3x3 for smooth edges
+                    const dil = new Uint8Array(w * h);
+                    for (let y = 1; y < h - 1; y++) {
+                        for (let x = 1; x < w - 1; x++) {
+                            let m = 0;
+                            for (let dy = -1; dy <= 1; dy++)
+                                for (let dx = -1; dx <= 1; dx++)
+                                    m = Math.max(m, skin[(y+dy) * w + (x+dx)]);
+                            dil[y * w + x] = m;
+                        }
+                    }
+
+                    // Feather mask via blur
+                    const fTmp = new Float32Array(w * h);
+                    for (let p = 0; p < w * h; p++) fTmp[p] = dil[p] / 255;
+                    for (let y = 0; y < h; y++) {
+                        for (let x = 2; x < w - 2; x++) {
+                            let s = 0;
+                            for (let dx = -2; dx <= 2; dx++) s += fTmp[y * w + x + dx];
+                            dil[y * w + x] = (s / 5) * 255;
+                        }
+                    }
+                    for (let x = 0; x < w; x++) {
+                        for (let y = 2; y < h - 2; y++) {
+                            let s = 0;
+                            for (let dy = -2; dy <= 2; dy++) s += dil[(y+dy) * w + x] / 255;
+                            dil[y * w + x] = (s / 5) * 255;
+                        }
+                    }
+
+                    // ── Step 2: Strong blur (radius 3) for smoothing ──
+                    const blur = new Uint8ClampedArray(data);
+                    for (let y = 0; y < h; y++) {
+                        for (let x = 3; x < w - 3; x++) {
+                            let r = 0, g = 0, b = 0, n = 0;
+                            for (let dx = -3; dx <= 3; dx++) {
+                                const idx = (y * w + x + dx) * 4;
+                                r += blur[idx]; g += blur[idx+1]; b += blur[idx+2]; n++;
+                            }
+                            const idx = (y * w + x) * 4;
+                            blur[idx] = r/n; blur[idx+1] = g/n; blur[idx+2] = b/n;
+                        }
+                    }
+                    for (let x = 0; x < w; x++) {
+                        for (let y = 3; y < h - 3; y++) {
+                            let r = 0, g = 0, b = 0, n = 0;
+                            for (let dy = -3; dy <= 3; dy++) {
+                                const idx = ((y+dy) * w + x) * 4;
+                                r += blur[idx]; g += blur[idx+1]; b += blur[idx+2]; n++;
+                            }
+                            const idx = (y * w + x) * 4;
+                            blur[idx] = r/n; blur[idx+1] = g/n; blur[idx+2] = b/n;
+                        }
+                    }
+
+                    // ── Step 3: Skin smoothing + fairness ──
+                    for (let i = 0, p = 0; i < len; i += 4, p++) {
+                        const m = Math.min(1, dil[p] / 255);
+                        if (m > 0.01) {
+                            const s = 0.5 * m;
+                            data[i]   = data[i]   * (1 - s) + blur[i]   * s;
+                            data[i+1] = data[i+1] * (1 - s) + blur[i+1] * s;
+                            data[i+2] = data[i+2] * (1 - s) + blur[i+2] * s;
+                            const l = 1 + 0.06 * m;
+                            data[i]   = Math.min(255, data[i]   * l);
+                            data[i+1] = Math.min(255, data[i+1] * l);
+                            data[i+2] = Math.min(255, data[i+2] * l);
+                        }
+                    }
+
+                    // ── Step 4: Blemish removal ──
+                    for (let y = 1; y < h - 1; y++) {
+                        for (let x = 1; x < w - 1; x++) {
+                            const p = y * w + x;
+                            if (dil[p] < 128) continue;
+                            const idx = p * 4;
+                            const r = data[idx], g = data[idx+1], b = data[idx+2];
+                            let nr = 0, ng = 0, nb = 0, nn = 0;
+                            for (let dy = -1; dy <= 1; dy++) {
+                                for (let dx = -1; dx <= 1; dx++) {
+                                    if (dx === 0 && dy === 0) continue;
+                                    const ni = ((y+dy) * w + (x+dx)) * 4;
+                                    nr += data[ni]; ng += data[ni+1]; nb += data[ni+2]; nn++;
+                                }
+                            }
+                            const aR = nr/nn, aG = ng/nn, aB = nb/nn;
+                            if (r < aR * 0.7 && g < aG * 0.7) {
+                                data[idx] = aR; data[idx+1] = aG; data[idx+2] = aB;
+                            }
+                        }
+                    }
+
+                    // ── Step 5: Glow + brightness ──
+                    for (let i = 0; i < len; i += 4) {
+                        const g = 0.299*data[i] + 0.587*data[i+1] + 0.114*data[i+2];
+                        const sb = 1.08;
+                        data[i]   = Math.min(255, data[i]   * sb - g * (sb - 1));
+                        data[i+1] = Math.min(255, data[i+1] * sb - g * (sb - 1));
+                        data[i+2] = Math.min(255, data[i+2] * sb - g * (sb - 1));
+                    }
+                    return imageData;
+                }
+
+                function applyVideoFilter() {
+                    const el = document.getElementById("camera-composited");
+                    if (!el) return;
+                    const b = document.getElementById("beauty-toggle")?.checked || false;
+                    const fc = FILTER_MAP[selectedFilter] || "";
+                    el.className = `w-full object-contain max-h-[350px]`;
+                    el.style.transform = "scaleX(-1)";
+                    if (!fc && !b) {
+                        el.style.filter = "none";
+                    } else {
+                        const parts = [];
+                        if (fc) {
+                            switch (selectedFilter) {
+                                case "vivid": parts.push("saturate(1.5) contrast(1.1) brightness(1.03)"); break;
+                                case "warm": parts.push("sepia(0.35) saturate(1.3) hue-rotate(-8deg) brightness(1.05)"); break;
+                                case "cool": parts.push("saturate(0.85) hue-rotate(12deg) brightness(1.08) contrast(0.95)"); break;
+                                case "noir": parts.push("grayscale(1) contrast(1.25) brightness(0.95)"); break;
+                                case "retro": parts.push("sepia(0.5) saturate(0.7) contrast(0.85) brightness(1.1)"); break;
+                                case "dramatic": parts.push("contrast(1.5) brightness(0.85) saturate(1.3)"); break;
+                            }
+                        }
+                        if (b) parts.push("saturate(1.08) brightness(1.04) contrast(0.98)");
+                        el.style.filter = parts.join(" ");
+                    }
+                }
+
+                function applyBgPreview() {
+                    const w = document.getElementById("camera-video-wrapper");
+                    if (!w) return;
+                    w.style.background = selectedBg !== "none" ? "#000" : "";
+                    w.style.padding = "";
+                }
+
+                let previewRunning = false;
+
+                function startPreviewLoop() {
+                    const v = document.getElementById("camera-preview");
+                    const c = document.getElementById("camera-composited");
+                    const ctx = c.getContext("2d");
+                    previewRunning = true;
+
+                    async function loop() {
+                        let tempCanvas = null, tempCtx = null;
+                        while (previewRunning) {
+                            if (v.readyState >= 2 && v.videoWidth > 0) {
+                                const vw = v.videoWidth, vh = v.videoHeight;
+                                if (c.width !== vw || c.height !== vh) { c.width = vw; c.height = vh; }
+                                const z = currentZoom;
+                                const visW = vw / z, visH = vh / z;
+                                const sx = (vw - visW) / 2, sy = (vh - visH) / 2;
+
+                                ctx.clearRect(0, 0, vw, vh);
+
+                                if (selectedBg !== "none") {
+                                    const doSeg = segModelReady && selectedBg !== "none";
+                                    if (doSeg) {
+                                        try {
+                                            await segModel.send({ image: v });
+                                            const ms = lastSegResults && lastSegResults.segmentationMask;
+                                            if (!ms) throw new Error("no mask");
+                                            drawBgGradient(ctx, selectedBg, vw, vh);
+                                            if (!tempCanvas) {
+                                                tempCanvas = document.createElement("canvas");
+                                                tempCtx = tempCanvas.getContext("2d");
+                                            }
+                                            tempCanvas.width = vw; tempCanvas.height = vh;
+                                            tempCtx.drawImage(v, sx, sy, visW, visH, 0, 0, vw, vh);
+                                            tempCtx.globalCompositeOperation = "destination-in";
+                                            tempCtx.drawImage(ms, sx, sy, visW, visH, 0, 0, vw, vh);
+                                            tempCtx.globalCompositeOperation = "source-over";
+                                            ctx.drawImage(tempCanvas, 0, 0);
+                                        } catch (e) {
+                                            drawBgGradient(ctx, selectedBg, vw, vh);
+                                            ctx.globalAlpha = 0.88;
+                                            ctx.drawImage(v, sx, sy, visW, visH, 0, 0, vw, vh);
+                                            ctx.globalAlpha = 1;
+                                        }
+                                    } else {
+                                        drawBgGradient(ctx, selectedBg, vw, vh);
+                                        ctx.globalAlpha = 0.88;
+                                        ctx.drawImage(v, sx, sy, visW, visH, 0, 0, vw, vh);
+                                        ctx.globalAlpha = 1;
+                                    }
+                                } else {
+                                    ctx.drawImage(v, sx, sy, visW, visH, 0, 0, vw, vh);
+                                }
+                            }
+                            if (segModelReady && selectedBg !== "none") {
+                                await new Promise(r => setTimeout(r, 120));
+                            } else {
+                                await new Promise(r => requestAnimationFrame(r));
+                            }
+                        }
+                    }
+                    loop();
+                }
+
+                function stopPreviewLoop() {
+                    previewRunning = false;
+                }
+
+                document.getElementById("camera-capture-btn").addEventListener("click", async () => {
+                    if (!window.isSecureContext) {
+                        alert("Camera needs a secure context (open via https:// or http://localhost, or double-click the file to open it as file://). Use the Gallery option instead.");
+                        return;
+                    }
+                    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                        const inp = document.createElement("input");
+                        inp.type = "file"; inp.accept = "image/*"; inp.capture = "user";
+                        inp.onchange = (e) => {
+                            const f = e.target.files[0];
+                            if (!f) return;
+                            const r = new FileReader();
+                            r.onload = (ev) => {
+                                document.getElementById("crop-image").src = ev.target.result;
+                                document.getElementById("crop-modal").classList.remove("hidden");
+                                if (cropper) cropper.destroy();
+                                cropper = new Cropper(document.getElementById("crop-image"), { aspectRatio: NaN, viewMode: 2, autoCropArea: 0.8 });
+                            };
+                            r.readAsDataURL(f);
+                        };
+                        inp.click();
+                        return;
+                    }
+                    try {
+                        cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 720 } } });
+                        document.getElementById("camera-preview").srcObject = cameraStream;
+                        document.getElementById("camera-modal").classList.remove("hidden");
+                        selectedFilter = "none"; selectedBg = "none"; currentZoom = 1;
+                        document.getElementById("zoom-range").value = 1;
+                        document.getElementById("zoom-label").textContent = "1.0x";
+                        document.querySelectorAll(".filter-btn").forEach(b => {
+                            b.className = "filter-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors";
+                        });
+                        document.querySelector('.filter-btn[data-filter="none"]').className = "filter-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white bg-white/10 shrink-0 font-medium";
+                        document.querySelectorAll(".bg-btn").forEach(b => {
+                            b.className = "bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors";
+                        });
+                        document.querySelector('.bg-btn[data-bg="none"]').className = "bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white bg-white/10 shrink-0 font-medium";
+                        document.getElementById("beauty-toggle").checked = false;
+                        applyVideoFilter(); applyBgPreview();
+                        initSegModel();
+                        document.getElementById("camera-preview").onloadedmetadata = () => startPreviewLoop();
+                    } catch (err) {
+                        if (err.name === "NotAllowedError" || err.name === "PermissionDeniedError")
+                            alert("Camera permission denied. Allow camera access in your browser's site settings, then try again.");
+                        else if (err.name === "NotFoundError" || err.name === "OverconstrainedError")
+                            alert("No camera found. Connect a webcam or use the Gallery option instead.");
+                        else if (err.name === "NotReadableError" || err.name === "AbortError")
+                            alert("Camera is in use by another app (Zoom, Teams, etc.) or blocked. Close it and try again, or use Gallery.");
+                        else alert("Camera error: " + err.message + "\n\nTip: open the page via https://, http://localhost, or as a file:// — not a plain http:// LAN address. Try Gallery instead.");
+                    }
+                });
+
+                document.querySelectorAll(".filter-btn").forEach(btn => {
+                    btn.addEventListener("click", () => {
+                        document.querySelectorAll(".filter-btn").forEach(b => {
+                            b.className = "filter-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors";
+                        });
+                        btn.className = "filter-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white bg-white/10 shrink-0 font-medium";
+                        selectedFilter = btn.dataset.filter;
+                        applyVideoFilter();
+                    });
+                });
+
+                document.querySelectorAll(".bg-btn").forEach(btn => {
+                    btn.addEventListener("click", () => {
+                        document.querySelectorAll(".bg-btn").forEach(b => {
+                            b.className = "bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors";
+                        });
+                        btn.className = "bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white bg-white/10 shrink-0 font-medium";
+                        selectedBg = btn.dataset.bg;
+                        if (selectedBg === "custom") { const inp = document.getElementById("custom-bg-input"); if (inp) inp.click(); }
+                        applyBgPreview();
+                    });
+                });
+
+                const customBgInput = document.getElementById("custom-bg-input");
+                if (customBgInput) {
+                    customBgInput.addEventListener("change", (e) => {
+                        const f = e.target.files && e.target.files[0];
+                        if (!f) return;
+                        const r = new FileReader();
+                        r.onload = (ev) => {
+                            const img = new Image();
+                            img.onload = () => {
+                                customBgImage = img;
+                                selectedBg = "custom";
+                                applyBgPreview();
+                                const rm = document.getElementById("review-modal");
+                                if (rm && !rm.classList.contains("hidden")) renderReviewWithBg("custom");
+                            };
+                            img.src = ev.target.result;
+                        };
+                        r.readAsDataURL(f);
+                        e.target.value = "";
+                    });
+                }
+
+                document.getElementById("beauty-toggle")?.addEventListener("change", applyVideoFilter);
+
+                document.getElementById("zoom-range")?.addEventListener("input", function() {
+                    currentZoom = parseFloat(this.value);
+                    document.getElementById("zoom-label").textContent = currentZoom.toFixed(1) + "x";
+                });
+
+                async function capturePhotoWithEffects(video, zoom) {
+                    const canvas = document.createElement("canvas");
+                    const ctx = canvas.getContext("2d");
+                    const vw = video.videoWidth, vh = video.videoHeight;
+                    canvas.width = vw; canvas.height = vh;
+                    const visW = vw / zoom, visH = vh / zoom;
+                    const sx = (vw - visW) / 2, sy = (vh - visH) / 2;
+
+                    if (selectedBg !== "none") {
+                        drawBgGradient(ctx, selectedBg, vw, vh);
+                        if (segModelReady) {
+                            try {
+                                const ld = document.getElementById("camera-loading");
+                                if (ld) ld.classList.remove("hidden");
+                                await segModel.send({ image: video });
+                                const ms = lastSegResults && lastSegResults.segmentationMask;
+                                if (!ms) throw new Error("no mask");
+                                const t = document.createElement("canvas");
+                                t.width = vw; t.height = vh;
+                                const tc = t.getContext("2d");
+                                tc.drawImage(video, sx, sy, visW, visH, 0, 0, vw, vh);
+                                tc.globalCompositeOperation = "destination-in";
+                                tc.drawImage(ms, sx, sy, visW, visH, 0, 0, vw, vh);
+                                tc.globalCompositeOperation = "source-over";
+                                ctx.drawImage(t, 0, 0);
+                                if (ld) ld.classList.add("hidden");
+                                return applyPixelEffects(ctx, canvas);
+                            } catch (e) {
+                                console.warn("Seg fallback:", e);
+                                ctx.globalAlpha = 0.88;
+                                ctx.drawImage(video, sx, sy, visW, visH, 0, 0, vw, vh);
+                                ctx.globalAlpha = 1;
+                            }
+                        } else {
+                            ctx.globalAlpha = 0.88;
+                            ctx.drawImage(video, sx, sy, visW, visH, 0, 0, vw, vh);
+                            ctx.globalAlpha = 1;
+                        }
+                    } else {
+                        ctx.drawImage(video, sx, sy, visW, visH, 0, 0, vw, vh);
+                    }
+                    return applyPixelEffects(ctx, canvas);
+                }
+
+                function applyPixelEffects(ctx, canvas) {
+                    if (selectedFilter !== "none") {
+                        const id = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                        const d = id.data;
+                        for (let i = 0; i < d.length; i += 4) {
+                            let r = d[i], g = d[i+1], b = d[i+2];
+                            switch (selectedFilter) {
+                                case "vivid": r=Math.min(255,r*1.3); g=Math.min(255,g*1.2); b=Math.min(255,b*1.1); break;
+                                case "warm": r=Math.min(255,r*1.2); g=g; b=Math.max(0,b*0.85); break;
+                                case "cool": r=Math.max(0,r*0.85); g=g*0.95; b=Math.min(255,b*1.25); break;
+                                case "noir": { const gr=0.299*r+0.587*g+0.114*b; r=g=b=Math.min(255,gr*1.1); } break;
+                                case "retro": r=Math.min(255,r*1.15); g=Math.max(0,g*0.85); b=Math.max(0,b*0.7); break;
+                                case "dramatic": r=Math.min(255,r*1.4); g=Math.min(255,g*1.3); b=Math.min(255,b*1.2); break;
+                            }
+                            d[i]=r; d[i+1]=g; d[i+2]=b;
+                        }
+                        ctx.putImageData(id, 0, 0);
+                    }
+
+                    if (document.getElementById("beauty-toggle")?.checked) {
+                        const w = canvas.width, h = canvas.height;
+                        const id = ctx.getImageData(0, 0, w, h);
+                        applyBeautyCapture(id, w, h);
+                        ctx.putImageData(id, 0, 0);
+                    }
+                    return canvas;
+                }
+
+                document.getElementById("close-camera-modal").addEventListener("click", () => {
+                    stopPreviewLoop();
+                    if (cameraStream) { cameraStream.getTracks().forEach(t => t.stop()); cameraStream = null; }
+                    document.getElementById("camera-modal").classList.add("hidden");
+                });
+
+                // ── Review Modal State ──
+                let reviewState = { rawCanvas: null, personCanvas: null, zoom: 1, filter: "none", beauty: false, bg: "none" };
+                let reviewRotation = 0, reviewFlipH = false, cropFromReview = false;
+
+                document.getElementById("capture-photo-btn").addEventListener("click", async () => {
+                    const video = document.getElementById("camera-preview");
+                    const zoom = currentZoom;
+
+                    const raw = document.createElement("canvas");
+                    raw.width = video.videoWidth; raw.height = video.videoHeight;
+                    raw.getContext("2d").drawImage(video, 0, 0);
+                    reviewState = { rawCanvas: raw, personCanvas: null, zoom, filter: selectedFilter, beauty: !!document.getElementById("beauty-toggle")?.checked, bg: selectedBg };
+
+                    if (selectedBg !== "none" && segModelReady) {
+                        try {
+                            const vw = raw.width, vh = raw.height;
+                            const visW = vw / zoom, visH = vh / zoom;
+                            const sx = (vw - visW) / 2, sy = (vh - visH) / 2;
+                            await segModel.send({ image: video });
+                            const mask = lastSegResults && lastSegResults.segmentationMask;
+                            const pc = document.createElement("canvas");
+                            pc.width = vw; pc.height = vh;
+                            const pctx = pc.getContext("2d");
+                            pctx.drawImage(video, sx, sy, visW, visH, 0, 0, vw, vh);
+                            pctx.globalCompositeOperation = "destination-in";
+                            pctx.drawImage(mask, sx, sy, visW, visH, 0, 0, vw, vh);
+                            pctx.globalCompositeOperation = "source-over";
+                            reviewState.personCanvas = pc;
+                        } catch (e) { reviewState.personCanvas = null; }
+                    }
+
+                    const canvas = await capturePhotoWithEffects(video, zoom);
+                    stopPreviewLoop();
+                    if (cameraStream) { cameraStream.getTracks().forEach(t => t.stop()); cameraStream = null; }
+                    document.getElementById("camera-modal").classList.add("hidden");
+                    reviewRotation = 0; reviewFlipH = false;
+                    updateReviewCanvas(canvas);
+                    document.getElementById("review-modal").classList.remove("hidden");
+                });
+
+                function updateReviewCanvas(sourceCanvas) {
+                    const rc = document.getElementById("review-canvas");
+                    const ctx = rc.getContext("2d");
+                    let w = sourceCanvas.width, h = sourceCanvas.height;
+                    if (reviewRotation === 90 || reviewRotation === 270) { const t = w; w = h; h = t; }
+                    rc.width = w; rc.height = h;
+                    ctx.save();
+                    ctx.translate(w / 2, h / 2);
+                    ctx.rotate(reviewRotation * Math.PI / 180);
+                    if (reviewFlipH) ctx.scale(-1, 1);
+                    ctx.drawImage(sourceCanvas, -sourceCanvas.width / 2, -sourceCanvas.height / 2);
+                    ctx.restore();
+                }
+
+                function composeReviewCanvas() {
+                    const { rawCanvas, personCanvas, zoom, filter, beauty, bg } = reviewState;
+                    const vw = rawCanvas.width, vh = rawCanvas.height;
+                    const visW = vw / zoom, visH = vh / zoom;
+                    const sx = (vw - visW) / 2, sy = (vh - visH) / 2;
+                    const c = document.createElement("canvas");
+                    c.width = vw; c.height = vh;
+                    const ctx = c.getContext("2d");
+                    if (bg !== "none") {
+                        drawBgGradient(ctx, bg, vw, vh);
+                        if (personCanvas) { ctx.drawImage(personCanvas, 0, 0); }
+                        else { ctx.globalAlpha = 0.88; ctx.drawImage(rawCanvas, sx, sy, visW, visH, 0, 0, vw, vh); ctx.globalAlpha = 1; }
+                    } else { ctx.drawImage(rawCanvas, sx, sy, visW, visH, 0, 0, vw, vh); }
+                    applyPixelEffects(ctx, c);
+                    return c;
+                }
+
+                function renderReviewWithBg(newBg) {
+                    reviewState.bg = newBg;
+                    updateReviewCanvas(composeReviewCanvas());
+                    const img = getBgImage(newBg);
+                    if (img && !img.complete) {
+                        img.onload = () => { if (reviewState.bg === newBg) updateReviewCanvas(composeReviewCanvas()); };
+                    }
+                }
+
+                document.getElementById("close-review-modal").addEventListener("click", () => {
+                    document.getElementById("review-modal").classList.add("hidden");
+                    reviewState = { rawCanvas: null, personCanvas: null, zoom: 1, filter: "none", beauty: false, bg: "none" };
+                });
+
+                document.querySelectorAll(".review-bg-btn").forEach(btn => {
+                    btn.addEventListener("click", () => {
+                        document.querySelectorAll(".review-bg-btn").forEach(b => {
+                            b.className = "review-bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white/60 hover:text-white hover:bg-white/5 shrink-0 transition-colors";
+                        });
+                        btn.className = "review-bg-btn px-2.5 py-1 rounded-lg text-[10px] border border-white/20 text-white bg-white/10 shrink-0 font-medium";
+                        if (btn.dataset.bg === "custom") { const inp = document.getElementById("custom-bg-input"); if (inp) inp.click(); return; }
+                        renderReviewWithBg(btn.dataset.bg);
+                    });
+                });
+
+                document.getElementById("review-rotate-left").addEventListener("click", () => {
+                    reviewRotation = (reviewRotation - 90 + 360) % 360;
+                    updateReviewCanvas(composeReviewCanvas());
+                });
+                document.getElementById("review-rotate-right").addEventListener("click", () => {
+                    reviewRotation = (reviewRotation + 90) % 360;
+                    updateReviewCanvas(composeReviewCanvas());
+                });
+                document.getElementById("review-flip-h").addEventListener("click", () => {
+                    reviewFlipH = !reviewFlipH;
+                    updateReviewCanvas(composeReviewCanvas());
+                });
+
+                document.getElementById("review-download-btn").addEventListener("click", () => {
+                    const link = document.createElement("a");
+                    link.download = "fanconnect-photo.jpg";
+                    link.href = document.getElementById("review-canvas").toDataURL("image/jpeg", 0.92);
+                    link.click();
+                });
+
+                document.getElementById("review-crop-btn").addEventListener("click", () => {
+                    cropFromReview = true;
+                    const img = document.getElementById("crop-image");
+                    img.src = document.getElementById("review-canvas").toDataURL("image/jpeg", 0.95);
+                    document.getElementById("review-modal").classList.add("hidden");
+                    document.getElementById("crop-modal").classList.remove("hidden");
+                    if (cropper) cropper.destroy();
+                    cropper = new Cropper(img, { aspectRatio: NaN, viewMode: 1, rotatable: true, scalable: true });
+                });
+
+                document.getElementById("review-use-btn").addEventListener("click", () => {
+                    cropFromReview = true;
+                    const img = document.getElementById("crop-image");
+                    img.src = document.getElementById("review-canvas").toDataURL("image/jpeg", 0.95);
+                    document.getElementById("review-modal").classList.add("hidden");
+                    document.getElementById("crop-modal").classList.remove("hidden");
+                    if (cropper) cropper.destroy();
+                    cropper = new Cropper(img, { aspectRatio: NaN, viewMode: 2, autoCropArea: 0.8 });
+                });
+
+                document.getElementById("cancel-crop").addEventListener("click", () => {
+                    document.getElementById("crop-modal").classList.add("hidden");
+                    if (cropFromReview) {
+                        cropFromReview = false;
+                        document.getElementById("review-modal").classList.remove("hidden");
+                    } else {
+                        document.getElementById("profile-upload").value = "";
+                    }
+                });
+
+                document.getElementById("confirm-crop").addEventListener("click", () => {
+                    const canvas = cropper.getCroppedCanvas({
+                        maxWidth: 600,
+                        maxHeight: 600
+                    });
+                    window.croppedProfileBase64 = canvas.toDataURL("image/jpeg", 0.85);
+                    const preview = document.getElementById("profile-preview");
+                    preview.src = window.croppedProfileBase64;
+                    preview.classList.remove("hidden");
+                    document.getElementById("upload-icon").classList.add("hidden");
+                    document.getElementById("crop-modal").classList.add("hidden");
+                    document
+                        .querySelectorAll(".default-avatar-item")
+                        .forEach((i) => i.classList.remove("border-primary-fixed-dim"));
+                    document.getElementById("selected-default-avatar").value = "";
+                });
+
+                // Default Avatar Selection
+                document.querySelectorAll(".default-avatar-item").forEach((img) => {
+                    img.addEventListener("click", () => {
+                        document
+                            .querySelectorAll(".default-avatar-item")
+                            .forEach((i) => i.classList.remove("border-primary-fixed-dim"));
+                        img.classList.add("border-primary-fixed-dim");
+                        document.getElementById("selected-default-avatar").value =
+                            img.dataset.url;
+                        const preview = document.getElementById("profile-preview");
+                        preview.src = img.dataset.url;
+                        preview.classList.remove("hidden");
+                        document.getElementById("upload-icon").classList.add("hidden");
+                        document.getElementById("profile-upload").value = "";
+                        window.croppedProfileBase64 = null;
+                    });
+                });
+
+                // Date of Birth — set max to 6 years ago + icon opens native picker
+                const dobInput = document.getElementById('dob');
+                if (dobInput) {
+                    const sixYearsAgo = new Date();
+                    sixYearsAgo.setFullYear(sixYearsAgo.getFullYear() - 6);
+                    dobInput.max = sixYearsAgo.toISOString().split('T')[0];
+                }
+                document.getElementById('dob-icon')?.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    document.getElementById('dob')?.showPicker();
+                });
+
+                // Password visibility toggle
+                function togglePasswordVisibility() {
+                    const pw = document.getElementById('password');
+                    const eye = document.getElementById('password-eye');
+                    if (pw.type === 'password') {
+                        pw.type = 'text';
+                        eye.textContent = 'visibility_off';
+                    } else {
+                        pw.type = 'password';
+                        eye.textContent = 'visibility';
+                    }
+                }
+
+                // Frame Selection
+                document.querySelectorAll(".frame-item").forEach((item) => {
+                    item.addEventListener("click", () => {
+                        document
+                            .querySelectorAll(".frame-item")
+                            .forEach((i) =>
+                                i.classList.remove("ring-2", "ring-primary-fixed-dim"),
+                            );
+                        item.classList.add("ring-2", "ring-primary-fixed-dim");
+                        document.getElementById("selected-frame").value = item.dataset.frame;
+                    });
+                });
+            </script>
+            <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+            <script type="module" src="js/firebase-config.js"></script>
+            <script src="js/theme.js"></script>
+            <script src="js/sidebar.js"></script>
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    const page = location.pathname.split('/').pop();
+                    document.querySelectorAll('a[href]').forEach(a => {
+                        if (a.getAttribute('href') === page) {
+                            a.classList.add('bg-primary/10', 'text-primary');
+                        }
+                    });
+                });
+
+                // Terms & Privacy Modal
+                function openTermsModal(section) {
+                    const modal = document.getElementById('terms-modal');
+                    const iframe = document.getElementById('terms-iframe');
+                    const title = document.getElementById('terms-modal-title');
+                    if (section === 'privacy') {
+                        title.textContent = 'Privacy Policy';
+                        iframe.src = 'terms.html#privacy';
+                    } else {
+                        title.textContent = 'Terms of Service';
+                        iframe.src = 'terms.html';
+                    }
+                    modal.classList.remove('hidden');
+                    document.body.style.overflow = 'hidden';
+                }
+                function closeTermsModal() {
+                    document.getElementById('terms-modal').classList.add('hidden');
+                    document.getElementById('terms-iframe').src = '';
+                    document.body.style.overflow = '';
+                }
+                document.getElementById('terms-modal')?.addEventListener('click', (e) => {
+                    if (e.target === e.currentTarget) closeTermsModal();
+                });
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') closeTermsModal();
+                });
+            </script>
+
+
+
+
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    const btn = document.getElementById('mobile-menu-btn');
+                    const sidebar = document.getElementById('sidebar');
+                    if (btn && sidebar) {
+                        const apply = () => {
+                            const c = localStorage.getItem('sidebarCollapsed') === 'true';
+                            if (window.innerWidth >= 1024) {
+                                sidebar.classList.toggle('w-20', c);
+                                sidebar.classList.toggle('w-64', !c);
+                                sidebar.querySelectorAll('.nav-text,.logo-text').forEach(el => el.style.display = c ? 'none' : '');
+                            }
+                        };
+                        apply();
+                        btn.addEventListener('click', () => {
+                            if (window.innerWidth >= 1024) {
+                                localStorage.setItem('sidebarCollapsed', localStorage.getItem('sidebarCollapsed') === 'true' ? 'false' : 'true');
+                                apply();
+                            } else {
+                                sidebar.classList.toggle('-translate-x-full');
+                            }
+                        });
+                    }
+                });
+            </script>
+
+  <script>
+    // --- Gender selection: deterministic, race-free handling ---
+    document.addEventListener('DOMContentLoaded', () => {
+      const genderGroup = document.getElementById('gender-group');
+      if (genderGroup) {
+        const genderOptions = Array.from(genderGroup.querySelectorAll('.gender-option'));
+        const selectGender = (value) => {
+          genderOptions.forEach((opt) => {
+            const inp = opt.querySelector('input');
+            const card = opt.querySelector('.gender-card');
+            const on = inp.value === value;
+            inp.checked = on;
+            card.classList.toggle('bg-primary-container', on);
+            card.classList.toggle('text-on-primary-container', on);
+            card.classList.toggle('border-primary', on);
+            card.classList.toggle('text-surface-dim/50', !on);
+          });
+        };
+        genderOptions.forEach((opt) => {
+          // Drive selection from the label click so the highlight always
+          // matches the chosen value (avoids the hidden-input toggle race).
+          opt.addEventListener('click', (e) => {
+            e.preventDefault();
+            selectGender(opt.dataset.value);
+          });
+        });
+        // Initialize from the pre-checked input.
+        const pre = genderGroup.querySelector('input[name="gender"]:checked');
+        if (pre) selectGender(pre.value);
+      }
+
+      // --- Live "email already registered" check on signup ---
+      const emailInput = document.getElementById('email');
+      const emailMsg = document.getElementById('signup-email-msg');
+      let emailTimer = null;
+      if (emailInput && emailMsg) {
+        emailInput.addEventListener('input', () => {
+          const val = emailInput.value.trim();
+          clearTimeout(emailTimer);
+          emailMsg.textContent = '';
+          emailMsg.className = 'block mt-1.5 text-xs font-medium';
+          if (!val || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) return;
+          emailTimer = setTimeout(async () => {
+            try {
+              const fb = window.__FB__;
+              if (!fb || !fb.fetchSignInMethodsForEmail || !fb.auth) return;
+              const methods = await fb.fetchSignInMethodsForEmail(fb.auth, val);
+              if (methods && methods.length > 0) {
+                emailMsg.textContent = '⚠ This email is already registered. Please log in instead.';
+                emailMsg.className = 'block mt-1.5 text-xs font-medium text-red-500';
+              } else {
+                emailMsg.textContent = '✓ Email is available — you can sign up.';
+                emailMsg.className = 'block mt-1.5 text-xs font-medium text-green-500';
+              }
+            } catch (e) { /* ignore network errors */ }
+          }, 600);
+        });
+      }
+    });
+  </script>
+
+  <script type="module" src="js/script.js"></script>
+</body>
+
+</html>

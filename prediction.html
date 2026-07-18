@@ -1,0 +1,1319 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="assets/fancoin/favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="assets/fancoin/favicon-16x16.png"
+    />
+    <meta property="og:site_name" content="Fanconnact" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="assets/fancoin/fanconnactlogo.png" />
+    <meta property="og:title" content="Fanconnact Dashboard" />
+    <meta
+      property="og:description"
+      content="Join Fanconnact for fantasy sports, predictions, and live matches."
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Fanconnact Dashboard" />
+    <meta
+      name="twitter:description"
+      content="Join Fanconnact for fantasy sports, predictions, and live matches."
+    />
+    <meta name="twitter:image" content="assets/fancoin/fanconnactlogo.png" />
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <script>
+      if (localStorage.getItem("color-theme") === "dark") {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
+    </script>
+    <title>Fanconnact Dashboard</title>
+    <!-- Tailwind CSS v3 with plugins -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Google Fonts: Lexend for headlines, Hanken Grotesk for body as per Design System -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;family=Hanken+Grotesk:wght@300;400;500;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+    <link rel="stylesheet" href="css/prediction.css" />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-dim": "#cbdbf5",
+              "on-secondary-container": "#fffbff",
+              "on-primary-fixed-variant": "#005236",
+              "surface-container-highest": "#d3e4fe",
+              "primary-container": "#10b981",
+              "on-surface-variant": "#3c4a42",
+              "on-primary": "#ffffff",
+              "on-tertiary-container": "#2e394c",
+              "surface-container-high": "#dce9ff",
+              "on-secondary": "#ffffff",
+              "primary-fixed": "#6ffbbe",
+              secondary: "#4648d4",
+              "surface-container": "#e5eeff",
+              "on-tertiary-fixed": "#111c2d",
+              "secondary-container": "#6063ee",
+              "on-secondary-fixed-variant": "#2f2ebe",
+              "surface-bright": "#f8f9ff",
+              "on-background": "#0b1c30",
+              "secondary-fixed": "#e1e0ff",
+              "on-surface": "#0b1c30",
+              "outline-variant": "#bbcabf",
+              primary: "#006c49",
+              "tertiary-fixed": "#d8e3fb",
+              error: "#ba1a1a",
+              surface: "#f8f9ff",
+              "inverse-on-surface": "#eaf1ff",
+              "tertiary-fixed-dim": "#bcc7de",
+              "primary-fixed-dim": "#4edea3",
+              "on-primary-fixed": "#002113",
+              background: "#f8f9ff",
+              outline: "#6c7a71",
+              "surface-variant": "#d3e4fe",
+              "on-tertiary-fixed-variant": "#3c475a",
+              "on-tertiary": "#ffffff",
+              tertiary: "#545f73",
+              "secondary-fixed-dim": "#c0c1ff",
+              "on-secondary-fixed": "#07006c",
+              "on-primary-container": "#00422b",
+              "surface-container-low": "#eff4ff",
+              "error-container": "#ffdad6",
+              "on-error-container": "#93000a",
+              "tertiary-container": "#98a3ba",
+              "surface-container-lowest": "#ffffff",
+              "inverse-primary": "#4edea3",
+              "surface-tint": "#006c49",
+              "inverse-surface": "#213145",
+              "on-error": "#ffffff",
+              brand: {
+                green: "#10b981",
+                dark: "#0B0E11",
+                card: "#16191E",
+                border: "#2A2E35",
+              },
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px",
+            },
+            fontFamily: {
+              headline: ["Lexend", "sans-serif"],
+              body: ["Hanken Grotesk", "sans-serif"],
+            },
+            boxShadow: {
+              soft: "0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05)",
+            },
+          },
+        },
+      };
+    </script>
+    <style data-purpose="custom-layout-styles">
+      body {
+        transition:
+          color 0.3s,
+          background-color 0.3s,
+          border-color 0.3s;
+        font-family: "Hanken Grotesk", sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+
+      .dark body {
+        background-color: #0b0e11;
+        color: white;
+      }
+
+      .light body {
+        background-color: #f8f9ff;
+        color: #0f172a;
+      }
+
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 4px;
+        height: 4px;
+      }
+
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        border-radius: 0.25rem;
+      }
+
+      .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+        background-color: #2a2e35;
+      }
+
+      .light .custom-scrollbar::-webkit-scrollbar-thumb {
+        background-color: #d1d5db;
+      }
+
+      .glow-green {
+        box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
+      }
+
+      .hero-gradient {
+        background-image: linear-gradient(
+          rgba(11, 14, 17, 0.55),
+          rgba(11, 14, 17, 0.75)
+        );
+        background-size: cover;
+        background-position: center;
+        background-blend-mode: multiply;
+      }
+
+      :root:not(.dark) .hero-gradient {
+        border-color: #e2e8f0;
+        background-image: linear-gradient(
+          rgba(255, 255, 255, 0.55),
+          rgba(241, 245, 249, 0.7)
+        );
+        background-size: cover;
+        background-position: center;
+        background-blend-mode: overlay;
+      }
+
+      :root:not(.dark) .hero-gradient,
+      :root:not(.dark) .hero-gradient * {
+        color: #0f172a !important;
+      }
+
+      :root:not(.dark) .hero-gradient .text-brand-green,
+      :root:not(.dark) .hero-gradient .text-emerald-600 {
+        color: #059669 !important;
+      }
+
+      :root:not(.dark) .hero-gradient button,
+      :root:not(.dark) .hero-gradient button * {
+        color: #000 !important;
+      }
+
+      .fan-war-bg {
+        background:
+          linear-gradient(rgba(15, 23, 42, 0.7), rgba(30, 27, 75, 0.8)),
+          url("https://lh3.googleusercontent.com/aida-public/AB6AXuDwCuhhgmpq4ax-2MoOqwW680LvqXJYLB7BSTP9ByZYzcWclRelEC6d-CAoLsKJVL4pEo44viJDoj1Nybp5b8UEUzO1uF-AQsmorzyBa_GhGwev3TKjQUAESIovARJWAUTdiVJii8YxP3eVgsHcoBXLfE5lDEKt5ZuNPeFahTYSFovGMAI4nOAY-A2GljKuEtF5T3Wqtla0m8ClWUwd2p5cnTBGe5nsoT3kxhb_NoZZgLWE9DQUi3ap8FAsXGv28cDJJUT8SSG-_Cfa");
+        background-size: cover;
+        background-position: center;
+        position: relative;
+        overflow: hidden;
+      }
+
+      :root:not(.dark) .fan-war-bg {
+        background-image:
+          linear-gradient(rgba(240, 249, 255, 0.5), rgba(224, 242, 254, 0.7)),
+          url("https://lh3.googleusercontent.com/aida-public/AB6AXuDwCuhhgmpq4ax-2MoOqwW680LvqXJYLB7BSTP9ByZYzcWclRelEC6d-CAoLsKJVL4pEo44viJDoj1Nybp5b8UEUzO1uF-AQsmorzyBa_GhGwev3TKjQUAESIovARJWAUTdiVJii8YxP3eVgsHcoBXLfE5lDEKt5ZuNPeFahTYSFovGMAI4nOAY-A2GljKuEtF5T3Wqtla0m8ClWUwd2p5cnTBGe5nsoT3kxhb_NoZZgLWE9DQUi3ap8FAsXGv28cDJJUT8SSG-_Cfa");
+        background-size: cover;
+        background-position: center;
+      }
+
+      .nav-link-active {
+        font-weight: 500 !important;
+      }
+
+      .dark .nav-link-active {
+        background-color: rgba(16, 185, 129, 0.2) !important;
+        color: #10b981 !important;
+        border-right: 4px solid #10b981 !important;
+      }
+
+      .dark .nav-link-active span,
+      .dark .nav-link-active .nav-text {
+        color: #10b981 !important;
+      }
+
+      :root:not(.dark) .nav-link-active {
+        background-color: #eff6ff !important;
+        color: #1d4ed8 !important;
+        border-right: 4px solid #3b82f6 !important;
+      }
+
+      /* Profile Frames */
+
+      .frame-gold {
+        border: 3px solid #eab308 !important;
+        box-shadow: 0 0 10px rgba(234, 179, 8, 0.5);
+      }
+
+      .frame-emerald {
+        border: 3px solid #10b981 !important;
+        box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+      }
+
+      .frame-diamond {
+        border: 3px solid #22d3ee !important;
+        box-shadow: 0 0 10px rgba(34, 211, 238, 0.5);
+      }
+
+      #sidebar.sidebar-collapsed {
+        width: 0 !important;
+        min-width: 0 !important;
+        border: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+      }
+    </style>
+  </head>
+
+  <body
+    class="h-screen w-full flex flex-row overflow-hidden transition-colors duration-300 bg-[#F8F9FF] dark:bg-[#0B0E11]"
+  >
+    <!-- BEGIN: Sidebar -->
+    <aside
+      id="sidebar"
+      class="fixed inset-y-0 left-0 z-[60] w-64 flex-shrink-0 flex flex-col h-screen transition-all duration-300 bg-white dark:bg-brand-dark border-r border-gray-200 dark:border-brand-border shadow-xl lg:shadow-none -translate-x-full lg:translate-x-0 lg:static overflow-y-auto custom-scrollbar"
+      data-purpose="sidebar-navigation"
+    >
+      <!-- Mobile Close Button -->
+      <button
+        id="close-sidebar-btn"
+        class="lg:hidden p-2 absolute top-4 right-4 text-slate-500 dark:text-gray-400"
+      >
+        <span class="material-symbols-outlined">close</span>
+      </button>
+
+      <div class="p-6 flex items-center space-x-2 logo-container">
+        <img
+          src="assets/fancoin/fanconnactlogo.png"
+          alt="Fanconnact"
+          class="w-8 h-8 flex-shrink-0"
+        />
+        <span class="text-xl font-bold tracking-tight font-headline logo-text"
+          ><span class="text-fan">Fan</span
+          ><span class="text-connect">Connact</span></span
+        >
+      </div>
+      <nav class="flex-1 px-4 space-y-1 mt-2 transition-all">
+        <h3
+          class="text-xs font-bold text-slate-500 dark:text-gray-400 uppercase tracking-widest mb-4 px-3 opacity-60"
+        >
+          Global
+        </h3>
+        <a
+          class="flex items-center space-x-3 px-3 py-3 rounded-lg nav-link transition-colors text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:bg-gray-100"
+          href="index.html"
+        >
+          <span class="material-symbols-outlined text-xl">home</span>
+          <span class="text-sm nav-text">Home</span>
+        </a>
+        <a
+          class="flex items-center space-x-3 px-3 py-3 rounded-lg nav-link transition-colors text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:bg-gray-100"
+          href="livematches.html"
+        >
+          <span class="material-symbols-outlined text-xl">live_tv</span>
+          <span class="text-sm nav-text">Live Matches</span>
+        </a>
+        <a
+          class="flex items-center space-x-3 px-3 py-3 rounded-lg nav-link transition-colors text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:bg-gray-100"
+          href="news&update.html"
+        >
+          <span class="material-symbols-outlined text-xl">newspaper</span>
+          <span class="text-sm nav-text">News & Updates</span>
+        </a>
+        <div class="h-px bg-gray-200 dark:bg-brand-border my-4 mx-2"></div>
+
+        <a
+          class="flex items-center space-x-3 px-3 py-3 rounded-lg nav-link transition-colors text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:bg-gray-100"
+          href="top-players.html"
+        >
+          <span class="material-symbols-outlined text-xl">person_pin</span>
+          <span class="text-sm nav-text">Player Zone</span>
+        </a>
+<a
+            class="flex items-center space-x-3 px-3 py-3 rounded-lg nav-link transition-colors text-slate-900 dark:text-white hover:text-slate-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5"
+            href="prediction.html"
+          >
+            <span class="material-symbols-outlined text-xl text-brand-green">psychology</span>
+            <span class="text-sm nav-text font-semibold text-brand-green">Predictions</span>
+          </a>
+        <a
+          class="flex items-center space-x-3 px-3 py-3 rounded-lg nav-link transition-colors text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:bg-gray-100"
+          href="leaderboard.html"
+        >
+          <span class="material-symbols-outlined text-xl">leaderboard</span>
+          <span class="text-sm nav-text">Leaderboard</span>
+        </a>
+        <a
+          class="flex items-center space-x-3 px-3 py-3 rounded-lg nav-link transition-colors text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:bg-gray-100"
+          href="setting.html"
+        >
+          <span class="material-symbols-outlined text-xl">settings</span>
+          <span class="text-sm nav-text">Settings</span>
+        </a>
+      </nav>
+      <!-- Side Promo Card: Fan War -->
+      <div class="p-4 mt-6 promo-card pb-6 md:pb-6">
+        <div
+          class="fan-war-bg rounded-2xl p-5 relative group border dark:border-white/10 border-emerald-100 shadow-soft overflow-hidden cursor-pointer"
+          onclick="window.open('https://play.google.com/store/apps', '_blank')"
+        >
+          <div class="relative z-10">
+            <p
+              class="text-[10px] font-black uppercase tracking-widest mb-1 drop-shadow-md text-emerald-600 dark:text-brand-green"
+            >
+              Fan War
+            </p>
+            <h4
+              class="text-xl font-bold font-headline leading-tight mb-1 drop-shadow-lg text-slate-900 dark:text-white"
+            >
+              RCB vs CSK
+            </h4>
+            <p
+              class="text-[11px] font-medium max-w-[120px] mb-4 drop-shadow-sm text-slate-600 dark:text-white/90"
+            >
+              Join the ultimate fan battle
+            </p>
+            <button
+              class="w-full bg-brand-green text-black font-bold py-2.5 rounded-lg text-sm transition-all active:scale-95 hover:bg-emerald-400 shadow-lg shadow-emerald-500/20 dark:shadow-emerald-500/40"
+            >
+              Join Now
+            </button>
+          </div>
+          <div
+            class="absolute -right-4 -bottom-4 opacity-30 group-hover:opacity-50 transition-opacity duration-500 w-36 h-36"
+          >
+            <img
+              alt="Trophy"
+              class="w-full h-full object-contain"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuCyoPG8fC8OtWBHcek3eIADBuDd3Np6gULZynELuZ7pPlKPOvdDgadQilZ4NfFjhSLU7lCBGKDWED-M5SFPsDrv8_LjVBezdu54XHLdbq0TOzs5Utw94juYlgZVjcdiDakU5HzApwMzI7nb7wmdy30hrCqwMIFwbTdvXWwadYvbQzkRBDzersvlj-TXlr7PpbbZAf-TX0lRI1vf3byQ_rAoIR5mQFrb-xpUqEy6NSMtl5FcuESAg3MgpigcW0jUnDqRWhgLqpm2Qbse"
+            />
+          </div>
+        </div>
+      </div>
+    </aside>
+    <!-- END: Sidebar -->
+    <!-- Main Content Area -->
+    <main
+      class="flex-1 flex flex-col h-screen overflow-hidden transition-colors duration-300 bg-[#F8F9FF] dark:bg-[#0B0E11]"
+    >
+      <!-- BEGIN: Header -->
+      <header
+        class="min-h-16 md:min-h-20 flex items-center justify-between px-3 md:px-8 border-b transition-colors duration-300 bg-white dark:bg-brand-dark border-gray-200 dark:border-brand-border shrink-0 z-50 sticky top-0"
+        data-purpose="top-navigation"
+      >
+        <div class="flex items-center gap-2 md:gap-4 flex-1 min-w-0">
+          <button
+            id="mobile-menu-btn"
+            class="p-2 text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 rounded-lg transition-colors shrink-0"
+          >
+            <span class="material-symbols-outlined">menu</span>
+          </button>
+
+          <div
+            id="header-logo"
+            class="lg:hidden flex items-center gap-1 sm:gap-2 ml-1 sm:ml-2"
+          >
+            <img
+              src="assets/fancoin/fanconnactlogo.png"
+              alt="Fanconnact"
+              class="w-6 h-6 sm:w-7 sm:h-7"
+            />
+            <span class="text-sm sm:text-base font-bold whitespace-nowrap"
+              ><span class="text-fan">Fan</span
+              ><span class="text-connect">Connact</span></span
+            >
+          </div>
+
+          <!-- Desktop Search -->
+          <div class="relative max-w-md w-full hidden md:block mx-4">
+            <span
+              class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-gray-500"
+              >search</span
+            >
+            <input
+              type="text"
+              placeholder="Search matches, players..."
+              class="w-full bg-gray-100 dark:bg-[#1A1D23] border-none rounded-xl py-2.5 pl-10 pr-4 text-sm focus:ring-2 focus:ring-brand-green/50 text-slate-800 dark:text-white transition-all"
+            />
+          </div>
+        </div>
+
+        <div class="flex items-center gap-1 sm:gap-2 md:gap-3 shrink-0">
+          <!-- Mobile Search Trigger -->
+          <button
+            class="md:hidden p-1.5 sm:p-2 text-slate-500 dark:text-gray-400"
+          >
+            <span class="material-symbols-outlined">search</span>
+          </button>
+
+          <!-- Theme Toggle Button -->
+          <button
+            id="theme-toggle"
+            class="p-1.5 sm:p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-all active:scale-95"
+          >
+            <span
+              id="theme-toggle-light-icon"
+              class="material-symbols-outlined hidden text-yellow-400"
+              >light_mode</span
+            >
+            <span
+              id="theme-toggle-dark-icon"
+              class="material-symbols-outlined text-slate-600 dark:text-slate-400"
+              >dark_mode</span
+            >
+          </button>
+
+          <!-- Wallet / FanCoins -->
+          <div
+            class="flex items-center gap-1 bg-gray-100 dark:bg-[#1A1D23] px-1.5 sm:px-3 py-1.5 rounded-full border border-gray-200 dark:border-white/5"
+          >
+            <div
+              class="w-5 h-5 bg-yellow-500 rounded-full flex items-center justify-center text-[10px] text-black font-bold"
+            >
+              F
+            </div>
+            <span
+              id="wallet-coin-balance"
+              class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white hidden sm:inline"
+              >100</span
+            >
+          </div>
+
+          <div class="relative shrink-0 notification-trigger cursor-pointer">
+            <span
+              class="material-symbols-outlined text-slate-500 dark:text-gray-400 text-xl sm:text-2xl"
+              >notifications</span
+            >
+            <span
+              class="absolute -top-1 -right-1 w-3.5 h-3.5 sm:w-4 sm:h-4 bg-red-500 rounded-full text-[8px] sm:text-[10px] flex items-center justify-center font-bold text-white shadow-sm"
+              >3</span
+            >
+          </div>
+
+          <div
+            id="profile-trigger"
+            onclick="window.location.href='profile.html'"
+            class="flex items-center space-x-2 md:border-l md:pl-4 border-gray-200 dark:border-brand-border group relative cursor-pointer shrink-0"
+          >
+            <div class="text-right hidden md:block">
+              <p
+                id="user-name-display"
+                class="text-sm font-bold font-headline text-slate-900 dark:text-white"
+              ></p>
+              <p
+                id="user-level-display"
+                class="text-[10px] text-slate-500 uppercase tracking-wider"
+              ></p>
+            </div>
+            <img
+              id="user-profile-img"
+              alt="User"
+              class="w-6 h-6 sm:w-7 sm:h-7 md:w-10 md:h-10 rounded-full border-2 border-brand-green"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuARZ0xVBU1KvcLOf_ZliOHitD78PVSiDr1qlcai6kvG_jn6epDDtgIDvdS6ua2TZqciXhMqDw6mk2eq9wvTp7-B6CfJDv4ojxPvR6jrB2qbta__ofGg1moSqgOm0kQa-hSS3UJMmhiNzN0ATFdKJqevDzCZBACLb1Ku-BrA29W3Oi1vhMGxeiyb4AXGw-ByXo2Tan25gBOd1JgP8rK_7LsKzczbNyat9sSGsL_OhzKBtupfCW9XrnwK6BPAZg3XGBBtd4Ry7pdyfBFG"
+            />
+          </div>
+        </div>
+      </header>
+      <!-- Scrollable Content -->
+      <div class="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-8">
+        <!-- =====================================================
+                PREDICTION PAGE
+====================================================== -->
+
+        <section class="prediction-page">
+          <div class="prediction-layout">
+            <!-- ===========================
+                LEFT SIDE
+        ============================ -->
+
+            <div class="prediction-main">
+              <!-- Header -->
+
+              <div class="prediction-header">
+                <div>
+                  <h1 class="prediction-title">Prediction Arena</h1>
+
+                  <p class="prediction-subtitle">
+                    Predict • Earn XP • Collect Coins • Climb the Leaderboard
+                  </p>
+                </div>
+
+                <button class="how-play-btn">
+                  <i class="fa-regular fa-circle-question"></i>
+
+                  How To Play
+                </button>
+              </div>
+
+              <!-- ===========================
+                    SPORTS FILTER
+            ============================ -->
+
+              <div class="sports-filter">
+                <button class="sport-pill" data-sport="cricket"><span class="material-symbols-outlined text-base">sports_cricket</span> Cricket</button>
+              <button class="sport-pill" data-sport="football"><span class="material-symbols-outlined text-base">sports_soccer</span> Football</button>
+              <button class="sport-pill" data-sport="basketball"><span class="material-symbols-outlined text-base">sports_basketball</span> Basketball</button>
+              <button class="sport-pill" data-sport="tennis"><span class="material-symbols-outlined text-base">sports_tennis</span> Tennis</button>
+              <button class="sport-pill" data-sport="hockey"><span class="material-symbols-outlined text-base">sports_hockey</span> Hockey</button>
+              <button class="sport-pill" data-sport="volleyball"><span class="material-symbols-outlined text-base">sports_volleyball</span> Volleyball</button>
+              <button class="sport-pill" data-sport="kabaddi"><span class="material-symbols-outlined text-base">sports_kabaddi</span> Kabaddi</button>
+              </div>
+
+              <!-- ===========================
+                    MATCH HEADER
+            ============================ -->
+
+              <div class="match-banner">
+                <div class="team-block">
+                  <div class="team-logo-circle" id="team1Logo"><span id="team1Initial">A</span></div>
+                  <div>
+                    <h2 id="team1Name">Team A</h2>
+                    <span class="team-label">Home</span>
+                    <div class="team-score-big" id="team1Score"></div>
+                  </div>
+                </div>
+                <div class="match-center">
+                  <div class="live-badge" id="matchBadge">LIVE</div>
+                  <h2>VS</h2>
+                  <div class="match-status" id="matchStatus">Upcoming</div>
+                </div>
+                <div class="team-block">
+                  <div class="team-logo-circle" id="team2Logo"><span id="team2Initial">B</span></div>
+                  <div>
+                    <h2 id="team2Name">Team B</h2>
+                    <span class="team-label">Away</span>
+                    <div class="team-score-big" id="team2Score"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ===========================
+                NAVIGATION
+            ============================ -->
+
+              <div class="prediction-tabs">
+                <button class="tab-btn active" data-tab="live">
+                  LIVE PREDICTIONS
+                </button>
+
+                <button class="tab-btn" data-tab="prematch">PRE MATCH</button>
+
+                <button class="tab-btn" data-tab="results">RESULTS</button>
+
+                <button class="tab-btn" data-tab="history">
+                  MY PREDICTIONS
+                </button>
+              </div>
+
+              <!-- ===========================
+                PREDICTION LIST
+            ============================ -->
+
+              <div id="predictionContainer" class="prediction-container">
+                <!-- =======================================================
+                UNIVERSAL PREDICTION CARD
+======================================================= -->
+
+                <div class="prediction-card">
+                  <!-- Header -->
+
+                  <div class="prediction-card-header">
+                    <div class="prediction-live">
+                      <span class="live-dot"></span>
+
+                      LIVE NOW
+                    </div>
+
+                    <div class="prediction-timer">
+                      <i class="fa-regular fa-clock"></i>
+
+                      <div>
+                        <span class="time-value"> 00:25 </span>
+
+                        <small> Time Left </small>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Question -->
+
+                  <h2 class="prediction-question">
+                    How many runs will be scored in Over 16?
+                  </h2>
+
+                  <!-- ===========================
+            OPTIONS
+    ============================ -->
+
+                  <div class="prediction-options">
+                    <button class="prediction-option">
+                      <div class="option-image">
+                        <div class="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 text-xs font-bold">VK</div>
+                      </div>
+
+                      <div class="option-content">
+                        <span class="option-title"> Virat Kohli </span>
+
+                        <span class="option-percent"> 45% </span>
+                      </div>
+                    </button>
+                    <button class="prediction-option active">
+                      <span class="option-title"> 6 - 10 </span>
+
+                      <span class="option-percent"> 48% </span>
+                    </button>
+
+                    <button class="prediction-option">
+                      <span class="option-title"> 11 - 15 </span>
+
+                      <span class="option-percent"> 28% </span>
+                    </button>
+
+                    <button class="prediction-option">
+                      <span class="option-title"> 16+ </span>
+
+                      <span class="option-percent"> 12% </span>
+                    </button>
+                  </div>
+
+                  <!-- ===========================
+          USER PREDICTION
+    ============================ -->
+
+                  <div class="prediction-user">
+                    <div class="prediction-divider">
+                      <div class="user-left">
+                        <div class="default-avatar-circle"><span>U</span></div>
+
+                        <span>
+                          You predicted :
+
+                          <strong> 6 - 10 Runs </strong>
+                        </span>
+                      </div>
+
+                      <div class="prediction-position">
+                        <i class="fa-solid fa-trophy"></i>
+
+                        Your Position:
+
+                        <strong>Top 23%</strong>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- ===========================
+            FOOTER
+    ============================ -->
+
+                  <div class="prediction-footer">
+                    <div class="reward-section">
+                      <span class="reward-title"> Reward </span>
+
+                      <div class="reward-item coins">
+                        <i class="fa-solid fa-coins"></i>
+
+                        +8 Coins
+                      </div>
+
+                      <div class="reward-item xp">
+                        <i class="fa-solid fa-star"></i>
+
+                        +10 XP
+                      </div>
+                    </div>
+
+                    <div class="prediction-count">
+                      <strong> 2,345 </strong>
+
+                      <span> Players Predicted </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- ===========================
+                RIGHT SIDE
+        ============================ -->
+
+            <aside class="prediction-sidebar">
+              <div class="stats-panel">
+                <div class="flex items-center justify-between mb-5">
+                  <h2 class="stats-title text-base font-bold">Your Stats</h2>
+                  <span class="text-[10px] text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-white/5 px-3 py-1 rounded-full font-medium">Last 30 days</span>
+                </div>
+                <div class="stats-list">
+                  <div class="stats-item">
+                    <div class="stats-icon blue">
+                      <i class="fa-solid fa-layer-group"></i>
+                    </div>
+                    <div class="stats-content">
+                      <span> Total Predictions </span>
+                      <h3 id="totalPredictions">248</h3>
+                    </div>
+                  </div>
+                  <div class="stats-item">
+                    <div class="stats-icon green">
+                      <i class="fa-solid fa-person-running"></i>
+                    </div>
+                    <div class="stats-content">
+                      <span> Correct Predictions </span>
+                      <h3 id="correctPredictions">178</h3>
+                    </div>
+                  </div>
+                  <div class="stats-item">
+                    <div class="stats-icon yellow">
+                      <i class="fa-solid fa-bullseye"></i>
+                    </div>
+                    <div class="stats-content">
+                      <span> Accuracy </span>
+                      <h3 id="accuracy">72%</h3>
+                    </div>
+                  </div>
+                  <div class="stats-item">
+                    <div class="stats-icon orange">
+                      <i class="fa-solid fa-fire"></i>
+                    </div>
+                    <div class="stats-content">
+                      <span> Best Streak </span>
+                      <h3 id="bestStreak">12</h3>
+                      <small>Matches</small>
+                    </div>
+                  </div>
+                  <div class="stats-item">
+                    <div class="stats-icon purple">
+                      <i class="fa-solid fa-star"></i>
+                    </div>
+                    <div class="stats-content">
+                      <span> Level </span>
+                      <h3 id="level">18</h3>
+                    </div>
+                  </div>
+                  <div class="stats-item">
+                    <div class="stats-icon pink">
+                      <i class="fa-solid fa-ranking-star"></i>
+                    </div>
+                    <div class="stats-content">
+                      <span> Global Rank </span>
+                      <h3 id="rank">#15</h3>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="live-feed-panel">
+                <h3 class="text-sm font-bold text-gray-800 dark:text-gray-200 mb-3 flex items-center gap-2"><span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span> Match Feed</h3>
+                <div id="matchFeedContainer"></div>
+              </div>
+            </aside>
+          </div>
+        </section>
+      </div>
+    </main>
+    <script src="js/theme.js"></script>
+    <script type="module" src="js/sidebar.js"></script>
+
+    <script type="module">
+      import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+      import { auth } from "./js/firebase-config.js";
+      import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+      import { db } from "./js/firebase-config.js";
+      onAuthStateChanged(auth, (user) => {
+        const nameEl = document.getElementById('user-name-display');
+        const imgEl = document.getElementById('user-profile-img');
+        const levelEl = document.getElementById('user-level-display');
+        if (user) {
+          if (nameEl) nameEl.textContent = user.displayName || 'User';
+          if (imgEl) imgEl.src = user.photoURL || 'https://api.dicebear.com/7.x/avataaars/svg?seed=default';
+          if (levelEl) levelEl.textContent = 'LVL 12';
+          getDoc(doc(db, 'users', user.uid)).then(snap => {
+            if (snap.exists()) {
+              const d = snap.data();
+              if (levelEl && d.level) levelEl.textContent = 'LVL ' + d.level;
+              if (imgEl && d.photoURL) imgEl.src = d.photoURL;
+            }
+          }).catch(() => {});
+        } else {
+          if (nameEl) nameEl.textContent = 'Guest';
+          if (imgEl) imgEl.src = 'https://api.dicebear.com/7.x/avataaars/svg?seed=guest';
+          if (levelEl) levelEl.textContent = '';
+        }
+      });
+    </script>
+
+    <script>
+      const FEED_DATA = {
+        cricket: [
+          { title:'IND 185/4 (32.4 ov)', desc:'Kohli hits a boundary through covers', live:true },
+          { title:'Over 32.4', desc:'4 runs from the over, IND need 45 more' },
+          { title:'WICKET!', desc:'Warner caught at slip, AUS 112/3' },
+          { title:'Over 28.1', desc:'Bumrah strikes! AUS lose 3rd wicket' },
+        ],
+        football: [
+          { title:'BAR 2 - 1 RMA • 68\'', desc:'Messi with a through ball to Pedri', live:true },
+          { title:'GOAL!', desc:'Pedri scores! BAR takes the lead' },
+          { title:'Yellow Card', desc:'Casemiro booked for late challenge' },
+          { title:'Half Time', desc:'BAR 1-1 RMA, even match so far' },
+        ],
+        basketball: [
+          { title:'LAL 89 - 82 GSW • Q3', desc:'LeBron drives for a strong layup', live:true },
+          { title:'3-POINTER!', desc:'Curry pulls up from deep, nails it' },
+          { title:'Timeout', desc:'Warriors call timeout, down by 7' },
+          { title:'Free Throws', desc:'AD at the line, makes both' },
+        ],
+        tennis: [
+          { title:'N. Djokovic 2-1 C. Alcaraz', desc:'Djokovic holds serve, 40-15', live:true },
+          { title:'Set 3', desc:'Djokovic breaks! Leads 4-2' },
+          { title:'Ace!', desc:'Alcaraz fires down a 135mph serve' },
+          { title:'Deuce', desc:'3rd deuce in this game, intense rally' },
+        ],
+        hockey: [
+          { title:'IND 3 - 2 AUS • Q3', desc:'India pressing in the attacking circle', live:true },
+          { title:'GOAL!', desc:'Harmanpreet fires it past the keeper' },
+          { title:'Penalty Corner', desc:'Australia awarded a PC, defended well' },
+          { title:'Green Card', desc:'Australia down to 10 men for 2 mins' },
+        ],
+        volleyball: [
+          { title:'BRA 2-1 USA • Set 4', desc:'Brazil spiking aggressively', live:true },
+          { title:'Point!', desc:'Wallace smashes a cross-court winner' },
+          { title:'Block!', desc:'USA blocks Brazil\'s attack, huge cheer' },
+          { title:'Time Out', desc:'Brazil coach calls timeout, trailing 18-16' },
+        ],
+        kabaddi: [
+          { title:'BEN 32-28 PAT • 15min', desc:'Pardeep Narwal with a 3-point raid', live:true },
+          { title:'ALL OUT!', desc:'Bengal Warriors inflict all out on Patna' },
+          { title:'Super Tackle', desc:'Bengal\'s corner duo stop the raid' },
+          { title:'DO-OR-DIE', desc:'Patna raider with a successful raid' },
+        ],
+      };
+
+      const PREDICTION_DATA = {
+        cricket: {
+          live: [
+            { id:1, question:'How many runs will be scored in the next over?', options:[{label:'0-6',pct:32},{label:'7-12',pct:41},{label:'13-18',pct:19},{label:'19+',pct:8}], reward:{coins:12,xp:15}, players:3456, timer:'03:45', team1:'India', team2:'Australia', team1Short:'IND', team2Short:'AUS', score1:'185/4', score2:'112/3', overs:'32.4', status:'LIVE', batting:'Virat Kohli 62 (48)', bowling:'Pat Cummins 2/28 (7)' },
+            { id:2, question:'Will Virat Kohli score a fifty?', options:[{label:'Yes',pct:62},{label:'No',pct:38}], reward:{coins:8,xp:10}, players:2156, timer:'05:20', team1:'India', team2:'Australia', team1Short:'IND', team2Short:'AUS', score1:'185/4', score2:'112/3', overs:'28.1', status:'LIVE', batting:'Rohit Sharma 41 (32)', bowling:'Jasprit Bumrah 1/18 (6)' },
+          ],
+          prematch: [
+            { id:3, question:'Which team will win the match?', options:[{label:'RCB',pct:48},{label:'CSK',pct:52}], reward:{coins:15,xp:20}, players:8923, timer:'2h 15m', team1:'RCB', team2:'CSK', team1Short:'RCB', team2Short:'CSK', status:'PRE MATCH' },
+            { id:4, question:'Total sixes in the match?', options:[{label:'0-5',pct:22},{label:'6-10',pct:45},{label:'11-15',pct:24},{label:'16+',pct:9}], reward:{coins:10,xp:12}, players:4567, timer:'3h 30m', team1:'MI', team2:'KKR', team1Short:'MI', team2Short:'KKR', status:'PRE MATCH' },
+          ],
+          results: [
+            { id:5, question:'Which team will win the toss?', resolved:'India', correct:true, reward:{coins:8,xp:10}, team1:'India', team2:'Australia' },
+            { id:6, question:'Total runs in 1st innings?', resolved:'287', correct:false, reward:{coins:10,xp:12}, team1:'India', team2:'Australia' },
+          ],
+          history: [
+            { id:7, question:'Highest individual score?', predicted:'Virat Kohli', actual:'Rohit Sharma', reward:{coins:12,xp:15}, result:'lost' },
+            { id:8, question:'Man of the Match?', predicted:'Jasprit Bumrah', actual:'Jasprit Bumrah', reward:{coins:15,xp:20}, result:'won' },
+          ]
+        },
+        football: {
+          live: [
+            { id:9, question:'Which team will score next?', options:[{label:'Barcelona',pct:55},{label:'Real Madrid',pct:45}], reward:{coins:10,xp:12}, players:5678, timer:'08:30', team1:'FC Barcelona', team2:'Real Madrid', team1Short:'BAR', team2Short:'RMA', score1:'2', score2:'1', status:'LIVE', extraInfo:'2nd Half • 68\'', batting:'Messi 1G • Pedri 1A', bowling:'Courtois 4 saves' },
+            { id:10, question:'Total goals in this half?', options:[{label:'0',pct:18},{label:'1',pct:35},{label:'2',pct:30},{label:'3+',pct:17}], reward:{coins:8,xp:10}, players:3456, timer:'12:15', team1:'FC Barcelona', team2:'Real Madrid', team1Short:'BAR', team2Short:'RMA', score1:'2', score2:'1', status:'LIVE', extraInfo:'2nd Half • 68\'', batting:'Vinicius Jr 1G • Benzema 1A', bowling:'Ter Stegen 3 saves' },
+          ],
+          prematch: [
+            { id:11, question:'Which team will win?', options:[{label:'Man City',pct:58},{label:'Liverpool',pct:42}], reward:{coins:15,xp:20}, players:7234, timer:'4h 00m', team1:'Manchester City', team2:'Liverpool FC', team1Short:'MCI', team2Short:'LIV', status:'PRE MATCH' },
+          ],
+          results: [
+            { id:12, question:'First goal scorer?', resolved:'Erling Haaland', correct:true, reward:{coins:12,xp:15}, team1:'Man City', team2:'Arsenal' },
+          ],
+          history: [
+            { id:13, question:'Match winner?', predicted:'Man City', actual:'Man City', reward:{coins:10,xp:12}, result:'won' },
+          ]
+        },
+        basketball: {
+          live: [
+            { id:14, question:'Which team will win this quarter?', options:[{label:'Lakers',pct:52},{label:'Warriors',pct:48}], reward:{coins:8,xp:10}, players:2890, timer:'06:45', team1:'LA Lakers', team2:'Golden State Warriors', team1Short:'LAL', team2Short:'GSW', score1:'89', score2:'82', status:'LIVE', extraInfo:'Q3 • 4:15 left', batting:'LeBron 28pts • AD 22pts', bowling:'Curry 31pts • Thompson 18pts' },
+          ],
+          prematch: [
+            { id:15, question:'Total points over/under 210.5?', options:[{label:'Over',pct:61},{label:'Under',pct:39}], reward:{coins:10,xp:12}, players:4102, timer:'1h 45m', team1:'Boston Celtics', team2:'Miami Heat', team1Short:'BOS', team2Short:'MIA', status:'PRE MATCH' },
+          ],
+          results: [
+            { id:16, question:'Highest scorer?', resolved:'LeBron James', correct:true, reward:{coins:12,xp:15}, team1:'Lakers', team2:'Celtics' },
+          ],
+          history: [
+            { id:17, question:'Winning margin?', predicted:'5-9', actual:'8', reward:{coins:8,xp:10}, result:'won' },
+          ]
+        },
+        tennis: {
+          live: [
+            { id:18, question:'Who will win the next set?', options:[{label:'Djokovic',pct:56},{label:'Alcaraz',pct:44}], reward:{coins:10,xp:12}, players:1987, timer:'15:30', team1:'Novak Djokovic', team2:'Carlos Alcaraz', team1Short:'DJO', team2Short:'ALC', status:'LIVE' },
+          ],
+          prematch: [
+            { id:19, question:'Match winner?', options:[{label:'Sinner',pct:51},{label:'Medvedev',pct:49}], reward:{coins:12,xp:15}, players:3210, timer:'5h 30m', team1:'Jannik Sinner', team2:'Daniil Medvedev', team1Short:'SIN', team2Short:'MED', status:'PRE MATCH' },
+          ],
+          results: [
+            { id:20, question:'Will there be a tiebreak?', resolved:'Yes', correct:false, reward:{coins:8,xp:10}, team1:'Djokovic', team2:'Alcaraz' },
+          ],
+          history: [
+            { id:21, question:'Sets to win?', predicted:'3-1', actual:'3-2', reward:{coins:10,xp:12}, result:'lost' },
+          ]
+        },
+        hockey: {
+          live: [
+            { id:22, question:'Which team scores next?', options:[{label:'India',pct:60},{label:'Netherlands',pct:40}], reward:{coins:8,xp:10}, players:1234, timer:'10:00', team1:'India', team2:'Netherlands', team1Short:'IND', team2Short:'NED', status:'LIVE' },
+          ],
+          prematch: [
+            { id:23, question:'Total goals?', options:[{label:'0-3',pct:30},{label:'4-6',pct:45},{label:'7+',pct:25}], reward:{coins:10,xp:12}, players:2345, timer:'2h 15m', team1:'Belgium', team2:'Germany', team1Short:'BEL', team2Short:'GER', status:'PRE MATCH' },
+          ],
+          results: [], history: []
+        },
+        volleyball: {
+          live: [], prematch: [
+            { id:24, question:'Match winner?', options:[{label:'Brazil',pct:54},{label:'Poland',pct:46}], reward:{coins:10,xp:12}, players:1876, timer:'6h 00m', team1:'Brazil', team2:'Poland', team1Short:'BRA', team2Short:'POL', status:'PRE MATCH' },
+          ], results: [], history: []
+        },
+        kabaddi: {
+          live: [], prematch: [
+            { id:25, question:'Which team will win?', options:[{label:'Patna Pirates',pct:55},{label:'Bengal Warriors',pct:45}], reward:{coins:10,xp:12}, players:2341, timer:'1h 30m', team1:'Patna Pirates', team2:'Bengal Warriors', team1Short:'PAT', team2Short:'BEN', status:'PRE MATCH' },
+          ], results: [], history: []
+        }
+      };
+
+      const TAB_KEYS = { 'live':'live', 'prematch':'prematch', 'results':'results', 'history':'history' };
+      let activeSport = 'cricket';
+      let activeTab = 'live';
+      let userPredictions = {};
+
+      document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.sport-pill').forEach(pill => {
+          pill.addEventListener('click', () => {
+            document.querySelectorAll('.sport-pill').forEach(p => p.classList.remove('active'));
+            pill.classList.add('active');
+            activeSport = pill.dataset.sport;
+            renderPredictionContent();
+            updateMatchBanner();
+            updateMatchFeed();
+          });
+        });
+
+        document.querySelectorAll('.tab-btn').forEach(tab => {
+          tab.addEventListener('click', () => {
+            document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            activeTab = tab.dataset.tab;
+            renderPredictionContent();
+            updateMatchBanner();
+            // Award any correct predictions the user already made
+            if (activeTab === 'results' || activeTab === 'history') awardAllMade();
+          });
+        });
+
+        // Activate first sport pill
+        const firstPill = document.querySelector('.sport-pill');
+        if (firstPill) firstPill.classList.add('active');
+
+        renderPredictionContent();
+        updateMatchBanner();
+        updateMatchFeed();
+        updateStats();
+      });
+
+      function getPredictionsForCurrent() {
+        const sportData = PREDICTION_DATA[activeSport];
+        if (!sportData) return [];
+        return sportData[activeTab] || [];
+      }
+
+      function renderPredictionContent() {
+        const container = document.getElementById('predictionContainer');
+        const predictions = getPredictionsForCurrent();
+
+        if (!predictions || predictions.length === 0) {
+          container.innerHTML = '<div class="bg-white dark:bg-brand-card border border-gray-200 dark:border-brand-border rounded-2xl p-8 text-center"><span class="material-symbols-outlined text-4xl text-gray-400">info</span><p class="text-gray-500 dark:text-gray-400 mt-2 text-sm">No ' + activeTab.replace('_',' ') + ' predictions available for ' + activeSport + '.</p></div>';
+          return;
+        }
+
+        container.innerHTML = predictions.map(p => {
+          const isLive = activeTab === 'live';
+          const isPrematch = activeTab === 'prematch';
+          const isResults = activeTab === 'results';
+          const isHistory = activeTab === 'history';
+
+          if (isResults) {
+            return '<div class="prediction-card claimable" data-prediction="' + p.id + '">' +
+              '<div class="prediction-card-header">' +
+                '<div class="prediction-live"><span class="live-dot completed"></span>RESULT</div>' +
+              '</div>' +
+              '<h2 class="prediction-question">' + p.question + '</h2>' +
+              '<div class="prediction-user">' +
+                '<div class="prediction-divider">' +
+                  '<div class="user-left">' +
+                    '<div class="default-avatar-circle"><span>U</span></div>' +
+                    '<span>Resolved: <strong>' + p.resolved + '</strong></span>' +
+                  '</div>' +
+                  '<div class="prediction-position">' +
+                    '<i class="fa-solid ' + (p.correct ? 'fa-check-circle text-green-500' : 'fa-times-circle text-red-500') + '"></i>' +
+                    (p.correct ? 'Correct' : 'Incorrect') +
+                  '</div>' +
+                '</div>' +
+              '</div>' +
+              '<div class="prediction-footer"><div class="reward-section"><span class="reward-title">Reward</span><div class="reward-item coins"><i class="fa-solid fa-coins"></i>+' + p.reward.coins + ' Coins</div><div class="reward-item xp"><i class="fa-solid fa-star"></i>+' + p.reward.xp + ' XP</div></div></div>' +
+            '</div>';
+          }
+
+          if (isHistory) {
+            const isWon = p.result === 'won';
+            return '<div class="prediction-card claimable" data-prediction="' + p.id + '">' +
+              '<div class="prediction-card-header">' +
+                '<div class="prediction-live"><span class="live-dot ' + (isWon ? 'completed' : '') + '"></span>' + (isWon ? 'WON' : 'LOST') + '</div>' +
+              '</div>' +
+              '<h2 class="prediction-question">' + p.question + '</h2>' +
+              '<div class="prediction-user">' +
+                '<div class="prediction-divider">' +
+                  '<div class="user-left">' +
+                    '<div class="default-avatar-circle"><span>U</span></div>' +
+                    '<span>You predicted: <strong>' + p.predicted + '</strong></span>' +
+                  '</div>' +
+                  '<div class="prediction-position">' +
+                    'Actual: <strong>' + p.actual + '</strong>' +
+                  '</div>' +
+                '</div>' +
+              '</div>' +
+              '<div class="prediction-footer"><div class="reward-section"><span class="reward-title">Reward</span><div class="reward-item coins"><i class="fa-solid fa-coins"></i>+' + p.reward.coins + ' Coins</div><div class="reward-item xp"><i class="fa-solid fa-star"></i>+' + p.reward.xp + ' XP</div></div></div>' +
+            '</div>';
+          }
+
+          const optionsHtml = p.options.map((o, i) => {
+            const isSelected = userPredictions[p.id] === i;
+            return '<button class="prediction-option' + (isSelected ? ' active' : '') + '" data-prediction="' + p.id + '" data-option="' + i + '">' +
+              (o.label.length <= 8 ? '' : '<div class="option-image"><div class="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 text-xs font-bold">' + o.label.charAt(0) + '</div></div>') +
+              '<div class="option-content"><span class="option-title">' + o.label + '</span><span class="option-percent">' + o.pct + '%</span></div></button>';
+          }).join('');
+
+          let matchInfoHtml = '';
+          if (p.score1 !== undefined && p.score2 !== undefined) {
+            matchInfoHtml += '<div class="live-scoreboard">' +
+              '<div class="lsb-team"><span class="lsb-short">' + p.team1Short + '</span><span class="lsb-score">' + p.score1 + '</span></div>' +
+              '<div class="lsb-vs"><span>VS</span></div>' +
+              '<div class="lsb-team"><span class="lsb-short">' + p.team2Short + '</span><span class="lsb-score">' + p.score2 + '</span></div>' +
+            '</div>';
+          }
+          if (isLive && p.extraInfo) {
+            matchInfoHtml += '<div class="lsb-extra">' + p.extraInfo + '</div>';
+          }
+          if (isLive && p.batting) {
+            matchInfoHtml += '<div class="lsb-players"><span class="lsb-label">TOP</span><span class="lsb-name">' + p.batting + '</span></div>';
+          }
+          if (isLive && p.bowling) {
+            matchInfoHtml += '<div class="lsb-players"><span class="lsb-label">BOW</span><span class="lsb-name">' + p.bowling + '</span></div>';
+          }
+          return '<div class="prediction-card">' +
+            '<div class="prediction-card-header">' +
+              '<div class="prediction-live"><span class="live-dot"></span>' + p.status + '</div>' +
+              (isLive ? '<div class="prediction-timer"><i class="fa-regular fa-clock"></i><div><span class="time-value">' + p.timer + '</span><small>Time Left</small></div></div>' : '<div class="prediction-timer"><i class="fa-regular fa-clock"></i><div><span class="time-value">' + p.timer + '</span><small>Until Start</small></div></div>') +
+            '</div>' +
+            (matchInfoHtml ? '<div class="match-info-strip">' + matchInfoHtml + '</div>' : '') +
+            '<h2 class="prediction-question">' + p.question + '</h2>' +
+            '<div class="prediction-options">' + optionsHtml + '</div>' +
+            '<div class="prediction-footer">' +
+              '<div class="reward-section"><span class="reward-title">Reward</span><div class="reward-item coins"><i class="fa-solid fa-coins"></i>+' + p.reward.coins + ' Coins</div><div class="reward-item xp"><i class="fa-solid fa-star"></i>+' + p.reward.xp + ' XP</div></div>' +
+              '<div class="prediction-count"><strong>' + p.players.toLocaleString() + '</strong><span>Players Predicted</span></div>' +
+            '</div>' +
+          '</div>';
+        }).join('');
+
+        // Attach option click handlers
+        container.querySelectorAll('.prediction-option').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const pid = parseInt(btn.dataset.prediction);
+            const optIdx = parseInt(btn.dataset.option);
+            const group = btn.closest('.prediction-options');
+            group.querySelectorAll('.prediction-option').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            userPredictions[pid] = optIdx;
+            updateStats();
+            // Award coins immediately if this prediction is already resolved & correct
+            const p = getPredictionsForCurrent().find(x => x.id === pid);
+            if (p) awardIfCorrect(p, optIdx);
+          });
+        });
+
+        // Results/History cards: clicking claims the reward if the user's pick was correct
+        container.querySelectorAll('.prediction-card.claimable').forEach(card => {
+          card.addEventListener('click', () => {
+            const pid = parseInt(card.dataset.prediction);
+            const p = getPredictionsForCurrent().find(x => x.id === pid);
+            if (!p) return;
+            // For results/history, treat the resolved/actual outcome as the user's pick
+            const optIdx = 0;
+            userPredictions[pid] = optIdx;
+            awardIfCorrect(p, optIdx);
+          });
+        });
+      }
+
+      function updateMatchBanner() {
+        const tabs = ['live', 'prematch', 'results', 'history'];
+        let p = null;
+        for (const tab of tabs) {
+          const d = PREDICTION_DATA[activeSport] ? PREDICTION_DATA[activeSport][tab] : null;
+          if (d && d.length > 0) { p = d[0]; break; }
+        }
+        if (!p) {
+          document.getElementById('team1Name').textContent = 'Team A';
+          document.getElementById('team2Name').textContent = 'Team B';
+          const i1 = document.getElementById('team1Initial');
+          const i2 = document.getElementById('team2Initial');
+          if (i1) i1.textContent = 'TA';
+          if (i2) i2.textContent = 'TB';
+          const s1 = document.getElementById('team1Score');
+          const s2 = document.getElementById('team2Score');
+          if (s1) s1.textContent = '';
+          if (s2) s2.textContent = '';
+          const statusEl = document.getElementById('matchStatus');
+          if (statusEl) statusEl.textContent = '';
+          const badge = document.getElementById('matchBadge');
+          if (badge) badge.style.display = 'none';
+          return;
+        }
+        const t1 = p.team1 || 'Team A';
+        const t2 = p.team2 || 'Team B';
+        document.getElementById('team1Name').textContent = t1;
+        document.getElementById('team2Name').textContent = t2;
+        const i1 = document.getElementById('team1Initial');
+        const i2 = document.getElementById('team2Initial');
+        if (i1) i1.textContent = t1.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
+        if (i2) i2.textContent = t2.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
+        const s1 = document.getElementById('team1Score');
+        const s2 = document.getElementById('team2Score');
+        if (s1) s1.textContent = p.score1 || '';
+        if (s2) s2.textContent = p.score2 || '';
+        const badge = document.getElementById('matchBadge');
+        if (badge) {
+          if (activeTab === 'live') { badge.textContent = 'LIVE'; badge.style.display = ''; }
+          else if (activeTab === 'prematch') { badge.textContent = 'UPCOMING'; badge.style.display = ''; }
+          else { badge.style.display = 'none'; }
+        }
+        const statusEl = document.getElementById('matchStatus');
+        if (statusEl) {
+          if (activeTab === 'live' && p.extraInfo) statusEl.textContent = p.extraInfo;
+          else if (p.overs) statusEl.textContent = p.overs + ' Overs';
+          else if (p.status) statusEl.textContent = p.status;
+          else if (activeTab === 'prematch') statusEl.textContent = 'Upcoming';
+          else statusEl.textContent = '';
+        }
+      }
+
+      function updateMatchFeed() {
+        const container = document.getElementById('matchFeedContainer');
+        if (!container) return;
+        const feed = FEED_DATA[activeSport];
+        if (!feed) { container.innerHTML = ''; return; }
+        container.innerHTML = feed.map(f => {
+          return '<div class="feed-item">' +
+            '<span class="feed-dot' + (f.live ? ' live-feed' : '') + '"></span>' +
+            '<div>' +
+              '<p class="text-xs font-semibold text-gray-700 dark:text-gray-300">' + f.title + '</p>' +
+              '<p class="text-[10px] text-gray-500">' + f.desc + '</p>' +
+            '</div>' +
+          '</div>';
+        }).join('');
+      }
+
+      function updateStats() {
+        const total = document.getElementById('totalPredictions');
+        const correct = document.getElementById('correctPredictions');
+        const accuracy = document.getElementById('accuracy');
+        if (total) total.textContent = Object.keys(userPredictions).length + 248;
+        if (correct) correct.textContent = Math.floor(Object.keys(userPredictions).length * 0.72) + 178;
+        if (accuracy) accuracy.textContent = Math.round(72 + Object.keys(userPredictions).length * 0.5) + '%';
+      }
+
+      // =====================
+      // REAL COIN / XP REWARDS
+      // When a prediction is correct (resolved in timeline / results),
+      // add the reward coins + XP to the user's real balance.
+      // =====================
+      function getCoinBalance() {
+        const raw = parseInt(localStorage.getItem('fancoin-balance'), 10);
+        return isNaN(raw) ? 100 : raw;
+      }
+      function setCoinBalance(v) {
+        localStorage.setItem('fancoin-balance', String(v));
+        const el = document.getElementById('wallet-coin-balance');
+        if (el) el.textContent = v.toLocaleString();
+      }
+      // Persist awarded prediction ids so coins are given only once.
+      function getAwarded() {
+        try { return JSON.parse(localStorage.getItem('awarded-predictions') || '[]'); }
+        catch (e) { return []; }
+      }
+      function markAwarded(pid) {
+        const a = getAwarded();
+        if (a.indexOf(pid) === -1) { a.push(pid); localStorage.setItem('awarded-predictions', JSON.stringify(a)); }
+      }
+      // Determine if the user's picked option is correct per the data.
+      // Returns true / false / null (not yet known).
+      function isPredictionCorrect(p, optIdx) {
+        if (p.correct === true) return true;
+        if (p.correct === false) return false;
+        if (p.result === 'won') return true;
+        if (p.result === 'lost') return false;
+        // Live / prematch with a resolved/actual answer we can match to an option label
+        const answer = p.resolved || p.actual;
+        if (answer && Array.isArray(p.options)) {
+          const idx = p.options.findIndex(o => o.label && answer.toLowerCase().indexOf(o.label.toLowerCase()) !== -1);
+          if (idx !== -1) return idx === optIdx;
+        }
+        return null;
+      }
+      // Award coins + XP if the pick is correct and not already awarded.
+      function awardIfCorrect(p, optIdx) {
+        const correct = isPredictionCorrect(p, optIdx);
+        if (correct !== true) return;
+        if (getAwarded().indexOf(p.id) !== -1) return; // already given
+        const coins = (p.reward && p.reward.coins) || 0;
+        const xp = (p.reward && p.reward.xp) || 0;
+        markAwarded(p.id);
+        // Update real balance (Firestore when signed in + online, else localStorage)
+        if (window.__FB__ && window.__FB__.auth && window.__FB__.auth.currentUser && window.location.protocol !== 'file:') {
+          const uid = window.__FB__.auth.currentUser.uid;
+          import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js').then(({ doc, getDoc, updateDoc }) => {
+            const ref = doc(window.__FB__.db, 'users', uid);
+            getDoc(ref).then(snap => {
+              const cur = (snap.exists() && snap.data().coins) || 0;
+              const curXp = (snap.exists() && snap.data().xp) || 0;
+              updateDoc(ref, { coins: cur + coins, xp: curXp + xp });
+            });
+          }).catch(() => { setCoinBalance(getCoinBalance() + coins); });
+        } else {
+          setCoinBalance(getCoinBalance() + coins);
+        }
+        if (window.showToast) window.showToast('Correct! +' + coins + ' Coins · +' + xp + ' XP', 'success');
+        else alert('Correct! +' + coins + ' Coins');
+      }
+      // Re-check all predictions the user made when viewing results/history.
+      function awardAllMade() {
+        const list = getPredictionsForCurrent();
+        list.forEach(p => {
+          if (userPredictions[p.id] !== undefined) awardIfCorrect(p, userPredictions[p.id]);
+        });
+      }
+      // Initialise wallet display from the REAL profile coins (default 100),
+      // falling back to any previously stored balance.
+      (function initWallet() {
+        var real = (window.currentUserProfile && window.currentUserProfile.coins);
+        if (typeof real === 'number' && !isNaN(real)) {
+          setCoinBalance(real);
+        } else {
+          var stored = getCoinBalance();
+          setCoinBalance(stored === 4250 ? 100 : stored);
+        }
+      })();
+    </script>
+  <script src="js/notif-ws.js"></script>
+  <script type="module" src="js/script.js"></script></body>
+</html>

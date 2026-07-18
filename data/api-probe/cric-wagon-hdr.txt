@@ -1,0 +1,36 @@
+HTTP/1.1 200 OK
+Date: Fri, 17 Jul 2026 08:48:54 GMT
+Content-Type: application/json; charset=utf-8
+Content-Length: 4233
+Connection: keep-alive
+Vary: Accept-Encoding
+Cache-Control: no-store, no-cache, must-revalidate, max-age=0
+etag: W/"1089-paI9JDaSXBEIU6KJiREgpeyORV4"
+accept-ranges: bytes
+Expires: 0
+x-server-powered-by: nginx
+traceparent: 00-9eccb97bb24eb92aa2e531af2b03d8a3-8c0ee01f23d65747-01
+x-id: ww-hw-edge-gc10
+cache: MISS
+vary: Accept-Encoding
+access-control-allow-origin: *
+x-content-type-options: nosniff
+x-xss-protection: 1; mode=block
+x-id-fe: ww-hw-edge-gc10
+x-powered-by: Express
+Pragma: no-cache
+x-nginx-upstream-cache-status: BYPASS
+X-RateLimit-rapid-free-plans-hard-limit-Limit: 500000
+X-RateLimit-rapid-free-plans-hard-limit-Remaining: 499998
+X-RateLimit-rapid-free-plans-hard-limit-Reset: 2632493
+X-RateLimit-Requests-Limit: 100
+X-RateLimit-Requests-Remaining: 98
+X-RateLimit-Requests-Reset: 40493
+Server: RapidAPI-0.0.30
+X-RapidAPI-Version: 0.0.30
+X-RapidAPI-Region: AWS - ap-southeast-1
+X-RapidAPI-Request-Id: 6d9c197cc9ea9f0de2abd53787e60fbd4058c197aff08f222674aa075105cabd
+X-Content-Type-Options: nosniff
+X-Frame-Options: DENY
+Referrer-Policy: strict-origin-when-cross-origin
+

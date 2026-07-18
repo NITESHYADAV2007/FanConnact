@@ -1,0 +1,838 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/fancoin/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/fancoin/favicon-16x16.png" />
+    <meta property="og:site_name" content="Fanconnact" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="assets/fancoin/fanconnactlogo.png" />
+    <meta property="og:title" content="Terms & Privacy | Fanconnact" />
+    <meta property="og:description" content="Join Fanconnact for fantasy sports, predictions, and live matches." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Terms & Privacy | Fanconnact" />
+    <meta name="twitter:description" content="Join Fanconnact for fantasy sports, predictions, and live matches." />
+    <meta name="twitter:image" content="assets/fancoin/fanconnactlogo.png" />
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Terms & Privacy | Fanconnact</title>
+    <script>
+      if (localStorage.getItem("color-theme") === "dark") {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
+    </script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link rel="stylesheet" href="css/style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-secondary-fixed-variant": "#2f2ebe",
+              "surface-dim": "#cbdbf5",
+              "surface-container-high": "#dce9ff",
+              "surface-container": "#e2ecfc",
+              "inverse-surface": "#000000",
+              "surface-container-low": "#e8f1ff",
+              "primary-container": "#d1e4ff",
+              "on-primary-container": "#001d36",
+              "primary-fixed-dim": "#a4c9ff",
+              "on-surface": "#001b3d",
+              surface: "#ffffff",
+              "on-tertiary": "#001d36",
+              "on-primary": "#003258",
+              "on-inverse-surface": "#e1eaff",
+              "on-surface-variant": "#414751",
+              "surface-tint": "#00658b",
+              "outline-variant": "#c1c7d0",
+              "tertiary-container": "#c7e6ff",
+              "primary-fixed": "#d1e4ff",
+              "on-primary-fixed": "#001d36",
+              "on-surface-dim": "#5a6070",
+              "on-error-container": "#410e0b",
+              "surface-variant": "#dfe2eb",
+              primary: "#00658b",
+              tertiary: "#006494",
+              "on-surface-fixed-variant": "#42474e",
+              "on-error": "#ffffff",
+              "inverse-on-surface": "#f0f0f7",
+              "inverse-primary": "#8fcaff",
+              "on-surface-fixed": "#1a1c21",
+              "on-tertiary-container": "#001e31",
+              error: "#ba1a1a",
+              "surface-dim/50": "rgba(90, 96, 112, 0.5)",
+              "brand-green": "#10b981",
+              "emerald-accent": "#6ee7b7",
+            },
+            fontFamily: { sans: ["Inter", "sans-serif"] },
+            fontSize: {
+              "headline-xl": [
+                "2rem",
+                { lineHeight: "2.5rem", fontWeight: "800" },
+              ],
+              "headline-lg": [
+                "1.75rem",
+                { lineHeight: "2.25rem", fontWeight: "700" },
+              ],
+              "headline-md": [
+                "1.25rem",
+                { lineHeight: "1.75rem", fontWeight: "600" },
+              ],
+              "body-lg": ["1rem", { lineHeight: "1.5rem" }],
+              "body-md": ["0.875rem", { lineHeight: "1.25rem" }],
+              "body-sm": ["0.75rem", { lineHeight: "1rem" }],
+              "label-md": [
+                "0.8125rem",
+                { lineHeight: "1rem", fontWeight: "600" },
+              ],
+            },
+            spacing: {
+              xs: "0.25rem",
+              sm: "0.5rem",
+              md: "1rem",
+              lg: "1.5rem",
+              xl: "2rem",
+              "2xl": "2.5rem",
+              "3xl": "3rem",
+            },
+            borderRadius: { xl: "0.75rem", "2xl": "1rem", "3xl": "1.5rem" },
+          },
+        },
+      };
+    </script>
+    <style>
+      .lang-hi {
+        display: none;
+      }
+      html[lang="hi"] .lang-en {
+        display: none;
+      }
+      html[lang="hi"] .lang-hi {
+        display: inline;
+      }
+      :root:not(.dark) ::-webkit-scrollbar-track { background: #f1f5f9; }
+      :root:not(.dark) ::-webkit-scrollbar-thumb { background: #2196f3; }
+      :root:not(.dark) ::-webkit-scrollbar-thumb:hover { background: #1e88e5; }
+      .dark ::-webkit-scrollbar-thumb { background: #10b981; }
+      .dark ::-webkit-scrollbar-thumb:hover { background: #34d399; }
+      :root:not(.dark) input:focus { border-color: #2196f3 !important; box-shadow: 0 0 0 2px rgba(33,150,243,0.2) !important; }
+      .dark .text-gray-400 { color: #94a3b8 !important; }
+    </style>
+  </head>
+  <body
+    class="bg-surface dark:bg-inverse-surface text-on-surface dark:text-on-inverse-surface font-sans antialiased min-h-screen"
+  >
+    <div class="max-w-4xl mx-auto px-4 py-6 md:py-10">
+      <!-- Top Bar: Back + Lang Toggle -->
+      <div class="flex items-center justify-between mb-6">
+        <a
+          href="javascript:history.back()"
+          class="inline-flex items-center gap-1 text-primary-fixed-dim hover:underline"
+        >
+          <span class="material-symbols-outlined text-sm">arrow_back</span>
+          <span class="lang-en">Back</span>
+          <span class="lang-hi">वापस</span>
+        </a>
+        <button
+          id="lang-toggle"
+          class="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary-container/30 border border-outline-variant/30 text-on-surface dark:text-white hover:bg-primary-container/50 transition-colors text-label-md"
+        >
+          <span class="material-symbols-outlined text-base">translate</span>
+          <span id="lang-label">हिन्दी</span>
+        </button>
+      </div>
+
+      <h1
+        class="text-headline-xl font-headline-xl mb-2 text-on-surface dark:text-on-inverse-surface"
+      >
+        <span class="lang-en">Terms &amp; Conditions</span>
+        <span class="lang-hi">नियम एवं शर्तें</span>
+      </h1>
+      <p class="text-body-sm text-surface-dim/70 mb-8">
+        <span class="lang-en">Last updated: June 2026</span>
+        <span class="lang-hi">अंतिम अद्यतन: जून 2026</span>
+      </p>
+
+      <!-- Section Tabs -->
+      <div class="flex gap-4 mb-8 border-b border-outline-variant/30 pb-2">
+        <button
+          id="tab-terms"
+          class="px-4 py-2 text-label-md font-label-md bg-[#15803d] text-white border-b-2 border-[#15803d] rounded-t-md transition-colors"
+        >
+          Terms
+        </button>
+        <button
+          id="tab-privacy"
+          class="px-4 py-2 text-label-md font-label-md text-surface-dim/70 hover:text-on-surface transition-colors"
+        >
+          Privacy Policy
+        </button>
+      </div>
+
+      <!-- ============ TERMS & CONDITIONS ============ -->
+      <div id="terms-content" class="space-y-6 text-body-md leading-relaxed">
+        <!-- 1 -->
+        <section>
+          <h2
+            class="text-headline-md font-headline-md mb-2 text-on-surface dark:text-on-inverse-surface"
+          >
+            <span class="lang-en">1. Acceptance of Terms</span>
+            <span class="lang-hi">1. शर्तों की स्वीकृति</span>
+          </h2>
+          <p class="lang-en">
+            By accessing or using Fanconnact ("the Platform"), you agree to be
+            legally bound by these Terms & Conditions and our Privacy Policy. If
+            you do not agree, please do not use the Platform. Continued use
+            constitutes acceptance of any future changes.
+          </p>
+          <p class="lang-hi">
+            Fanconnact ("प्लेटफ़ॉर्म") तक पहुँचने या उपयोग करके, आप इन नियमों
+            एवं शर्तों और हमारी गोपनीयता नीति से कानूनी रूप से बंधने के लिए सहमत
+            होते हैं। यदि आप सहमत नहीं हैं, तो कृपया प्लेटफ़ॉर्म का उपयोग न
+            करें। निरंतर उपयोग भविष्य में किसी भी बदलाव की स्वीकृति माना जाएगा।
+          </p>
+        </section>
+
+        <!-- 2 -->
+        <section>
+          <h2
+            class="text-headline-md font-headline-md mb-2 text-on-surface dark:text-on-inverse-surface"
+          >
+            <span class="lang-en">2. Eligibility</span>
+            <span class="lang-hi">2. पात्रता</span>
+          </h2>
+          <p class="lang-en">
+            You must be at least 13 years old to use this Platform. By
+            registering, you represent that you are 13 or older. If you are
+            under 18, you confirm that you have parental or guardian consent.
+            The Platform is intended for users in India and may not be
+            accessible in all jurisdictions.
+          </p>
+          <p class="lang-hi">
+            इस प्लेटफ़ॉर्म का उपयोग करने के लिए आपकी आयु कम से कम 13 वर्ष होनी
+            चाहिए। पंजीकरण करके, आप प्रतिनिधित्व करते हैं कि आप 13 वर्ष या उससे
+            अधिक हैं। यदि आप 18 वर्ष से कम हैं, तो आप पुष्टि करते हैं कि आपके
+            पास माता-पिता या अभिभावक की सहमति है। यह प्लेटफ़ॉर्म भारत में
+            उपयोगकर्ताओं के लिए है।
+          </p>
+        </section>
+
+        <!-- 3 -->
+        <section>
+          <h2
+            class="text-headline-md font-headline-md mb-2 text-on-surface dark:text-on-inverse-surface"
+          >
+            <span class="lang-en">3. Account Registration & Security</span>
+            <span class="lang-hi">3. खाता पंजीकरण और सुरक्षा</span>
+          </h2>
+          <p class="lang-en">
+            You must provide accurate, current, and complete information when
+            creating an account. You are solely responsible for maintaining the
+            confidentiality of your password and login credentials. You must
+            notify us immediately of any unauthorized use. We are not liable for
+            any loss from unauthorized access.
+          </p>
+          <p class="lang-hi">
+            खाता बनाते समय आपको सटीक, वर्तमान और पूरी जानकारी प्रदान करनी होगी।
+            आप अपने पासवर्ड और लॉगिन क्रेडेंशियल की गोपनीयता बनाए रखने के लिए
+            पूरी तरह जिम्मेदार हैं। किसी भी अनधिकृत उपयोग की तुरंत सूचना दें।
+            अनधिकृत पहुँच से होने वाले किसी भी नुकसान के लिए हम उत्तरदायी नहीं
+            हैं।
+          </p>
+        </section>
+
+        <!-- 4 -->
+        <section>
+          <h2
+            class="text-headline-md font-headline-md mb-2 text-on-surface dark:text-on-inverse-surface"
+          >
+            <span class="lang-en">4. User Conduct & Prohibited Activities</span>
+            <span class="lang-hi"
+              >4. उपयोगकर्ता आचरण और निषिद्ध गतिविधियाँ</span
+            >
+          </h2>
+          <p class="lang-en">
+            You agree not to: (a) violate any applicable law; (b) harass, abuse,
+            impersonate, or intimidate others; (c) upload viruses, malware, or
+            harmful code; (d) attempt to access another user's account; (e) use
+            the Platform for spam, fraud, or misleading activities; (f) disrupt
+            the Platform's servers or networks; (g) collect user data without
+            consent. Violation may result in immediate account termination.
+          </p>
+          <p class="lang-hi">
+            आप सहमत हैं कि: (क) किसी भी लागू कानून का उल्लंघन नहीं करेंगे; (ख)
+            दूसरों को परेशान, दुर्व्यवहार, प्रतिरूपित या धमकी नहीं देंगे; (ग)
+            वायरस, मैलवेयर या हानिकारक कोड अपलोड नहीं करेंगे; (घ) किसी अन्य
+            उपयोगकर्ता के खाते तक पहुँचने का प्रयास नहीं करेंगे; (ङ) स्पैम,
+            धोखाधड़ी या भ्रामक गतिविधियों के लिए प्लेटफ़ॉर्म का उपयोग नहीं
+            करेंगे; (च) सर्वर या नेटवर्क को बाधित नहीं करेंगे; (छ) बिना सहमति के
+            उपयोगकर्ता डेटा एकत्र नहीं करेंगे। उल्लंघन पर खाता तत्काल समाप्त
+            किया जा सकता है।
+          </p>
+        </section>
+
+        <!-- 5 -->
+        <section>
+          <h2
+            class="text-headline-md font-headline-md mb-2 text-on-surface dark:text-on-inverse-surface"
+          >
+            <span class="lang-en">5. User-Generated Content</span>
+            <span class="lang-hi">5. उपयोगकर्ता-निर्मित सामग्री</span>
+          </h2>
+          <p class="lang-en">
+            You retain ownership of content you post. By posting, you grant
+            Fanconnact a non-exclusive, worldwide, royalty-free license to
+            display, distribute, and modify your content within the Platform.
+            You represent that your content does not infringe any third-party
+            rights. We reserve the right to remove any content at our
+            discretion.
+          </p>
+          <p class="lang-hi">
+            आपके द्वारा पोस्ट की गई सामग्री का स्वामित्व आपके पास रहता है। पोस्ट
+            करके, आप Fanconnact को अपनी सामग्री को प्लेटफ़ॉर्म के भीतर
+            प्रदर्शित, वितरित और संशोधित करने के लिए एक गैर-अनन्य, विश्वव्यापी,
+            रॉयल्टी-मुक्त लाइसेंस प्रदान करते हैं। आप प्रतिनिधित्व करते हैं कि
+            आपकी सामग्री किसी तीसरे पक्ष के अधिकारों का उल्लंघन नहीं करती है। हम
+            अपने विवेक से किसी भी सामग्री को हटाने का अधिकार सुरक्षित रखते हैं।
+          </p>
+        </section>
+
+        <!-- 6 -->
+        <section>
+          <h2
+            class="text-headline-md font-headline-md mb-2 text-on-surface dark:text-on-inverse-surface"
+          >
+            <span class="lang-en">6. Intellectual Property</span>
+            <span class="lang-hi">6. बौद्धिक संपदा</span>
+          </h2>
+          <p class="lang-en">
+            All platform content, logos, trademarks, design, text, graphics, and
+            software are owned by Fanconnact or its licensors and are protected
+            by Indian and international copyright laws. You may not reproduce,
+            distribute, modify, or create derivative works without prior written
+            consent.
+          </p>
+          <p class="lang-hi">
+            सभी प्लेटफ़ॉर्म सामग्री, लोगो, ट्रेडमार्क, डिज़ाइन, टेक्स्ट,
+            ग्राफ़िक्स और सॉफ़्टवेयर Fanconnact या इसके लाइसेंसधारकों के
+            स्वामित्व में हैं और भारतीय एवं अंतर्राष्ट्रीय कॉपीराइट कानूनों
+            द्वारा संरक्षित हैं। आप पूर्व लिखित सहमति के बिना पुनरुत्पादन,
+            वितरण, संशोधन या व्युत्पन्न कार्य नहीं बना सकते।
+          </p>
+        </section>
+
+        <!-- 7 -->
+        <section>
+          <h2
+            class="text-headline-md font-headline-md mb-2 text-on-surface dark:text-on-inverse-surface"
+          >
+            <span class="lang-en">7. Disclaimer of Warranties</span>
+            <span class="lang-hi">7. वारंटी का अस्वीकरण</span>
+          </h2>
+          <p class="lang-en">
+            The Platform is provided "as is" and "as available" without
+            warranties of any kind, either express or implied. We do not
+            guarantee that the Platform will be uninterrupted, secure,
+            error-free, or that defects will be corrected. Use is at your own
+            risk.
+          </p>
+          <p class="lang-hi">
+            प्लेटफ़ॉर्म "जैसा है" और "जैसा उपलब्ध है" प्रदान किया जाता है, बिना
+            किसी प्रकार की वारंटी के, चाहे वह स्पष्ट या निहित हो। हम गारंटी नहीं
+            देते कि प्लेटफ़ॉर्म निर्बाध, सुरक्षित, त्रुटि-मुक्त होगा या दोषों को
+            ठीक किया जाएगा। उपयोग आपके अपने जोखिम पर है।
+          </p>
+        </section>
+
+        <!-- 8 -->
+        <section>
+          <h2
+            class="text-headline-md font-headline-md mb-2 text-on-surface dark:text-on-inverse-surface"
+          >
+            <span class="lang-en">8. Limitation of Liability</span>
+            <span class="lang-hi">8. दायित्व की सीमा</span>
+          </h2>
+          <p class="lang-en">
+            To the maximum extent permitted by law, Fanconnact, its affiliates,
+            and employees shall not be liable for any indirect, incidental,
+            special, or consequential damages arising from your use of the
+            Platform, including but not limited to loss of data, profits, or
+            business interruption. Our total liability shall not exceed ₹1,000.
+          </p>
+          <p class="lang-hi">
+            कानून द्वारा अनुमत अधिकतम सीमा तक, Fanconnact, इसके सहयोगी और
+            कर्मचारी प्लेटफ़ॉर्म के आपके उपयोग से उत्पन्न किसी भी अप्रत्यक्ष,
+            आकस्मिक, विशेष या परिणामी क्षति के लिए उत्तरदायी नहीं होंगे, जिसमें
+            डेटा, लाभ या व्यवसाय में रुकावट शामिल है। हमारी कुल देयता ₹1,000 से
+            अधिक नहीं होगी।
+          </p>
+        </section>
+
+        <!-- 9 -->
+        <section>
+          <h2
+            class="text-headline-md font-headline-md mb-2 text-on-surface dark:text-on-inverse-surface"
+          >
+            <span class="lang-en">9. Termination</span>
+            <span class="lang-hi">9. समाप्ति</span>
+          </h2>
+          <p class="lang-en">
+            We reserve the right to suspend or terminate your account at any
+            time, without notice, for any violation of these Terms or for any
+            reason at our discretion. Upon termination, your right to use the
+            Platform ceases immediately. You may delete your account at any time
+            from profile settings.
+          </p>
+          <p class="lang-hi">
+            हम किसी भी समय, बिना सूचना के, इन नियमों के उल्लंघन या अपने विवेक पर
+            किसी भी कारण से आपके खाते को निलंबित या समाप्त करने का अधिकार
+            सुरक्षित रखते हैं। समाप्ति पर, प्लेटफ़ॉर्म का उपयोग करने का आपका
+            अधिकार तुरंत समाप्त हो जाता है। आप प्रोफ़ाइल सेटिंग्स से किसी भी समय
+            अपना खाता हटा सकते हैं।
+          </p>
+        </section>
+
+        <!-- 10 -->
+        <section>
+          <h2
+            class="text-headline-md font-headline-md mb-2 text-on-surface dark:text-on-inverse-surface"
+          >
+            <span class="lang-en">10. Changes to Terms</span>
+            <span class="lang-hi">10. शर्तों में बदलाव</span>
+          </h2>
+          <p class="lang-en">
+            We may update these Terms at any time. Changes will be posted on
+            this page with an updated "Last updated" date. Continued use after
+            changes constitutes acceptance. We encourage you to review this page
+            periodically.
+          </p>
+          <p class="lang-hi">
+            हम किसी भी समय इन शर्तों को अपडेट कर सकते हैं। परिवर्तन इस पृष्ठ पर
+            अपडेटेड "अंतिम अद्यतन" तिथि के साथ पोस्ट किए जाएंगे। परिवर्तनों के
+            बाद निरंतर उपयोग स्वीकृति माना जाएगा। हम आपको समय-समय पर इस पृष्ठ की
+            समीक्षा करने की सलाह देते हैं।
+          </p>
+        </section>
+
+        <!-- 11 -->
+        <section>
+          <h2
+            class="text-headline-md font-headline-md mb-2 text-on-surface dark:text-on-inverse-surface"
+          >
+            <span class="lang-en">11. Governing Law & Dispute Resolution</span>
+            <span class="lang-hi">11. शासकीय कानून और विवाद समाधान</span>
+          </h2>
+          <p class="lang-en">
+            These Terms are governed by the laws of India. Any disputes arising
+            from these Terms shall be subject to the exclusive jurisdiction of
+            the courts in Delhi, India. We encourage informal resolution before
+            legal action.
+          </p>
+          <p class="lang-hi">
+            ये शर्तें भारत के कानूनों द्वारा शासित हैं। इन शर्तों से उत्पन्न
+            किसी भी विवाद पर दिल्ली, भारत की अदालतों का अनन्य क्षेत्राधिकार
+            होगा। हम कानूनी कार्रवाई से पहले अनौपचारिक समाधान को प्रोत्साहित
+            करते हैं।
+          </p>
+        </section>
+
+        <!-- 12 -->
+        <section>
+          <h2
+            class="text-headline-md font-headline-md mb-2 text-on-surface dark:text-on-inverse-surface"
+          >
+            <span class="lang-en">12. Contact Us</span>
+            <span class="lang-hi">12. हमसे संपर्क करें</span>
+          </h2>
+          <p class="lang-en">
+            For questions about these Terms, please contact us through the
+            Platform's support channels or email us at support@fanconnect.com.
+          </p>
+          <p class="lang-hi">
+            इन शर्तों के बारे में प्रश्नों के लिए, कृपया प्लेटफ़ॉर्म के सहायता
+            चैनलों के माध्यम से हमसे संपर्क करें या support@fanconnect.com पर
+            ईमेल करें।
+          </p>
+        </section>
+      </div>
+
+      <!-- ============ PRIVACY POLICY ============ -->
+      <div
+        id="privacy-content"
+        class="hidden space-y-6 text-body-md leading-relaxed"
+      >
+        <!-- P1 -->
+        <section>
+          <h2
+            class="text-headline-md font-headline-md mb-2 text-on-surface dark:text-on-inverse-surface"
+          >
+            <span class="lang-en">1. Information We Collect</span>
+            <span class="lang-hi">1. हम क्या जानकारी एकत्र करते हैं</span>
+          </h2>
+          <p class="lang-en">
+            We collect information you provide directly: name, email address,
+            username, phone number, date of birth, gender, profile photo, and
+            favorite sports. We also collect usage data such as pages visited,
+            time spent, device information, IP address, and browser type through
+            cookies and analytics.
+          </p>
+          <p class="lang-hi">
+            हम वह जानकारी एकत्र करते हैं जो आप सीधे प्रदान करते हैं: नाम, ईमेल
+            पता, उपयोगकर्ता नाम, फ़ोन नंबर, जन्म तिथि, लिंग, प्रोफ़ाइल फ़ोटो और
+            पसंदीदा खेल। हम कुकीज़ और एनालिटिक्स के माध्यम से उपयोग डेटा भी
+            एकत्र करते हैं जैसे विज़िट किए गए पृष्ठ, बिताया गया समय, डिवाइस
+            जानकारी, IP पता और ब्राउज़र प्रकार।
+          </p>
+        </section>
+
+        <!-- P2 -->
+        <section>
+          <h2
+            class="text-headline-md font-headline-md mb-2 text-on-surface dark:text-on-inverse-surface"
+          >
+            <span class="lang-en">2. How We Use Your Information</span>
+            <span class="lang-hi"
+              >2. हम आपकी जानकारी का उपयोग कैसे करते हैं</span
+            >
+          </h2>
+          <p class="lang-en">
+            We use your data to: (a) create and manage your account; (b) provide
+            and improve Platform features; (c) personalize your experience; (d)
+            send service-related communications; (e) respond to your inquiries;
+            (f) ensure security and prevent fraud; (g) comply with legal
+            obligations. We do not sell your personal information to third
+            parties.
+          </p>
+          <p class="lang-hi">
+            हम आपके डेटा का उपयोग करते हैं: (क) आपका खाता बनाने और प्रबंधित
+            करने; (ख) प्लेटफ़ॉर्म सुविधाएँ प्रदान करने और सुधारने; (ग) आपके
+            अनुभव को वैयक्तिकृत करने; (घ) सेवा-संबंधित संचार भेजने; (ङ) आपकी
+            पूछताछ का जवाब देने; (च) सुरक्षा सुनिश्चित करने और धोखाधड़ी रोकने;
+            (छ) कानूनी दायित्वों का पालन करने। हम आपकी व्यक्तिगत जानकारी तीसरे
+            पक्ष को नहीं बेचते हैं।
+          </p>
+        </section>
+
+        <!-- P3 -->
+        <section>
+          <h2
+            class="text-headline-md font-headline-md mb-2 text-on-surface dark:text-on-inverse-surface"
+          >
+            <span class="lang-en">3. Data Sharing & Disclosure</span>
+            <span class="lang-hi">3. डेटा साझाकरण और प्रकटीकरण</span>
+          </h2>
+          <p class="lang-en">
+            We may share your data with: (a) service providers who help us
+            operate the Platform (e.g., Firebase, cloud hosting); (b) law
+            enforcement if required by law; (c) in connection with a business
+            transfer (merger, acquisition). We ensure third parties are bound by
+            confidentiality agreements.
+          </p>
+          <p class="lang-hi">
+            हम आपका डेटा साझा कर सकते हैं: (क) सेवा प्रदाताओं के साथ जो
+            प्लेटफ़ॉर्म संचालित करने में हमारी सहायता करते हैं (जैसे Firebase,
+            क्लाउड होस्टिंग); (ख) कानून प्रवर्तन के साथ यदि कानून द्वारा आवश्यक
+            हो; (ग) व्यावसायिक हस्तांतरण (विलय, अधिग्रहण) के संबंध में। हम
+            सुनिश्चित करते हैं कि तीसरे पक्ष गोपनीयता समझौतों से बंधे हों।
+          </p>
+        </section>
+
+        <!-- P4 -->
+        <section>
+          <h2
+            class="text-headline-md font-headline-md mb-2 text-on-surface dark:text-on-inverse-surface"
+          >
+            <span class="lang-en">4. Cookies & Tracking</span>
+            <span class="lang-hi">4. कुकीज़ और ट्रैकिंग</span>
+          </h2>
+          <p class="lang-en">
+            We use cookies and similar technologies to enhance your experience,
+            analyze usage, and serve relevant content. You can control cookie
+            preferences through your browser settings. Disabling cookies may
+            affect Platform functionality.
+          </p>
+          <p class="lang-hi">
+            हम आपके अनुभव को बेहतर बनाने, उपयोग का विश्लेषण करने और प्रासंगिक
+            सामग्री प्रदान करने के लिए कुकीज़ और समान तकनीकों का उपयोग करते हैं।
+            आप अपनी ब्राउज़र सेटिंग्स के माध्यम से कुकी प्राथमिकताओं को
+            नियंत्रित कर सकते हैं। कुकीज़ अक्षम करने से प्लेटफ़ॉर्म कार्यक्षमता
+            प्रभावित हो सकती है।
+          </p>
+        </section>
+
+        <!-- P5 -->
+        <section>
+          <h2
+            class="text-headline-md font-headline-md mb-2 text-on-surface dark:text-on-inverse-surface"
+          >
+            <span class="lang-en">5. Data Security</span>
+            <span class="lang-hi">5. डेटा सुरक्षा</span>
+          </h2>
+          <p class="lang-en">
+            We implement industry-standard security measures, including
+            encryption (SSL/TLS), firewalls, and secure server infrastructure,
+            to protect your data. However, no method of transmission over the
+            Internet is 100% secure. You are responsible for keeping your
+            password confidential.
+          </p>
+          <p class="lang-hi">
+            हम आपके डेटा की सुरक्षा के लिए उद्योग-मानक सुरक्षा उपाय लागू करते
+            हैं, जिसमें एन्क्रिप्शन (SSL/TLS), फ़ायरवॉल और सुरक्षित सर्वर
+            बुनियादी ढाँचा शामिल है। हालाँकि, इंटरनेट पर ट्रांसमिशन का कोई भी
+            तरीका 100% सुरक्षित नहीं है। अपने पासवर्ड को गोपनीय रखना आपकी
+            जिम्मेदारी है।
+          </p>
+        </section>
+
+        <!-- P6 -->
+        <section>
+          <h2
+            class="text-headline-md font-headline-md mb-2 text-on-surface dark:text-on-inverse-surface"
+          >
+            <span class="lang-en">6. Data Retention</span>
+            <span class="lang-hi">6. डेटा प्रतिधारण</span>
+          </h2>
+          <p class="lang-en">
+            We retain your data for as long as your account is active or as
+            needed to provide services. After account deletion, we may retain
+            certain data for legal obligations, fraud prevention, or
+            record-keeping for up to 90 days, after which it is permanently
+            deleted.
+          </p>
+          <p class="lang-hi">
+            हम आपके डेटा को तब तक बनाए रखते हैं जब तक आपका खाता सक्रिय है या
+            सेवाएँ प्रदान करने के लिए आवश्यक है। खाता हटाने के बाद, हम कानूनी
+            दायित्वों, धोखाधड़ी रोकथाम या रिकॉर्ड-कीपिंग के लिए 90 दिनों तक कुछ
+            डेटा बनाए रख सकते हैं, जिसके बाद इसे स्थायी रूप से हटा दिया जाता है।
+          </p>
+        </section>
+
+        <!-- P7 -->
+        <section>
+          <h2
+            class="text-headline-md font-headline-md mb-2 text-on-surface dark:text-on-inverse-surface"
+          >
+            <span class="lang-en">7. Your Rights (India - DPDP Act 2023)</span>
+            <span class="lang-hi"
+              >7. आपके अधिकार (भारत - DPDP अधिनियम 2023)</span
+            >
+          </h2>
+          <p class="lang-en">
+            Under India's Digital Personal Data Protection Act 2023, you have
+            the right to: (a) access your personal data; (b) correct inaccurate
+            data; (c) update your data; (d) request deletion (right to be
+            forgotten); (e) withdraw consent at any time; (f) nominate a
+            representative for data processing after your death. To exercise
+            these rights, use profile settings or contact us.
+          </p>
+          <p class="lang-hi">
+            भारत के डिजिटल व्यक्तिगत डेटा संरक्षण अधिनियम 2023 के तहत, आपको
+            अधिकार है: (क) अपने व्यक्तिगत डेटा तक पहुँचने का; (ख) गलत डेटा को
+            सुधारने का; (ग) अपने डेटा को अपडेट करने का; (घ) हटाने का अनुरोध करने
+            का (भूल जाने का अधिकार); (ङ) किसी भी समय सहमति वापस लेने का; (च)
+            आपकी मृत्यु के बाद डेटा प्रसंस्करण के लिए प्रतिनिधि नामित करने का।
+            इन अधिकारों का उपयोग करने के लिए, प्रोफ़ाइल सेटिंग्स का उपयोग करें
+            या हमसे संपर्क करें।
+          </p>
+        </section>
+
+        <!-- P8 -->
+        <section>
+          <h2
+            class="text-headline-md font-headline-md mb-2 text-on-surface dark:text-on-inverse-surface"
+          >
+            <span class="lang-en">8. Third-Party Services</span>
+            <span class="lang-hi">8. तृतीय-पक्ष सेवाएँ</span>
+          </h2>
+          <p class="lang-en">
+            The Platform uses third-party services including Firebase
+            (authentication, database, storage), Google Analytics, and Tailwind
+            CSS. These services have their own privacy policies. We encourage
+            you to review them. We are not responsible for third-party
+            practices.
+          </p>
+          <p class="lang-hi">
+            प्लेटफ़ॉर्म तृतीय-पक्ष सेवाओं का उपयोग करता है जिसमें Firebase
+            (प्रमाणीकरण, डेटाबेस, स्टोरेज), Google Analytics और Tailwind CSS
+            शामिल हैं। इन सेवाओं की अपनी गोपनीयता नीतियाँ हैं। हम आपको उनकी
+            समीक्षा करने की सलाह देते हैं। तृतीय-पक्ष प्रथाओं के लिए हम
+            जिम्मेदार नहीं हैं।
+          </p>
+        </section>
+
+        <!-- P9 -->
+        <section>
+          <h2
+            class="text-headline-md font-headline-md mb-2 text-on-surface dark:text-on-inverse-surface"
+          >
+            <span class="lang-en">9. Children's Privacy</span>
+            <span class="lang-hi">9. बच्चों की गोपनीयता</span>
+          </h2>
+          <p class="lang-en">
+            The Platform is not directed at children under 13. We do not
+            knowingly collect personal data from children under 13. If we
+            discover such data, we will delete it immediately. If you believe a
+            child under 13 has provided us data, please contact us.
+          </p>
+          <p class="lang-hi">
+            यह प्लेटफ़ॉर्म 13 वर्ष से कम उम्र के बच्चों के लिए नहीं है। हम
+            जानबूझकर 13 वर्ष से कम उम्र के बच्चों से व्यक्तिगत डेटा एकत्र नहीं
+            करते हैं। यदि हमें ऐसा डेटा मिलता है, तो हम इसे तुरंत हटा देंगे। यदि
+            आपको लगता है कि 13 वर्ष से कम उम्र के बच्चे ने हमें डेटा प्रदान किया
+            है, तो कृपया हमसे संपर्क करें।
+          </p>
+        </section>
+
+        <!-- P10 -->
+        <section>
+          <h2
+            class="text-headline-md font-headline-md mb-2 text-on-surface dark:text-on-inverse-surface"
+          >
+            <span class="lang-en">10. Changes to Privacy Policy</span>
+            <span class="lang-hi">10. गोपनीयता नीति में बदलाव</span>
+          </h2>
+          <p class="lang-en">
+            We may update this Privacy Policy from time to time. Changes will be
+            posted here with an updated date. Material changes will be notified
+            via email or Platform notice.
+          </p>
+          <p class="lang-hi">
+            हम समय-समय पर इस गोपनीयता नीति को अपडेट कर सकते हैं। परिवर्तन
+            अपडेटेड तिथि के साथ यहाँ पोस्ट किए जाएंगे। महत्वपूर्ण परिवर्तनों की
+            सूचना ईमेल या प्लेटफ़ॉर्म सूचना के माध्यम से दी जाएगी।
+          </p>
+        </section>
+
+        <!-- P11 -->
+        <section>
+          <h2
+            class="text-headline-md font-headline-md mb-2 text-on-surface dark:text-on-inverse-surface"
+          >
+            <span class="lang-en">11. Grievance Officer (India)</span>
+            <span class="lang-hi">11. शिकायत अधिकारी (भारत)</span>
+          </h2>
+          <p class="lang-en">
+            In compliance with the Information Technology Act, 2000 and DPDP Act
+            2023, the Grievance Officer can be reached at:
+            grievance@fanconnect.com. Complaints will be acknowledged within 24
+            hours and resolved within 30 days.
+          </p>
+          <p class="lang-hi">
+            सूचना प्रौद्योगिकी अधिनियम, 2000 और DPDP अधिनियम 2023 के अनुपालन
+            में, शिकायत अधिकारी से grievance@fanconnect.com पर संपर्क किया जा
+            सकता है। शिकायतों को 24 घंटे के भीतर स्वीकार किया जाएगा और 30 दिनों
+            के भीतर हल किया जाएगा।
+          </p>
+        </section>
+
+        <!-- P12 -->
+        <section>
+          <h2
+            class="text-headline-md font-headline-md mb-2 text-on-surface dark:text-on-inverse-surface"
+          >
+            <span class="lang-en">12. Contact Us</span>
+            <span class="lang-hi">12. हमसे संपर्क करें</span>
+          </h2>
+          <p class="lang-en">
+            For privacy-related inquiries: support@fanconnect.com. Address:
+            Fanconnact, New Delhi, India.
+          </p>
+          <p class="lang-hi">
+            गोपनीयता से संबंधित पूछताछ के लिए: support@fanconnect.com। पता:
+            Fanconnact, नई दिल्ली, भारत।
+          </p>
+        </section>
+      </div>
+
+      <div
+        class="mt-8 pt-6 border-t border-outline-variant/30 text-body-sm text-surface-dim/70 text-center"
+      >
+        <p class="lang-en">&copy; 2026 Fanconnact. All rights reserved.</p>
+        <p class="lang-hi">&copy; 2026 Fanconnact. सर्वाधिकार सुरक्षित।</p>
+      </div>
+    </div>
+
+    <script>
+      // Language Toggle
+      const langToggle = document.getElementById("lang-toggle");
+      const langLabel = document.getElementById("lang-label");
+      let currentLang = localStorage.getItem("terms-lang") || "en";
+
+      function setLang(lang) {
+        document.documentElement.lang = lang;
+        langLabel.textContent = lang === "en" ? "हिन्दी" : "English";
+        localStorage.setItem("terms-lang", lang);
+        currentLang = lang;
+      }
+      setLang(currentLang);
+
+      langToggle.addEventListener("click", () => {
+        setLang(currentLang === "en" ? "hi" : "en");
+      });
+
+      // Tab Toggle: Terms / Privacy
+      const tabTerms = document.getElementById("tab-terms");
+      const tabPrivacy = document.getElementById("tab-privacy");
+      const termsContent = document.getElementById("terms-content");
+      const privacyContent = document.getElementById("privacy-content");
+
+      // Check URL hash for initial tab
+      function switchTab(tab) {
+        if (tab === "privacy") {
+          tabPrivacy.classList.add(
+            "border-b-2",
+            "border-[#15803d]",
+            "bg-[#15803d]",
+            "text-white",
+          );
+          tabPrivacy.classList.remove("text-primary", "text-surface-dim/70");
+          tabTerms.classList.remove(
+            "border-b-2",
+            "border-[#15803d]",
+            "bg-[#15803d]",
+            "text-white",
+          );
+          tabTerms.classList.add("text-surface-dim/70");
+          termsContent.classList.add("hidden");
+          privacyContent.classList.remove("hidden");
+        } else {
+          tabTerms.classList.add(
+            "border-b-2",
+            "border-[#15803d]",
+            "bg-[#15803d]",
+            "text-white",
+          );
+          tabTerms.classList.remove("text-primary", "text-surface-dim/70");
+          tabPrivacy.classList.remove(
+            "border-b-2",
+            "border-[#15803d]",
+            "bg-[#15803d]",
+            "text-white",
+          );
+          tabPrivacy.classList.add("text-surface-dim/70");
+          privacyContent.classList.add("hidden");
+          termsContent.classList.remove("hidden");
+        }
+      }
+
+      if (window.location.hash === "#privacy") {
+        switchTab("privacy");
+      }
+
+      tabTerms.addEventListener("click", () => switchTab("terms"));
+      tabPrivacy.addEventListener("click", () => switchTab("privacy"));
+    </script>
+    <script src="js/theme.js"></script>
+  <script type="module" src="js/script.js"></script>
+  </body>
+</html>

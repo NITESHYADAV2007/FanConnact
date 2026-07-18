@@ -1,0 +1,23 @@
+HTTP/1.1 500 Internal Server Error
+Date: Fri, 17 Jul 2026 07:25:33 GMT
+Content-Type: application/json
+Content-Length: 63
+Connection: keep-alive
+Server: cloudflare
+Nel: {"report_to":"cf-nel","success_fraction":0.0,"max_age":604800}
+X-Cloud-Trace-Context: 16ea9bb9a78b8ef79f20e90d678e6889;o=1
+Access-Control-Allow-Origin: *
+X-Ratelimit-Limit-Month: 500
+X-Ratelimit-Remaining-Day: 494
+Ratelimit-Reset: 1182868
+Ratelimit-Limit: 500
+Ratelimit-Remaining: 494
+X-Ratelimit-Limit-Day: 500
+X-Ratelimit-Remaining-Month: 494
+Cf-Cache-Status: DYNAMIC
+Strict-Transport-Security: max-age=2592000; includeSubDomains
+X-Content-Type-Options: nosniff
+Report-To: {"group":"cf-nel","max_age":604800,"endpoints":[{"url":"https://a.nel.cloudflare.com/report/v4?s=pSJ%2F5sgM69QL1sj111QoXaZZfjwMAbqdZ7B0C7bEEr4XlkYzT%2FB3G%2BCDH%2BIclJ4DxNd2n4BGCq%2B8sKpVs9yogLJUc%2B%2B864mLTye3hvEYtJlRl3lf9Y2vWM%2FLMBykF3QF86FdOK6FVfUbbGVzn%2FE%3D"}]}
+CF-RAY: a1c78368089bfde0-SIN
+alt-svc: h3=":443"; ma=86400
+

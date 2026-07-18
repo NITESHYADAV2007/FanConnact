@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/fancoin/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/fancoin/favicon-16x16.png" />
+    <meta property="og:site_name" content="Fanconnact" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="assets/fancoin/fanconnactlogo.png" />
+    <meta property="og:title" content="Fanconnact - Fantasy Sports" />
+    <meta property="og:description" content="Join Fanconnact for fantasy sports, predictions, and live matches." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Fanconnact - Fantasy Sports" />
+    <meta name="twitter:description" content="Join Fanconnact for fantasy sports, predictions, and live matches." />
+    <meta name="twitter:image" content="assets/fancoin/fanconnactlogo.png" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>
+        Notifications | Fanconnact
+    </title>
+    <script>
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
+    <style>
+        body { transition: background 0.3s, color 0.3s; }
+        ::-webkit-scrollbar { width: 5px; }
+        :root:not(.dark) ::-webkit-scrollbar-track { background: #f1f5f9; }
+        :root:not(.dark) ::-webkit-scrollbar-thumb { background: #2196f3; border-radius: 99px; }
+        .dark ::-webkit-scrollbar-track { background: #0a0a0a; }
+        .dark ::-webkit-scrollbar-thumb { background: #10b981; border-radius: 99px; }
+        :root:not(.dark) input:focus { border-color: #2196f3 !important; box-shadow: 0 0 0 2px rgba(33,150,243,0.2) !important; }
+        .dark input:focus { border-color: #10b981 !important; box-shadow: 0 0 0 2px rgba(16,185,129,0.2) !important; }
+
+        .header-right { display: flex; align-items: center; gap: 8px; }
+        .theme-toggle-btn {
+            border: none; width: 40px; height: 40px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: all 0.25s;
+        }
+        .theme-toggle-btn:active { transform: scale(0.9); }
+        .theme-toggle-btn .material-symbols-outlined { font-size: 22px; }
+        :root:not(.dark) .theme-toggle-btn {
+            background: #ffffff; color: #2196f3;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+        }
+        :root:not(.dark) .theme-toggle-btn:hover {
+            background: #eff6ff; box-shadow: 0 4px 12px rgba(33,150,243,0.15);
+        }
+        .dark .theme-toggle-btn {
+            background: #111111; color: #10b981;
+            border: 1px solid #1e1e1e;
+        }
+        .dark .theme-toggle-btn:hover {
+            background: #1a1a1a; border-color: #10b981;
+        }
+    </style>
+
+    <link rel="stylesheet" href="css/notification.css">
+</head>
+
+<body>
+
+    <div class="notification-page">
+
+        <!-- HEADER -->
+        <div class="notification-header">
+
+            <button class="back-btn">
+                ← Back
+            </button>
+
+            <div class="header-center">
+
+                <h1>
+                    Notifications
+                </h1>
+
+                <span class="badge-count">
+                    18
+                </span>
+
+            </div>
+
+            <div class="header-right">
+                <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle theme">
+                    <span id="theme-toggle-light-icon" class="material-symbols-outlined hidden">light_mode</span>
+                    <span id="theme-toggle-dark-icon" class="material-symbols-outlined">dark_mode</span>
+                </button>
+                <button class="settings-btn">
+                    ⚙
+                </button>
+            </div>
+
+        </div>
+
+
+        <!-- QUICK ACTIONS -->
+        <div class="quick-actions">
+
+            <button class="mark-read-btn">
+                ✓ Mark Read
+            </button>
+
+            <button class="pinned-btn">
+                📌 Pinned
+            </button>
+
+            <button class="sound-btn">
+                🔊 Sound ON
+            </button>
+
+            <div class="filter-wrapper">
+
+                <button id="filterBtn">
+                    Filter
+                </button>
+
+                <select id="filterDropdown">
+
+                    <option value="all">
+                        All
+                    </option>
+
+                    <option value="match">
+                        Match
+                    </option>
+
+                    <option value="rewards">
+                        Rewards
+                    </option>
+
+                    <option value="news">
+                        News
+                    </option>
+
+                    <option value="social">
+                        Social
+                    </option>
+
+                    <option value="account">
+                        Account
+                    </option>
+
+                </select>
+
+            </div>
+
+        </div>
+
+
+        <!-- CATEGORY TABS -->
+        <div class="notification-tabs">
+
+            <button class="tab active" data-type="all">
+                All
+            </button>
+
+            <button class="tab" data-type="match">
+                Match
+            </button>
+
+            <button class="tab" data-type="rewards">
+                Rewards
+            </button>
+
+            <button class="tab" data-type="news">
+                News
+            </button>
+
+            <button class="tab" data-type="social">
+                Social
+            </button>
+
+            <button class="tab" data-type="account">
+                Account
+            </button>
+        </div>
+
+
+        <!-- BREAKING NEWS -->
+        <div class="breaking-news">
+
+            <div class="breaking-tag">
+                🚨 Breaking
+            </div>
+
+            <p>
+                Virat Kohli ruled fit
+                for next IPL match
+            </p>
+
+        </div>
+
+
+        <!-- PINNED -->
+        <h2 class="section-title">
+            📌 Pinned
+        </h2>
+
+        <div id="pinnedContainer">
+        </div>
+
+        <!-- NOTIFICATION FEED -->
+
+        <h2 class="section-title">
+            Recent
+        </h2>
+
+        <div class="notification-feed">
+
+           
+
+            </div>
+
+
+            <!-- MATCH -->
+            <div class="notification-card" data-type="match">
+                <button class="pin-btn">
+                    📍
+                </button>
+                <div class="icon">
+                    ❤️
+                </div>
+
+                <div class="card-content">
+
+                    <h3>
+                        Match Alert
+                    </h3>
+
+                    <p>
+                        RCB vs MI starts
+                        in 30 mins.
+                    </p>
+
+                </div>
+
+                <span class="time">
+                    15m
+                </span>
+
+            </div>
+
+
+            <!-- BREAKING -->
+            <div class="notification-card" data-type="news">
+
+                <button class="pin-btn">
+                    📍
+                </button>
+                <div class="icon">
+                    📰
+                </div>
+
+                <div class="card-content">
+
+                    <h3>
+                        Breaking News
+                    </h3>
+
+                    <p>
+                        Bumrah ruled out
+                        of next match.
+                    </p>
+
+                </div>
+
+                <span class="time">
+                    22m
+                </span>
+
+            </div>
+
+
+            <!-- ACCOUNT -->
+            <div class="notification-card" data-type="account">
+                <button class="pin-btn">
+                    📍
+                </button>
+                <div class="icon">
+                    ⚙
+                </div>
+
+                <div class="card-content">
+
+                    <h3>
+                        Username Updated
+                    </h3>
+
+                    <p>
+                        Your username
+                        updated successfully.
+                    </p>
+
+                </div>
+
+                <span class="time">
+                    1h
+                </span>
+
+            </div>
+
+
+            <!-- SOCIAL -->
+            <div class="notification-card" data-type="social">
+                <button class="pin-btn">
+                    📍
+                </button>
+                <div class="icon">
+                    💬
+                </div>
+
+                <div class="card-content">
+
+                    <h3>
+                        Social Activity
+                    </h3>
+
+                    <p>
+                        12 fans liked your
+                        prediction.
+                    </p>
+
+                </div>
+
+                <span class="time">
+                    2h
+                </span>
+
+            </div>
+
+
+            <!-- STREAK -->
+            <div class="notification-card streak-card" data-type="rewards">
+                <button class="pin-btn">
+                    📍
+                </button>
+                <div class="icon">
+                    🔥
+                </div>
+
+                <div class="card-content">
+
+                    <h3>
+                        Prediction Streak
+                    </h3>
+
+                    <p>
+                        5 predictions correct
+                        in a row.
+                    </p>
+
+                    <span class="reward">
+                        +250 Bonus Coins
+                    </span>
+
+                </div>
+
+                <span class="time">
+                    Today
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- WEEKLY SUMMARY -->
+        <div class="weekly-summary">
+
+            <h2>
+                Weekly Summary
+            </h2>
+
+            <div class="summary-grid">
+
+                <div>
+                    <span>
+                        Predictions
+                    </span>
+                    <h3>
+                        18
+                    </h3>
+                </div>
+
+                <div>
+                    <span>
+                        Correct
+                    </span>
+                    <h3>
+                        13
+                    </h3>
+                </div>
+
+                <div>
+                    <span>
+                        Coins
+                    </span>
+                    <h3>
+                        540
+                    </h3>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- SETTINGS MODAL -->
+        <div class="settings-modal">
+
+            <div class="settings-box">
+
+                <button class="close-settings">
+                    ✕
+                </button>
+
+                <h2>
+                    Notification Settings
+                </h2>
+
+                <!-- ONLY MY TEAM -->
+                <div class="setting-box">
+
+                    <h3>
+                        ❤️ Only My Team
+                    </h3>
+
+                    <label>
+                        <input type="radio" name="teamMode" checked>
+                        RCB Only
+                    </label>
+
+                    <label>
+                        <input type="radio" name="teamMode">
+                        All Teams
+                    </label>
+
+                </div>
+
+
+                <!-- QUIET HOURS -->
+                <div class="setting-box">
+
+                    <h3>🌙 Quiet Hours</h3>
+
+                    <div class="quiet-hours">
+
+                        <div>
+                            <label>Start</label>
+                            <input type="time" id="quietStart">
+                        </div>
+
+                        <div>
+                            <label>End</label>
+                            <input type="time" id="quietEnd">
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- PRIORITY -->
+                <div class="setting-box">
+
+                    <h3>
+                        🔥 Priority
+                    </h3>
+
+                    <label>
+                        <input type="radio" name="priority" checked>
+                        High
+                    </label>
+
+                    <label>
+                        <input type="radio" name="priority">
+                        Medium
+                    </label>
+
+                    <label>
+                        <input type="radio" name="priority">
+                        Low
+                    </label>
+
+                </div>
+
+
+                <!-- SPORTS FILTER -->
+               <div class="setting-box">
+
+    <h3>
+        🏆 My Interests
+    </h3>
+
+    <!-- SPORTS -->
+
+    <div class="interest-title">
+        Sports
+    </div>
+
+    <div class="sports-grid">
+
+        <button class="interest-card active"
+        data-sport="cricket">
+            🏏 Cricket
+        </button>
+
+        <button class="interest-card"
+        data-sport="football">
+            ⚽ Football
+        </button>
+
+        <button class="interest-card"
+        data-sport="basketball">
+            🏀 Basketball
+        </button>
+
+        <button class="interest-card"
+        data-sport="tennis">
+            🎾 Tennis
+        </button>
+
+        <button class="interest-card"
+        data-sport="esports">
+            🎮 Esports
+        </button>
+
+    </div>
+
+    <!-- TEAM AREA -->
+
+    <div class="interest-title">
+        Favourite Teams
+    </div>
+
+    <div id="teamsContainer" id="teamsContainer">
+
+       
+</div>
+
+                <!-- SOUND -->
+                <div class="setting-box">
+
+                    <h3>
+                        🔊 Notification Sound
+                    </h3>
+
+                    <label>
+                        <input type="checkbox" checked>
+                        Enable Sound
+                    </label>
+
+                </div>
+
+            </div>
+
+        </div>
+        <script src="js/notification.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const btn = document.getElementById('theme-toggle');
+                const light = document.getElementById('theme-toggle-light-icon');
+                const dark = document.getElementById('theme-toggle-dark-icon');
+                function render() {
+                    const isDark = localStorage.getItem('color-theme') === 'dark' ||
+                        (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
+                    document.documentElement.classList.toggle('dark', isDark);
+                    if (light) light.classList.toggle('hidden', !isDark);
+                    if (dark) dark.classList.toggle('hidden', isDark);
+                }
+                render();
+                btn?.addEventListener('click', () => {
+                    const next = document.documentElement.classList.contains('dark') ? 'light' : 'dark';
+                    localStorage.setItem('color-theme', next);
+                    render();
+                });
+            });
+        </script>
+  <script src="js/notif-ws.js"></script>
+  <script type="module" src="js/script.js"></script></body>
+
+</html>

@@ -1,0 +1,8 @@
+﻿basketball open=585 close=951
+tennis open=593 close=886
+baseball open=584 close=912
+hockey open=584 close=932
+e-sports open=579 close=832
+kabbaddi open=579 close=864
+tabletennis open=702 close=1073
+vollyeball open=580 close=918

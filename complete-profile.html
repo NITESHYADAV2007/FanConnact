@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Complete Your Profile · FanConnect</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/fancoin/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/fancoin/favicon-16x16.png" />
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800&family=Hanken+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/tailwind.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    body { font-family: "Hanken Grotesk", sans-serif; }
+    .material-symbols-outlined { font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24; }
+    .gender-card.active { background: var(--primary-container); color: var(--on-primary-container); border-color: var(--primary); }
+    .sport-checkbox.active { background: var(--primary-container); color: var(--on-primary-container); border-color: var(--primary); }
+  </style>
+</head>
+<body class="min-h-screen w-full bg-[#F8F9FF] dark:bg-[#0B0E11] flex items-center justify-center p-4">
+  <div class="w-full max-w-lg">
+    <div class="text-center mb-6">
+      <h1 class="text-2xl font-bold font-headline text-gray-900 dark:text-white">Complete Your Profile</h1>
+      <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Just a few details to finish signing up with Google</p>
+    </div>
+
+    <div class="bg-white dark:bg-[#11151C] border border-gray-200 dark:border-white/10 rounded-2xl p-6 space-y-4">
+      <!-- Google email (read-only, already verified) -->
+      <div class="space-y-1">
+        <label class="text-xs font-semibold text-slate-500 dark:text-slate-400 ml-1">Email (verified by Google)</label>
+        <div class="relative flex items-center">
+          <span class="material-symbols-outlined absolute left-4 text-slate-400">mail</span>
+          <input id="email" type="email" readonly disabled
+            class="w-full bg-gray-100 dark:bg-black/30 border border-gray-200 dark:border-white/10 rounded-xl py-3 pl-12 pr-4 text-gray-600 dark:text-gray-300 cursor-not-allowed" />
+        </div>
+      </div>
+
+      <!-- Full Name -->
+      <div class="space-y-1">
+        <label class="text-xs font-semibold text-slate-500 dark:text-slate-400 ml-1">Full Name</label>
+        <div class="relative flex items-center">
+          <span class="material-symbols-outlined absolute left-4 text-slate-400">person</span>
+          <input id="full-name" type="text" required placeholder="Enter your full name"
+            class="w-full bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl py-3 pl-12 pr-4 text-gray-900 dark:text-white placeholder:text-slate-400 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition-all" />
+        </div>
+      </div>
+
+      <!-- Username -->
+      <div class="space-y-1">
+        <label class="text-xs font-semibold text-slate-500 dark:text-slate-400 ml-1">Username</label>
+        <div class="relative flex items-center">
+          <span class="material-symbols-outlined absolute left-4 text-slate-400">alternate_email</span>
+          <input id="signup-username" type="text" placeholder="Choose a username"
+            class="w-full bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl py-3 pl-12 pr-4 text-gray-900 dark:text-white placeholder:text-slate-400 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition-all" />
+        </div>
+        <span id="username-msg" class="text-xs ml-1"></span>
+      </div>
+
+      <!-- Mobile -->
+      <div class="space-y-1">
+        <label class="text-xs font-semibold text-slate-500 dark:text-slate-400 ml-1">Mobile Number</label>
+        <div class="relative flex items-center">
+          <span class="material-symbols-outlined absolute left-4 text-slate-400">call</span>
+          <select id="country-code" class="absolute left-11 bg-transparent text-gray-900 dark:text-white text-sm font-medium outline-none border-0 cursor-pointer appearance-none">
+            <option value="+91" data-digits="10">🇮🇳 +91</option>
+            <option value="+1" data-digits="10">🇺🇸 +1</option>
+            <option value="+44" data-digits="10">🇬🇧 +44</option>
+            <option value="+61" data-digits="9">🇦🇺 +61</option>
+            <option value="+971" data-digits="9">🇦🇪 +971</option>
+            <option value="+92" data-digits="10">🇵🇰 +92</option>
+            <option value="+880" data-digits="10">🇧🇩 +880</option>
+            <option value="+977" data-digits="10">🇳🇵 +977</option>
+            <option value="+94" data-digits="9">🇱🇰 +94</option>
+            <option value="+27" data-digits="9">🇿🇦 +27</option>
+            <option value="+65" data-digits="8">🇸🇬 +65</option>
+            <option value="+966" data-digits="9">🇸🇦 +966</option>
+          </select>
+          <input id="mobile" type="tel" inputmode="numeric" maxlength="10" required placeholder="XXXXXXXXXX"
+            class="w-full bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl py-3 pl-28 pr-4 text-gray-900 dark:text-white placeholder:text-slate-400 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition-all" />
+        </div>
+      </div>
+
+      <!-- Date of Birth -->
+      <div class="space-y-1">
+        <label class="text-xs font-semibold text-slate-500 dark:text-slate-400 ml-1">Date of Birth</label>
+        <div class="relative flex items-center">
+          <span class="material-symbols-outlined absolute left-4 text-slate-400">calendar_month</span>
+          <input id="dob" type="date" required
+            class="w-full bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl py-3 pl-12 pr-4 text-gray-900 dark:text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition-all" />
+        </div>
+      </div>
+
+      <!-- Gender -->
+      <div class="space-y-1">
+        <label class="text-xs font-semibold text-slate-500 dark:text-slate-400 ml-1">Gender</label>
+        <div class="flex bg-gray-100 dark:bg-black/20 rounded-xl p-1 gap-1" id="gender-group">
+          <label class="flex-1 cursor-pointer">
+            <input class="hidden" name="gender" value="Male" type="radio" />
+            <div class="gender-card py-2 text-center text-xs font-semibold rounded-lg text-slate-400 border border-transparent transition-all">Male</div>
+          </label>
+          <label class="flex-1 cursor-pointer">
+            <input class="hidden" name="gender" value="Female" type="radio" />
+            <div class="gender-card py-2 text-center text-xs font-semibold rounded-lg text-slate-400 border border-transparent transition-all">Female</div>
+          </label>
+          <label class="flex-1 cursor-pointer">
+            <input class="hidden" name="gender" value="Other" type="radio" />
+            <div class="gender-card py-2 text-center text-xs font-semibold rounded-lg text-slate-400 border border-transparent transition-all">Other</div>
+          </label>
+        </div>
+      </div>
+
+      <!-- Favorite Sports -->
+      <div class="space-y-1">
+        <label class="text-xs font-semibold text-slate-500 dark:text-slate-400 block">Favorite Sports</label>
+        <div class="flex flex-wrap gap-2" id="sports-container">
+          <label class="sport-checkbox cursor-pointer px-3 py-1.5 rounded-xl border border-gray-300 dark:border-white/10 text-xs text-slate-500 dark:text-slate-400 transition-all"><input type="checkbox" name="sports" value="cricket" class="hidden" />🏏 Cricket</label>
+          <label class="sport-checkbox cursor-pointer px-3 py-1.5 rounded-xl border border-gray-300 dark:border-white/10 text-xs text-slate-500 dark:text-slate-400 transition-all"><input type="checkbox" name="sports" value="football" class="hidden" />⚽ Football</label>
+          <label class="sport-checkbox cursor-pointer px-3 py-1.5 rounded-xl border border-gray-300 dark:border-white/10 text-xs text-slate-500 dark:text-slate-400 transition-all"><input type="checkbox" name="sports" value="basketball" class="hidden" />🏀 Basketball</label>
+          <label class="sport-checkbox cursor-pointer px-3 py-1.5 rounded-xl border border-gray-300 dark:border-white/10 text-xs text-slate-500 dark:text-slate-400 transition-all"><input type="checkbox" name="sports" value="tennis" class="hidden" />🎾 Tennis</label>
+          <label class="sport-checkbox cursor-pointer px-3 py-1.5 rounded-xl border border-gray-300 dark:border-white/10 text-xs text-slate-500 dark:text-slate-400 transition-all"><input type="checkbox" name="sports" value="baseball" class="hidden" />⚾ Baseball</label>
+          <label class="sport-checkbox cursor-pointer px-3 py-1.5 rounded-xl border border-gray-300 dark:border-white/10 text-xs text-slate-500 dark:text-slate-400 transition-all"><input type="checkbox" name="sports" value="hockey" class="hidden" />🏑 Hockey</label>
+          <label class="sport-checkbox cursor-pointer px-3 py-1.5 rounded-xl border border-gray-300 dark:border-white/10 text-xs text-slate-500 dark:text-slate-400 transition-all"><input type="checkbox" name="sports" value="esports" class="hidden" />🎮 E-Sports</label>
+          <label class="sport-checkbox cursor-pointer px-3 py-1.5 rounded-xl border border-gray-300 dark:border-white/10 text-xs text-slate-500 dark:text-slate-400 transition-all"><input type="checkbox" name="sports" value="kabaddi" class="hidden" />🤼 Kabaddi</label>
+          <label class="sport-checkbox cursor-pointer px-3 py-1.5 rounded-xl border border-gray-300 dark:border-white/10 text-xs text-slate-500 dark:text-slate-400 transition-all"><input type="checkbox" name="sports" value="tabletennis" class="hidden" />🏓 Table Tennis</label>
+          <label class="sport-checkbox cursor-pointer px-3 py-1.5 rounded-xl border border-gray-300 dark:border-white/10 text-xs text-slate-500 dark:text-slate-400 transition-all"><input type="checkbox" name="sports" value="volleyball" class="hidden" />🏐 Volleyball</label>
+        </div>
+      </div>
+
+      <button id="finish-btn" class="w-full py-3 rounded-xl bg-emerald-500 text-black font-bold hover:bg-emerald-400 transition-colors disabled:opacity-50">
+        Finish Sign Up
+      </button>
+      <p id="error-msg" class="text-red-500 text-sm text-center hidden"></p>
+    </div>
+  </div>
+
+  <script type="module" src="js/complete-profile.js"></script>
+</body>
+</html>

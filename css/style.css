@@ -1,0 +1,885 @@
+/* Smooth theme transitions */
+*,
+*::before,
+*::after {
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    color 0.3s ease,
+    fill 0.3s ease,
+    stroke 0.3s ease;
+}
+
+/* =========================
+   NAMED THEME BINDINGS
+   The body.theme-* classes (set by settings.js / script.js)
+   define --page-bg / --card-bg / --border / --text /
+   --text-light / --primary / --hover. These rules bind the
+   global Tailwind surface/brand classes to those variables so
+   every theme looks distinct across the whole site.
+   ========================= */
+
+/* ── PLAIN DARK MODE (html.dark, no named theme) ──
+   When the user toggles dark mode via the header toggle, only the
+   `dark` class is added to <html> (no body.theme-dark). The dark
+   surface variables were previously only defined on body.theme-dark,
+   so --card-bg / --page-bg kept their :root light defaults and cards
+   rendered white. These rules guarantee a fully dark surface in plain
+   dark mode too. ── */
+html.dark,
+html.dark body {
+  --page-bg: #0b1220 !important;
+  --card-bg: #111827 !important;
+  --border: #243347 !important;
+  --text: #ffffff !important;
+  --text-light: #94a3b8 !important;
+  --primary: #22c55e !important;
+  --hover: #162132 !important;
+}
+body.theme-light,
+body.theme-dark,
+body.theme-stadium,
+body.theme-esports,
+body.theme-royal,
+body.theme-custom {
+  background-color: var(--page-bg);
+  color: var(--text);
+}
+
+/* ── AUTHORITATIVE THEME BACKGROUND ──
+   Many pages paint opaque backgrounds on <body> via per-page
+   `!important` rules (e.g. `.dark body { background: #0b0e11 !important }`)
+   which would hide the themed background image. This high-specificity
+   rule guarantees the active named/custom theme background always wins,
+   so toggling light/dark never changes the background of a non-light/dark
+   theme (stadium / esports / royal / custom). ── */
+html body.theme-light,
+html body.theme-dark,
+html body.theme-stadium,
+html body.theme-esports,
+html body.theme-royal,
+html body.theme-custom {
+  background-color: var(--page-bg) !important;
+  background-image: var(--page-bg-image, none) !important;
+  background-size: var(--page-bg-size, auto) !important;
+  background-position: var(--page-bg-position, center) !important;
+  background-repeat: var(--page-bg-repeat, no-repeat) !important;
+  background-attachment: var(--page-bg-attachment, scroll) !important;
+  color: var(--text) !important;
+}
+
+/* Body element itself carries bg-background / text-on-surface */
+body.theme-light.bg-background,
+body.theme-dark.bg-background,
+body.theme-stadium.bg-background,
+body.theme-esports.bg-background,
+body.theme-royal.bg-background {
+  background-color: var(--page-bg) !important;
+}
+
+body.theme-light.text-on-surface,
+body.theme-dark.text-on-surface,
+body.theme-stadium.text-on-surface,
+body.theme-esports.text-on-surface,
+body.theme-royal.text-on-surface {
+  color: var(--text) !important;
+}
+
+body.theme-light .bg-surface,
+body.theme-dark .bg-surface,
+body.theme-stadium .bg-surface,
+body.theme-esports .bg-surface,
+body.theme-royal .bg-surface,
+body.theme-light .bg-surface-container-lowest,
+body.theme-dark .bg-surface-container-lowest,
+body.theme-stadium .bg-surface-container-lowest,
+body.theme-esports .bg-surface-container-lowest,
+body.theme-royal .bg-surface-container-lowest,
+body.theme-light .bg-surface-container-low,
+body.theme-dark .bg-surface-container-low,
+body.theme-stadium .bg-surface-container-low,
+body.theme-esports .bg-surface-container-low,
+body.theme-royal .bg-surface-container-low,
+body.theme-light .bg-brand-card,
+body.theme-dark .bg-brand-card,
+body.theme-stadium .bg-brand-card,
+body.theme-esports .bg-brand-card,
+body.theme-royal .bg-brand-card {
+  background-color: var(--card-bg) !important;
+}
+
+body.theme-light .bg-background,
+body.theme-dark .bg-background,
+body.theme-stadium .bg-background,
+body.theme-esports .bg-background,
+body.theme-royal .bg-background {
+  background-color: var(--page-bg) !important;
+}
+
+body.theme-light .bg-brand-dark,
+body.theme-dark .bg-brand-dark,
+body.theme-stadium .bg-brand-dark,
+body.theme-esports .bg-brand-dark,
+body.theme-royal .bg-brand-dark {
+  background-color: var(--card-bg) !important;
+}
+
+body.theme-light .border-outline-variant,
+body.theme-dark .border-outline-variant,
+body.theme-stadium .border-outline-variant,
+body.theme-esports .border-outline-variant,
+body.theme-royal .border-outline-variant,
+body.theme-light .border-brand-border,
+body.theme-dark .border-brand-border,
+body.theme-stadium .border-brand-border,
+body.theme-esports .border-brand-border,
+body.theme-royal .border-brand-border {
+  border-color: var(--border) !important;
+}
+
+body.theme-light .text-on-surface,
+body.theme-dark .text-on-surface,
+body.theme-stadium .text-on-surface,
+body.theme-esports .text-on-surface,
+body.theme-royal .text-on-surface,
+body.theme-light .text-on-surface-variant,
+body.theme-dark .text-on-surface-variant,
+body.theme-stadium .text-on-surface-variant,
+body.theme-esports .text-on-surface-variant,
+body.theme-royal .text-on-surface-variant {
+  color: var(--text-light) !important;
+}
+
+body.theme-light .text-primary,
+body.theme-dark .text-primary,
+body.theme-stadium .text-primary,
+body.theme-esports .text-primary,
+body.theme-royal .text-primary,
+body.theme-light .bg-primary,
+body.theme-dark .bg-primary,
+body.theme-stadium .bg-primary,
+body.theme-esports .bg-primary,
+body.theme-royal .bg-primary {
+  color: var(--primary) !important;
+  background-color: var(--primary) !important;
+}
+
+body.theme-light .bg-primary\/10,
+body.theme-dark .bg-primary\/10,
+body.theme-stadium .bg-primary\/10,
+body.theme-esports .bg-primary\/10,
+body.theme-royal .bg-primary\/10 {
+  background-color: color-mix(in srgb, var(--primary) 10%, transparent) !important;
+}
+
+/* Hover surfaces */
+body.theme-light .hover\:bg-surface-container-high:hover,
+body.theme-dark .hover\:bg-surface-container-high:hover,
+body.theme-stadium .hover\:bg-surface-container-high:hover,
+body.theme-esports .hover\:bg-surface-container-high:hover,
+body.theme-royal .hover\:bg-surface-container-high:hover,
+body.theme-light .hover\:bg-white\/5:hover,
+body.theme-dark .hover\:bg-white\/5:hover,
+body.theme-stadium .hover\:bg-white\/5:hover,
+body.theme-esports .hover\:bg-white\/5:hover,
+body.theme-royal .hover\:bg-white\/5:hover {
+  background-color: var(--hover) !important;
+}
+
+/* Logo text follows the active accent (except .text-connect, which is
+   forced blue in light mode and green in dark mode — see below). */
+body.theme-light .text-accent,
+body.theme-dark .text-accent,
+body.theme-stadium .text-accent,
+body.theme-esports .text-accent,
+body.theme-royal .text-accent,
+body.theme-custom .text-accent {
+  color: var(--primary) !important;
+}
+
+/* ── FANCONNACT LOGO "CONNACT" — GOLDEN ──
+   The brand logo's "Connact" wordmark is golden. This global rule
+   guarantees it stays golden on every page (including dashboard,
+   profile, login, etc. which have no per-page .text-connect rule).
+   Per-page rules in the HTML files override this for their own
+   light/dark variants, but the golden hue is consistent everywhere. ── */
+.text-connect {
+  color: #d99a00 !important;
+}
+html.dark .text-connect {
+  color: #f5b301 !important;
+}
+
+/* ── CUSTOM THEME BINDINGS ──
+   A user-built theme (theme-custom) sets the same CSS variables as the
+   named themes, so we bind the global surface/primary/border classes to
+   those variables here. The actual values are applied at runtime by
+   js/settings.js (applyCustomTheme) / js/script.js via inline styles. ── */
+body.theme-custom .bg-surface,
+body.theme-custom .bg-surface-container-lowest,
+body.theme-custom .bg-surface-container-low,
+body.theme-custom .bg-brand-card,
+body.theme-custom .bg-background,
+body.theme-custom .bg-brand-dark {
+  background-color: var(--card-bg) !important;
+}
+body.theme-custom .border-outline-variant,
+body.theme-custom .border-brand-border {
+  border-color: var(--border) !important;
+}
+body.theme-custom .text-on-surface {
+  color: var(--text, #ffffff) !important;
+}
+body.theme-custom .text-on-surface-variant {
+  color: var(--text-light, #94a3b8) !important;
+}
+body.theme-custom .text-primary,
+body.theme-custom .bg-primary {
+  color: var(--primary) !important;
+  background-color: var(--primary) !important;
+}
+body.theme-custom .bg-primary\/10 {
+  background-color: color-mix(in srgb, var(--primary) 10%, transparent) !important;
+}
+body.theme-custom .hover\:bg-surface-container-high:hover,
+body.theme-custom .hover\:bg-white\/5:hover {
+  background-color: var(--hover) !important;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f8f9ff;
+}
+.dark ::-webkit-scrollbar-track {
+  background: #0b1c30;
+}
+::-webkit-scrollbar-thumb {
+  background: #bbcabf;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #6c7a71;
+}
+
+/* ── GLOBAL CHECKBOX TICK ──
+   Guarantee every checkbox shows a visible tick in every theme.
+   The Tailwind forms plugin sets `appearance: none` and relies on a
+   `text-*` colour for the checkmark; if that colour is missing (or a
+   `bg-transparent` class is used) the tick disappears. This rule forces
+   a native coloured tick via accent-color so it always renders. ── */
+input[type="checkbox"]:not(.sr-only):not(.peer) {
+  accent-color: #10b981 !important;
+}
+body.theme-custom input[type="checkbox"]:not(.sr-only):not(.peer),
+body.theme-stadium input[type="checkbox"]:not(.sr-only):not(.peer),
+body.theme-esports input[type="checkbox"]:not(.sr-only):not(.peer),
+body.theme-royal input[type="checkbox"]:not(.sr-only):not(.peer) {
+  accent-color: var(--primary, #10b981) !important;
+}
+
+/* Match cards: guarantee a solid surface + border so cards never look
+   "transparent/overlapping" regardless of theme class on <body>. */
+.bg-card-bg,
+.bg-brand-card {
+  background-color: var(--card-bg, #101a2e) !important;
+}
+.border-border-subtle {
+  border-color: var(--border, #25324a) !important;
+}
+
+/* Dark Mode Overrides for Specific Components */
+.dark .bg-fc-sidebar,
+.dark .bg-fc-card {
+  background-color: #0b1c30;
+}
+.dark .bg-background {
+  background-color: #050e18;
+}
+.dark .border-outline-variant {
+  border-color: #3c4a42;
+}
+.dark .bg-surface-container-lowest {
+  background-color: #0b1c30;
+}
+.dark .bg-surface-container-low {
+  background-color: #1a2a3e;
+}
+
+/* Light Mode Visibility Improvements - Makes borders and buttons pop */
+:root:not(.dark) .border-outline-variant {
+  border-color: #94a3b8 !important; /* Higher contrast for light mode borders */
+}
+
+:root:not(.dark) .text-on-surface-variant {
+  color: #475569 !important; /* Darker slate for better readability */
+}
+
+/* ── GLOBAL LOGO TEXT (overrides each page's inline <style>) ──
+   Light theme: Fan = near-black, Connact = golden.
+   Dark theme:  Fan = white,       Connact = golden (brighter).
+   High specificity so it wins over per-page inline overrides. ── */
+html:root:not(.dark) .text-fan { color: #0f172a !important; }
+html.dark .text-fan { color: #ffffff !important; }
+/* Default (non-royal): Connact = royal blue (light) / green (dark) — as before */
+html:root:not(.dark) .text-connect { color: #1565c0 !important; }
+html.dark .text-connect { color: #10b981 !important; }
+/* Royal blue theme ONLY: Connact = golden */
+html.dark body.theme-royal .text-connect { color: #f5b301 !important; }
+html:root:not(.dark) body.theme-royal .text-connect { color: #f5b301 !important; }
+
+/* ── LIGHT MODE: remap hardcoded dark text colours to readable ones ──
+   Many components hardcode Tailwind dark-mode greys (text-gray-300/400/500)
+   and accent colours that become invisible on light backgrounds. In light
+   mode we remap them to dark, high-contrast equivalents. Dark surfaces that
+   intentionally keep light text (e.g. dark cards, theme swatches) override
+   these locally, so we deliberately do NOT blanket-remap .text-white. ── */
+html:not(.dark) .text-gray-100 { color: #1e293b !important; }
+html:not(.dark) .text-gray-200 { color: #334155 !important; }
+html:not(.dark) .text-gray-300 { color: #475569 !important; }
+html:not(.dark) .text-gray-400 { color: #64748b !important; }
+html:not(.dark) .text-gray-500 { color: #64748b !important; }
+html:not(.dark) .text-gray-600 { color: #475569 !important; }
+html:not(.dark) .text-slate-200 { color: #334155 !important; }
+html:not(.dark) .text-slate-300 { color: #475569 !important; }
+html:not(.dark) .text-slate-400 { color: #64748b !important; }
+html:not(.dark) .text-slate-500 { color: #64748b !important; }
+html:not(.dark) .text-yellow-400,
+html:not(.dark) .text-yellow-500 { color: #b45309 !important; }
+html:not(.dark) .text-yellow-600 { color: #b45309 !important; }
+html:not(.dark) .text-fan-emerald { color: #047857 !important; }
+html:not(.dark) .text-brand-green { color: #047857 !important; }
+
+/* Status / source badges use a light-tint background (bg-*-500/20 or
+   bg-*-900/40) with a light accent text (text-*-400). On a light page that
+   combination is low-contrast, so in light mode we darken the *-400 (and
+   *-500) accent text to a deeper shade. We deliberately do NOT remap the
+   *-300 shades — those are used on intentionally DARK panels (scoreboard
+   headers, live/result pills) where light text must stay light. */
+html:not(.dark) .text-blue-400 { color: #1e40af !important; }
+html:not(.dark) .text-emerald-400,
+html:not(.dark) .text-emerald-600 { color: #047857 !important; }
+html:not(.dark) .text-green-400,
+html:not(.dark) .text-green-500 { color: #15803d !important; }
+html:not(.dark) .text-red-400,
+html:not(.dark) .text-red-500 { color: #b91c1c !important; }
+html:not(.dark) .text-amber-400 { color: #b45309 !important; }
+html:not(.dark) .text-purple-400 { color: #6b21a8 !important; }
+html:not(.dark) .text-orange-400 { color: #c2410c !important; }
+html:not(.dark) .text-cyan-400 { color: #155e75 !important; }
+html:not(.dark) .text-lime-400 { color: #3f6212 !important; }
+html:not(.dark) .text-indigo-400 { color: #3730a3 !important; }
+html:not(.dark) .text-fuchsia-400 { color: #86198f !important; }
+html:not(.dark) .text-teal-400 { color: #115e59 !important; }
+html:not(.dark) .text-rose-400 { color: #9f1239 !important; }
+
+/* NOTE: Material-theme token classes (text-surface-dim, text-on-surface,
+   text-primary-fixed-dim, text-body-*, etc.) are intentionally NOT remapped
+   here. Those pages (signup / forget-password / settings) define their own
+   complete light/dark colour systems via CSS variables, and a blanket
+   override would clash with their correct values. Fixes for those pages
+   live in their own <style> blocks. */
+
+/* ── GLASSY SIDEBAR on every page & theme ── */
+#sidebar {
+  background-color: rgba(255, 255, 255, 0.72) !important;
+  backdrop-filter: blur(16px) saturate(140%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(140%) !important;
+}
+.dark #sidebar {
+  background-color: rgba(15, 23, 42, 0.65) !important;
+}
+
+/* Sidebar Collapsed State - fully hide sidebar */
+.sidebar-collapsed {
+  width: 0 !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+  border: 0 !important;
+  padding: 0 !important;
+}
+
+/* =========================
+   GLOBAL THEME + APPEARANCE
+   These rules are loaded on EVERY page (via css/style.css) so that
+   changes made on the Settings page (theme, compact mode, large text,
+   reduce animation) take effect across the whole site. The classes
+   themselves are applied globally by js/script.js; this is the CSS
+   that gives them visual meaning.
+   ========================= */
+
+:root {
+  --page-bg: #f6f8fb;
+  --card-bg: #ffffff;
+  --border: #dbe3ef;
+  --text: #111827;
+  --text-light: #64748b;
+  --primary: #2563eb;
+  --hover: #f4f7fb;
+}
+
+/* DARK — deep navy, green accent (default) */
+body.theme-dark {
+  --page-bg: #0b1220;
+  --card-bg: #111827;
+  --border: #243347;
+  --text: #ffffff;
+  --text-light: #94a3b8;
+  --primary: #22c55e;
+  --hover: #162132;
+  background-color: var(--page-bg);
+}
+
+/* LIGHT — clean bright, blue accent */
+body.theme-light {
+  --page-bg: #f6f8fb;
+  --card-bg: #ffffff;
+  --border: #d8e1ec;
+  --text: #111827;
+  --text-light: #64748b;
+  --primary: #2563eb;
+  --hover: #f4f7fb;
+  background-color: var(--page-bg);
+}
+
+/* STADIUM — cricket stadium photo background, emerald accent */
+body.theme-stadium {
+  --page-bg: #07140f;
+  --card-bg: rgba(10, 30, 20, 0.55);
+  --border: #1f7a4f;
+  --text: #ffffff;
+  --text-light: #b6eccf;
+  --primary: #22c55e;
+  --hover: rgba(15, 44, 29, 0.7);
+  --page-bg-image:
+    linear-gradient(180deg, rgba(7, 20, 15, 0.55) 0%, rgba(6, 18, 13, 0.82) 100%),
+    url("../assets/cricket bg.jpg");
+  --page-bg-size: cover;
+  --page-bg-position: center top;
+  --page-bg-repeat: no-repeat;
+  --page-bg-attachment: fixed;
+  background-color: var(--page-bg);
+  background-image: var(--page-bg-image);
+  background-size: var(--page-bg-size);
+  background-position: var(--page-bg-position);
+  background-repeat: var(--page-bg-repeat);
+  background-attachment: var(--page-bg-attachment);
+}
+
+/* ESPORTS — e-sports arena photo background, violet accent */
+body.theme-esports {
+  --page-bg: #120622;
+  --card-bg: rgba(24, 16, 40, 0.55);
+  --border: #7c3aed;
+  --text: #ffffff;
+  --text-light: #c7b8f6;
+  --primary: #a855f7;
+  --hover: rgba(36, 22, 64, 0.7);
+  --page-bg-image:
+    linear-gradient(180deg, rgba(18, 6, 34, 0.55) 0%, rgba(10, 3, 20, 0.82) 100%),
+    url("../assets/esports bg.jpg");
+  --page-bg-size: cover;
+  --page-bg-position: center top;
+  --page-bg-repeat: no-repeat;
+  --page-bg-attachment: fixed;
+  background-color: var(--page-bg);
+  background-image: var(--page-bg-image);
+  background-size: var(--page-bg-size);
+  background-position: var(--page-bg-position);
+  background-repeat: var(--page-bg-repeat);
+  background-attachment: var(--page-bg-attachment);
+}
+
+/* ROYAL — royal blue arena photo background, blue accent */
+body.theme-royal {
+  --page-bg: #06142f;
+  --card-bg: rgba(9, 24, 58, 0.55);
+  --border: #2563eb;
+  --text: #ffffff;
+  --text-light: #bfd6ff;
+  --primary: #3b82f6;
+  --hover: rgba(16, 42, 94, 0.7);
+  --page-bg-image:
+    linear-gradient(180deg, rgba(6, 20, 47, 0.55) 0%, rgba(3, 10, 28, 0.82) 100%),
+    url("../assets/background.jpg");
+  --page-bg-size: cover;
+  --page-bg-position: center top;
+  --page-bg-repeat: no-repeat;
+  --page-bg-attachment: fixed;
+  background-color: var(--page-bg);
+  background-image: var(--page-bg-image);
+  background-size: var(--page-bg-size);
+  background-position: var(--page-bg-position);
+  background-repeat: var(--page-bg-repeat);
+  background-attachment: var(--page-bg-attachment);
+}
+
+/* CUSTOM — user-built theme. All values are supplied at runtime via
+   inline CSS variables on <body> (set by applyCustomTheme / script.js).
+   Sensible fallbacks are provided so the page is never unstyled. */
+body.theme-custom {
+  --page-bg: #0b1220;
+  --card-bg: rgba(17, 24, 39, 0.85);
+  --border: #243347;
+  --text: #ffffff;
+  --text-light: #94a3b8;
+  --primary: #22c55e;
+  --hover: rgba(22, 33, 50, 0.85);
+  background-color: var(--page-bg);
+  background-image: var(--page-bg-image, none);
+  background-size: var(--page-bg-size, cover);
+  background-position: var(--page-bg-position, center top);
+  background-repeat: var(--page-bg-repeat, no-repeat);
+  background-attachment: var(--page-bg-attachment, fixed);
+}
+
+/* GLASSY CARDS for named themes (stadium / esports / royal) —
+   translucent surfaces + backdrop blur so the themed background
+   shows through, while text stays visible. */
+body.theme-stadium .bg-card-bg,
+body.theme-esports .bg-card-bg,
+body.theme-royal .bg-card-bg,
+body.theme-custom .bg-card-bg,
+body.theme-stadium .bg-brand-card,
+body.theme-esports .bg-brand-card,
+body.theme-royal .bg-brand-card,
+body.theme-custom .bg-brand-card,
+body.theme-stadium .bg-surface,
+body.theme-esports .bg-surface,
+body.theme-royal .bg-surface,
+body.theme-custom .bg-surface {
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+}
+body.theme-stadium .hero-gradient,
+body.theme-esports .hero-gradient,
+body.theme-royal .hero-gradient,
+body.theme-custom .hero-gradient {
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* ── THEME BACKGROUND VISIBLE SITE-WIDE ──
+   Many pages paint opaque backgrounds on <body>/<main>/headers
+   (bg-white dark:bg-black, bg-[#F8F9FF] dark:bg-[#0B0E11], etc.)
+   which hide the themed body background image. For the named
+   themes (stadium / esports / royal) we make those wrappers
+   transparent so the photo background shows through everywhere. ── */
+body.theme-stadium,
+body.theme-esports,
+body.theme-royal,
+body.theme-custom {
+  background-color: transparent !important;
+}
+body.theme-stadium main,
+body.theme-esports main,
+body.theme-royal main,
+body.theme-custom main,
+body.theme-stadium .bg-white,
+body.theme-esports .bg-white,
+body.theme-royal .bg-white,
+body.theme-custom .bg-white,
+body.theme-stadium .dark\:bg-black,
+body.theme-esports .dark\:bg-black,
+body.theme-royal .dark\:bg-black,
+body.theme-custom .dark\:bg-black,
+body.theme-stadium .dark\:bg-brand-dark,
+body.theme-esports .dark\:bg-brand-dark,
+body.theme-royal .dark\:bg-brand-dark,
+body.theme-custom .dark\:bg-brand-dark,
+body.theme-stadium [class*="bg-[#F8F9FF]"],
+body.theme-esports [class*="bg-[#F8F9FF]"],
+body.theme-royal [class*="bg-[#F8F9FF]"],
+body.theme-custom [class*="bg-[#F8F9FF]"],
+body.theme-stadium [class*="bg-[#0B0E11]"],
+body.theme-esports [class*="bg-[#0B0E11]"],
+body.theme-royal [class*="bg-[#0B0E11]"],
+body.theme-custom [class*="bg-[#0B0E11]"],
+body.theme-stadium [class*="bg-[#0F172A]"],
+body.theme-esports [class*="bg-[#0F172A]"],
+body.theme-royal [class*="bg-[#0F172A]"],
+body.theme-custom [class*="bg-[#0F172A]"] {
+  background-color: transparent !important;
+  background-image: none !important;
+}
+/* Keep headers/sub-navs subtly tinted (not fully opaque) so text stays readable */
+body.theme-stadium header,
+body.theme-esports header,
+body.theme-royal header,
+body.theme-custom header,
+body.theme-stadium nav,
+body.theme-esports nav,
+body.theme-royal nav,
+body.theme-custom nav {
+  background-color: rgba(0, 0, 0, 0.35) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* ── AUTH CARDS (login / signup / forgot-password) ──
+   These cards use bg-white / dark:bg-black which the rule above makes
+   transparent under custom themes. Give them a solid surface fill so the
+   card content (text, inputs) stays readable on any custom background. ── */
+body.theme-custom .login-container-glow,
+body.theme-custom [data-purpose="login-card"],
+body.theme-custom .bg-white.rounded-2xl,
+body.theme-custom .dark\:bg-black.rounded-2xl {
+  background-color: var(--card-bg, #111827) !important;
+  border-color: var(--border, #243347) !important;
+  color: var(--text, #ffffff) !important;
+}
+/* Inputs inside auth cards must use the theme text colour so they're visible */
+body.theme-custom .login-container-glow input,
+body.theme-custom [data-purpose="login-card"] input,
+body.theme-custom .bg-white.rounded-2xl input,
+body.theme-custom .dark\:bg-black.rounded-2xl input {
+  color: var(--text, #ffffff) !important;
+  background-color: color-mix(in srgb, var(--card-bg, #111827) 70%, #000 0%) !important;
+  border-color: var(--border, #243347) !important;
+}
+
+/* COMPACT MODE */
+.compact-mode .card { padding: 18px; }
+.compact-mode .sport-item { padding: 8px 10px; min-height: 48px; }
+.compact-mode .notification-item { padding: 8px 0; }
+.compact-mode .setting-row { padding: 10px 0; }
+.compact-mode .theme-item { height: 150px; }
+.compact-mode .appearance-options { gap: 12px; }
+
+/* LARGE TEXT — scales up without breaking layout */
+.large-text { font-size: 1.125rem; line-height: 1.55; }
+.large-text h1 { font-size: clamp(1.75rem, 6vw, 3rem); line-height: 1.15; }
+.large-text h2 { font-size: clamp(1.4rem, 5vw, 2rem); line-height: 1.2; }
+.large-text h3 { font-size: clamp(1.15rem, 4vw, 1.4rem); line-height: 1.25; }
+.large-text p,
+.large-text label,
+.large-text span,
+.large-text button,
+.large-text select,
+.large-text a,
+.large-text div,
+.large-text li { font-size: 1.05rem; }
+.large-text * { overflow-wrap: break-word; word-break: break-word; }
+
+/* REDUCE ANIMATION */
+.reduce-animation * {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+}
+
+/* =========================
+   SIDEBAR BEHAVIOUR
+   - Desktop (>=1024px): forced visible, static, 256px wide.
+   - Mobile (<1024px): a fixed overlay drawer (per-page Tailwind
+     "fixed -translate-x-full lg:translate-x-0 lg:static"); capped
+     width so it never eats the whole screen.
+   ========================= */
+@media (min-width: 1024px) {
+  #sidebar {
+    position: static !important;
+    transform: none !important;
+    width: 256px !important;
+    min-width: 256px !important;
+    max-width: 80vw !important;
+    overflow-y: auto !important;
+    z-index: 60;
+  }
+  #sidebar .nav-text,
+  #sidebar .logo-text,
+  #sidebar .sidebar-label { display: inline !important; }
+  /* Hide the mobile-only close button on desktop (no drawer) */
+  #sidebar #close-sidebar-btn,
+  #close-sidebar-btn { display: none !important; }
+}
+
+/* Mobile drawer width cap (does not push the main content) */
+@media (max-width: 1023px) {
+  #sidebar {
+    width: 80vw !important;
+    min-width: 80vw !important;
+    max-width: 300px !important;
+  }
+  #sidebar .nav-text,
+  #sidebar .logo-text,
+  #sidebar .sidebar-label { display: inline !important; }
+}
+
+/* Hide the header logo whenever the sidebar (which has its own logo)
+   is visible, on every screen size. script.js toggles these classes.
+   The logo text uses .text-fan / .text-connect, so it already follows
+   the light/dark theme toggle. */
+.header-logo-hidden { display: none !important; }
+/* Revealed by script.js when the sidebar is collapsed/hidden, overriding
+   the per-page `lg:hidden` utility so the logo stays visible on desktop too. */
+#header-logo.header-logo-show { display: flex !important; }
+
+/* ── Top bar mobile safety: keep the right-side action cluster from
+   ever overlapping the logo / nav. Buttons shrink, never wrap into
+   the logo, and the cluster stays pinned to the right edge. ── */
+[data-purpose="top-navigation"] > div:last-child,
+header > div:last-child {
+  flex-wrap: nowrap !important;
+  min-width: 0 !important;
+}
+[data-purpose="top-navigation"] .flex-1,
+header .flex-1 {
+  min-width: 0 !important;
+}
+@media (max-width: 640px) {
+  [data-purpose="top-navigation"] > div:last-child > *,
+  header > div:last-child > * {
+    flex-shrink: 0 !important;
+  }
+}
+
+/* Hide/show toggle (menu button) — works on every screen size.
+   Collapsing the sidebar to 0 lets the flex-1 main content
+   expand to fill the screen. */
+#sidebar.sidebar-hidden {
+  width: 0 !important;
+  min-width: 0 !important;
+  max-width: 0 !important;
+  flex-basis: 0 !important;
+  flex-grow: 0 !important;
+  flex-shrink: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  margin-left: 0 !important;
+  border-width: 0 !important;
+  overflow: hidden !important;
+  transform: none !important;
+}
+/* On desktop the sidebar is static; ensure the collapse class wins
+   over the per-page w-64 / lg:w-64 utility classes. Use display:none
+   so the flex-1 main content expands instantly (no transition glitch). */
+@media (min-width: 1024px) {
+  #sidebar.sidebar-collapsed {
+    display: none !important;
+  }
+}
+
+/* ==========================
+   GLOBAL RESPONSIVE
+   ========================== */
+
+/* ── TABLET (768px – 1024px) ──
+   Full sidebar stays visible (with labels) on every screen.
+   Only grids/touch targets tighten; no icon rail, no drawer. */
+@media (min-width: 768px) and (max-width: 1024px) {
+  body { overflow-x: hidden; }
+  img { max-width: 100%; height: auto; }
+  /* Below 1024px the sidebar is a drawer (toggled by hamburger). */
+  #sidebar .nav-text,
+  #sidebar .logo-text,
+  #sidebar .sidebar-label { display: inline !important; }
+  /* Tighten common grids/cards */
+  .grid { gap: 14px; }
+  [class*="gap-xl"] { gap: 16px !important; }
+  [class*="gap-lg"] { gap: 12px !important; }
+  /* Keep headings readable but not huge */
+  h1 { font-size: clamp(24px, 3.4vw, 32px) !important; }
+  h2 { font-size: clamp(20px, 2.8vw, 26px) !important; }
+  /* Bigger tap targets for interactive rows */
+  .setting-row, .notification-item, .sport-item,
+  .flex.items-center.justify-between { min-height: 44px; }
+}
+
+@media (max-width: 768px) {
+  body { overflow-x: hidden; }
+  img { max-width: 100%; height: auto; }
+  table { display: block; overflow-x: auto; }
+  .hide-mobile { display: none !important; }
+  .show-mobile { display: block !important; }
+  [class*="flex"][class*="gap"] { gap: 12px; }
+  h1 { font-size: clamp(22px, 6vw, 32px) !important; }
+  h2 { font-size: clamp(18px, 5vw, 26px) !important; }
+  h3 { font-size: clamp(16px, 4vw, 22px) !important; }
+  /* Below 1024px the sidebar is a drawer (toggled by hamburger).
+     Keep labels visible when it opens. */
+  #sidebar .nav-text,
+  #sidebar .logo-text,
+  #sidebar .sidebar-label { display: inline !important; }
+  /* On phones the sidebar must not eat the whole screen — cap its width. */
+  #sidebar {
+    width: 80vw !important;
+    min-width: 80vw !important;
+    max-width: 300px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  body { overflow-x: hidden; }
+  h1 { font-size: clamp(18px, 5vw, 26px) !important; }
+  h2 { font-size: clamp(16px, 4.5vw, 22px) !important; }
+  h3 { font-size: clamp(14px, 3.5vw, 18px) !important; }
+  .hide-xs { display: none !important; }
+  .show-xs { display: block !important; }
+  /* Single-column grids on small phones */
+  .grid-cols-2, .grid-cols-3, .grid-cols-4 { grid-template-columns: 1fr !important; }
+}
+
+/* ==========================
+   LOGIN PAGE — TABLET / MOBILE
+   ========================== */
+/* On tablet the hero + form sit side-by-side (md:flex-row).
+   Keep the hero compact and let the form area scroll. */
+@media (min-width: 768px) and (max-width: 1024px) {
+  [data-purpose="hero-content"] {
+    padding: 28px 32px !important;
+  }
+  [data-purpose="hero-content"] h2 {
+    font-size: 2.25rem !important;
+    line-height: 1.05 !important;
+  }
+  [data-purpose="login-form-container"] {
+    padding: 24px !important;
+  }
+  [data-purpose="login-card"] {
+    padding: 24px !important;
+  }
+}
+
+/* Phones: hero shrinks, form fills width, social grid stays 2-col */
+@media (max-width: 640px) {
+  [data-purpose="hero-content"] {
+    min-height: 300px !important;
+    padding: 20px !important;
+  }
+  [data-purpose="hero-content"] h2 {
+    font-size: 1.75rem !important;
+    line-height: 1.1 !important;
+  }
+  [data-purpose="login-form-container"] {
+    padding: 16px !important;
+  }
+  [data-purpose="login-card"] {
+    padding: 20px !important;
+    border-radius: 20px !important;
+  }
+  /* Full-width social buttons stack nicely */
+  [data-purpose="login-card"] .grid-cols-2 {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  [data-purpose="login-card"] input,
+  [data-purpose="login-card"] button[type="submit"] {
+    font-size: 16px; /* prevents iOS zoom-on-focus */
+  }
+}
+
+/* ==========================
+   GLOBAL MOBILE SAFETY
+   Fixes the universal causes of content overlap / cut-off on
+   small screens (flex children overflowing, images wider than
+   viewport, locked scroll). Desktop (>=1024px) is untouched.
+   ========================== */
+/* Prevent accidental horizontal page scroll on small screens only.
+   Deliberately minimal so no desktop/tablet layout is altered. */
+@media (max-width: 1024px) {
+  html, body { overflow-x: hidden !important; }
+  img, video, iframe, canvas, svg { max-width: 100% !important; height: auto; }
+}

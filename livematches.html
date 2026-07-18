@@ -1,0 +1,1271 @@
+﻿<!doctype html>
+
+<html lang="en">
+  <head>
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/fancoin/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/fancoin/favicon-16x16.png" />
+    <meta property="og:site_name" content="Fanconnact" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="assets/fancoin/fanconnactlogo.png" />
+    <meta property="og:title" content="Fanconnact - Matches" />
+    <meta property="og:description" content="Join Fanconnact for fantasy sports, predictions, and live matches." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Fanconnact - Matches" />
+    <meta name="twitter:description" content="Join Fanconnact for fantasy sports, predictions, and live matches." />
+    <meta name="twitter:image" content="assets/fancoin/fanconnactlogo.png" />
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <script>
+      if (localStorage.getItem("color-theme") === "dark") {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
+    </script>
+    <title>Fanconnact - Matches</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Google Fonts: Lexend -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            fontFamily: {
+              lexend: ["Lexend", "sans-serif"],
+            },
+            colors: {
+              "emerald-accent": "#10b981",
+              "dark-bg": "#000000",
+              "sidebar-bg": "#0f172a",
+              "card-bg": "#000000",
+              "border-subtle": "#333333",
+            },
+          },
+        },
+      };
+    </script>
+    <style data-purpose="custom-scrollbar">
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #0a0e14;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #1e293b;
+        border-radius: 10px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #10b981;
+      }
+      .sidebar-collapsed #sidebar { width: 0 !important; min-width: 0 !important; border: 0 !important; padding: 0 !important; overflow: hidden !important; }
+      .text-fan { color: #ffffff !important; }
+      :root:not(.dark) .text-connect { color: #d99a00 !important; }
+      .dark .text-connect { color: #f5b301 !important; }
+      :root:not(.dark) .text-fan { color: #374151 !important; }
+      .nav-link-active { font-weight: 500 !important; }
+      .dark .nav-link-active { background-color: rgba(16, 185, 129, 0.2) !important; color: #10b981 !important; border-right: 4px solid #10b981 !important; }
+      .dark .nav-link-active span, .dark .nav-link-active .nav-text { color: #10b981 !important; }
+      :root:not(.dark) .nav-link-active { background-color: #eff6ff !important; color: #1d4ed8 !important; border-right: 4px solid #3b82f6 !important; }
+      :root:not(.dark) #sidebar { background-color: #ffffff !important; }
+      :root:not(.dark) #sidebar a:not(.nav-link-active) { color: #475569 !important; }
+      :root:not(.dark) #sidebar a:not(.nav-link-active):hover { color: #2196f3 !important; }
+      :root:not(.dark) .hover\:text-emerald-accent:hover,
+      :root:not(.dark) .nav-link:hover,
+      :root:not(.dark) [class*="hover:text-emerald"] {
+        color: #2196f3 !important;
+      }
+      :root:not(.dark) ::-webkit-scrollbar-track {
+        background: #f1f5f9;
+      }
+      :root:not(.dark) ::-webkit-scrollbar-thumb {
+        background: #2196f3;
+      }
+      :root:not(.dark) ::-webkit-scrollbar-thumb:hover {
+        background: #1e88e5;
+      }
+      .dark ::-webkit-scrollbar-thumb {
+        background: #10b981;
+      }
+      .dark ::-webkit-scrollbar-thumb:hover {
+        background: #34d399;
+      }
+      :root:not(.dark) input:focus {
+        border-color: #2196f3 !important;
+        box-shadow: 0 0 0 2px rgba(33,150,243,0.2) !important;
+      }
+      .dark .text-gray-400 { color: #94a3b8 !important; }
+      :root:not(.dark) .bg-card-bg { background: #ffffff !important; }
+      :root:not(.dark) .bg-dark-bg { background: #f1f5f9 !important; }
+      :root:not(.dark) .bg-brand-surface { background: #ffffff !important; }
+      :root:not(.dark) .bg-brand-dark { background: #f8fafc !important; }
+      :root:not(.dark) .bg-gray-800 { background: #ffffff !important; }
+      :root:not(.dark) .bg-gray-800\/40 { background: #f8fafc !important; }
+      :root:not(.dark) .bg-gray-800\/50 { background: #ffffff !important; }
+      :root:not(.dark) [class*="bg-gray-900"] { background: #f8fafc !important; }
+      :root:not(.dark) .from-gray-800 { --tw-gradient-from: #f1f5f9 !important; }
+      :root:not(.dark) .to-gray-900 { --tw-gradient-to: #e2e8f0 !important; }
+      :root:not(.dark) .from-gray-800.to-gray-900 { background: linear-gradient(135deg,#f1f5f9,#e2e8f0) !important; }
+      :root:not(.dark) .bg-gradient-to-br.from-gray-800.to-gray-900 { background: #f8fafc !important; border-color: #e2e8f0 !important; }
+      :root:not(.dark) .text-white { color: #0f172a !important; }
+      :root:not(.dark) .text-gray-400 { color: #64748b !important; }
+      :root:not(.dark) .text-gray-500 { color: #64748b !important; }
+      :root:not(.dark) .text-gray-300 { color: #334155 !important; }
+      :root:not(.dark) .bg-emerald-accent { background: #2196f3 !important; }
+      :root:not(.dark) .bg-emerald-accent\/10 { background: #dbeafe !important; }
+      :root:not(.dark) .border-emerald-accent { border-color: #2196f3 !important; }
+      :root:not(.dark) .text-emerald-accent { color: #2196f3 !important; }
+      :root:not(.dark) .bg-accent-green { background: #dbeafe !important; }
+      :root:not(.dark) .text-accent-green { color: #2196f3 !important; }
+      :root:not(.dark) .border-accent-green { border-color: #2196f3 !important; }
+      :root:not(.dark) .bg-brand-green { background: #2196f3 !important; }
+      :root:not(.dark) .border-gray-700 { border-color: #e2e8f0 !important; }
+      :root:not(.dark) .border-gray-800 { border-color: #e2e8f0 !important; }
+      :root:not(.dark) .border-gray-800\/50 { border-color: #e2e8f0 !important; }
+      :root:not(.dark) .hover\:bg-gray-800:hover { background: #f1f5f9 !important; }
+      :root:not(.dark) .hover\:text-white:hover { color: #0f172a !important; }
+      :root:not(.dark) .dark\:hover\:bg-white\/5:hover { background: #f1f5f9 !important; }
+
+      /* ===== Crex-style Live Match View ===== */
+      #live-match-view { display: none; }
+      #live-match-view.open { display: block; }
+      .crex-pitch { background: linear-gradient(180deg,#0b3d1e 0%,#0e5a2b 60%,#0b3d1e 100%); }
+      .crex-card { background: #0b1626; border: 1px solid rgba(255,255,255,0.06); }
+      .dark .crex-card { background: #0b1626; }
+      :root:not(.dark) .crex-card { background: #0b1626; }
+      .crex-bat { background: #f7941d; }
+      .crex-bowl { background: #2b6cb0; }
+      .comm-item { animation: commIn .35s ease both; }
+      @keyframes commIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+      .comm-four { box-shadow: 0 0 0 1px #22c55e inset; }
+      .comm-six { box-shadow: 0 0 0 1px #a855f7 inset; }
+      .comm-wicket { box-shadow: 0 0 0 1px #ef4444 inset; }
+      .comm-milestone { box-shadow: 0 0 0 1px #f7941d inset; }
+      .badge-pop { display: inline-flex; align-items: center; justify-content: center; font-weight: 800; border-radius: 9999px; animation: badgePop .4s cubic-bezier(.2,1.4,.4,1) both; }
+      @keyframes badgePop { 0% { transform: scale(0) rotate(-20deg); } 60% { transform: scale(1.25) rotate(6deg); } 100% { transform: scale(1) rotate(0); } }
+      .run-float { position: absolute; font-weight: 800; pointer-events: none; animation: runFloat 1s ease-out forwards; }
+      @keyframes runFloat { 0% { opacity: 0; transform: translateY(0) scale(.6); } 20% { opacity: 1; } 100% { opacity: 0; transform: translateY(-34px) scale(1.1); } }
+      .pulse-live { animation: pulseLive 1.4s ease-in-out infinite; }
+      @keyframes pulseLive { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+      .score-flash { animation: scoreFlash .5s ease; }
+      @keyframes scoreFlash { 0% { color: #f7941d; transform: scale(1.18); } 100% { color: inherit; transform: scale(1); } }
+    </style>
+    <meta
+      name="description"
+      content="Fanconnact sports platform for fans, scores, communities and updates."
+    />
+    <meta property="og:title" content="Fanconnact" />
+    <meta name="robots" content="index,follow" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;"
+    />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+  </head>
+  <body
+    class="h-screen w-full flex flex-col overflow-hidden transition-colors duration-300 bg-white dark:bg-black text-slate-900 dark:text-slate-100"
+  >
+    <!-- BEGIN: MainHeader -->
+    <header
+      class="sticky top-0 z-50 transition-colors duration-300 bg-white dark:bg-black border-b border-gray-200 dark:border-border-subtle px-4 md:px-8 py-4 flex items-center justify-between"
+    >
+      <div class="flex items-center space-x-4 md:space-x-12">
+        <button
+          class="text-gray-400 hover:text-emerald-accent"
+          id="mobile-menu-btn"
+        >
+          <span class="material-symbols-outlined">menu</span>
+        </button>
+
+          <div id="header-logo" class="lg:hidden flex items-center gap-2 ml-2">
+            <img src="assets/fancoin/fanconnactlogo.png" alt="Fanconnact" class="w-7 h-7" />
+            <span class="text-base font-bold whitespace-nowrap"><span class="text-fan">Fan</span><span class="text-connect">Connact</span></span>
+          </div>
+
+        <!-- Top Navigation -->
+        <nav class="hidden xl:flex items-center space-x-6 mx-6 shrink-0">
+          <a
+            class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link"
+            href="dashboard.html"
+            >Home</a
+          >
+          <a
+            class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link"
+            href="livematches.html"
+            >Matches</a
+          >
+          <a
+            class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link"
+            href="prediction.html"
+            >Predictions</a
+          >
+          <a
+            class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link"
+            href="leaderboard.html"
+            >Leaderboard</a
+          >
+          <a
+            class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link"
+            href="news&update.html"
+            >News</a
+          >
+        </nav>
+      </div>
+      <!-- Header Actions -->
+      <div class="flex items-center gap-5 md:gap-8">
+        <div class="relative hidden lg:block">
+          <input
+            class="bg-gray-100 dark:bg-[#1a1a1a] text-slate-900 dark:text-white border-none rounded-xl py-2.5 pl-10 pr-4 text-sm w-64 focus:ring-1 focus:ring-emerald-accent"
+            placeholder="Search teams, matches, players..."
+            type="text"
+          />
+          <span
+            class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl"
+            >search</span
+          >
+        </div>
+        <!-- Theme Toggle -->
+        <button
+          id="theme-toggle"
+          class="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-all active:scale-95"
+        >
+          <span
+            id="theme-toggle-light-icon"
+            class="material-symbols-outlined hidden text-yellow-400"
+            >light_mode</span
+          >
+          <span
+            id="theme-toggle-dark-icon"
+            class="material-symbols-outlined text-slate-500 dark:text-slate-400"
+            >dark_mode</span
+          >
+        </button>
+        <div class="relative notification-trigger cursor-pointer">
+          <span
+            class="material-symbols-outlined text-slate-500 dark:text-gray-400 cursor-pointer"
+            >notifications</span
+          >
+          <span
+            class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-[10px] flex items-center justify-center font-bold text-white shadow-sm"
+            >3</span
+          >
+        </div>
+        <div
+          id="profile-trigger"
+          class="flex items-center space-x-3 cursor-pointer border-l border-gray-200 dark:border-gray-800 pl-4 md:pl-6"
+        >
+          <img
+            id="user-profile-img"
+            alt="User Profile"
+            class="w-9 h-9 md:w-10 md:h-10 rounded-full border-2 border-emerald-accent"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDOdWz0yXTAfug92jAlZ-XZtnL5urTJNu8npwz7RIfeTacw2m4yeAoKNMAkf3MLOCIk0iI35_ID8tSabIp6I7MF2N_gez6RO01_i0q1DX3bj656URDlnI8A34wDvyRB5WoPOVTN1qvuyGRfskySDI-pCWAnw3raxBsKX2G6sEhrFHiweAO4TxLdxuB-4_oHoAPBbm9bwmrKrqSGKFEtAeXpM76OE_C1cQQSNmRYmIRT01ZVb4lT2k1tR1xDw6ujXtxiain2IWfiKxim"
+          />
+          <div class="hidden sm:block">
+            <p
+              id="user-name-display"
+              class="text-sm font-bold text-slate-900 dark:text-white"
+            >
+              NiteshY
+            </p>
+            <p
+              id="user-level-display"
+              class="text-[10px] text-emerald-accent font-bold uppercase tracking-wider"
+            >
+              Level 28
+            </p>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Mobile Sub-Nav -->
+    <nav class="xl:hidden flex overflow-x-auto gap-1 sm:gap-2 px-2 py-1.5 sm:px-4 sm:py-2.5 bg-white dark:bg-black border-b border-gray-200 dark:border-border-subtle scrollbar-none whitespace-nowrap" style="-webkit-overflow-scrolling:touch;scrollbar-width:none;">
+      <a href="dashboard.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Home</a>
+      <a href="livematches.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Matches</a>
+      <a href="prediction.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Predictions</a>
+      <a href="leaderboard.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">Leaderboard</a>
+      <a href="news&update.html" class="text-gray-400 hover:text-brand-green transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 shrink-0">News</a>
+    </nav>
+
+    <!-- END: MainHeader -->
+    <div class="flex flex-1 overflow-hidden">
+      <!-- BEGIN: SidebarNav -->
+      <aside
+        id="sidebar"
+        class="w-64 fixed inset-y-0 left-0 z-[60] transition-all duration-300 bg-white dark:bg-black border-r border-gray-200 dark:border-border-subtle p-6 overflow-y-auto -translate-x-full lg:translate-x-0 lg:static h-full"
+      >
+        <!-- Mobile Close Button -->
+        <button
+          id="close-sidebar-btn"
+          class="lg:hidden p-2 absolute top-4 right-4 text-gray-400"
+        >
+          <span class="material-symbols-outlined">close</span>
+        </button>
+        <!-- Logo Container for collapsed state -->
+        <div
+          class="p-6 flex items-center space-x-2 logo-container cursor-pointer"
+          onclick="window.location.href = 'dashboard.html'"
+        >
+          <img src="assets/fancoin/fanconnactlogo.png" alt="Fanconnact" class="w-8 h-8 flex-shrink-0" />
+          <span
+            class="text-xl font-bold tracking-tight font-headline logo-text"
+            ><span class="text-fan">Fan</span><span class="text-connect">Connact</span></span
+          >
+        </div>
+
+
+        <div class="mb-8">
+          <h3
+            class="text-xs font-bold text-slate-500 dark:text-gray-400 uppercase tracking-wider mb-4"
+          >
+            SPORTS
+          </h3>
+          <ul class="space-y-1">
+            <li>
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                href="livematches.html"
+              >
+                <span class="material-symbols-outlined text-xl">grid_view</span>
+                <span class="nav-text">All Sports</span>
+              </a>
+            </li>
+            <li class="">
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                href="cricket.html"
+              >
+                <span class="material-symbols-outlined text-xl"
+                  >sports_cricket</span
+                >
+                <span class="nav-text">Cricket</span>
+              </a>
+            </li>
+            <li class="">
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                href="football.html"
+              >
+                <span class="material-symbols-outlined text-xl"
+                  >sports_soccer</span
+                >
+                <span class="nav-text">Football</span>
+              </a>
+            </li>
+            <li class="">
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                href="basketball.html"
+              >
+                <span class="material-symbols-outlined text-xl"
+                  >sports_basketball</span
+                >
+                <span class="nav-text">Basketball</span>
+              </a>
+            </li>
+            <li class="">
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                href="tennis.html"
+              >
+                <span class="material-symbols-outlined text-xl"
+                  >sports_tennis</span
+                >
+                <span class="nav-text">Tennis</span>
+              </a>
+            </li>
+            <li class="">
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                href="hockey.html"
+              >
+                <span class="material-symbols-outlined text-xl"
+                  >sports_hockey</span
+                >
+                <span class="nav-text">Hockey</span>
+              </a>
+            </li>
+            <li class="">
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                href="kabbaddi.html"
+              >
+                <span class="material-symbols-outlined text-xl"
+                  >sports_kabaddi</span
+                >
+                <span class="nav-text">Kabaddi</span>
+              </a>
+            </li>
+            <li class="">
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                href="e-sports.html"
+              >
+                <span class="material-symbols-outlined text-xl"
+                  >sports_esports</span
+                >
+                <span class="nav-text">E-Sports</span>
+              </a>
+            </li>
+            <li class="">
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                href="baseball.html"
+              >
+                <span class="material-symbols-outlined text-xl"
+                  >sports_baseball</span
+                >
+                <span class="nav-text">Baseball</span>
+              </a>
+            </li>
+            <li class="">
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                href="vollyeball.html"
+              >
+                <span class="material-symbols-outlined text-xl"
+                  >sports_volleyball</span
+                >
+                <span class="nav-text">Volleyball</span>
+              </a>
+            </li>
+            <li class="">
+              <a
+                class="flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group nav-link"
+                href="tabletennis.html"
+              >
+                <span class="material-symbols-outlined text-xl">sports_tennis</span>
+                <span class="nav-text">Table Tennis</span>
+              </a>
+            </li>
+
+          </ul>
+        </div>
+
+
+
+        <!-- Premium Promo -->
+        <div
+          class="mt-auto bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-5 border border-gray-700 text-center"
+        >
+          <div class="flex justify-center mb-3">
+            <div
+              class="w-10 h-10 bg-yellow-500 rounded-full flex items-center justify-center shadow-lg shadow-yellow-500/20"
+            >
+              <svg
+                class="w-6 h-6 text-black"
+                fill="currentColor"
+                viewbox="0 0 20 20"
+              >
+                <path
+                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                ></path>
+              </svg>
+            </div>
+          </div>
+          <h4 class="font-bold text-sm mb-1">Fanconnact Premium</h4>
+          <p class="text-[11px] text-gray-400 mb-4 leading-tight">
+            Ad-free experience, exclusive badges &amp; more!
+          </p>
+          <button
+            onclick="window.location.href='https://play.google.com/store/apps'"
+            class="w-full bg-emerald-accent text-black font-bold py-2 rounded-lg text-xs hover:bg-emerald-400 transition-colors"
+          >
+            Go Premium
+          </button>
+        </div>
+      </aside>
+      <!-- END: SidebarNav -->
+      <!-- Main Content Area: Use internal scroll to avoid disturbing top bar -->
+      <main
+        class="flex-1 flex flex-col overflow-hidden transition-colors duration-300"
+      >
+        <div class="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-6">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <!-- Center Content Section -->
+            <div class="lg:col-span-9">
+              <div class="mb-6">
+                <h1
+                  class="text-3xl font-bold mb-2 text-slate-900 dark:text-white"
+                >
+                  Matches
+                </h1>
+                <p class="text-slate-500 dark:text-gray-400 text-sm">
+                  Follow your favorite sports and never miss a moment!
+                </p>
+              </div>
+
+              <!-- Tournament Tabs -->
+              <div
+                class="border-b border-gray-200 dark:border-border-subtle mb-8 flex space-x-8 overflow-x-auto pb-0"
+                data-purpose="tournament-filters"
+              >
+                <button
+                  class="pb-4 border-b-2 border-emerald-accent text-emerald-accent font-bold text-sm px-1 shrink-0"
+                >
+                  All
+                </button>
+                <button
+                  class="pb-4 text-slate-500 dark:text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm px-1 shrink-0"
+                >
+                  Cricket
+                </button>
+                <button
+                  class="pb-4 text-slate-500 dark:text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm px-1 shrink-0"
+                >
+                  Football
+                </button>
+                <button
+                  class="pb-4 text-slate-500 dark:text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm px-1 shrink-0"
+                >
+                  Basketball
+                </button>
+                <button
+                  class="pb-4 text-slate-500 dark:text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm px-1 shrink-0"
+                >
+                  Tennis
+                </button>
+                <button
+                  class="pb-4 text-slate-500 dark:text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm px-1 shrink-0"
+                >
+                  Baseball
+                </button>
+                <button
+                  class="pb-4 text-slate-500 dark:text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm px-1 shrink-0"
+                >
+                  Hockey
+                </button>
+              </div>
+              <!-- Filter & Sort Bar -->
+              <div class="flex flex-col gap-3 mb-6 lg:flex-row lg:items-center lg:justify-between" data-purpose="status-filters">
+                <div class="flex space-x-2 overflow-x-auto pb-1 custom-scrollbar sm:space-x-3">
+                  <button
+                    data-status="live"
+                    class="status-tab bg-[#161d2b] border border-emerald-accent text-emerald-accent px-3 py-1.5 rounded-lg text-xs sm:text-sm flex items-center space-x-2 shrink-0"
+                  >
+                    <span
+                      class="w-2 h-2 bg-red-500 rounded-full animate-pulse"
+                    ></span>
+                    <span class="">Live (<span data-count="live">0</span>)</span>
+                  </button>
+                  <button
+                    data-status="upcoming"
+                    class="status-tab bg-[#161d2b] border border-gray-700 text-gray-400 px-3 py-1.5 rounded-lg text-xs sm:text-sm flex items-center space-x-2 hover:text-white shrink-0"
+                  >
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewbox="0 0 24 24"
+                    >
+                      <path
+                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                      ></path>
+                    </svg>
+                    <span class="">Upcoming (<span data-count="upcoming">0</span>)</span>
+                  </button>
+                  <button
+                    data-status="finished"
+                    class="status-tab bg-[#161d2b] border border-gray-700 text-gray-400 px-3 py-1.5 rounded-lg text-xs sm:text-sm flex items-center space-x-2 hover:text-white shrink-0"
+                  >
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewbox="0 0 24 24"
+                    >
+                      <path
+                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                      ></path>
+                    </svg>
+                    <span class="">Finished (<span data-count="finished">0</span>)</span>
+                  </button>
+                </div>
+                <div class="flex space-x-2 sm:space-x-3 shrink-0">
+                  <button
+                    class="bg-[#161d2b] border border-gray-700 text-gray-400 px-3 py-1.5 rounded-lg text-xs sm:text-sm flex items-center space-x-2"
+                  >
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewbox="0 0 24 24"
+                    >
+                      <path
+                        d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                      ></path>
+                    </svg>
+                    <span class="">Filter</span>
+                  </button>
+                  <button
+                    class="bg-[#161d2b] border border-gray-700 text-gray-400 px-3 py-1.5 rounded-lg text-xs sm:text-sm flex items-center space-x-2"
+                  >
+                    <span class="whitespace-nowrap">Sort: Latest</span>
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewbox="0 0 24 24"
+                    >
+                      <path
+                        d="M19 9l-7 7-7-7"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                      ></path>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <!-- BEGIN: LiveMatchCards -->
+              <div class="space-y-6" data-purpose="matches-list">
+                <!-- Real match cards injected from js/matches-data.js -->
+              </div>
+              <!-- END: LiveMatchCards -->
+            </div>
+            <!-- Right Sidebar Section -->
+            <div class="lg:col-span-3 space-y-8">
+              <!-- BEGIN: CalendarWidget -->
+              <div
+                class="bg-card-bg rounded-2xl p-6 border border-border-subtle"
+              >
+                <div class="flex items-center justify-between mb-6">
+                  <h3 class="font-bold">Calendar</h3>
+                  <a
+                    class="text-emerald-accent text-xs font-semibold hover:underline"
+                    href="calendar.html?game=all"
+                    >View Full Calendar</a
+                  >
+                </div>
+                <div class="grid grid-cols-7 gap-2 text-center">
+                  <div class="space-y-2">
+                    <p class="text-[10px] text-gray-500 uppercase font-bold">
+                      Mon
+                    </p>
+                    <div
+                      class="h-10 w-10 flex items-center justify-center rounded-lg hover:bg-gray-800 cursor-pointer text-sm"
+                    >
+                      13
+                    </div>
+                  </div>
+                  <div class="space-y-2">
+                    <p class="text-[10px] text-gray-500 uppercase font-bold">
+                      Tue
+                    </p>
+                    <div
+                      class="h-10 w-10 flex items-center justify-center rounded-lg hover:bg-gray-800 cursor-pointer text-sm"
+                    >
+                      14
+                    </div>
+                  </div>
+                  <div class="space-y-2">
+                    <p class="text-[10px] text-gray-500 uppercase font-bold">
+                      Wed
+                    </p>
+                    <div
+                      class="h-10 w-10 flex items-center justify-center rounded-lg bg-emerald-accent text-black font-bold text-sm"
+                    >
+                      15
+                    </div>
+                  </div>
+                  <div class="space-y-2">
+                    <p class="text-[10px] text-gray-500 uppercase font-bold">
+                      Thu
+                    </p>
+                    <div
+                      class="h-10 w-10 flex items-center justify-center rounded-lg hover:bg-gray-800 cursor-pointer text-sm"
+                    >
+                      16
+                    </div>
+                  </div>
+                  <div class="space-y-2">
+                    <p class="text-[10px] text-gray-500 uppercase font-bold">
+                      Fri
+                    </p>
+                    <div
+                      class="h-10 w-10 flex items-center justify-center rounded-lg hover:bg-gray-800 cursor-pointer text-sm"
+                    >
+                      17
+                    </div>
+                  </div>
+                  <div class="space-y-2">
+                    <p class="text-[10px] text-gray-500 uppercase font-bold">
+                      Sat
+                    </p>
+                    <div
+                      class="h-10 w-10 flex items-center justify-center rounded-lg hover:bg-gray-800 cursor-pointer text-sm"
+                    >
+                      18
+                    </div>
+                  </div>
+                  <div class="space-y-2">
+                    <p class="text-[10px] text-gray-500 uppercase font-bold">
+                      Sun
+                    </p>
+                    <div
+                      class="h-10 w-10 flex items-center justify-center rounded-lg hover:bg-gray-800 cursor-pointer text-sm"
+                    >
+                      19
+                    </div>
+                  </div>
+                </div>
+                <!-- Mini Match List in Calendar -->
+                <div class="mt-8 space-y-4">
+                  <div
+                    class="flex items-center justify-between group cursor-pointer"
+                  >
+                    <div class="flex items-center space-x-3">
+                      <img
+                        class="w-8 h-8 rounded object-contain dark:bg-gray-800 light:bg-gray-100 p-1"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuD5F4IAkw1Tcq3s82q-6HXUUCMtiuOErKPjyhaUcdL-37MM8XeziLK_571FCMPnzLlHNvGzsWYgaXyVqH4L9Q5lxN_naZ3vna4ipayFNEW1kfZ0uL5mn9XUSTWC5_EfV_RiBYched_rJOEcjRPpiAm_HTCu44QjjNt7WNRiuCq1L8EyYcGkt-UxwWBAUNWxKedZJ4jqpvxGILKeuu2QtBpWiUnmzufAFGe3ThGPCmL09CdD_vq_A5oBbFaOVv5vsKVsdUgu18eRoTAD"
+                      />
+                      <div>
+                        <p
+                          class="text-[10px] text-gray-500 font-bold leading-none mb-1"
+                        >
+                          IPL 2024 â€¢ Match 56
+                        </p>
+                        <p
+                          class="text-xs font-bold dark:text-white light:text-slate-800"
+                        >
+                          MI vs CSK
+                        </p>
+                      </div>
+                    </div>
+                    <span
+                      class="text-[10px] bg-red-500/10 text-red-500 px-1.5 py-0.5 rounded font-bold uppercase flex items-center"
+                    >
+                      <span class="w-1 h-1 bg-red-500 rounded-full mr-1"></span>
+                      LIVE
+                    </span>
+                  </div>
+                  <div
+                    class="flex items-center justify-between group cursor-pointer"
+                  >
+                    <div class="flex items-center space-x-3">
+                      <img
+                        class="w-8 h-8 rounded object-contain dark:bg-gray-800 light:bg-gray-100 p-1"
+                        src="https://upload.wikimedia.org/wikipedia/en/thumb/e/eb/Manchester_City_FC_badge.svg/512px-Manchester_City_FC_badge.svg.png"
+                      />
+                      <div>
+                        <p
+                          class="text-[10px] text-gray-500 font-bold leading-none mb-1"
+                        >
+                          Champions League â€¢ Quarter Final
+                        </p>
+                        <p
+                          class="text-xs font-bold dark:text-white light:text-slate-800"
+                        >
+                          MCI vs RMA
+                        </p>
+                      </div>
+                    </div>
+                    <span
+                      class="text-[10px] bg-red-500/10 text-red-500 px-1.5 py-0.5 rounded font-bold uppercase flex items-center"
+                    >
+                      <span class="w-1 h-1 bg-red-500 rounded-full mr-1"></span>
+                      LIVE
+                    </span>
+                  </div>
+                  <div
+                    class="flex items-center justify-between group cursor-pointer"
+                  >
+                    <div class="flex items-center space-x-3">
+                      <img
+                        class="w-8 h-8 rounded object-contain dark:bg-gray-800 light:bg-gray-100 p-1"
+                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Los_Angeles_Lakers_logo.svg/512px-Los_Angeles_Lakers_logo.svg.png"
+                      />
+                      <div>
+                        <p
+                          class="text-[10px] text-gray-500 font-bold leading-none mb-1"
+                        >
+                          NBA â€¢ Regular Season
+                        </p>
+                        <p
+                          class="text-xs font-bold dark:text-white light:text-slate-800"
+                        >
+                          LAL vs GSW
+                        </p>
+                      </div>
+                    </div>
+                    <span class="text-[10px] text-gray-500 font-bold"
+                      >7:30 PM</span
+                    >
+                  </div>
+                  <div
+                    class="flex items-center justify-between group cursor-pointer"
+                  >
+                    <div class="flex items-center space-x-3">
+                      <img
+                        class="w-8 h-8 rounded object-contain dark:bg-gray-800 light:bg-gray-100 p-1"
+                        src="https://upload.wikimedia.org/wikipedia/en/thumb/2/2d/Washington_Capitals.svg/512px-Washington_Capitals.svg.png"
+                      />
+                      <div>
+                        <p
+                          class="text-[10px] text-gray-500 font-bold leading-none mb-1"
+                        >
+                          NHL â€¢ Regular Season
+                        </p>
+                        <p
+                          class="text-xs font-bold dark:text-white light:text-slate-800"
+                        >
+                          WSH vs VGK
+                        </p>
+                      </div>
+                    </div>
+                    <span class="text-[10px] text-gray-500 font-bold"
+                      >7:30 PM</span
+                    >
+                  </div>
+                </div>
+                <button
+                  class="w-full mt-6 text-emerald-accent text-[11px] font-bold text-center hover:underline"
+                >
+                  View All Matches
+                </button>
+              </div>
+              <!-- END: CalendarWidget -->
+              <!-- BEGIN: TrendingGamesWidget -->
+              <div
+                class="bg-card-bg rounded-2xl p-6 border border-border-subtle"
+              >
+                <div class="flex items-center justify-between mb-6">
+                  <div class="flex items-center space-x-2">
+                    <h3 class="font-bold">Trending Games</h3>
+                    <span class="material-symbols-outlined text-red-500 text-lg">local_fire_department</span>
+                  </div>
+                </div>
+                <div class="space-y-4">
+                  <!-- Game 1 -->
+                  <div class="flex items-center justify-between group cursor-pointer">
+                    <div class="flex items-center space-x-3">
+                      <img
+                        class="w-8 h-8 rounded object-contain dark:bg-gray-800 light:bg-gray-100 p-1"
+                        src="https://upload.wikimedia.org/wikipedia/en/thumb/c/cd/Mumbai_Indians_Logo.svg/512px-Mumbai_Indians_Logo.svg.png"
+                      />
+                      <div>
+                        <p class="text-[10px] text-gray-500 font-bold leading-none mb-1">
+                          IPL 2024 â€¢ Match 56
+                        </p>
+                        <p class="text-xs font-bold dark:text-white light:text-slate-800">
+                          MI vs CSK
+                        </p>
+                      </div>
+                    </div>
+                    <span class="text-[10px] bg-red-500/10 text-red-500 px-1.5 py-0.5 rounded font-bold uppercase flex items-center">
+                      <span class="w-1 h-1 bg-red-500 rounded-full mr-1"></span>
+                      LIVE
+                    </span>
+                  </div>
+                  <!-- Game 2 -->
+                  <div class="flex items-center justify-between group cursor-pointer">
+                    <div class="flex items-center space-x-3">
+                      <img
+                        class="w-8 h-8 rounded object-contain dark:bg-gray-800 light:bg-gray-100 p-1"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuD5F4IAkw1Tcq3s82q-6HXUUCMtiuOErKPjyhaUcdL-37MM8XeziLK_571FCMPnzLlHNvGzsWYgaXyVqH4L9Q5lxN_naZ3vna4ipayFNEW1kfZ0uL5mn9XUSTWC5_EfV_RiBYched_rJOEcjRPpiAm_HTCu44QjjNt7WNRiuCq1L8EyYcGkt-UxwWBAUNWxKedZJ4jqpvxGILKeuu2QtBpWiUnmzufAFGe3ThGPCmL09CdD_vq_A5oBbFaOVv5vsKVsdUgu18eRoTAD"
+                      />
+                      <div>
+                        <p class="text-[10px] text-gray-500 font-bold leading-none mb-1">
+                          Premier League â€¢ Matchday 37
+                        </p>
+                        <p class="text-xs font-bold dark:text-white light:text-slate-800">
+                          LIV vs MCI
+                        </p>
+                      </div>
+                    </div>
+                    <span class="text-[10px] bg-red-500/10 text-red-500 px-1.5 py-0.5 rounded font-bold uppercase flex items-center">
+                      <span class="w-1 h-1 bg-red-500 rounded-full mr-1"></span>
+                      LIVE
+                    </span>
+                  </div>
+                  <!-- Game 3 -->
+                  <div class="flex items-center justify-between group cursor-pointer">
+                    <div class="flex items-center space-x-3">
+                      <img
+                        class="w-8 h-8 rounded object-contain dark:bg-gray-800 light:bg-gray-100 p-1"
+                        src="https://upload.wikimedia.org/wikipedia/en/thumb/a/ad/New_York_Yankees_logo.svg/512px-New_York_Yankees_logo.svg.png"
+                      />
+                      <div>
+                        <p class="text-[10px] text-gray-500 font-bold leading-none mb-1">
+                          MLB â€¢ Dodger Stadium
+                        </p>
+                        <p class="text-xs font-bold dark:text-white light:text-slate-800">
+                          LAD vs NYY
+                        </p>
+                      </div>
+                    </div>
+                    <span class="text-[10px] bg-red-500/10 text-red-500 px-1.5 py-0.5 rounded font-bold uppercase flex items-center">
+                      <span class="w-1 h-1 bg-red-500 rounded-full mr-1"></span>
+                      LIVE
+                    </span>
+                  </div>
+                  <!-- Game 4 -->
+                  <div class="flex items-center justify-between group cursor-pointer">
+                    <div class="flex items-center space-x-3">
+                      <img
+                        class="w-8 h-8 rounded object-contain dark:bg-gray-800 light:bg-gray-100 p-1"
+                        src="https://upload.wikimedia.org/wikipedia/en/thumb/2/2b/Chennai_Super_Kings_Logo.svg/512px-Chennai_Super_Kings_Logo.svg.png"
+                      />
+                      <div>
+                        <p class="text-[10px] text-gray-500 font-bold leading-none mb-1">
+                          IPL 2025 â€¢ Qualifier 1
+                        </p>
+                        <p class="text-xs font-bold dark:text-white light:text-slate-800">
+                          CSK vs RCB
+                        </p>
+                      </div>
+                    </div>
+                    <span class="text-[10px] text-gray-500 font-bold">
+                      Upcoming
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <!-- END: TrendingGamesWidget -->
+            </div>
+          </div>
+          <!-- All Games Section Removed -->
+        </div>
+      </main>
+
+      <!-- BEGIN: Crex-style Live Match View (opens on live card click) -->
+      <div id="live-match-view" class="fixed inset-0 z-[60] overflow-y-auto bg-black/80 backdrop-blur-sm">
+        <div class="min-h-full lg:max-w-5xl lg:mx-auto bg-[#0a0e1a] text-white">
+          <!-- Top bar -->
+          <div class="sticky top-0 z-10 flex items-center justify-between px-4 py-3 bg-[#0b1626] border-b border-white/10">
+            <button id="lmv-close" class="flex items-center gap-2 text-sm text-gray-300 hover:text-white">
+              <span class="material-symbols-outlined text-xl">arrow_back</span> Matches
+            </button>
+            <div class="flex items-center gap-2 text-xs">
+              <span class="w-2 h-2 rounded-full bg-red-500 pulse-live"></span>
+              <span id="lmv-status" class="font-bold text-red-400 uppercase tracking-wide">Live</span>
+            </div>
+            <button id="lmv-chat" class="text-xs px-3 py-1.5 rounded-lg bg-[#f7941d] text-black font-bold">Live Chat</button>
+          </div>
+
+          <div class="p-4 space-y-4">
+            <!-- Scoreboard -->
+            <div class="crex-card rounded-2xl overflow-hidden">
+              <div class="px-4 py-2 text-[11px] uppercase tracking-wide text-gray-400" id="lmv-series">Series</div>
+              <div class="crex-pitch px-4 py-5">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <img id="lmv-home-logo" class="w-12 h-12 object-contain" src="" alt="">
+                    <div>
+                      <div id="lmv-home-name" class="font-bold text-lg leading-none">HOME</div>
+                      <div id="lmv-home-score" class="text-3xl font-extrabold mt-1 score-flash">0</div>
+                      <div id="lmv-home-sub" class="text-[11px] text-gray-300"></div>
+                    </div>
+                  </div>
+                  <div class="text-center text-xs text-gray-300">
+                    <div id="lmv-state" class="font-semibold">LIVE</div>
+                    <div id="lmv-over" class="mt-1"></div>
+                  </div>
+                  <div class="flex items-center gap-3 text-right">
+                    <div>
+                      <div id="lmv-away-name" class="font-bold text-lg leading-none">AWAY</div>
+                      <div id="lmv-away-score" class="text-3xl font-extrabold mt-1 score-flash">0</div>
+                      <div id="lmv-away-sub" class="text-[11px] text-gray-300"></div>
+                    </div>
+                    <img id="lmv-away-logo" class="w-12 h-12 object-contain" src="" alt="">
+                  </div>
+                </div>
+              </div>
+              <!-- Current players strip -->
+              <div class="grid grid-cols-2 gap-px bg-white/10">
+                <div class="bg-[#0b1626] px-4 py-3 flex items-center gap-3">
+                  <span class="text-[10px] uppercase font-bold text-[#f7941d]">Batting</span>
+                  <img id="lmv-bat1-img" class="w-8 h-8 rounded-full bg-gray-700 object-cover" src="" alt="">
+                  <div class="text-sm"><span id="lmv-bat1" class="font-semibold">-</span> <span id="lmv-bat1-runs" class="text-gray-400 text-xs"></span></div>
+                  <img id="lmv-bat2-img" class="w-8 h-8 rounded-full bg-gray-700 object-cover ml-2" src="" alt="">
+                  <div class="text-sm"><span id="lmv-bat2" class="font-semibold">-</span> <span id="lmv-bat2-runs" class="text-gray-400 text-xs"></span></div>
+                </div>
+                <div class="bg-[#0b1626] px-4 py-3 flex items-center gap-3">
+                  <span class="text-[10px] uppercase font-bold text-[#2b6cb0]">Bowling</span>
+                  <img id="lmv-bowl-img" class="w-8 h-8 rounded-full bg-gray-700 object-cover" src="" alt="">
+                  <div class="text-sm"><span id="lmv-bowl" class="font-semibold">-</span> <span id="lmv-bowl-fig" class="text-gray-400 text-xs"></span></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Commentary -->
+            <div class="crex-card rounded-2xl p-4">
+              <div class="flex items-center justify-between mb-3">
+                <h3 class="font-bold text-sm uppercase tracking-wide">Live Commentary</h3>
+                <span class="text-[11px] text-gray-400">Ball-by-ball</span>
+              </div>
+              <div id="lmv-comm" class="space-y-2 max-h-[55vh] overflow-y-auto pr-1"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- END: Crex-style Live Match View -->
+
+    </div>
+    <script type="module" src="js/script.js"></script>
+    <script src="js/theme.js"></script>
+    <script>
+    /* ============================================================
+       Crex-style Live Match View â€” sport-aware, data-driven
+       Opens when a LIVE match card is clicked. Shows avatars,
+       live scoreboard and ball-by-ball commentary with
+       FOUR / SIX / WICKET / MILESTONE animations per sport.
+       ============================================================ */
+    (function () {
+      'use strict';
+      var view = document.getElementById('live-match-view');
+      if (!view) return;
+      var $ = function (id) { return document.getElementById(id); };
+      var timers = [];
+      function clearTimers() { timers.forEach(clearTimeout); timers = []; }
+      function later(fn, ms) { var t = setTimeout(fn, ms); timers.push(t); return t; }
+
+      // ---- Avatar helpers (initials fallback) ----
+      function initials(name) {
+        var parts = String(name).replace(/[^a-zA-Z ]/g, '').trim().split(/\s+/);
+        if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+        return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+      }
+      function avatar(name, bg) {
+        return 'https://ui-avatars.com/api/?name=' + encodeURIComponent(initials(name)) +
+          '&background=' + (bg || '374151') + '&color=fff&size=80&bold=true&format=png';
+      }
+
+      // ---- Per-sport commentary generators ----
+      // Each returns { text, type, runs, badge } where type in four/six/wicket/milestone/normal
+      var GEN = {
+        cricket: function (s) {
+          var r = Math.random();
+          if (r < 0.16) return { type: 'four', runs: 4, badge: '4', text: s.striker + ' times it beautifully through the covers for FOUR! ' + s.home + ' ' + s.homeScore + '/' + s.homeWkts + '.' };
+          if (r < 0.26) return { type: 'six', runs: 6, badge: '6', text: s.striker + ' launches ' + s.bowler + ' over long-on for a massive SIX! ' + s.home + ' ' + s.homeScore + '/' + s.homeWkts + '.' };
+          if (r < 0.34) { s.homeWkts++; return { type: 'wicket', runs: 0, badge: 'W', text: 'WICKET! ' + s.striker + ' b ' + s.bowler + ' ' + s.homeScore + '/' + s.homeWkts + '. Big breakthrough!' }; }
+          if (r < 0.40) return { type: 'milestone', runs: 1, badge: '50', text: 'Milestone! ' + s.striker + ' brings up a well-made half-century. ' + s.home + ' ' + s.homeScore + '/' + s.homeWkts + '.' };
+          var runs = [0, 1, 1, 2, 1, 3, 2, 1][Math.floor(Math.random() * 8)];
+          return { type: 'normal', runs: runs, badge: String(runs), text: runs + ' run' + (runs === 1 ? '' : 's') + ' taken off ' + s.bowler + '. ' + s.striker + ' on strike.' };
+        },
+        football: function (s) {
+          var r = Math.random();
+          if (r < 0.18) { s.homeScore++; return { type: 'wicket', runs: 1, badge: 'âš½', text: 'GOOOAL! ' + s.striker + ' finds the net for ' + s.home + '! ' + s.home + ' ' + s.homeScore + 'â€“' + s.awayScore + '.' }; }
+          if (r < 0.30) return { type: 'milestone', runs: 0, badge: 'ðŸŸ¨', text: 'Yellow card for ' + s.bowler + ' after a late challenge. ' + s.away + ' free-kick in a dangerous area.' };
+          if (r < 0.42) return { type: 'four', runs: 0, badge: 'ðŸŽ¯', text: 'Great chance! ' + s.striker + ' forces a fine save from the ' + s.away + ' keeper.' };
+          if (r < 0.52) return { type: 'six', runs: 0, badge: 'ðŸš€', text: 'Stunning strike from distance by ' + s.striker + ' â€” just wide! ' + s.home + ' ' + s.homeScore + 'â€“' + s.awayScore + '.' };
+          return { type: 'normal', runs: 0, badge: 'â€¢', text: 'Possession with ' + (Math.random() < 0.5 ? s.home : s.away) + '. ' + s.striker + ' looking lively on the wing.' };
+        },
+        basketball: function (s) {
+          var r = Math.random();
+          if (r < 0.22) { s.homeScore += 3; return { type: 'six', runs: 3, badge: '3PT', text: 'Three-pointer from downtown by ' + s.striker + '! ' + s.home + ' ' + s.homeScore + 'â€“' + s.awayScore + '.' }; }
+          if (r < 0.42) { s.homeScore += 2; return { type: 'four', runs: 2, badge: '2PT', text: 'And-1 opportunity! ' + s.striker + ' finishes strong through contact. ' + s.home + ' ' + s.homeScore + 'â€“' + s.awayScore + '.' }; }
+          if (r < 0.54) return { type: 'wicket', runs: 0, badge: 'ðŸ€', text: 'Steal and fast break! ' + s.bowler + ' picks ' + s.away + ' pocket. Transition bucket.' };
+          if (r < 0.64) return { type: 'milestone', runs: 0, badge: 'ðŸ”¥', text: 'Milestone: ' + s.striker + ' reaches 30 points on the night. On fire!' };
+          return { type: 'normal', runs: 0, badge: 'â€¢', text: s.striker + ' brings the ball up. ' + s.home + ' ' + s.homeScore + 'â€“' + s.awayScore + '.' };
+        },
+        tennis: function (s) {
+          var r = Math.random();
+          if (r < 0.20) return { type: 'wicket', runs: 0, badge: 'ðŸŽ¾', text: 'BREAK POINT! ' + s.striker + ' breaks serve against ' + s.away + '. ' + s.state + '.' };
+          if (r < 0.36) return { type: 'four', runs: 0, badge: 'ACE', text: 'Ace! ' + s.striker + ' unleashes a 210km/h serve. ' + s.state + '.' };
+          if (r < 0.50) return { type: 'six', runs: 0, badge: 'âš¡', text: 'Winner cross-court by ' + s.striker + '! Unreturnable. ' + s.state + '.' };
+          if (r < 0.62) return { type: 'milestone', runs: 0, badge: 'ðŸ†', text: 'Set point saved by ' + s.striker + '. Incredible defence. ' + s.state + '.' };
+          return { type: 'normal', runs: 0, badge: 'â€¢', text: s.striker + ' holds serve comfortably. ' + s.state + '.' };
+        },
+        baseball: function (s) {
+          var r = Math.random();
+          if (r < 0.18) { s.homeScore++; return { type: 'six', runs: 1, badge: 'HR', text: 'HOME RUN! ' + s.striker + ' sends it out of the park! ' + s.home + ' ' + s.homeScore + 'â€“' + s.awayScore + '.' }; }
+          if (r < 0.34) { s.homeScore++; return { type: 'four', runs: 1, badge: 'RBI', text: 'Base hit, RBI for ' + s.striker + '. ' + s.home + ' ' + s.homeScore + 'â€“' + s.awayScore + '.' }; }
+          if (r < 0.46) return { type: 'wicket', runs: 0, badge: 'âš¾', text: 'Strikeout! ' + s.bowler + ' paints the corner. ' + s.away + ' batter sits down.' };
+          if (r < 0.58) return { type: 'milestone', runs: 0, badge: 'ðŸ”¥', text: 'Milestone: ' + s.striker + ' extends hit streak to 12 games.' };
+          return { type: 'normal', runs: 0, badge: 'â€¢', text: s.bowler + ' on the mound. ' + s.striker + ' at the plate. ' + s.home + ' ' + s.homeScore + 'â€“' + s.awayScore + '.' };
+        },
+        hockey: function (s) {
+          var r = Math.random();
+          if (r < 0.20) { s.homeScore++; return { type: 'wicket', runs: 1, badge: 'ðŸ’', text: 'GOAL! ' + s.striker + ' roofs it top-shelf for ' + s.home + '! ' + s.home + ' ' + s.homeScore + 'â€“' + s.awayScore + '.' }; }
+          if (r < 0.36) return { type: 'four', runs: 0, badge: 'ðŸ¥…', text: 'Great save by the ' + s.away + ' goaltender off ' + s.striker + "'s slapshot." };
+          if (r < 0.50) return { type: 'six', runs: 0, badge: 'ðŸ’¥', text: 'Huge open-ice hit by ' + s.bowler + '. The crowd erupts!' };
+          if (r < 0.62) return { type: 'milestone', runs: 0, badge: 'ðŸ”¥', text: 'Milestone: ' + s.striker + ' records a Gordie Howe hat-trick (goal, assist, fight).' };
+          return { type: 'normal', runs: 0, badge: 'â€¢', text: s.home + ' controlling the puck in the ' + s.away + ' zone. ' + s.home + ' ' + s.homeScore + 'â€“' + s.awayScore + '.' };
+        }
+      };
+
+      // ---- Sport display config ----
+      var SPORT = {
+        Cricket: { unit: 'Run', state: function (s) { return 'Over ' + s.over.toFixed(1); }, sub: function (s, side) { return side === 'home' ? (s.homeWkts + ' wkts') : (s.awayWkts + ' wkts'); } },
+        Football: { unit: 'Goal', state: function (s) { return s.minute + "'"; }, sub: function () { return ''; } },
+        Basketball: { unit: 'PTS', state: function (s) { return 'Q' + s.quarter + ' â€¢ ' + s.clock; }, sub: function () { return ''; } },
+        Tennis: { unit: 'Set', state: function (s) { return s.state; }, sub: function () { return ''; } },
+        Baseball: { unit: 'Run', state: function (s) { return 'Top ' + s.inning + (s.outs ? ' â€¢ ' + s.outs + ' out' : ''); }, sub: function () { return ''; } },
+        Hockey: { unit: 'Goal', state: function (s) { return s.clock + ' left'; }, sub: function () { return ''; } }
+      };
+
+      var NAMES = {
+        LIV: 'Liverpool', MCI: 'Man City', LAL: 'Lakers', GSW: 'Warriors', MI: 'Mumbai Indians', CSK: 'Chennai Super Kings',
+        Alcaraz: 'C. Alcaraz', Djokovic: 'N. Djokovic', Dodgers: 'Dodgers', Yankees: 'Yankees', Capitals: 'Capitals', GoldenKnights: 'Golden Knights'
+      };
+      function fullName(code) { return NAMES[code] || code; }
+
+      // ---- Open the view from a clicked card ----
+      function openMatch(card) {
+        var sport = card.getAttribute('data-tournament');
+        var home = card.getAttribute('data-home') || 'HOME';
+        var away = card.getAttribute('data-away') || 'AWAY';
+        var cfg = SPORT[sport] || SPORT.Cricket;
+        var gen = GEN[sport] || GEN[sport.toLowerCase()] || GEN.cricket;
+
+        // Read initial scores from the card
+        var scoreEls = card.querySelectorAll('.text-2xl, .sm\\:text-2xl, .text-4xl');
+        var homeScore = 0, awayScore = 0;
+        if (scoreEls.length >= 2) {
+          var hRaw = scoreEls[0].textContent.split('/')[0].replace(/[^\d]/g, '');
+          var aRaw = scoreEls[1].textContent.split('/')[0].replace(/[^\d]/g, '');
+          var h = parseInt(hRaw, 10), a = parseInt(aRaw, 10);
+          if (!isNaN(h)) homeScore = h; if (!isNaN(a)) awayScore = a;
+        }
+        var series = (card.querySelector('.text-xs.font-semibold.text-gray-400') || {}).textContent || (sport + ' Live');
+
+        // Build state object
+        var st = {
+          sport: sport, home: fullName(home), away: fullName(away), homeCode: home, awayCode: away,
+          homeScore: homeScore, awayScore: awayScore, homeWkts: 0, awayWkts: 0,
+          over: 0.1, minute: 1, quarter: 1, clock: '11:00', inning: 1, outs: 0,
+          striker: '', bowler: '', state: ''
+        };
+        st.striker = sport === 'Tennis' ? st.home : (sport === 'Cricket' ? 'B Duckett' : st.home + ' #10');
+        st.bowler = sport === 'Tennis' ? st.away : (sport === 'Cricket' ? 'J Bumrah' : st.away + ' #7');
+        st.state = cfg.state(st);
+
+        // Populate header
+        $('lmv-series').textContent = series;
+        $('lmv-home-name').textContent = st.home;
+        $('lmv-away-name').textContent = st.away;
+        $('lmv-home-logo').src = (card.querySelectorAll('img')[0] || {}).src || avatar(st.home, '2196F3');
+        $('lmv-away-logo').src = (card.querySelectorAll('img')[1] || {}).src || avatar(st.away, 'D32F2F');
+        $('lmv-home-score').textContent = st.homeScore;
+        $('lmv-away-score').textContent = st.awayScore;
+        $('lmv-home-sub').textContent = cfg.sub(st, 'home');
+        $('lmv-away-sub').textContent = cfg.sub(st, 'away');
+        $('lmv-over').textContent = st.state;
+        $('lmv-state').textContent = 'LIVE';
+
+        // Current players strip (avatars)
+        $('lmv-bat1-img').src = avatar(st.striker, 'f7941d');
+        $('lmv-bat1').textContent = st.striker;
+        $('lmv-bat1-runs').textContent = sport === 'Cricket' ? '12 (8)' : '';
+        $('lmv-bat2-img').src = avatar(sport === 'Cricket' ? 'J Smith' : st.home + ' #11', 'f7941d');
+        $('lmv-bat2').textContent = sport === 'Cricket' ? 'J Smith' : (st.home + ' #11');
+        $('lmv-bat2-runs').textContent = sport === 'Cricket' ? '8 (6)' : '';
+        $('lmv-bowl-img').src = avatar(st.bowler, '2b6cb0');
+        $('lmv-bowl').textContent = st.bowler;
+        $('lmv-bowl-fig').textContent = sport === 'Cricket' ? '1/12 (2)' : '';
+
+        // Clear + seed commentary
+        var feed = $('lmv-comm');
+        feed.innerHTML = '';
+        addComm({ type: 'normal', badge: 'â€¢', text: 'Match started. ' + st.home + ' vs ' + st.away + ' â€” live ball-by-ball coverage begins.' }, false);
+
+        view.classList.add('open');
+        document.body.style.overflow = 'hidden';
+
+        // Live loop
+        clearTimers();
+        function tick() {
+          var ev = gen(st);
+          // update scoreboard
+          $('lmv-home-score').textContent = st.homeScore;
+          $('lmv-away-score').textContent = st.awayScore;
+          flash($('lmv-home-score')); flash($('lmv-away-score'));
+          st.state = cfg.state(st);
+          $('lmv-over').textContent = st.state;
+          $('lmv-home-sub').textContent = cfg.sub(st, 'home');
+          $('lmv-away-sub').textContent = cfg.sub(st, 'away');
+          // rotate players a bit for realism
+          if (Math.random() < 0.3) {
+            st.striker = sport === 'Tennis' ? st.home : (sport === 'Cricket' ? (Math.random() < .5 ? 'B Duckett' : 'J Root') : st.home + ' #' + (10 + Math.floor(Math.random() * 5)));
+            $('lmv-bat1').textContent = st.striker;
+            $('lmv-bat1-img').src = avatar(st.striker, 'f7941d');
+          }
+          addComm(ev, true);
+          // advance sport clock
+          if (sport === 'Cricket') st.over = Math.min(50, +(st.over + 0.1).toFixed(1));
+          else if (sport === 'Football') st.minute = Math.min(90, st.minute + 1);
+          else if (sport === 'Basketball') { st.clock = decClock(st.clock); if (st.clock === '00:00') { st.quarter = Math.min(4, st.quarter + 1); st.clock = '12:00'; } }
+          else if (sport === 'Baseball') { st.outs = (st.outs + 1) % 3; if (st.outs === 0) st.inning = Math.min(9, st.inning + 1); }
+          else if (sport === 'Hockey') st.clock = decClock(st.clock);
+          later(tick, 2600 + Math.random() * 1800);
+        }
+        later(tick, 1500);
+      }
+
+      function decClock(c) {
+        var p = c.split(':'); var m = parseInt(p[0], 10), s = parseInt(p[1], 10);
+        s -= 11; if (s < 0) { s += 60; m -= 1; } if (m < 0) m = 0;
+        return (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
+      }
+      function flash(el) { if (!el) return; el.classList.remove('score-flash'); void el.offsetWidth; el.classList.add('score-flash'); }
+
+      function addComm(ev, animate) {
+        var feed = $('lmv-comm');
+        var cls = 'comm-item ' + (ev.type === 'four' ? 'comm-four' : ev.type === 'six' ? 'comm-six' : ev.type === 'wicket' ? 'comm-wicket' : ev.type === 'milestone' ? 'comm-milestone' : '');
+        var color = ev.type === 'four' ? '#22c55e' : ev.type === 'six' ? '#a855f7' : ev.type === 'wicket' ? '#ef4444' : ev.type === 'milestone' ? '#f7941d' : '#94a3b8';
+        var row = document.createElement('div');
+        row.className = 'flex items-start gap-3 rounded-xl bg-white/5 p-3 ' + cls;
+        row.innerHTML =
+          '<span class="badge-pop shrink-0 w-9 h-9 text-sm" style="background:' + color + '22;color:' + color + ';border:1px solid ' + color + '55">' + (ev.badge || 'â€¢') + '</span>' +
+          '<div class="min-w-0"><p class="text-sm text-gray-100 leading-snug">' + ev.text + '</p>' +
+          '<p class="text-[10px] text-gray-500 mt-0.5">' + (ev.type === 'normal' ? 'Live' : ev.type.toUpperCase()) + '</p></div>';
+        feed.insertBefore(row, feed.firstChild);
+        while (feed.children.length > 40) feed.removeChild(feed.lastChild);
+        if (animate) {
+          var badge = row.querySelector('.badge-pop');
+          if (badge) { badge.style.animation = 'none'; void badge.offsetWidth; badge.style.animation = ''; }
+        }
+      }
+
+      function closeMatch() {
+        view.classList.remove('open');
+        document.body.style.overflow = '';
+        clearTimers();
+      }
+
+      // Wire up: clicking a LIVE card opens the view (instead of summary redirect)
+      document.querySelectorAll('[data-status="live"]').forEach(function (card) {
+        card.style.cursor = 'pointer';
+        card.addEventListener('click', function (e) {
+          // ignore clicks on the action buttons that explicitly navigate
+          if (e.target.closest('button[onclick]')) return;
+          openMatch(card);
+        });
+      });
+      $('lmv-close').addEventListener('click', closeMatch);
+      $('lmv-chat').addEventListener('click', function () {
+        var card = document.querySelector('[data-status="live"].open') || document.querySelector('[data-status="live"]');
+        var sport = card ? card.getAttribute('data-tournament') : 'cricket';
+        var home = card ? (card.getAttribute('data-home') || 'HOME') : 'HOME';
+        var away = card ? (card.getAttribute('data-away') || 'AWAY') : 'AWAY';
+        window.location.href = 'match-center.html?sport=' + sport.toLowerCase() + '&home=' + home + '&away=' + away + '&state=live';
+      });
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeMatch(); });
+    })();
+    </script>
+  <script src="js/notif-ws.js"></script>
+  <script src="js/matches-data.js"></script>
+  <script src="js/matches-render.js"></script>
+  <script src="js/sport-filters.js"></script>
+</body>
+</html>

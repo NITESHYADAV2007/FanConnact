@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/fancoin/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/fancoin/favicon-16x16.png" />
+    <meta property="og:site_name" content="Fanconnact" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="assets/fancoin/fanconnactlogo.png" />
+    <meta property="og:title" content="Fanconnact - Fan Coin Wallet" />
+    <meta property="og:description" content="Manage your Fan Coins, earn rewards and track your wallet." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Fanconnact - Fan Coin Wallet" />
+    <meta name="twitter:description" content="Manage your Fan Coins, earn rewards and track your wallet." />
+    <meta name="twitter:image" content="assets/fancoin/fanconnactlogo.png" />
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <script>
+      if (localStorage.getItem("color-theme") === "dark") {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
+    </script>
+    <title>Fanconnact - Fan Coin Wallet</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/fancoin.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            fontFamily: { lexend: ["Lexend", "sans-serif"], sans: ["Inter", "sans-serif"] },
+            colors: {
+              brand: { dark: "#0B0E1E", blue: "#4154F1", green: "#10b981", card: "#12172D", secondary: "#1A213E", border: "rgba(255,255,255,0.1)" },
+              "fan-dark": "#060b13", "fan-card-bg": "rgba(16,24,39,0.6)", "fan-emerald": "#10b981", "fan-emerald-dark": "#059669",
+              "fan-border": "rgba(255,255,255,0.1)", "border-subtle": "rgba(255,255,255,0.08)",
+              "emerald-accent": "#10b981", "brand-green": "#10b981",
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body class="min-h-screen w-full transition-colors duration-300 bg-[#01091f] dark:bg-[#01091f] text-white dark:text-white">
+    <!-- Header -->
+    <header class="sticky top-0 z-50 transition-colors duration-300 bg-[#061328]/95 dark:bg-[#061328]/95 border-b border-white/10 dark:border-white/10 px-4 md:px-8 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2 cursor-pointer" onclick="window.location.href='dashboard.html'">
+          <img src="assets/fancoin/fanconnactlogo.png" alt="Fanconnact" class="w-8 h-8" />
+          <span class="text-lg font-bold whitespace-nowrap"><span class="text-fan">Fan</span><span class="text-connect">Connact</span></span>
+        </div>
+        <nav class="hidden xl:flex items-center space-x-6 mx-6 shrink-0">
+          <a class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link" href="dashboard.html">Home</a>
+          <a class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link" href="livematches.html">Matches</a>
+          <a class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link" href="prediction.html">Predictions</a>
+          <a class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link" href="leaderboard.html">Leaderboard</a>
+          <a class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-sm nav-link" href="news&update.html">News</a>
+        </nav>
+      </div>
+      <div class="flex items-center gap-4">
+        <button id="theme-toggle" class="w-9 h-9 rounded-full flex items-center justify-center hover:bg-white/10 dark:hover:bg-white/10 transition-all active:scale-95">
+          <span id="theme-toggle-light-icon" class="material-symbols-outlined hidden text-yellow-400">light_mode</span>
+          <span id="theme-toggle-dark-icon" class="material-symbols-outlined text-gray-400 dark:text-gray-400">dark_mode</span>
+        </button>
+        <button class="hidden sm:block p-2 rounded-full hover:bg-white/10 dark:hover:bg-white/10 transition-all shrink-0" onclick="window.location.href='setting.html'">
+          <span class="material-symbols-outlined text-gray-400 dark:text-gray-400">settings</span>
+        </button>
+        <div class="relative notification-trigger cursor-pointer">
+          <span class="material-symbols-outlined text-gray-400 dark:text-gray-400">notifications</span>
+          <span class="absolute -top-1 -right-1 w-3.5 h-3.5 bg-red-500 rounded-full text-[8px] flex items-center justify-center font-bold text-white">3</span>
+        </div>
+        <div id="profile-trigger" class="flex items-center space-x-2 cursor-pointer border-l border-white/10 dark:border-white/10 pl-4">
+          <img id="user-profile-img" alt="User" class="w-8 h-8 md:w-9 md:h-9 rounded-full border-2 border-emerald-accent" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDOdWz0yXTAfug92jAlZ-XZtnL5urTJNu8npwz7RIfeTacw2m4yeAoKNMAkf3MLOCIk0iI35_ID8tSabIp6I7MF2N_gez6RO01_i0q1DX3bj656URDlnI8A34wDvyRB5WoPOVTN1qvuyGRfskySDI-pCWAnw3raxBsKX2G6sEhrFHiweAO4TxLdxuB-4_oAPBbm9bwmrKrqSGKFEtAeXpM76OE_C1cQQSNmRYmIRT01ZVb4lT2k1tR1xDw6ujXtxiain2IWfiKxim" />
+          <div class="hidden sm:block">
+            <p id="user-name-display" class="text-sm font-bold text-white dark:text-white">NiteshY</p>
+            <p id="user-level-display" class="text-[10px] text-emerald-accent font-bold uppercase tracking-wider">Level 28</p>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Mobile Sub-Nav -->
+    <nav class="xl:hidden flex overflow-x-auto gap-1 sm:gap-2 px-2 py-1.5 sm:px-4 sm:py-2.5 bg-[#061328] dark:bg-[#061328] border-b border-white/10 dark:border-white/10 scrollbar-none whitespace-nowrap" style="-webkit-overflow-scrolling:touch;scrollbar-width:none;">
+      <a href="dashboard.html" class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-white/10 shrink-0">Home</a>
+      <a href="livematches.html" class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-white/10 shrink-0">Matches</a>
+      <a href="prediction.html" class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-white/10 shrink-0">Predictions</a>
+      <a href="leaderboard.html" class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-white/10 shrink-0">Leaderboard</a>
+      <a href="news&update.html" class="text-gray-400 hover:text-emerald-accent transition-colors font-medium text-[11px] sm:text-sm px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-white/10 shrink-0">News</a>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="p-4 md:p-8">
+      <div class="dashboard">
+
+        <div class="main-container">
+
+          <!-- LEFT CONTENT -->
+          <div class="content">
+
+            <!-- WALLET -->
+            <div class="wallet-card">
+              <div>
+                <h1>FAN <span>COIN</span><br>WALLET</h1>
+                <p>Earn Coins. Play More. Win Big.</p>
+                <p>YOUR FAN COINS</p>
+                <div class="coins">
+                  <div class="coin-icon">FC</div>
+                  <h2 id="fancoin-balance">100</h2>
+                </div>
+                <div class="buttons">
+                  <button type="button" onclick="window.location.href='prediction.html'" class="green-btn">Earn Coins</button>
+                  <button type="button" onclick="toggleAllTransactions()" class="dark-btn">Coin History</button>
+                </div>
+              </div>
+              <div class="wallet-image">
+                <img src="assets/fancoin/Fanconnact_Stadium_Wallet.png">
+              </div>
+            </div>
+
+            <!-- EARN -->
+            <h3 class="earn-heading">Ways To Earn Fan Coins</h3>
+            <div class="earn-grid">
+              <div class="card">
+                <i class="fa-regular fa-circle-question"></i>
+                <h4>Daily Quiz</h4>
+                <p>Answer daily quiz</p>
+                <span>+100 Coins</span>
+              </div>
+              <div class="card">
+                <i class="fa-solid fa-trophy"></i>
+                <h4>Match Prediction</h4>
+                <p>Predict matches</p>
+                <span>+250 Coins</span>
+              </div>
+              <div class="card">
+                <i class="fa-solid fa-users"></i>
+                <h4>Community Activity</h4>
+                <p>Stay active</p>
+                <span>+50 Coins</span>
+              </div>
+              <div class="card">
+                <i class="fa-solid fa-shield"></i>
+                <h4>Fan War</h4>
+                <p>Participate in battles</p>
+                <span>+500 Coins</span>
+              </div>
+            </div>
+
+            <!-- LEVEL -->
+            <div class="level-card">
+              <div>
+                <h2>&#x1F947; Gold Fan</h2>
+                <p>Keep going! Next level is Diamond Fan</p>
+                <div class="progress">
+                  <div class="progress-fill" style="width:75%;"></div>
+                </div>
+                <small>750 / 1000 XP</small>
+              </div>
+              <div>
+                <h4>LEVEL BENEFITS</h4>
+                <div class="benefit-list">
+                  <div>&#x2B50; Exclusive Content</div>
+                  <div>&#x1F3AB; Early Access</div>
+                  <div>&#x1F6E1; Special Badges</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- FAN LEVELS -->
+            <div class="fan-levels">
+              <div class="fan-card">
+                <div class="level-icon bronze">&#x1F6E1;</div>
+                <h4>Bronze Fan</h4>
+                <p>0 - 500</p>
+              </div>
+              <div class="fan-card">
+                <div class="level-icon silver">&#x1F6E1;</div>
+                <h4>Silver Fan</h4>
+                <p>500 - 2000</p>
+              </div>
+              <div class="fan-card active">
+                <div class="level-icon gold">&#x1F3C6;</div>
+                <h4>Gold Fan</h4>
+                <p>2000 - 5000</p>
+              </div>
+              <div class="fan-card">
+                <div class="level-icon diamond">&#x1F48E;</div>
+                <h4>Diamond Fan</h4>
+                <p>5000+</p>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- SIDEBAR - TRANSACTIONS -->
+          <div class="sidebar-panel">
+            <h3>
+              <span>RECENT TRANSACTIONS</span>
+              <span id="tx-count">5 of 40</span>
+            </h3>
+            <div id="tx-list-sidebar"></div>
+            <div style="text-align:center;margin-top:16px;">
+              <button id="view-all-tx-btn" onclick="toggleAllTransactions()" class="view-btn">VIEW ALL TRANSACTIONS (40)</button>
+            </div>
+          </div>
+
+        </div>
+
+        <script>
+          // Real balance + transactions for the logged-in user (default 100 coins).
+          // Falls back to a single "Welcome Bonus" entry if no history exists.
+          let TX_DATA = [];
+          (async function loadFanCoin() {
+            let balance = 100;
+            try {
+              if (window.__FB__ && window.__FB__.db) {
+                const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+                let uid = null;
+                if (window.currentUserProfile && window.currentUserProfile.uid) uid = window.currentUserProfile.uid;
+                else if (window.__FB__.auth && window.__FB__.auth.currentUser) uid = window.__FB__.auth.currentUser.uid;
+                if (uid) {
+                  const snap = await getDoc(doc(window.__FB__.db, "users", uid));
+                  if (snap.exists()) {
+                    const d = snap.data();
+                    const c = parseInt(d.coins, 10);
+                    balance = isNaN(c) ? 100 : c;
+                    if (Array.isArray(d.coinHistory)) {
+                      TX_DATA = d.coinHistory.map(function(t) {
+                        const amt = parseInt(t.amount, 10) || 0;
+                        return { label: t.label || "Coin Adjustment", amount: (amt >= 0 ? "+" : "") + amt, type: amt >= 0 ? "plus" : "minus", date: t.date || "" };
+                      });
+                    }
+                  }
+                }
+              }
+            } catch (e) { console.warn("[fancoin] balance load failed:", e.message); }
+            if (!TX_DATA.length) {
+              TX_DATA = [{ label: "Welcome Bonus", amount: "+100", type: "plus", date: new Date().toISOString().slice(0, 10) }];
+            }
+            const balEl = document.getElementById("fancoin-balance");
+            if (balEl) balEl.textContent = balance.toLocaleString();
+            renderTX(txShowAll);
+          })();
+
+          function renderTxItem(t) {
+            return '<div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.07);font-size:13px;">' +
+              '<div><div style="font-weight:500;">' + t.label + '</div><div style="font-size:11px;color:#9ba7bd;margin-top:2px;">' + t.date + '</div></div>' +
+              '<span style="color:' + (t.type==='plus'?'#2EF06B':'#ff5c5c') + ';font-weight:700;white-space:nowrap;">' + t.amount + '</span>' +
+              '</div>';
+          }
+
+          let txShowAll = false;
+
+          function renderTX(showAll) {
+            const list = document.getElementById("tx-list-sidebar");
+            const count = document.getElementById("tx-count");
+            const btn = document.getElementById("view-all-tx-btn");
+            const visible = showAll ? TX_DATA.length : 5;
+            list.style.maxHeight = showAll ? "420px" : "280px";
+            list.innerHTML = TX_DATA.slice(0, visible).map(renderTxItem).join("");
+            count.textContent = visible + " of " + TX_DATA.length;
+            btn.textContent = showAll ? "SHOW LESS" : "VIEW ALL TRANSACTIONS (" + TX_DATA.length + ")";
+          }
+
+          function toggleAllTransactions() {
+            txShowAll = !txShowAll;
+            renderTX(txShowAll);
+          }
+
+          renderTX(false);
+        </script>
+
+        </div>
+      </div>
+    </main>
+    <script type="module" src="js/script.js"></script>
+    <script src="js/theme.js"></script>
+  <script src="js/notif-ws.js"></script></body>
+</html>
