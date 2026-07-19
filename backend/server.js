@@ -1,5 +1,18 @@
+const {
+
+    startCleanup
+
+} = require("./presence/cleanupManager");
+
+const presenceRoutes =
+require("./routes/presence.routes");
+
 const express = require("express");
 const cors = require("cors");
+const helmet = require("helmet");
+const compression = require("compression");
+const rateLimit = require("express-rate-limit");
+const dotenv = require("dotenv");
 const path = require("path");
 const fs = require("fs");
 const http = require("http");
@@ -10,11 +23,102 @@ const rankingsSync = require("./rankings-sync");
 const { createChatServer } = require("./chat-server");
 const { createNotificationServer, pushNotification } = require("./notif-server");
 
-const app = express();
-app.use(cors());
-app.use(express.json());
 
-const PORT = process.env.PORT || 3001;
+const matchRoutes = require("./routes/matches.routes");
+
+const seriesRoutes = require("./routes/series.routes");
+
+const teamRoutes=require("./routes/teams.routes");
+const playerRoutes =
+require("./routes/players.routes");
+const venueRoutes =
+require("./routes/venues.routes");
+
+const rankingRoutes =
+require("./routes/rankings.routes");
+
+const newsRoutes =
+require("./routes/news.routes");
+const photoRoutes =
+require("./routes/photos.routes");
+
+const matchCenterRoutes =
+require("./routes/matchcenter.routes");
+
+const auctionRoutes =
+require("./routes/auction.routes");
+
+const scheduleRoutes =
+require("./routes/schedule.routes");
+
+const archiveRoutes =
+require("./routes/archive.routes");
+
+const browseRoutes =
+require("./routes/browse.routes");
+
+const statsRoutes =
+require("./routes/stats.routes");
+
+
+
+dotenv.config();
+const PORT = process.env.PORT || 5000;
+
+const app = express();
+
+const limiter = rateLimit({
+    windowMs: 60 * 1000,
+    max: 300
+});
+
+
+
+app.use(cors());
+app.use(helmet());
+app.use(compression());
+app.use(express.json());
+app.use(limiter);
+
+
+
+app.use("/api/matches", matchRoutes);
+
+app.use("/api/series", seriesRoutes);
+
+app.use("/api/teams",teamRoutes);
+
+app.use("/api/players",playerRoutes);
+
+app.use("/api/venues", venueRoutes);
+
+app.use("/api/rankings", rankingRoutes);
+
+app.use("/api/news",newsRoutes);
+
+app.use("/api/photos", photoRoutes);
+
+app.use("/api/mcenter",matchCenterRoutes);
+
+app.use("/api/auction", auctionRoutes);
+
+app.use("/api/schedule", scheduleRoutes);
+
+app.use("/api/archive", archiveRoutes);
+
+app.use("/api/browse", browseRoutes);
+
+app.use("/api/stats", statsRoutes);
+
+app.use(
+
+"/api/presence",
+
+presenceRoutes
+
+);
+
+
 const DATA_DIR = path.join(__dirname, "..", "data");
 const PLAYER_RANKINGS_PATH = path.join(DATA_DIR, "player-rankings.json");
 const TEAM_RANKINGS_PATH = path.join(DATA_DIR, "team-rankings.json");
@@ -4072,6 +4176,8 @@ server.listen(PORT, () => {
   console.log(`  GET /api/sync/status`);
   console.log(`  POST /api/sync/trigger`);
   console.log(`  GET /api/sync/last-updated`);
+
+  startCleanup();
 
   // Initial sync in background
   rankingsSync.startAutoSync();

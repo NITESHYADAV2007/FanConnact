@@ -14,6 +14,7 @@ import {
     signOut,
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { getStorage } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+
 import {
     getFirestore,
     doc,
@@ -23,6 +24,20 @@ import {
     query,
     where,
     getDocs,
+
+    /* NEW ADDITIONS */
+
+    updateDoc,
+    deleteDoc,
+    addDoc,
+    orderBy,
+    limit,
+    onSnapshot,
+    increment,
+    runTransaction,
+    serverTimestamp,
+    writeBatch
+
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -63,19 +78,155 @@ const handleSocialLogin = async(provider) => {
         const userSnap = await getDoc(userRef);
 
         if (!userSnap.exists()) {
-            // New Google user — store their basic info in sessionStorage and
-            // send them to the "complete profile" page to fill in the rest
-            // (username, mobile, DOB, gender, sports, avatar, frame). Email is
-            // already known + verified by Google, so it is NOT asked for.
-            sessionStorage.setItem("googleSignup", JSON.stringify({
+            const email = user.email;
+            const username = email.split("@")[0] + Math.floor(Math.random() * 1000);
+            await setDoc(userRef, {
+
+                // ========= BASIC =========
+
                 uid: user.uid,
-                email: user.email,
-                fullName: user.displayName || "",
+
+                fullName: user.displayName || email.split("@")[0],
+
+                username,
+
+                email,
+
+                mobile: "",
+
+                dob: "",
+
+                gender: "",
+
                 photoURL: user.photoURL || "",
-            }));
-            window.location.href = "complete-profile.html";
+
+                frame: "default",
+
+                badge: "",
+
+                role: "user",
+
+                emailVerified: true,
+
+                provider: user.providerData[0]?.providerId || "google",
+
+                // ========= GAMIFICATION =========
+
+                level: 0,
+
+                xp: 0,
+
+                coins: 0,
+
+                totalPredictions: 0,
+
+                correctPredictions: 0,
+
+                wrongPredictions: 0,
+
+                currentStreak: 0,
+
+                bestStreak: 0,
+
+                accuracy: 0,
+
+                predictionRank: 0,
+
+                rewardPoints: 0,
+
+                totalXPEarned: 0,
+
+                totalCoinsEarned: 0,
+
+                lastPredictionAt: null,
+
+                lastRewardAt: null,
+
+                // ========= SPORTS =========
+
+                selectedSports: ["cricket"],
+
+                favoriteTeam: "",
+
+                favoritePlayer: "",
+
+                favoriteLeague: "",
+
+                // ========= SETTINGS =========
+
+                theme: "dark",
+
+                themeMode: "system",
+
+                language: "English",
+
+                timezone: "Asia/Kolkata",
+
+                compactMode: false,
+
+                reduceAnimation: false,
+
+                largeText: false,
+
+                notifications: {
+
+                    liveMatch: true,
+
+                    predictionResult: true,
+
+                    breakingNews: true,
+
+                    chat: true,
+
+                    missions: true,
+
+                    leaderboard: true,
+
+                    promotions: false
+
+                },
+
+                // ========= MISSIONS =========
+
+                welcomeBonusClaimed: false,
+
+                dailyMissionCompleted: 0,
+
+                weeklyMissionCompleted: 0,
+
+                dailyMissionRewardClaimed: false,
+
+                weeklyMissionRewardClaimed: false,
+
+                // ========= ACCOUNT =========
+
+                isPremium: false,
+
+                premiumExpiry: null,
+
+                isBanned: false,
+
+                banReason: "",
+
+                accountStatus: "ACTIVE",
+
+                // ========= TIMESTAMPS =========
+
+                createdAt: new Date().toISOString(),
+
+                lastLogin: new Date().toISOString(),
+
+                updatedAt: new Date().toISOString()
+
+            });
+            await setDoc(doc(db, "usernames", username), { uid: user.uid });
+
+             window.location.href = "complete-profile.html";
             return;
         }
+
+           
+        
 
         window.location.href = "dashboard.html";
     } catch (error) {
@@ -303,21 +454,146 @@ signupForm?.addEventListener("submit", async(e) => {
         });
 
         // 5. Store user data, reserve mobile and username in Firestore
-        await setDoc(doc(db, "users", userCredential.user.uid), {
+         await setDoc(doc(db, "users", userCredential.user.uid), {
+
+            // ========= BASIC =========
+
+            uid: userCredential.user.uid,
+
             fullName,
+
             username: finalUsername,
+
             email,
+
             mobile,
+
             dob: dobISO,
+
             gender,
+
+            photoURL,
+
             frame: selectedFrame,
-            favoriteSports,
-            coins: 100,
-            level: 1,
-            xp: 0,
-            photoURL: photoURL,
+
+            badge: "",
+
+            role: "user",
+
             emailVerified: true,
+
+            provider: "email",
+
+            // ========= GAMIFICATION =========
+
+            level: 0,
+
+            xp: 0,
+
+            coins: 0,
+
+            totalPredictions: 0,
+
+            correctPredictions: 0,
+
+            wrongPredictions: 0,
+
+            currentStreak: 0,
+
+            bestStreak: 0,
+
+            accuracy: 0,
+
+            predictionRank: 0,
+
+            rewardPoints: 0,
+
+            totalXPEarned: 0,
+
+            totalCoinsEarned: 0,
+
+            lastPredictionAt: null,
+
+            lastRewardAt: null,
+
+            // ========= SPORTS =========
+
+            selectedSports: favoriteSports.length
+                ? favoriteSports
+                : ["cricket"],
+
+            favoriteTeam: "",
+
+            favoritePlayer: "",
+
+            favoriteLeague: "",
+
+            // ========= SETTINGS =========
+
+            theme: "dark",
+
+            themeMode: "system",
+
+            language: "English",
+
+            timezone: "Asia/Kolkata",
+
+            compactMode: false,
+
+            reduceAnimation: false,
+
+            largeText: false,
+
+            notifications: {
+
+                liveMatch: true,
+
+                predictionResult: true,
+
+                breakingNews: true,
+
+                chat: true,
+
+                missions: true,
+
+                leaderboard: true,
+
+                promotions: false
+
+            },
+
+            // ========= MISSIONS =========
+
+            welcomeBonusClaimed: false,
+
+            dailyMissionCompleted: 0,
+
+            weeklyMissionCompleted: 0,
+
+            dailyMissionRewardClaimed: false,
+
+            weeklyMissionRewardClaimed: false,
+
+            // ========= ACCOUNT =========
+
+            isPremium: false,
+
+            premiumExpiry: null,
+
+            isBanned: false,
+
+            banReason: "",
+
+            accountStatus: "ACTIVE",
+
+            // ========= TIMESTAMPS =========
+
             createdAt: new Date().toISOString(),
+
+            lastLogin: new Date().toISOString(),
+
+            updatedAt: new Date().toISOString()
+
         });
 
         await setDoc(mobileRef, { uid: userCredential.user.uid });
