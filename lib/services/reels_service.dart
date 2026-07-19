@@ -43,10 +43,13 @@ class ReelItem {
 class ReelsService {
   // How long client-side results stay valid before we allow a backend call.
   static const Duration cacheTtl = Duration(minutes: 15);
+  static const int pageSize = 20;
 
-  // sport key -> cached payload + timestamp
+  // sport key -> accumulated payload + timestamp
   static final Map<String, List<ReelItem>> _cache = {};
   static final Map<String, DateTime> _cacheTime = {};
+  static final Map<String, int> _loadedPages = {};
+  static final Map<String, bool> _hasMore = {};
   // sport key -> in-flight future (so concurrent calls share ONE request)
   static final Map<String, Future<List<ReelItem>>> _inflight = {};
 
@@ -54,6 +57,8 @@ class ReelsService {
   static void invalidate({String sport = 'all'}) {
     _cache.remove(sport);
     _cacheTime.remove(sport);
+    _loadedPages.remove(sport);
+    _hasMore.remove(sport);
     _inflight.remove(sport);
   }
 
@@ -64,32 +69,51 @@ class ReelsService {
         DateTime.now().difference(t) < cacheTtl;
   }
 
-  static Future<List<ReelItem>> fetchReels({String sport = 'all'}) async {
-    // 1) Return cached data immediately if still fresh.
-    if (_fresh(sport)) return _cache[sport]!;
+  static bool hasMore(String sport) => _hasMore[sport] ?? true;
 
-    // 2) If a request for this sport is already running, reuse it.
-    if (_inflight.containsKey(sport)) return _inflight[sport]!;
+  // Fetch the next page of reels and append it to the cache.
+  // Returns the full accumulated list. [reset] starts from page 0.
+  static Future<List<ReelItem>> fetchReels({
+    String sport = 'all',
+    bool reset = false,
+  }) async {
+    if (reset) {
+      _cache[sport] = [];
+      _loadedPages[sport] = 0;
+      _hasMore[sport] = true;
+      _cacheTime[sport] = DateTime.now();
+    }
+    if (_fresh(sport) && !(_hasMore[sport] ?? false)) return _cache[sport] ?? [];
 
-    // 3) Otherwise start ONE request and share it via _inflight.
-    final future = _doFetch(sport);
-    _inflight[sport] = future;
+    final page = _loadedPages[sport] ?? 0;
+    final reqKey = '$sport#$page';
+    if (_inflight.containsKey(reqKey)) return _inflight[reqKey]!;
+
+    final future = _doFetch(sport, page);
+    _inflight[reqKey] = future;
     try {
       return await future;
     } finally {
-      _inflight.remove(sport);
+      _inflight.remove(reqKey);
     }
   }
 
-  static Future<List<ReelItem>> _doFetch(String sport) async {
+  static Future<List<ReelItem>> _doFetch(String sport, int page) async {
     try {
       final uri = Uri.parse('$apiBaseUrl/api/reels').replace(
-        queryParameters: {'sport': sport},
+        queryParameters: {
+          'sport': sport,
+          'page': page.toString(),
+          'pageSize': pageSize.toString(),
+        },
       );
       final res = await http.get(uri).timeout(const Duration(seconds: 10));
       if (res.statusCode == 200) {
         final json = jsonDecode(res.body) as Map<String, dynamic>;
         final reels = (json['reels'] as List?) ?? [];
+        _hasMore[sport] = json['hasMore'] as bool? ?? false;
+        _loadedPages[sport] = page + 1;
+        _cacheTime[sport] = DateTime.now();
         if (reels.isNotEmpty) {
           final parsed = reels.map<ReelItem>((r) {
             final map = r as Map<String, dynamic>;
@@ -109,17 +133,26 @@ class ReelsService {
               username: user != null ? (user['username'] ?? '').toString() : null,
             );
           }).toList();
-          // Cache the successful result.
-          _cache[sport] = parsed;
-          _cacheTime[sport] = DateTime.now();
-          return parsed;
+          final existing = _cache[sport] ?? [];
+          final seen = <String>{for (final r in existing) r.code};
+          for (final r in parsed) {
+            if (!seen.contains(r.code)) {
+              existing.add(r);
+              seen.add(r.code);
+            }
+          }
+          _cache[sport] = existing;
+          return existing;
         }
       }
     } catch (e) {
       debugPrint('ReelsService: failed ($e)');
     }
     // On error/empty: if we have stale cache, serve it instead of empty.
-    if (_cache.containsKey(sport)) return _cache[sport]!;
+    if (_cache.containsKey(sport) && _cache[sport]!.isNotEmpty) {
+      _hasMore[sport] = false;
+      return _cache[sport]!;
+    }
     return [];
   }
 }

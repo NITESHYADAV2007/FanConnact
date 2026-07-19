@@ -1,6 +1,7 @@
-// Fetches real sports news from the backend (/api/news) powered by newsdata.io.
-// Sports-only, filterable by sport + language. Falls back to the static `news`
-// list in data.dart if the backend is unreachable.
+// Fetches real sports news from the backend (/api/news).
+// Sports-only, filterable by sport + language, with endless pagination
+// (RSS + cricket-line + newsdata.io merged server-side). Falls back to the
+// static `news` list in data.dart if the backend is unreachable.
 
 import 'dart:convert';
 import 'dart:async';
@@ -12,10 +13,13 @@ import '../data.dart';
 class NewsService {
   // How long client-side results stay valid before we allow a backend call.
   static const Duration cacheTtl = Duration(minutes: 10);
+  static const int pageSize = 20;
 
-  // cache key ("$sport|$language") -> payload + timestamp
+  // cache key ("$sport|$language") -> accumulated items + timestamp
   static final Map<String, List<NewsItem>> _cache = {};
   static final Map<String, DateTime> _cacheTime = {};
+  static final Map<String, int> _loadedPages = {};
+  static final Map<String, bool> _hasMore = {};
   // in-flight futures keyed by cache key (concurrent calls share ONE request)
   static final Map<String, Future<List<NewsItem>>> _inflight = {};
 
@@ -24,6 +28,8 @@ class NewsService {
     final key = '$sport|$language';
     _cache.remove(key);
     _cacheTime.remove(key);
+    _loadedPages.remove(key);
+    _hasMore.remove(key);
     _inflight.remove(key);
   }
 
@@ -34,39 +40,59 @@ class NewsService {
         DateTime.now().difference(t) < cacheTtl;
   }
 
-  // Fetch sports news. [sport] is an app sport key ('all' shows every sport).
-  // [language] is an ISO code like 'en', 'hi', 'es'.
+  static bool hasMore(String sport, String language) =>
+      _hasMore['$sport|$language'] ?? true;
+
+  // Fetch the next page of sports news and append it to the cache.
+  // Returns the full accumulated list. [reset] starts from page 0.
   static Future<List<NewsItem>> fetchNews({
     String sport = 'all',
     String language = 'en',
+    bool reset = false,
   }) async {
     final key = '$sport|$language';
-    // 1) Return cached data immediately if still fresh.
-    if (_fresh(key)) return _cache[key]!;
-    // 2) If a request for this key is already running, reuse it.
-    if (_inflight.containsKey(key)) return _inflight[key]!;
+    if (reset) {
+      _cache[key] = [];
+      _loadedPages[key] = 0;
+      _hasMore[key] = true;
+      _cacheTime[key] = DateTime.now();
+    }
+    // If fresh and fully loaded, return immediately.
+    if (_fresh(key) && !(_hasMore[key] ?? false)) return _cache[key] ?? [];
 
-    // 3) Otherwise start ONE request and share it via _inflight.
-    final future = _doFetch(sport, language, key);
-    _inflight[key] = future;
+    final page = _loadedPages[key] ?? 0;
+    final reqKey = '$key#$page';
+    if (_inflight.containsKey(reqKey)) return _inflight[reqKey]!;
+
+    final future = _doFetch(sport, language, key, page);
+    _inflight[reqKey] = future;
     try {
       return await future;
     } finally {
-      _inflight.remove(key);
+      _inflight.remove(reqKey);
     }
   }
 
   static Future<List<NewsItem>> _doFetch(
-      String sport, String language, String key) async {
+      String sport, String language, String key, int page) async {
     try {
       final uri = Uri.parse('$apiBaseUrl/api/news').replace(
-        queryParameters: {'sport': sport, 'language': language},
+        queryParameters: {
+          'sport': sport,
+          'language': language,
+          'page': page.toString(),
+          'pageSize': pageSize.toString(),
+        },
       );
-      final res = await http.get(uri).timeout(const Duration(seconds: 9));
+      final res = await http.get(uri).timeout(const Duration(seconds: 12));
 
       if (res.statusCode == 200) {
         final json = jsonDecode(res.body) as Map<String, dynamic>;
         final articles = (json['articles'] as List?) ?? [];
+        final more = json['hasMore'] as bool? ?? false;
+        _hasMore[key] = more;
+        _loadedPages[key] = page + 1;
+        _cacheTime[key] = DateTime.now();
         if (articles.isNotEmpty) {
           final parsed = articles.map<NewsItem>((a) {
             final map = a as Map<String, dynamic>;
@@ -84,18 +110,32 @@ class NewsService {
               link: (map['link'] ?? '').toString(),
             );
           }).toList();
-          // Cache the successful result.
-          _cache[key] = parsed;
-          _cacheTime[key] = DateTime.now();
-          return parsed;
+          final existing = _cache[key] ?? [];
+          // De-dupe by title+link.
+          final seen = <String>{
+            for (final n in existing) '${n.title}|${n.link}'
+          };
+          for (final n in parsed) {
+            final k = '${n.title}|${n.link}';
+            if (!seen.contains(k)) {
+              existing.add(n);
+              seen.add(k);
+            }
+          }
+          _cache[key] = existing;
+          return existing;
         }
       }
     } catch (e) {
-      debugPrint('NewsService: falling back to static news ($e)');
+      debugPrint('NewsService: error ($e)');
     }
     // On error/empty: if we have stale cache, serve it instead of static.
-    if (_cache.containsKey(key)) return _cache[key]!;
-    return news; // static fallback
+    if (_cache.containsKey(key) && _cache[key]!.isNotEmpty) {
+      _hasMore[key] = false;
+      return _cache[key]!;
+    }
+    if (page == 0) return news; // static fallback only on first load
+    return _cache[key] ?? [];
   }
 
   static String _detectSport(Map<String, dynamic> map) {

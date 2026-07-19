@@ -28,6 +28,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   String? _langOverride; // quick language preview from the top bar
+  String _feedSport = 'all'; // sport filter for the news/reels feed
 
   List<MatchItem> _matches = [];
   List<NewsItem> _news = news;
@@ -35,6 +36,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _loadingMatches = true;
   bool _loadingNews = true;
   bool _loadingReels = true;
+  bool _loadingMore = false;
 
   // Real-time score updates: poll the backend every 20s.
   static const Duration _pollInterval = Duration(seconds: 20);
@@ -73,11 +75,11 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _loadAll() async {
     // Pull-to-refresh: bypass the client cache so we fetch fresh data.
     LiveMatchService.invalidate(sport: 'all');
-    NewsService.invalidate(sport: 'all', language: _langOverride ?? widget.locale.languageCode);
-    ReelsService.invalidate(sport: 'all');
+    NewsService.invalidate(sport: _feedSport, language: _langOverride ?? widget.locale.languageCode);
+    ReelsService.invalidate(sport: _feedSport);
     _loadMatches();
-    _loadNews();
-    _loadReels();
+    _loadNews(reset: true);
+    _loadReels(reset: true);
   }
 
   Future<void> _loadMatches() async {
@@ -91,11 +93,12 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Future<void> _loadNews() async {
-    setState(() => _loadingNews = true);
+  Future<void> _loadNews({bool reset = false}) async {
+    if (reset) setState(() => _loadingNews = true);
     final fetched = await NewsService.fetchNews(
-      sport: 'all',
+      sport: _feedSport,
       language: _langOverride ?? widget.locale.languageCode,
+      reset: reset,
     );
     if (mounted) {
       setState(() {
@@ -105,15 +108,36 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Future<void> _loadReels() async {
-    setState(() => _loadingReels = true);
-    final fetched = await ReelsService.fetchReels(sport: 'all');
+  Future<void> _loadReels({bool reset = false}) async {
+    if (reset) setState(() => _loadingReels = true);
+    final fetched = await ReelsService.fetchReels(sport: _feedSport, reset: reset);
     if (mounted) {
       setState(() {
         _reels = fetched;
         _loadingReels = false;
       });
     }
+  }
+
+  // Load the next page of the feed (endless scroll).
+  Future<void> _loadMore() async {
+    if (_loadingMore) return;
+    if (!NewsService.hasMore(_feedSport, _langOverride ?? widget.locale.languageCode) &&
+        !ReelsService.hasMore(_feedSport)) {
+      return;
+    }
+    setState(() => _loadingMore = true);
+    await Future.wait([
+      _loadNews(),
+      _loadReels(),
+    ]);
+    if (mounted) setState(() => _loadingMore = false);
+  }
+
+  void _onFeedSportChanged(String sport) {
+    setState(() => _feedSport = sport);
+    _loadNews(reset: true);
+    _loadReels(reset: true);
   }
 
   // Live matches section shown at the top of Home with real-time scores.
@@ -203,7 +227,52 @@ class _HomeScreenState extends State<HomeScreen> {
         items.add(NewsPostCard(item: _news[i]));
       }
     }
+    // Loading-more spinner at the end of the endless feed.
+    if (_loadingMore) {
+      items.add(const Padding(
+        padding: EdgeInsets.symmetric(vertical: 24),
+        child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+      ));
+    }
     return items;
+  }
+
+  // Horizontal sport filter chips for the news/reels feed.
+  Widget _buildFeedFilter(String Function(String) t) {
+    const chips = [
+      ('all', 'All'),
+      ('cricket', '🏏 Cricket'),
+      ('football', '⚽ Football'),
+      ('basketball', '🏀 NBA'),
+      ('tennis', '🎾 Tennis'),
+      ('hockey', '🏑 Hockey'),
+      ('baseball', '⚾ MLB'),
+    ];
+    return SizedBox(
+      height: 40,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        itemCount: chips.length,
+        separatorBuilder: (_, _) => const SizedBox(width: 8),
+        itemBuilder: (_, i) {
+          final (key, label) = chips[i];
+          final selected = _feedSport == key;
+          return ChoiceChip(
+            label: Text(label),
+            selected: selected,
+            onSelected: (_) => _onFeedSportChanged(key),
+            selectedColor: AppColors.brandBlue,
+            labelStyle: TextStyle(
+              color: selected ? Colors.white : null,
+              fontWeight: FontWeight.w700,
+              fontSize: 13,
+            ),
+            visualDensity: VisualDensity.compact,
+          );
+        },
+      ),
+    );
   }
 
   @override
@@ -216,12 +285,20 @@ class _HomeScreenState extends State<HomeScreen> {
         automaticallyImplyLeading: false,
         title: Row(
           children: [
-            Image.asset(
-              'assets/fancoin/fanconnactlogo.png',
-              height: 30,
-              width: 30,
+            Container(
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                color: widget.isDark ? Colors.white : AppColors.brandBlue,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Image.asset(
+                'assets/fancoin/fanconnactlogo.png',
+                height: 26,
+                width: 26,
+                color: widget.isDark ? null : Colors.white,
+              ),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: 10),
             Text(
               t('appName'),
               style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 20),
@@ -296,7 +373,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   // ── Live matches (real-time scores) at the top ──
                   _buildLiveMatches(t),
                   const Divider(height: 1),
-                  // ── Mixed reels + news feed ──
+                  // ── Sport filter for the feed ──
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8, bottom: 4),
+                    child: _buildFeedFilter(t),
+                  ),
+                  // ── Mixed reels + news feed (endless) ──
                   if (_loadingReels && _reels.isEmpty && _loadingNews && _news.isEmpty)
                     const Padding(
                       padding: EdgeInsets.all(40),
@@ -312,6 +394,20 @@ class _HomeScreenState extends State<HomeScreen> {
                     )
                   else
                     ..._mixedFeed,
+                  // Endless scroll trigger.
+                  if (_mixedFeed.isNotEmpty)
+                    SizedBox(
+                      height: 1,
+                      child: NotificationListener<ScrollEndNotification>(
+                        onNotification: (n) {
+                          if (n.metrics.pixels >= n.metrics.maxScrollExtent - 200) {
+                            _loadMore();
+                          }
+                          return false;
+                        },
+                        child: const SizedBox.shrink(),
+                      ),
+                    ),
                   const SizedBox(height: 16),
                 ],
               ),

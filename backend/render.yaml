@@ -25,3 +25,5 @@ services:
         sync: false
       - key: IG_KEY
         sync: false
+      - key: CRICKET_KEY
+        sync: false

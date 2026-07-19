@@ -3711,6 +3711,27 @@ app.get("/api/rankings/:sport/:category?", async (req, res) => {
   });
 });
 
+// ─── CRICKET PLAYER RANKINGS (cricket-live-line1, real images) ───────────────
+// category: 1=batting, 2=bowling, 3=all-rounders (men). Returns top players.
+app.get("/api/cricket-rankings/:category?", async (req, res) => {
+  try {
+    const cat = parseInt(req.params.category || "1", 10);
+    const data = await fetchCricketLine(`/playerRanking/${cat}`);
+    if (!data) return res.status(502).json({ error: "cricket rankings unavailable" });
+    const players = data.map((p, i) => ({
+      rank: i + 1,
+      name: p.name || "Unknown",
+      country: p.country || "",
+      rating: p.rating || 0,
+      image: p.img || null,
+      playerId: p.player_id || null,
+    }));
+    res.json({ source: "cricket-live-line1", category: cat, count: players.length, players });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
 // ─── TEAM LEADERBOARD DATA ───────────────────────────────────────────────────
 
 function loadTeamRankings() {
@@ -4175,6 +4196,8 @@ const NEWS_SPORT_QUERY = {
 // Simple in-memory cache (per query) to respect the newsdata daily quota.
 const newsCache = new Map(); // key -> { ts, data }
 const NEWS_CACHE_TTL = 10 * 60 * 1000; // 10 minutes
+// Merged article list cache (RSS + cricketline + newsdata) for pagination.
+const newsListCache = new Map(); // key -> articles[]
 
 async function fetchSportsNews({ sport = "all", language = "en" }) {
   const q = NEWS_SPORT_QUERY[sport] || "sports";
@@ -4232,19 +4255,211 @@ async function fetchSportsNews({ sport = "all", language = "en" }) {
   }
 }
 
+// Cricket news from cricket-live-line1 (free, no daily-quota cost).
+async function fetchCricketLineNews() {
+  const data = await fetchCricketLine("/news");
+  if (!data) return [];
+  return data.map((a) => ({
+    id: a.news_id ? String(a.news_id) : "",
+    title: a.title || "",
+    description: (a.description || "").toString().slice(0, 220),
+    image: a.image || null,
+    video: null,
+    source: "Cricket Live Line",
+    sourceIcon: null,
+    link: "",
+    pubDate: a.pub_date ? new Date(a.pub_date.replace(/\|/g, "")).toISOString() : "",
+    category: "cricket",
+    language: "en",
+    aiTag: null,
+    aiSummary: null,
+  }));
+}
+
+// ─── FREE RSS NEWS (no API key, no quota) ───────────────────────────────────
+// These feeds are fetched directly and merged into /api/news so the feed is
+// effectively unlimited at ZERO daily-quota cost.
+const { load: cheerioLoad } = (() => {
+  try { return require("cheerio"); } catch (e) { return { load: null }; }
+})();
+
+// sport key -> array of RSS feed URLs (free, no key required)
+const RSS_FEEDS = {
+  all: [
+    "https://www.espn.com/espn/rss/news",
+    "https://www.cricbuzz.com/rss/livecricket.xml",
+    "https://www.theguardian.com/sport/rss",
+    "https://feeds.bbci.co.uk/sport/rss.xml",
+  ],
+  cricket: [
+    "https://www.cricbuzz.com/rss/livecricket.xml",
+    "https://www.espncricinfo.com/rss/content/story/feeds/9.rss",
+  ],
+  football: [
+    "https://www.espn.com/espn/rss/soccer/news",
+    "https://feeds.bbci.co.uk/sport/football/rss.xml",
+  ],
+  basketball: ["https://www.espn.com/espn/rss/nba/news"],
+  tennis: ["https://www.espn.com/espn/rss/tennis/news"],
+  baseball: ["https://www.espn.com/espn/rss/mlb/news"],
+  hockey: ["https://www.espn.com/espn/rss/nhl/news"],
+};
+
+// In-memory cache for parsed RSS (refreshed every 15 min).
+const rssCache = new Map(); // sport -> { ts, items }
+const RSS_CACHE_TTL = 15 * 60 * 1000;
+
+function _decodeEntities(s) {
+  if (!s) return "";
+  return s
+    .replace(/<!\[CDATA\[(.*?)\]\]>/gs, "$1")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&apos;/g, "'")
+    .replace(/&#x([0-9a-fA-F]+);/g, (_, h) => String.fromCodePoint(parseInt(h, 16)))
+    .replace(/&#(\d+);/g, (_, d) => String.fromCodePoint(parseInt(d, 10)))
+    .trim();
+}
+
+function _stripHtml(s) {
+  if (!s) return "";
+  return _decodeEntities(s.replace(/<[^>]+>/g, " ")).replace(/\s+/g, " ").trim();
+}
+
+function _extractImageFromRss(item, $) {
+  // Try media:content / media:thumbnail / enclosure first.
+  let img =
+    item.find("media\\:content, media\\:thumbnail").attr("url") ||
+    item.find("enclosure").attr("url") ||
+    item.find("image").text().trim();
+  if (!img && item.find("description, content\\:encoded").length) {
+    const html = item.find("description, content\\:encoded").first().text();
+    const m = html.match(/<img[^>]+src=["']([^"']+)["']/i);
+    if (m) img = m[1];
+  }
+  return img || null;
+}
+
+async function fetchRssNews(sport = "all") {
+  const feeds = RSS_FEEDS[sport] || RSS_FEEDS.all;
+  const cached = rssCache.get(sport);
+  if (cached && Date.now() - cached.ts < RSS_CACHE_TTL) return cached.items;
+
+  const items = [];
+  await Promise.all(
+    feeds.map(async (url) => {
+      const ctrl = new AbortController();
+      const t = setTimeout(() => ctrl.abort(), 9000);
+      try {
+        const r = await fetch(url, {
+          signal: ctrl.signal,
+          headers: { "User-Agent": "Mozilla/5.0 FanconnactNews/1.0" },
+        });
+        if (!r.ok) return;
+        const xml = await r.text();
+        if (!cheerioLoad) return;
+        const $ = cheerioLoad(xml, { xmlMode: true });
+        $("item").each((_, el) => {
+          const item = $(el);
+          const title = _decodeEntities(item.find("title").text());
+          if (!title) return;
+          const descRaw = item.find("description").text();
+          const link = item.find("link").text().trim();
+          const pub = item.find("pubDate").text().trim();
+          const source = item.find("source").text().trim() ||
+            (url.includes("cricbuzz") ? "Cricbuzz" :
+              url.includes("espn") ? "ESPN" :
+              url.includes("bbc") ? "BBC Sport" :
+              url.includes("guardian") ? "The Guardian" : "RSS");
+          items.push({
+            id: link || title,
+            title,
+            description: _stripHtml(descRaw).slice(0, 220),
+            image: _extractImageFromRss(item, $),
+            video: null,
+            source,
+            sourceIcon: null,
+            link,
+            pubDate: pub ? new Date(pub).toISOString() : "",
+            category: sport === "all" ? "sports" : sport,
+            language: "en",
+            aiTag: null,
+            aiSummary: null,
+            free: true, // marks zero-quota content
+          });
+        });
+      } catch (e) {
+        console.error("RSS fetch failed", url, e.message);
+      } finally {
+        clearTimeout(t);
+      }
+    })
+  );
+
+  // Sort newest first, cache, return.
+  items.sort((a, b) => new Date(b.pubDate || 0) - new Date(a.pubDate || 0));
+  rssCache.set(sport, { ts: Date.now(), items });
+  return items;
+}
+
 app.get("/api/news", async (req, res) => {
   try {
     const sport = (req.query.sport || "all").toString();
     const language = (req.query.language || "en").toString();
+    const page = Math.max(0, parseInt(req.query.page || "0", 10) || 0);
+    const pageSize = Math.min(50, parseInt(req.query.pageSize || "20", 10) || 20);
     const cacheKey = `${sport}|${language}`;
-    // Serve the persisted DB immediately if it's still fresh (free, no quota).
-    const last = getLast("news", cacheKey);
-    if (last && dbAge("news", cacheKey) < NEWS_CACHE_TTL) {
-      return res.json({ ...last, cached: true });
+
+    // Build the full merged article list (cached per sport+language).
+    const listKey = `news|${cacheKey}`;
+    let articles = newsListCache.get(listKey);
+    if (!articles) {
+      articles = [];
+      // 1) Free RSS news (no quota) — the bulk of an "unlimited" feed.
+      const rss = await fetchRssNews(sport);
+      if (rss.length) articles.push(...rss);
+      // 2) Free cricket-line news (no quota).
+      if (sport === "cricket" || sport === "all") {
+        const clNews = await fetchCricketLineNews();
+        if (clNews.length) articles.push(...clNews);
+      }
+      // 3) newsdata.io (uses daily quota) — only if not exhausted.
+      if (!quotaExhausted()) {
+        const data = await fetchSportsNews({ sport, language });
+        if (data && data.articles) articles.push(...data.articles);
+      }
+      // De-dupe by id/link, keep newest first.
+      const seen = new Set();
+      articles = articles.filter((a) => {
+        const k = a.id || a.link || a.title;
+        if (seen.has(k)) return false;
+        seen.add(k);
+        return true;
+      });
+      articles.sort((a, b) => new Date(b.pubDate || 0) - new Date(a.pubDate || 0));
+      newsListCache.set(listKey, articles);
+      // Persist for offline/quota-exhausted serving.
+      storeLast("news", cacheKey, { source: "mixed", count: articles.length, articles });
     }
-    const data = await fetchSportsNews({ sport, language });
-    if (!data) return res.status(502).json({ error: "news provider unavailable" });
-    res.json(data);
+
+    // Paginate for an endless feed.
+    const start = page * pageSize;
+    const slice = articles.slice(start, start + pageSize);
+    const hasMore = start + pageSize < articles.length;
+    res.json({
+      source: "rss+cricketline+newsdata",
+      sport,
+      language,
+      page,
+      pageSize,
+      total: articles.length,
+      hasMore,
+      count: slice.length,
+      articles: slice,
+    });
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
@@ -4348,11 +4563,16 @@ async function fetchReelsForAccount(username) {
 app.get("/api/reels", async (req, res) => {
   try {
     const sport = (req.query.sport || "all").toString();
+    const page = Math.max(0, parseInt(req.query.page || "0", 10) || 0);
+    const pageSize = Math.min(50, parseInt(req.query.pageSize || "20", 10) || 20);
     const accounts = REEL_SPORT_ACCOUNTS[sport] || REEL_SPORT_ACCOUNTS.all;
     // Serve the persisted DB immediately if it's still fresh (free, no quota).
     const last = getLast("reels", sport);
     if (last && dbAge("reels", sport) < REEL_CACHE_TTL) {
-      return res.json({ ...last, cached: true });
+      const all = last.reels || [];
+      const start = page * pageSize;
+      const slice = all.slice(start, start + pageSize);
+      return res.json({ ...last, cached: true, page, pageSize, total: all.length, hasMore: start + pageSize < all.length, reels: slice });
     }
     let reels = [];
     if (!quotaExhausted()) {
@@ -4371,9 +4591,11 @@ app.get("/api/reels", async (req, res) => {
       // Serve last stored reels when quota exhausted or fetch failed.
       if (last && Array.isArray(last.reels)) reels = last.reels;
     } else {
-      storeLast("reels", sport, { source: "instagram", sport, count: reels.length, reels: reels.slice(0, 20) });
+      storeLast("reels", sport, { source: "instagram", sport, count: reels.length, reels });
     }
-    res.json({ source: "instagram", sport, count: reels.length, reels: reels.slice(0, 20), cached: reels.length === 0 && !!last });
+    const start = page * pageSize;
+    const slice = reels.slice(start, start + pageSize);
+    res.json({ source: "instagram", sport, count: slice.length, page, pageSize, total: reels.length, hasMore: start + pageSize < reels.length, reels: slice, cached: reels.length === 0 && !!last });
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
@@ -4381,6 +4603,27 @@ app.get("/api/reels", async (req, res) => {
 
 // ─── REAL MATCHES (allsportsapi2 for most sports, cricbuzz for cricket) ─────
 const ALLSPORTS_KEY = process.env.ALLSPORTS_KEY || "d7a1cb1419msh72f3fc2b2903617p18a3abjsn3b24b2735a2d";
+// New cricket API (cricket-live-line1) — live scores, news, rankings, team logos.
+const CRICKET_KEY = process.env.CRICKET_KEY || "31ee070a54mshd6171aacb85b007p1443ccjsnf7c39463a592";
+const CRICKET_HOST = "cricket-live-line1.p.rapidapi.com";
+async function fetchCricketLine(path, key = CRICKET_KEY) {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), 9000);
+  try {
+    const r = await fetch(`https://${CRICKET_HOST}${path}`, {
+      signal: ctrl.signal,
+      headers: { "x-rapidapi-key": key, "x-rapidapi-host": CRICKET_HOST, "Content-Type": "application/json" },
+    });
+    if (!r.ok) throw new Error("cricketline " + r.status);
+    const j = await r.json();
+    return j.status ? j.data : null;
+  } catch (e) {
+    console.error("CricketLine fetch failed", path, e.message);
+    return null;
+  } finally {
+    clearTimeout(t);
+  }
+}
 // allsportsapi2 live endpoints that actually return data.
 const ALLSPORTS_LIVE = {
   basketball: "/api/basketball/matches/live",
@@ -4453,26 +4696,36 @@ async function fetchAllsportsLive(sportSlug) {
   }
 }
 
-// Cricbuzz live matches (returns match list; scorecard fetched on demand).
+// Cricbuzz matches (live + upcoming + recent). Live-only returned 0 when no
+// match is currently in play, so we merge all three to always show cricket.
 async function fetchCricbuzzLive() {
   const ctrl = new AbortController();
   const t = setTimeout(() => ctrl.abort(), 9000);
   try {
-    const r = await fetch("https://cricbuzz-cricket.p.rapidapi.com/matches/v1/live", {
-      signal: ctrl.signal,
-      headers: {
-        "X-Rapidapi-Key": ALLSPORTS_KEY,
-        "X-Rapidapi-Host": "cricbuzz-cricket.p.rapidapi.com",
-      },
-    });
-    if (!r.ok) throw new Error("cricbuzz " + r.status);
-    const j = await r.json();
+    const sections = await Promise.all([
+      fetch("https://cricbuzz-cricket.p.rapidapi.com/matches/v1/live", {
+        signal: ctrl.signal,
+        headers: { "X-Rapidapi-Key": ALLSPORTS_KEY, "X-Rapidapi-Host": "cricbuzz-cricket.p.rapidapi.com" },
+      }),
+      fetch("https://cricbuzz-cricket.p.rapidapi.com/matches/v1/upcoming", {
+        signal: ctrl.signal,
+        headers: { "X-Rapidapi-Key": ALLSPORTS_KEY, "X-Rapidapi-Host": "cricbuzz-cricket.p.rapidapi.com" },
+      }),
+      fetch("https://cricbuzz-cricket.p.rapidapi.com/matches/v1/recent", {
+        signal: ctrl.signal,
+        headers: { "X-Rapidapi-Key": ALLSPORTS_KEY, "X-Rapidapi-Host": "cricbuzz-cricket.p.rapidapi.com" },
+      }).catch(() => null),
+    ]);
     const out = [];
-    (j.typeMatches || []).forEach((tm) => {
-      (tm.seriesMatches || []).forEach((sm) => {
-        const wrap = sm.seriesAdWrapper;
-        if (!wrap) return;
-        (wrap.matches || []).forEach((m) => {
+    for (const r of sections) {
+      if (!r || !r.ok) continue;
+      const j = await r.json().catch(() => null);
+      if (!j) continue;
+      (j.typeMatches || []).forEach((tm) => {
+        (tm.seriesMatches || []).forEach((sm) => {
+          const wrap = sm.seriesAdWrapper;
+          if (!wrap) return;
+          (wrap.matches || []).forEach((m) => {
           const info = m.matchInfo || {};
           const team1 = info.team1 || {};
           const team2 = info.team2 || {};
@@ -4511,9 +4764,10 @@ async function fetchCricbuzzLive() {
             awayScore: scoreStr("team2Score"),
             venue: (info.venueInfo && info.venueInfo.ground) || "",
           });
+          });
         });
       });
-    });
+    }
     return out;
   } catch (e) {
     console.error("Cricbuzz fetch failed", e.message);
@@ -4521,6 +4775,48 @@ async function fetchCricbuzzLive() {
   } finally {
     clearTimeout(t);
   }
+}
+
+// Cricket-live-line1 matches (live + upcoming + recent) with real team logos.
+async function fetchCricketLineMatches() {
+  const [live, up, rec] = await Promise.all([
+    fetchCricketLine("/liveMatches"),
+    fetchCricketLine("/upcomingMatches"),
+    fetchCricketLine("/recentMatches"),
+  ]);
+  const out = [];
+  const push = (list, forceStatus) => {
+    (list || []).forEach((m) => {
+      const status = forceStatus || (m.match_status || "").toString().toUpperCase();
+      let statusStr = "UPCOMING";
+      if (status.includes("LIVE")) statusStr = "LIVE";
+      else if (status.includes("COMPLETE") || status.includes("RESULT")) statusStr = "COMPLETED";
+      const aScore = m.team_a_scores || "";
+      const bScore = m.team_b_scores || "";
+      out.push({
+        sport: "cricket",
+        league: m.series || "",
+        status: statusStr,
+        state: m.match_status || "",
+        time: `${m.match_date || ""} ${m.match_time || ""}`.trim(),
+        date: "",
+        matchId: m.match_id || "",
+        homeName: m.team_a || "TBD",
+        homeAbbr: m.team_a_short || "",
+        homeLogo: m.team_a_img || "",
+        awayName: m.team_b || "TBD",
+        awayAbbr: m.team_b_short || "",
+        awayLogo: m.team_b_img || "",
+        homeScore: aScore,
+        awayScore: bScore,
+        venue: m.venue || "",
+      });
+    });
+  };
+  push(live, "LIVE");
+  push(up, "UPCOMING");
+  push(rec, "COMPLETED");
+  return out;
 }
 
 app.get("/api/live-matches", async (req, res) => {
@@ -4539,15 +4835,16 @@ app.get("/api/live-matches", async (req, res) => {
     let results = [];
     if (!quotaExhausted()) {
       if (sport === "all") {
-        const [bb, bs, af, cb] = await Promise.all([
+        const [bb, bs, af, cb, cl] = await Promise.all([
           fetchAllsportsLive("basketball"),
           fetchAllsportsLive("baseball"),
           fetchAllsportsLive("american-football"),
           fetchCricbuzzLive(),
+          fetchCricketLineMatches(),
         ]);
-        results = [...bb, ...bs, ...af, ...cb];
+        results = [...bb, ...bs, ...af, ...cb, ...cl];
       } else if (sport === "cricket") {
-        results = await fetchCricbuzzLive();
+        results = await fetchCricketLineMatches();
       } else {
         const slug = APP_TO_ALLSPORTS[sport];
         results = slug ? await fetchAllsportsLive(slug) : [];
