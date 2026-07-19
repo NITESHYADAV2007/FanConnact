@@ -3,6 +3,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'theme.dart';
 import 'l10n.dart';
 import 'screens/home_screen.dart';
+import 'screens/sports_screen.dart';
 import 'screens/settings_screen.dart';
 
 void main() {
@@ -91,8 +92,15 @@ class _MainShellState extends State<MainShell> {
       body: IndexedStack(
         index: _index,
         children: [
-          HomeScreen(locale: widget.locale),
-          const Center(child: Text('Sports hub - coming soon')),
+          HomeScreen(
+            locale: widget.locale,
+            isDark: widget.isDark,
+            onToggleTheme: widget.onToggleTheme,
+          ),
+          SportsScreen(
+            locale: widget.locale,
+            isDark: widget.isDark,
+          ),
           const Center(child: Text('Leaderboard - coming soon')),
           SettingsScreen(),
         ],

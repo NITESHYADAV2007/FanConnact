@@ -19,6 +19,62 @@ const DATA_DIR = path.join(__dirname, "..", "data");
 const PLAYER_RANKINGS_PATH = path.join(DATA_DIR, "player-rankings.json");
 const TEAM_RANKINGS_PATH = path.join(DATA_DIR, "team-rankings.json");
 
+// ─── PERSISTENT JSON "DATABASE" ──────────────────────────────────────────────
+// Last successful fetches are written to disk so the app keeps working even
+// after a restart or when the upstream APIs hit their daily quota (100 req/day).
+const DB_DIR = path.join(__dirname, "db");
+if (!fs.existsSync(DB_DIR)) fs.mkdirSync(DB_DIR, { recursive: true });
+const DB_FILE = path.join(DB_DIR, "cache.json");
+
+function loadDb() {
+  try {
+    return JSON.parse(fs.readFileSync(DB_FILE, "utf8"));
+  } catch {
+    return { news: {}, reels: {}, matches: {} };
+  }
+}
+function saveDb(db) {
+  try {
+    fs.writeFileSync(DB_FILE, JSON.stringify(db));
+  } catch (e) {
+    console.error("DB save failed", e.message);
+  }
+}
+let _db = loadDb();
+
+// Daily quota guard: count upstream API calls per UTC day. If we exceed the
+// limit, we stop calling live APIs and serve the last stored data instead.
+const DAILY_API_LIMIT = parseInt(process.env.DAILY_API_LIMIT || "100", 10);
+function todayKey() {
+  return new Date().toISOString().slice(0, 10); // YYYY-MM-DD (UTC)
+}
+function apiUsage() {
+  const k = todayKey();
+  if (!_db.usage || _db.usage.date !== k) _db.usage = { date: k, count: 0 };
+  return _db.usage;
+}
+function bumpUsage(n = 1) {
+  const u = apiUsage();
+  u.count += n;
+  saveDb(_db);
+}
+function quotaExhausted() {
+  return apiUsage().count >= DAILY_API_LIMIT;
+}
+function storeLast(kind, key, data) {
+  _db[kind] = _db[kind] || {};
+  _db[kind][key] = { ts: Date.now(), data };
+  saveDb(_db);
+}
+function getLast(kind, key) {
+  return _db[kind] && _db[kind][key] ? _db[kind][key].data : null;
+}
+// Age (ms) of the last stored payload, or Infinity if none.
+function dbAge(kind, key) {
+  const e = _db[kind] && _db[kind][key];
+  return e ? Date.now() - e.ts : Infinity;
+}
+
 const server = http.createServer(app);
 const chatWSS = createChatServer(server);
 const notifWSS = createNotificationServer(server);
@@ -3854,6 +3910,46 @@ cron.schedule('0 */6 * * *', () => {
   rankingsSync.fullSync().then(refreshData).catch(() => {});
 });
 
+// ─── AUTO-REFRESH NEWS / REELS / MATCHES ────────────────────────────────────
+// Keeps the persistent DB fresh without waiting for a user to open the app.
+// Quota-safe: each data type is refreshed at most a few times per day.
+//   - matches: every 30 min (live scores change fast)  -> ~48 calls/day max
+//   - news:    every 2 hours                            -> ~12 calls/day max
+//   - reels:   every 3 hours                            -> ~8 calls/day max
+// Total worst case ~68 calls/day, well under the 100/day limit. Each refresh
+// is skipped if the stored data is still fresh or the daily quota is exhausted.
+async function autoRefreshMatches() {
+  if (quotaExhausted()) return;
+  if (dbAge("matches", "all") < MATCH_CACHE_TTL) return; // already fresh
+  try {
+    const [bb, bs, af, cb] = await Promise.all([
+      fetchAllsportsLive("basketball"),
+      fetchAllsportsLive("baseball"),
+      fetchAllsportsLive("american-football"),
+      fetchCricbuzzLive(),
+    ]);
+    const results = [...bb, ...bs, ...af, ...cb];
+    if (results.length) storeLast("matches", "all", { source: "realtime", count: results.length, matches: results });
+  } catch (e) { /* ignore */ }
+}
+async function autoRefreshNews() {
+  if (quotaExhausted()) return;
+  if (dbAge("news", "all|en") < NEWS_CACHE_TTL) return;
+  try { await fetchSportsNews({ sport: "all", language: "en" }); } catch (e) { /* ignore */ }
+}
+async function autoRefreshReels() {
+  if (quotaExhausted()) return;
+  if (dbAge("reels", "all") < REEL_CACHE_TTL) return;
+  try {
+    const accounts = REEL_SPORT_ACCOUNTS.all;
+    await Promise.all(accounts.map((u) => fetchReelsForAccount(u)));
+  } catch (e) { /* ignore */ }
+}
+// Matches every 30 min, news every 2h, reels every 3h.
+cron.schedule('*/30 * * * *', () => autoRefreshMatches().catch(() => {}));
+cron.schedule('0 */2 * * *', () => autoRefreshNews().catch(() => {}));
+cron.schedule('0 */3 * * *', () => autoRefreshReels().catch(() => {}));
+
 // ─── MATCH NEWS (cricbuzz proxy with fallback) ──────────────────────────────
 const NEWS_MATCH_ID = '129458'; // eng-vs-ind-1st-odi-2026
 async function fetchCricbuzzNews() {
@@ -4058,9 +4154,423 @@ app.get('/api/matches', async (req, res) => {
   }
 });
 
+// ─── SPORTS NEWS (newsdata.io, sports-only, sport + language filter) ─────────
+// Keys are overridable via env vars (set these on Render) but fall back to the
+// bundled defaults so the server runs out-of-the-box locally and on deploy.
+const NEWSDATA_KEY = process.env.NEWSDATA_KEY || "pub_184098b793e746988f90ccfb09fd9972";
+// Map app sport keys -> newsdata category / query keyword.
+const NEWS_SPORT_QUERY = {
+  all: "sports",
+  cricket: "cricket",
+  football: "football",
+  basketball: "basketball",
+  tennis: "tennis",
+  hockey: "hockey",
+  baseball: "baseball",
+  volleyball: "volleyball",
+  kabaddi: "kabaddi",
+  esports: "esports",
+  tabletennis: "table tennis",
+};
+// Simple in-memory cache (per query) to respect the newsdata daily quota.
+const newsCache = new Map(); // key -> { ts, data }
+const NEWS_CACHE_TTL = 10 * 60 * 1000; // 10 minutes
+
+async function fetchSportsNews({ sport = "all", language = "en" }) {
+  const q = NEWS_SPORT_QUERY[sport] || "sports";
+  const cacheKey = `${sport}|${language}`;
+  const cached = newsCache.get(cacheKey);
+  if (cached && Date.now() - cached.ts < NEWS_CACHE_TTL) return cached.data;
+
+  // Respect the daily upstream quota: if exhausted, serve last stored data.
+  if (quotaExhausted()) {
+    const last = getLast("news", cacheKey);
+    if (last) return { ...last, cached: true, quotaExhausted: true };
+    return null;
+  }
+
+  const params = new URLSearchParams({
+    apikey: NEWSDATA_KEY,
+    q,
+    language,
+    category: "sports",
+    size: "10",
+  });
+  const url = `https://newsdata.io/api/1/latest?${params.toString()}`;
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), 9000);
+  try {
+    const r = await fetch(url, { signal: ctrl.signal });
+    if (!r.ok) throw new Error("newsdata " + r.status);
+    const j = await r.json();
+    const results = (j.results || []).map((a) => ({
+      id: a.article_id || "",
+      title: a.title || "",
+      description: a.description || "",
+      image: a.image_url || null,
+      video: a.video_url || null,
+      source: a.source_name || a.source_id || "News",
+      sourceIcon: a.source_icon || null,
+      link: a.link || "",
+      pubDate: a.pubDate || "",
+      category: Array.isArray(a.category) ? a.category.join(", ") : (a.category || ""),
+      language: a.language || language,
+      aiTag: a.ai_tag || null,
+      aiSummary: a.ai_summary || null,
+    }));
+    const data = { source: "newsdata.io", count: results.length, articles: results };
+    newsCache.set(cacheKey, { ts: Date.now(), data });
+    storeLast("news", cacheKey, data); // persist for offline/quota-exhausted serving
+    bumpUsage(1);
+    return data;
+  } catch (e) {
+    console.error("News fetch failed", e.message);
+    const last = getLast("news", cacheKey);
+    return last ? { ...last, cached: true } : null;
+  } finally {
+    clearTimeout(t);
+  }
+}
+
+app.get("/api/news", async (req, res) => {
+  try {
+    const sport = (req.query.sport || "all").toString();
+    const language = (req.query.language || "en").toString();
+    const cacheKey = `${sport}|${language}`;
+    // Serve the persisted DB immediately if it's still fresh (free, no quota).
+    const last = getLast("news", cacheKey);
+    if (last && dbAge("news", cacheKey) < NEWS_CACHE_TTL) {
+      return res.json({ ...last, cached: true });
+    }
+    const data = await fetchSportsNews({ sport, language });
+    if (!data) return res.status(502).json({ error: "news provider unavailable" });
+    res.json(data);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// ─── SPORTS REELS (Instagram proxy, sport-filtered) ─────────────────────────
+const IG_KEY = process.env.IG_KEY || "d7a1cb1419msh72f3fc2b2903617p18a3abjsn3b24b2735a2d";
+// Map app sport keys -> Instagram accounts that post sports reels.
+const REEL_SPORT_ACCOUNTS = {
+  all: ["espn", "nba"],
+  cricket: ["icc", "cricketworld"],
+  football: ["fifa", "espn"],
+  basketball: ["nba", "espn"],
+  tennis: ["wimbledon", "espn"],
+  hockey: ["nhl", "espn"],
+  baseball: ["mlb", "espn"],
+  volleyball: ["espn"],
+  kabaddi: ["prokabaddi", "espn"],
+  esports: ["espn"],
+  tabletennis: ["ittf", "espn"],
+};
+const reelCache = new Map();
+const REEL_CACHE_TTL = 15 * 60 * 1000;
+
+function parseIgNode(node) {
+  const captionText =
+    (node.caption && (node.caption.text || node.caption)) || node.accessibility_caption || "";
+  let videoUrl = null;
+  if (node.video_versions && node.video_versions.length) {
+    videoUrl = node.video_versions[0].url;
+  }
+  if (!videoUrl && node.video_dash_manifest) {
+    const m = node.video_dash_manifest.match(/https:\/\/[^<"]+\.mp4/);
+    if (m) videoUrl = m[0];
+  }
+  let imageUrl = null;
+  if (node.image_versions2 && node.image_versions2.candidates && node.image_versions2.candidates.length) {
+    imageUrl = node.image_versions2.candidates[0].url;
+  } else if (node.thumbnail_src) {
+    imageUrl = node.thumbnail_src;
+  }
+  // Carousel: use first child's media
+  if ((!videoUrl && !imageUrl) && node.carousel_media && node.carousel_media.length) {
+    const c = node.carousel_media[0];
+    if (c.video_versions && c.video_versions.length) videoUrl = c.video_versions[0].url;
+    if (!imageUrl && c.image_versions2 && c.image_versions2.candidates && c.image_versions2.candidates.length)
+      imageUrl = c.image_versions2.candidates[0].url;
+  }
+  return {
+    code: node.code || "",
+    type: node.media_type || 1, // 1=image, 2=video/clip, 8=carousel
+    productType: node.product_type || "",
+    caption: captionText,
+    likeCount: node.like_count || 0,
+    commentCount: node.comment_count || 0,
+    viewCount: node.view_count || 0,
+    takenAt: node.taken_at || 0,
+    videoUrl,
+    imageUrl,
+    link: node.link || (node.code ? `https://www.instagram.com/p/${node.code}/` : ""),
+    user: node.user ? { username: node.user.username, avatar: node.user.profile_pic_url } : null,
+  };
+}
+
+async function fetchReelsForAccount(username) {
+  const cacheKey = "ig|" + username;
+  const cached = reelCache.get(cacheKey);
+  if (cached && Date.now() - cached.ts < REEL_CACHE_TTL) return cached.data;
+
+  const body = JSON.stringify({ username, maxId: "" });
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), 9000);
+  try {
+    const r = await fetch("https://instagram120.p.rapidapi.com/api/instagram/posts", {
+      method: "POST",
+      signal: ctrl.signal,
+      headers: {
+        "X-Rapidapi-Key": IG_KEY,
+        "X-Rapidapi-Host": "instagram120.p.rapidapi.com",
+        "Content-Type": "application/json",
+      },
+      body,
+    });
+    if (!r.ok) throw new Error("ig " + r.status);
+    const j = await r.json();
+    const edges = (j.result && j.result.edges) || [];
+    const reels = edges
+      .map((e) => (e.node ? parseIgNode(e.node) : null))
+      .filter((x) => x && (x.videoUrl || x.imageUrl));
+    reelCache.set(cacheKey, { ts: Date.now(), data: reels });
+    bumpUsage(1);
+    return reels;
+  } catch (e) {
+    console.error("Reels fetch failed for", username, e.message);
+    return [];
+  } finally {
+    clearTimeout(t);
+  }
+}
+
+app.get("/api/reels", async (req, res) => {
+  try {
+    const sport = (req.query.sport || "all").toString();
+    const accounts = REEL_SPORT_ACCOUNTS[sport] || REEL_SPORT_ACCOUNTS.all;
+    // Serve the persisted DB immediately if it's still fresh (free, no quota).
+    const last = getLast("reels", sport);
+    if (last && dbAge("reels", sport) < REEL_CACHE_TTL) {
+      return res.json({ ...last, cached: true });
+    }
+    let reels = [];
+    if (!quotaExhausted()) {
+      const lists = await Promise.all(accounts.map((u) => fetchReelsForAccount(u)));
+      reels = lists.flat();
+    }
+    // De-dupe by code, prefer video reels first
+    const seen = new Set();
+    reels = reels.filter((r) => {
+      if (seen.has(r.code)) return false;
+      seen.add(r.code);
+      return true;
+    });
+    reels.sort((a, b) => (b.type === 2 ? 1 : 0) - (a.type === 2 ? 1 : 0) || b.takenAt - a.takenAt);
+    if (reels.length === 0) {
+      // Serve last stored reels when quota exhausted or fetch failed.
+      if (last && Array.isArray(last.reels)) reels = last.reels;
+    } else {
+      storeLast("reels", sport, { source: "instagram", sport, count: reels.length, reels: reels.slice(0, 20) });
+    }
+    res.json({ source: "instagram", sport, count: reels.length, reels: reels.slice(0, 20), cached: reels.length === 0 && !!last });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// ─── REAL MATCHES (allsportsapi2 for most sports, cricbuzz for cricket) ─────
+const ALLSPORTS_KEY = process.env.ALLSPORTS_KEY || "d7a1cb1419msh72f3fc2b2903617p18a3abjsn3b24b2735a2d";
+// allsportsapi2 live endpoints that actually return data.
+const ALLSPORTS_LIVE = {
+  basketball: "/api/basketball/matches/live",
+  baseball: "/api/baseball/matches/live",
+  "american-football": "/api/american-football/matches/live",
+  cricket: "/api/cricket/matches/live",
+};
+// Map app sport key -> allsportsapi2 sport slug.
+const APP_TO_ALLSPORTS = {
+  basketball: "basketball",
+  baseball: "baseball",
+  football: "american-football", // NFL as proxy for football live
+  cricket: "cricket",
+};
+const matchCache = new Map();
+const MATCH_CACHE_TTL = 60 * 1000; // 1 minute (live scores change fast)
+
+function mapAllsportsEvent(ev, sportKey) {
+  const status = ev.status || {};
+  const state = status.type || status.code || "";
+  let statusStr = "UPCOMING";
+  if (state === "inprogress" || state === "live" || state === "halftime") statusStr = "LIVE";
+  else if (state === "finished" || state === "post") statusStr = "COMPLETED";
+  const home = ev.homeTeam || {};
+  const away = ev.awayTeam || {};
+  const homeScore = ev.homeScore && ev.homeScore.current != null ? ev.homeScore.current : (ev.homeScore != null ? ev.homeScore : "");
+  const awayScore = ev.awayScore && ev.awayScore.current != null ? ev.awayScore.current : (ev.awayScore != null ? ev.awayScore : "");
+  const startTs = ev.startTimestamp ? ev.startTimestamp * 1000 : null;
+  return {
+    sport: sportKey,
+    league: (ev.tournament && ev.tournament.name) || "",
+    status: statusStr,
+    state,
+    time: status.description || (startTs ? new Date(startTs).toLocaleString() : ""),
+    date: startTs ? new Date(startTs).toISOString() : "",
+    homeName: home.name || "TBD",
+    homeAbbr: home.shortName || home.nameCode || "",
+    homeLogo: "",
+    awayName: away.name || "TBD",
+    awayAbbr: away.shortName || away.nameCode || "",
+    awayLogo: "",
+    homeScore: homeScore != null ? String(homeScore) : "",
+    awayScore: awayScore != null ? String(awayScore) : "",
+    venue: "",
+  };
+}
+
+async function fetchAllsportsLive(sportSlug) {
+  const path = ALLSPORTS_LIVE[sportSlug];
+  if (!path) return [];
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), 9000);
+  try {
+    const r = await fetch(`https://allsportsapi2.p.rapidapi.com${path}`, {
+      signal: ctrl.signal,
+      headers: {
+        "X-Rapidapi-Key": ALLSPORTS_KEY,
+        "X-Rapidapi-Host": "allsportsapi2.p.rapidapi.com",
+      },
+    });
+    if (!r.ok) throw new Error("allsports " + r.status);
+    const j = await r.json();
+    const events = j.events || [];
+    return events.map((ev) => mapAllsportsEvent(ev, sportSlug));
+  } catch (e) {
+    console.error("Allsports fetch failed", sportSlug, e.message);
+    return [];
+  } finally {
+    clearTimeout(t);
+  }
+}
+
+// Cricbuzz live matches (returns match list; scorecard fetched on demand).
+async function fetchCricbuzzLive() {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), 9000);
+  try {
+    const r = await fetch("https://cricbuzz-cricket.p.rapidapi.com/matches/v1/live", {
+      signal: ctrl.signal,
+      headers: {
+        "X-Rapidapi-Key": ALLSPORTS_KEY,
+        "X-Rapidapi-Host": "cricbuzz-cricket.p.rapidapi.com",
+      },
+    });
+    if (!r.ok) throw new Error("cricbuzz " + r.status);
+    const j = await r.json();
+    const out = [];
+    (j.typeMatches || []).forEach((tm) => {
+      (tm.seriesMatches || []).forEach((sm) => {
+        const wrap = sm.seriesAdWrapper;
+        if (!wrap) return;
+        (wrap.matches || []).forEach((m) => {
+          const info = m.matchInfo || {};
+          const team1 = info.team1 || {};
+          const team2 = info.team2 || {};
+          const state = (info.state || "").toLowerCase();
+          let statusStr = "UPCOMING";
+          if (state.includes("live") || state.includes("in progress")) statusStr = "LIVE";
+          else if (state.includes("complete") || state.includes("finished")) statusStr = "COMPLETED";
+
+          // Extract real cricket scores from matchScore (innings runs/overs).
+          const scoreStr = (side) => {
+            const s = (m.matchScore && m.matchScore[side]) || {};
+            const keys = Object.keys(s).filter((k) => k.startsWith("inngs"));
+            if (!keys.length) return "";
+            // Prefer the latest innings (highest index).
+            keys.sort((a, b) => parseInt(a.replace("inngs", "")) - parseInt(b.replace("inngs", "")));
+            const last = s[keys[keys.length - 1]] || {};
+            if (last.runs == null) return "";
+            return last.overs != null ? `${last.runs}/${last.wickets ?? 0} (${last.overs})` : `${last.runs}/${last.wickets ?? 0}`;
+          };
+
+          out.push({
+            sport: "cricket",
+            league: info.seriesName || "",
+            status: statusStr,
+            state: info.state || "",
+            time: info.status || "",
+            date: info.startDate || "",
+            matchId: info.matchId || "",
+            homeName: team1.teamName || "TBD",
+            homeAbbr: team1.teamSName || "",
+            homeLogo: team1.imageId ? `https://www.cricbuzz.com/thumbnails/${team1.imageId}.png` : "",
+            awayName: team2.teamName || "TBD",
+            awayAbbr: team2.teamSName || "",
+            awayLogo: team2.imageId ? `https://www.cricbuzz.com/thumbnails/${team2.imageId}.png` : "",
+            homeScore: scoreStr("team1Score"),
+            awayScore: scoreStr("team2Score"),
+            venue: (info.venueInfo && info.venueInfo.ground) || "",
+          });
+        });
+      });
+    });
+    return out;
+  } catch (e) {
+    console.error("Cricbuzz fetch failed", e.message);
+    return [];
+  } finally {
+    clearTimeout(t);
+  }
+}
+
+app.get("/api/live-matches", async (req, res) => {
+  try {
+    const sport = (req.query.sport || "all").toString();
+    const cacheKey = "matches|" + sport;
+    const cached = matchCache.get(cacheKey);
+    if (cached && Date.now() - cached.ts < MATCH_CACHE_TTL) return res.json(cached.data);
+
+    // Serve the persisted DB immediately if it's still fresh (free, no quota).
+    const last = getLast("matches", sport);
+    if (last && dbAge("matches", sport) < MATCH_CACHE_TTL) {
+      return res.json({ ...last, cached: true });
+    }
+
+    let results = [];
+    if (!quotaExhausted()) {
+      if (sport === "all") {
+        const [bb, bs, af, cb] = await Promise.all([
+          fetchAllsportsLive("basketball"),
+          fetchAllsportsLive("baseball"),
+          fetchAllsportsLive("american-football"),
+          fetchCricbuzzLive(),
+        ]);
+        results = [...bb, ...bs, ...af, ...cb];
+      } else if (sport === "cricket") {
+        results = await fetchCricbuzzLive();
+      } else {
+        const slug = APP_TO_ALLSPORTS[sport];
+        results = slug ? await fetchAllsportsLive(slug) : [];
+        if (!results.length) results = staticMatchesFor(sport);
+      }
+    }
+    if (results.length === 0) {
+      // Serve last stored matches when quota exhausted or fetch failed.
+      if (last && Array.isArray(last.matches)) results = last.matches;
+    } else {
+      storeLast("matches", sport, { source: "realtime", count: results.length, matches: results });
+    }
+    const data = { source: "realtime", count: results.length, matches: results, cached: results.length > 0 && quotaExhausted() };
+    matchCache.set(cacheKey, { ts: Date.now(), data });
+    res.json(data);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
 // ─── START SERVER ────────────────────────────────────────────────────────────
 
-server.listen(PORT, () => {
+server.listen(PORT, "0.0.0.0", () => {
   console.log(`FanConnact Rankings API running on http://localhost:${PORT}`);
   console.log(`WebSocket chat running on ws://localhost:${PORT}/ws/chat`);
   console.log(`Endpoints:`);
@@ -4072,6 +4582,9 @@ server.listen(PORT, () => {
   console.log(`  GET /api/sync/status`);
   console.log(`  POST /api/sync/trigger`);
   console.log(`  GET /api/sync/last-updated`);
+  console.log(`  GET /api/news?{sport,language}`);
+  console.log(`  GET /api/reels?{sport}`);
+  console.log(`  GET /api/live-matches?{sport}`);
 
   // Initial sync in background
   rankingsSync.startAutoSync();

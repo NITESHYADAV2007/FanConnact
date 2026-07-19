@@ -97,6 +97,8 @@ class NewsItem {
   final String timeAgo;
   final String tag;
   final String? image;
+  final String? description;
+  final String? link;
 
   const NewsItem({
     required this.sport,
@@ -106,6 +108,8 @@ class NewsItem {
     required this.timeAgo,
     required this.tag,
     this.image,
+    this.description,
+    this.link,
   });
 }
 

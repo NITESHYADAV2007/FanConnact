@@ -45,3 +45,6 @@ migrate_working_dir/
 *.ipr
 *.iws
 .idea/
+
+# Local backend error log
+backend/server.err
