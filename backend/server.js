@@ -5207,51 +5207,92 @@ app.get("/api/live-matches/:id", async (req, res) => {
   try {
     const id = req.params.id;
     const sport = (req.query.sport || "cricket").toString();
+    const cacheKey = "detail|" + sport + "|" + id;
+    const cached = matchCache.get(cacheKey);
+    if (cached && Date.now() - cached.ts < MATCH_CACHE_TTL) {
+      return res.json(cached.data);
+    }
+
+    // Prefer the in-memory list cache (what /api/live-matches actually serves)
+    // so the detail matches the row the user tapped, then fall back to the
+    // persisted DB. This avoids hammering the upstream API on every 3s poll.
+    // Check the exact sport key first (e.g. "matches|cricket") before "all",
+    // since "all" may carry a different (generic) copy of the same match.
+    let base = null;
+    const cacheKeys = ["matches|" + sport, "matches|all"];
+    for (const key of cacheKeys) {
+      const c = matchCache.get(key);
+      const found = c && c.data && Array.isArray(c.data.matches)
+        ? c.data.matches.find((x) => String(x.matchId) === String(id))
+        : null;
+      if (found) { base = found; break; }
+    }
+    if (!base) {
+      const last = getLast("matches", sport) || getLast("matches", "all");
+      base = (last && Array.isArray(last.matches))
+        ? last.matches.find((x) => String(x.matchId) === String(id))
+        : null;
+    }
+
     let match = null;
 
     if (sport === "cricket") {
+      // cricket-live-line1 /match/:id often returns generic "Team A"/"Team B"
+      // placeholders, so only merge the fields it actually provides and keep
+      // the real list data for names/scores/logos.
       const detail = await fetchCricketLine("/match/" + id);
       if (detail && detail.data) {
         const d = detail.data;
-        // Find the matching list entry (for live scores) by id.
-        const list = await fetchCricketLineMatches();
-        const base = list.find((x) => String(x.matchId) === String(id)) || {};
         match = {
-          ...mapCricketLineMatch({
-            ...d,
-            match_status: d.match_status,
-            team_a_scores: base.homeScore || d.team_a_scores || "",
-            team_b_scores: base.awayScore || d.team_b_scores || "",
-          }, (d.match_status || "").toString().toUpperCase()),
+          ...(base || {}),
           matchId: id,
-          result: d.result || "",
-          toss: d.toss || "",
-          matchType: d.match_type || "",
-          venue: d.venue || base.venue || "",
-          series: d.series || base.league || "",
-          homeName: d.team_a || base.homeName || "TBD",
-          awayName: d.team_b || base.awayName || "TBD",
-          homeAbbr: d.team_a_short || base.homeAbbr || "",
-          awayAbbr: d.team_b_short || base.awayAbbr || "",
-          homeLogo: d.team_a_img || base.homeLogo || "",
-          awayLogo: d.team_b_img || base.awayLogo || "",
+          result: d.result || (base && base.result) || "",
+          toss: d.toss || (base && base.toss) || "",
+          matchType: d.match_type || (base && base.matchType) || "",
+          venue: d.venue || (base && base.venue) || "",
+          series: d.series || (base && base.league) || (base && base.series) || "",
+          // Prefer the real list entry for names/scores/logos; only use the
+          // detail call when the list entry is missing that field.
+          homeName: (base && base.homeName && base.homeName !== "TBD" && !/team\s*a/i.test(base.homeName))
+            ? base.homeName
+            : (d.team_a && !/team\s*a/i.test(d.team_a) ? d.team_a : (base && base.homeName) || "TBD"),
+          awayName: (base && base.awayName && base.awayName !== "TBD" && !/team\s*b/i.test(base.awayName))
+            ? base.awayName
+            : (d.team_b && !/team\s*b/i.test(d.team_b) ? d.team_b : (base && base.awayName) || "TBD"),
+          homeAbbr: (base && base.homeAbbr) || d.team_a_short || "",
+          awayAbbr: (base && base.awayAbbr) || d.team_b_short || "",
+          homeLogo: (base && base.homeLogo) || d.team_a_img || "",
+          awayLogo: (base && base.awayLogo) || d.team_b_img || "",
+          homeScore: (base && base.homeScore) || d.team_a_scores || "",
+          awayScore: (base && base.awayScore) || d.team_b_scores || "",
         };
       }
       // Fallback: if cricket-live-line1 failed/limited, use cricbuzz hscard.
       if (!match) {
         const cb = await fetchCricbuzzHscard(id);
-        if (cb) match = { ...cb, matchId: id };
+        if (cb) match = { ...(base || {}), ...cb, matchId: id };
+      }
+      // If we still only have the generic placeholder names from the detail
+      // call (cricket-live-line1 returns "Team A"/"Team B" on failure), fall
+      // back to the real list entry we already resolved.
+      if (match && /team\s*a/i.test(match.homeName || "") && /team\s*b/i.test(match.awayName || "")) {
+        match = { ...(base || {}), matchId: id, ...(match.result ? { result: match.result } : {}) };
       }
     }
 
+    // Non-cricket: just use the list entry (ESPN/allsports already real).
+    if (!match && base) match = { ...base, matchId: id };
+
     if (!match) {
-      // Fallback: search the live list for this id.
+      // Last resort: search the live list for this id (costs 3 API calls).
       const list = await fetchCricketLineMatches();
       match = list.find((x) => String(x.matchId) === String(id)) || null;
     }
 
     if (!match) return res.status(404).json({ error: "Match not found" });
-    res.json({ source: "realtime", match });
+    const data = { source: base ? "cached-list" : "realtime", match };
+    matchCache.set(cacheKey, { ts: Date.now(), data });
+    res.json(data);
   } catch (e) {
     res.status(500).json({ error: e.message });
   }

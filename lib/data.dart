@@ -35,6 +35,8 @@ class MatchItem {
   final String teamB;
   final String? logoA;
   final String? logoB;
+  final String? abbrA;
+  final String? abbrB;
   final String? scoreA;
   final String? scoreB;
   final String status; // "LIVE", "UPCOMING", "COMPLETED"
@@ -53,6 +55,8 @@ class MatchItem {
     required this.teamB,
     this.logoA,
     this.logoB,
+    this.abbrA,
+    this.abbrB,
     this.scoreA,
     this.scoreB,
     required this.status,
@@ -92,6 +96,12 @@ class MatchItem {
           : null,
       logoB: (m['awayLogo'] ?? '').toString().isNotEmpty
           ? m['awayLogo'].toString()
+          : null,
+      abbrA: (m['homeAbbr'] ?? '').toString().isNotEmpty
+          ? m['homeAbbr'].toString()
+          : null,
+      abbrB: (m['awayAbbr'] ?? '').toString().isNotEmpty
+          ? m['awayAbbr'].toString()
           : null,
       scoreA: (m['homeScore'] ?? '').toString().isNotEmpty
           ? m['homeScore'].toString()
