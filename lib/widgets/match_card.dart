@@ -1,11 +1,20 @@
 import 'package:flutter/material.dart';
 import '../data.dart';
 import '../theme.dart';
+import '../widgets/glow_wrapper.dart';
+import '../screens/match_detail_screen.dart';
 
 class MatchCard extends StatelessWidget {
   final MatchItem match;
+  final VoidCallback? onTap;
+  final void Function(String teamName, String? logo)? onTeamTap;
 
-  const MatchCard({super.key, required this.match});
+  const MatchCard({
+    super.key,
+    required this.match,
+    this.onTap,
+    this.onTeamTap,
+  });
 
   Color _statusColor() {
     switch (match.status) {
@@ -21,20 +30,30 @@ class MatchCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: isDark ? AppColors.darkCard : Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.grey.withOpacity(0.15)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(isDark ? 0.3 : 0.06),
-            blurRadius: 8,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
+    return InkWell(
+      onTap: onTap ??
+          () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => MatchDetailScreen(match: match),
+              ),
+            );
+          },
+      borderRadius: BorderRadius.circular(14),
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: isDark ? AppColors.darkCard : Colors.white,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: Colors.grey.withOpacity(0.15)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(isDark ? 0.3 : 0.06),
+              blurRadius: 8,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
       child: Column(
         children: [
           // Top accent bar
@@ -109,6 +128,9 @@ class MatchCard extends StatelessWidget {
                         name: match.teamA,
                         logo: match.logoA,
                         score: match.scoreA,
+                        onTap: onTeamTap != null
+                            ? () => onTeamTap!(match.teamA, match.logoA)
+                            : null,
                       ),
                     ),
                     const Text('  vs  ',
@@ -120,6 +142,9 @@ class MatchCard extends StatelessWidget {
                         logo: match.logoB,
                         score: match.scoreB,
                         alignRight: true,
+                        onTap: onTeamTap != null
+                            ? () => onTeamTap!(match.teamB, match.logoB)
+                            : null,
                       ),
                     ),
                   ],
@@ -140,6 +165,7 @@ class MatchCard extends StatelessWidget {
           ),
         ],
       ),
+      ),
     );
   }
 }
@@ -149,25 +175,33 @@ class _TeamRow extends StatelessWidget {
   final String? logo;
   final String? score;
   final bool alignRight;
+  final VoidCallback? onTap;
 
   const _TeamRow({
     required this.name,
     this.logo,
     this.score,
     this.alignRight = false,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     final logoWidget = logo != null && logo!.isNotEmpty
-        ? ClipRRect(
+        ? GlowWrapper(
+            glowColor: AppColors.brandBlue,
+            glowBlur: 10,
+            glowSpread: 1,
             borderRadius: BorderRadius.circular(8),
-            child: Image.network(
-              logo!,
-              width: 38,
-              height: 38,
-              fit: BoxFit.contain,
-              errorBuilder: (_, _, _) => const Icon(Icons.sports, size: 30),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.network(
+                logo!,
+                width: 38,
+                height: 38,
+                fit: BoxFit.contain,
+                errorBuilder: (_, _, _) => const Icon(Icons.sports, size: 30),
+              ),
             ),
           )
         : const Icon(Icons.sports, size: 30);
@@ -192,10 +226,16 @@ class _TeamRow extends StatelessWidget {
         ),
       ],
     ];
-    return Row(
+    final row = Row(
       mainAxisAlignment:
           alignRight ? MainAxisAlignment.end : MainAxisAlignment.start,
       children: alignRight ? children.reversed.toList() : children,
+    );
+    if (onTap == null) return row;
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: Padding(padding: const EdgeInsets.all(2), child: row),
     );
   }
 }

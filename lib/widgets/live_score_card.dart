@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import '../data.dart';
 import '../theme.dart';
+import '../widgets/glow_wrapper.dart';
 
 // Compact horizontal "scorecard" used in the Home live-scores carousel.
 class LiveScoreCard extends StatelessWidget {
   final MatchItem match;
-  const LiveScoreCard({super.key, required this.match});
+  final VoidCallback? onTap;
+  const LiveScoreCard({super.key, required this.match, this.onTap});
 
   Color _statusColor() {
     switch (match.status) {
@@ -23,12 +25,18 @@ class LiveScoreCard extends StatelessWidget {
       child: Row(
         children: [
           if (logo != null)
-            Image.network(
-              logo,
-              width: 22,
-              height: 22,
-              errorBuilder: (_, __, ___) =>
-                  const Icon(Icons.sports, size: 18),
+            GlowWrapper(
+              glowColor: AppColors.brandBlue,
+              glowBlur: 8,
+              glowSpread: 1,
+              borderRadius: BorderRadius.circular(6),
+              child: Image.network(
+                logo,
+                width: 22,
+                height: 22,
+              errorBuilder: (_, _, _) =>
+                    const Icon(Icons.sports, size: 18),
+              ),
             )
           else
             const Icon(Icons.sports, size: 18),
@@ -62,9 +70,12 @@ class LiveScoreCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final live = match.status == 'LIVE';
-    return Container(
-      width: 200,
-      margin: const EdgeInsets.only(right: 12),
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        width: 200,
+        margin: const EdgeInsets.only(right: 12),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkCard : Colors.white,
@@ -141,6 +152,7 @@ class LiveScoreCard extends StatelessWidget {
             ),
           ),
         ],
+      ),
       ),
     );
   }

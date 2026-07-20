@@ -8,6 +8,8 @@ import '../services/live_match_service.dart';
 import '../widgets/news_post_card.dart';
 import '../widgets/reels_card.dart';
 import '../widgets/live_score_card.dart';
+import '../widgets/glow_wrapper.dart';
+import '../screens/match_detail_screen.dart';
 import '../screens/reels_viewer_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -141,7 +143,11 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   // Live matches section shown at the top of Home with real-time scores.
+  // Home shows ONLY live matches across all sports.
   Widget _buildLiveMatches(String Function(String) t) {
+    final liveMatches = _matches
+        .where((m) => (m.status).toUpperCase() == 'LIVE')
+        .toList();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -159,7 +165,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               const Spacer(),
-              if (_loadingMatches && _matches.isEmpty)
+              if (_loadingMatches && liveMatches.isEmpty)
                 const SizedBox(
                   width: 14,
                   height: 14,
@@ -191,7 +197,16 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 12),
               itemCount: _matches.length,
               separatorBuilder: (_, _) => const SizedBox(width: 4),
-              itemBuilder: (_, i) => LiveScoreCard(match: _matches[i]),
+              itemBuilder: (_, i) => LiveScoreCard(
+                match: _matches[i],
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => MatchDetailScreen(match: _matches[i]),
+                    ),
+                  );
+                },
+              ),
             ),
           ),
         const SizedBox(height: 8),
@@ -285,17 +300,24 @@ class _HomeScreenState extends State<HomeScreen> {
         automaticallyImplyLeading: false,
         title: Row(
           children: [
-            Container(
-              padding: const EdgeInsets.all(4),
-              decoration: BoxDecoration(
-                color: widget.isDark ? Colors.white : AppColors.brandBlue,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Image.asset(
-                'assets/fancoin/fanconnactlogo.png',
-                height: 26,
-                width: 26,
-                color: widget.isDark ? null : Colors.white,
+            GlowWrapper(
+              pulse: true,
+              glowColor: AppColors.brandBlue,
+              glowBlur: 18,
+              glowSpread: 3,
+              borderRadius: BorderRadius.circular(10),
+              child: Container(
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: widget.isDark ? Colors.white : AppColors.brandBlue,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Image.asset(
+                  'assets/fancoin/fanconnactlogo.png',
+                  height: 26,
+                  width: 26,
+                  color: widget.isDark ? null : Colors.white,
+                ),
               ),
             ),
             const SizedBox(width: 10),

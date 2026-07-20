@@ -435,7 +435,106 @@ const SPORTS = {
       { key: "prize", label: "Prize $M", align: "center", hide: "lg" },
     ],
   },
+  rugby: {
+    label: "Rugby",
+    icon: "sports_rugby",
+    title: "World Rugby Rankings",
+    subtitle: "Top ranked rugby players — click any row for full profile",
+    defaultCategory: "points_men",
+    filters: [
+      {
+        group: "stat",
+        label: "Category",
+        options: [
+          { value: "points", label: "Points" },
+          { value: "tries", label: "Tries" },
+          { value: "assists", label: "Assists" },
+        ],
+      },
+      {
+        group: "gender",
+        label: "Gender",
+        options: [
+          { value: "men", label: "Men" },
+          { value: "women", label: "Women" },
+        ],
+      },
+    ],
+    columns: [
+      { key: "name", label: "Player" },
+      { key: "country", label: "Country" },
+      { key: "position", label: "Pos", align: "center", hide: "md" },
+      { key: "points", label: "Pts", align: "center" },
+      { key: "tries", label: "Tries", align: "center", hide: "md" },
+      { key: "assists", label: "Ast", align: "center", hide: "md" },
+      { key: "matches", label: "Mat", align: "center", hide: "sm" },
+      { key: "rating", label: "Rating", align: "center", hide: "lg" },
+    ],
+  },
+  golf: {
+    label: "Golf",
+    icon: "sports_golf",
+    title: "PGA Tour Rankings",
+    subtitle: "Top ranked golfers — click any row for full profile",
+    defaultCategory: "strokes",
+    filters: [
+      {
+        group: "stat",
+        label: "Category",
+        options: [
+          { value: "strokes", label: "Strokes" },
+          { value: "wins", label: "Wins" },
+          { value: "earnings", label: "Earnings" },
+        ],
+      },
+    ],
+    columns: [
+      { key: "name", label: "Player" },
+      { key: "country", label: "Country" },
+      { key: "strokes", label: "Avg", align: "center" },
+      { key: "wins", label: "Wins", align: "center", hide: "md" },
+      { key: "earnings", label: "Prize $M", align: "center", hide: "md" },
+      { key: "rating", label: "Rating", align: "center", hide: "lg" },
+    ],
+  },
+  mma: {
+    label: "MMA",
+    icon: "sports_mma",
+    title: "UFC Rankings",
+    subtitle: "Top ranked MMA fighters — click any row for full profile",
+    defaultCategory: "wins",
+    filters: [
+      {
+        group: "stat",
+        label: "Category",
+        options: [
+          { value: "wins", label: "Wins" },
+          { value: "ko", label: "KO/TKO" },
+          { value: "sub", label: "Submissions" },
+        ],
+      },
+    ],
+    columns: [
+      { key: "name", label: "Player" },
+      { key: "country", label: "Country" },
+      { key: "weight", label: "Weight", align: "center", hide: "md" },
+      { key: "wins", label: "Wins", align: "center" },
+      { key: "ko", label: "KO", align: "center", hide: "md" },
+      { key: "sub", label: "Sub", align: "center", hide: "md" },
+      { key: "rating", label: "Rating", align: "center", hide: "lg" },
+    ],
+  },
 };
+
+// Alias map so app sport keys (kabaddi, esports, tabletennis) resolve to config keys
+const SPORT_ALIASES = {
+  kabaddi: "kabbaddi",
+  esports: "e-sports",
+  tabletennis: "table-tennis",
+};
+function resolveSportKey(key) {
+  return SPORT_ALIASES[key] || key;
+}
 
 // ─── DATA GENERATORS ─────────────────────────────────────────────────────────
 
@@ -2923,6 +3022,90 @@ function makeTableTennisPlayers(category, gender) {
   return players;
 }
 
+// ─── RUGBY PLAYERS (procedural) ─────────────────────────────────────────────
+const RUGBY_NAMES_M = [
+  "Antoine Dupont", "Beauden Barrett", "Maro Itoje", "Siya Kolisi", "Owen Farrell",
+  "Eben Etzebeth", "Tadhg Furlong", "Pieter-Steph du Toit", "Aaron Smith", "Cheslin Kolbe",
+  "Jonathan Sexton", "Brodie Retallick", "Sam Cane", "Faf de Klerk", "Finn Russell",
+  "Tomas Lavanini", "Pablo Matera", "Alun Wyn Jones", "Greig Laidlaw", "Billy Vunipola",
+  "Damian de Allende", "Handre Pollard", "Romain Ntamack", "Hugo Keenan", "Josh van der Flier",
+  "Melvyn Jaminet", "Louis Rees-Zammit", "Duhan van der Merwe", "Makazole Mapimpi", "Willie le Roux",
+];
+const RUGBY_NAMES_W = [
+  "Emily Scarratt", "Kendra Cocksedge", "Portia Woodman", "Safi N'Diaye", "Abbie Ward",
+  "Poppy Cleall", "Marlie Packer", "Zoe Aldcroft", "Jess Breach", "Magali Harvey",
+  "Carla Hohepa", "Lydia Thompson", "Rachael Burford", "Katy Daley-McLean", "Emma Mitchell",
+];
+function makeRugbyPlayers(stat, gender) {
+  const pool = gender === "women" ? RUGBY_NAMES_W : RUGBY_NAMES_M;
+  const countries = ["France", "New Zealand", "England", "South Africa", "Ireland", "Wales", "Argentina", "Australia", "Scotland", "Italy", "Fiji", "Japan"];
+  const players = [];
+  for (let i = 0; i < 100; i++) {
+    const name = pool[i % pool.length];
+    const country = countries[i % countries.length];
+    const points = Math.max(1, Math.round(250 - i * 2 + Math.random() * 20));
+    const tries = Math.round(i < 20 ? 8 + Math.random() * 5 : Math.random() * 6);
+    const assists = Math.round(Math.random() * 10);
+    const matches = Math.round(20 + Math.random() * 60);
+    players.push({ rank: i + 1, name, country, position: i % 2 ? "Back" : "Forward", points, tries, assists, matches, rating: (7 + Math.random() * 2.5).toFixed(1) });
+  }
+  if (stat === "tries") players.sort((a, b) => b.tries - a.tries);
+  else if (stat === "assists") players.sort((a, b) => b.assists - a.assists);
+  else players.sort((a, b) => b.points - a.points);
+  players.forEach((p, i) => (p.rank = i + 1));
+  return players;
+}
+
+// ─── GOLF PLAYERS (procedural) ──────────────────────────────────────────────
+const GOLF_NAMES = [
+  "Scottie Scheffler", "Rory McIlroy", "Jon Rahm", "Bryson DeChambeau", "Xander Schauffele",
+  "Collin Morikawa", "Viktor Hovland", "Ludvig Aberg", "Patrick Cantlay", "Justin Thomas",
+  "Brooks Koepka", "Jordan Spieth", "Tony Finau", "Max Homa", "Wyndham Clark",
+  "Matt Fitzpatrick", "Tommy Fleetwood", "Hideki Matsuyama", "Cameron Smith", "Dustin Johnson",
+];
+function makeGolfPlayers(stat) {
+  const countries = ["USA", "Northern Ireland", "Spain", "USA", "USA", "USA", "Norway", "Sweden", "USA", "USA", "USA", "USA", "USA", "USA", "USA", "England", "England", "Japan", "Australia", "USA"];
+  const players = [];
+  for (let i = 0; i < 100; i++) {
+    const name = GOLF_NAMES[i % GOLF_NAMES.length];
+    const country = countries[i % countries.length];
+    const strokes = (68 + Math.random() * 4).toFixed(2);
+    const wins = Math.round(i < 15 ? 5 + Math.random() * 10 : Math.random() * 4);
+    const earnings = (i < 20 ? 15 - i * 0.5 : Math.random() * 5).toFixed(1);
+    players.push({ rank: i + 1, name, country, strokes: parseFloat(strokes), wins, earnings: parseFloat(earnings), rating: (8 + Math.random() * 1.5).toFixed(1) });
+  }
+  if (stat === "wins") players.sort((a, b) => b.wins - a.wins);
+  else if (stat === "earnings") players.sort((a, b) => b.earnings - a.earnings);
+  else players.sort((a, b) => a.strokes - b.strokes);
+  players.forEach((p, i) => (p.rank = i + 1));
+  return players;
+}
+
+// ─── MMA PLAYERS (procedural) ───────────────────────────────────────────────
+const MMA_NAMES = [
+  "Jon Jones", "Islam Makhachev", "Alex Pereira", "Leon Edwards", "Khamzat Chimaev",
+  "Alexander Volkanovski", "Charles Oliveira", "Max Holloway", "Sean O'Malley", "Dricus du Plessis",
+  "Ilia Topuria", "Tom Aspinall", "Israel Adesanya", "Dustin Poirier", "Justin Gaethje",
+];
+function makeMmaPlayers(stat) {
+  const countries = ["USA", "Russia", "Brazil", "England", "Sweden", "Australia", "Brazil", "USA", "USA", "South Africa", "Georgia", "England", "Nigeria", "USA", "USA"];
+  const players = [];
+  for (let i = 0; i < 100; i++) {
+    const name = MMA_NAMES[i % MMA_NAMES.length];
+    const country = countries[i % countries.length];
+    const wins = Math.round(i < 20 ? 15 + Math.random() * 5 : 5 + Math.random() * 10);
+    const ko = Math.round(wins * (0.4 + Math.random() * 0.3));
+    const sub = Math.round(wins * (0.2 + Math.random() * 0.3));
+    const weight = ["Lightweight", "Welterweight", "Middleweight", "Heavyweight", "Featherweight"][i % 5];
+    players.push({ rank: i + 1, name, country, weight, wins, ko, sub, rating: (8 + Math.random() * 1.5).toFixed(1) });
+  }
+  if (stat === "ko") players.sort((a, b) => b.ko - a.ko);
+  else if (stat === "sub") players.sort((a, b) => b.sub - a.sub);
+  else players.sort((a, b) => b.wins - a.wins);
+  players.forEach((p, i) => (p.rank = i + 1));
+  return players;
+}
+
 // ─── CRICKET DATA BUILDER ────────────────────────────────────────────────────
 
 const CRICKET_BASE = { ...CRICKET_RAW };
@@ -3557,7 +3740,7 @@ app.get("/api/sports", (req, res) => {
 
 // Get sport config
 app.get("/api/sports/:sport", (req, res) => {
-  const sport = SPORTS[req.params.sport];
+  const sport = SPORTS[resolveSportKey(req.params.sport)];
   if (!sport) return res.status(404).json({ error: "Sport not found" });
   res.json({
     id: req.params.sport,
@@ -3575,7 +3758,8 @@ app.get("/api/sports/:sport", (req, res) => {
 // Get rankings for a sport with optional category
 app.get("/api/rankings/:sport/:category?", async (req, res) => {
   const { sport: sportId, category } = req.params;
-  const config = SPORTS[sportId];
+  const resolvedId = resolveSportKey(sportId);
+  const config = SPORTS[resolvedId];
   if (!config) return res.status(404).json({ error: "Sport not found" });
 
   const cat = category || config.defaultCategory;
@@ -3583,13 +3767,13 @@ app.get("/api/rankings/:sport/:category?", async (req, res) => {
   let players = [];
 
   // Load from player-rankings.json if available
-  if (PLAYER_RANKINGS[sportId] && PLAYER_RANKINGS[sportId][cat]) {
-    players = PLAYER_RANKINGS[sportId][cat];
+  if (PLAYER_RANKINGS[resolvedId] && PLAYER_RANKINGS[resolvedId][cat]) {
+    players = PLAYER_RANKINGS[resolvedId][cat];
     // Re-rank to ensure correct order
     players.forEach((p, i) => (p.rank = i + 1));
   } else {
     // Fallback: generate procedurally
-    switch (sportId) {
+    switch (resolvedId) {
       case "cricket": {
         const parts = cat.split("_");
         const format = parts[0];
@@ -3674,13 +3858,28 @@ app.get("/api/rankings/:sport/:category?", async (req, res) => {
         players = makeTableTennisPlayers(ttCat, ttGender);
         break;
       }
+      case "rugby": {
+        const rParts = cat.split("_");
+        const rStat = rParts[0];
+        const rGender = rParts[1] || "men";
+        players = makeRugbyPlayers(rStat, rGender);
+        break;
+      }
+      case "golf": {
+        players = makeGolfPlayers(cat);
+        break;
+      }
+      case "mma": {
+        players = makeMmaPlayers(cat);
+        break;
+      }
       default:
         return res.status(404).json({ error: "Sport not found" });
     }
   }
 
   var dataSource = "generated";
-  if (PLAYER_RANKINGS[sportId] && PLAYER_RANKINGS[sportId][cat]) {
+  if (PLAYER_RANKINGS[resolvedId] && PLAYER_RANKINGS[resolvedId][cat]) {
     dataSource = "database";
   } else if (players.length > 0 && players[0]._source) {
     dataSource = players[0]._source;
@@ -4126,6 +4325,83 @@ async function fetchEspnScoreboard(path) {
   } finally {
     clearTimeout(t);
   }
+}
+
+// ─── ALL-SPORTS MATCH FETCHER (ESPN scoreboard, free, real logos) ───────────
+// Maps our app sport keys -> ESPN scoreboard path(s). ESPN's public scoreboard
+// API is free (no key, no quota) and returns REAL team logos for every sport.
+// This lets us show real matches + real logos for ALL sports, not just cricket.
+const SPORT_ESPN_PATHS = {
+  football: ['soccer/eng.1', 'soccer/esp.1', 'soccer/ita.1', 'soccer/ger.1', 'soccer/fra.1', 'soccer/usa.1', 'soccer/uefa.champions', 'soccer/eng.2', 'soccer/mex.1', 'soccer/bra.1', 'soccer/arg.1', 'soccer/por.1', 'soccer/ned.1'],
+  basketball: ['basketball/nba', 'basketball/wnba'],
+  hockey: ['hockey/nhl'],
+  baseball: ['baseball/mlb'],
+  tennis: ['tennis/atp', 'tennis/wta'],
+  cricket: [], // handled by cricket-live-line1 / cricbuzz
+  volleyball: [], // ESPN has no scoreboard; allsportsapi2 fallback
+  kabaddi: [],
+  tabletennis: [],
+  esports: [],
+  rugby: ['rugby/united-rugby', 'rugby/super-rugby', 'rugby/6-nations', 'rugby/world-cup'],
+  golf: ['golf/pga', 'golf/leaderboard'],
+  mma: ['mma/ufc'],
+  americanfootball: ['football/nfl'],
+};
+
+// Fetch real matches for a given app sport key from ESPN scoreboard(s).
+// Returns normalized match objects with REAL team logos.
+async function fetchEspnMatchesForSport(sportKey) {
+  const paths = SPORT_ESPN_PATHS[sportKey];
+  if (!paths || !paths.length) return [];
+  const all = await Promise.all(paths.map((p) => fetchEspnScoreboard(p)));
+  const flat = all.flat();
+  // Tag each match with the correct app sport key.
+  return flat.map((m) => ({ ...m, sport: sportKey }));
+}
+
+// ─── ESPN LOGO ENRICHMENT (free, no quota) ──────────────────────────────────
+// allsportsapi2 returns live matches but NO team logos. ESPN's public
+// scoreboard API returns real team logos for free, so we build a
+// name→logo map and enrich the allsports results with real logos.
+const ESPN_LOGO_PATHS = {
+  basketball: 'basketball/nba',
+  baseball: 'baseball/mlb',
+  hockey: 'hockey/nhl',
+  football: 'soccer/eng.1', // Premier League as a logo source for football
+};
+// Cache the logo map per sport for 6 hours (logos rarely change).
+const _logoCache = new Map(); // sport -> { ts, map }
+
+async function fetchEspnLogos(sportKey) {
+  const path = ESPN_LOGO_PATHS[sportKey];
+  if (!path) return {};
+  const cached = _logoCache.get(sportKey);
+  if (cached && Date.now() - cached.ts < 6 * 60 * 60 * 1000) return cached.map;
+  const map = {};
+  try {
+    const events = await fetchEspnScoreboard(path);
+    for (const ev of events) {
+      for (const side of ['homeName', 'awayName']) {
+        const name = ev[side];
+        const logo = ev[side === 'homeName' ? 'homeLogo' : 'awayLogo'];
+        if (name && logo && !map[name]) map[name] = logo;
+      }
+    }
+  } catch (e) { /* ignore */ }
+  _logoCache.set(sportKey, { ts: Date.now(), map });
+  return map;
+}
+
+// Enrich allsports matches with real ESPN logos where names match.
+async function enrichWithLogos(sportKey, matches) {
+  if (!matches || !matches.length) return matches;
+  const logos = await fetchEspnLogos(sportKey);
+  if (!Object.keys(logos).length) return matches;
+  return matches.map((m) => {
+    const homeLogo = m.homeLogo || logos[m.homeName] || '';
+    const awayLogo = m.awayLogo || logos[m.awayName] || '';
+    return { ...m, homeLogo, awayLogo };
+  });
 }
 
 // Static fallback (used when ESPN has no data or is unreachable).
@@ -4639,7 +4915,10 @@ const APP_TO_ALLSPORTS = {
   cricket: "cricket",
 };
 const matchCache = new Map();
-const MATCH_CACHE_TTL = 60 * 1000; // 1 minute (live scores change fast)
+// Live scores change fast — keep the in-memory cache short so the app's
+// 5s polling actually receives fresh data. 20s is a good balance between
+// freshness and not hammering the upstream APIs.
+const MATCH_CACHE_TTL = 20 * 1000;
 
 function mapAllsportsEvent(ev, sportKey) {
   const status = ev.status || {};
@@ -4777,6 +5056,106 @@ async function fetchCricbuzzLive() {
   }
 }
 
+// Cricbuzz match-center hscard — used as a fallback for cricket detail when
+// cricket-live-line1 is exhausted/limited. Returns normalized match object.
+async function fetchCricbuzzHscard(id) {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), 9000);
+  try {
+    const r = await fetch(`https://cricbuzz-cricket.p.rapidapi.com/mcenter/v1/${id}/hscard`, {
+      signal: ctrl.signal,
+      headers: { "x-rapidapi-key": CRICKET_KEY, "x-rapidapi-host": "cricbuzz-cricket.p.rapidapi.com" },
+    });
+    if (!r.ok) throw new Error("cricbuzz hscard " + r.status);
+    const j = await r.json();
+    const sc = Array.isArray(j.scorecard) ? j.scorecard : [];
+    const a = sc[0] || {};
+    const b = sc[1] || {};
+    const aScore = a.score != null ? `${a.score}${a.wickets != null ? "-" + a.wickets : ""}` : "";
+    const bScore = b.score != null ? `${b.score}${b.wickets != null ? "-" + b.wickets : ""}` : "";
+    const complete = j.ismatchcomplete === true;
+    const statusText = (j.status && j.status.state || "").toString().toUpperCase();
+    let state = "UPCOMING";
+    if (complete) state = "COMPLETED";
+    else if (statusText.includes("LIVE") || statusText.includes("IN PROGRESS") || statusText.includes("PLAY")) state = "LIVE";
+    return {
+      sport: "cricket",
+      league: "",
+      status: state,
+      state,
+      time: "",
+      date: "",
+      matchId: id,
+      homeName: a.batteam || "Team A",
+      homeAbbr: "",
+      homeLogo: "",
+      awayName: b.batteam || "Team B",
+      awayAbbr: "",
+      awayLogo: "",
+      homeScore: aScore,
+      awayScore: bScore,
+      venue: "",
+      result: complete && j.status ? j.status : "",
+      toss: "",
+      matchType: "",
+    };
+  } catch (e) {
+    console.error("Cricbuzz hscard failed", id, e.message);
+    return null;
+  } finally {
+    clearTimeout(t);
+  }
+}
+
+// ─── Football live API (free-api-live-football-data) ───────────────────────
+// NOTE: This RapidAPI host only exposes /football-players-search (player
+// search). It has NO live-match endpoint, so we use it for player enrichment
+// and fall back to allsportsapi2 for actual live football matches.
+const FOOTBALL_KEY = process.env.FOOTBALL_KEY || "31ee070a54mshd6171aacb85b007p1443ccjsnf7c39463a592";
+const FOOTBALL_HOST = "free-api-live-football-data.p.rapidapi.com";
+async function fetchFootballPlayers(search) {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), 9000);
+  try {
+    const r = await fetch(`https://${FOOTBALL_HOST}/football-players-search?search=${encodeURIComponent(search || "m")}`, {
+      signal: ctrl.signal,
+      headers: { "x-rapidapi-key": FOOTBALL_KEY, "x-rapidapi-host": FOOTBALL_HOST },
+    });
+    if (!r.ok) throw new Error("football " + r.status);
+    const j = await r.json();
+    return (j.response && j.response.suggestions) || [];
+  } catch (e) {
+    console.error("Football players failed", e.message);
+    return [];
+  } finally {
+    clearTimeout(t);
+  }
+}
+
+// ─── Odds API (odds-api1) ──────────────────────────────────────────────────
+// NOTE: This RapidAPI host only exposes /sports (a list of available sports).
+// It has NO live-match/odds endpoint, so we use it to enumerate sports and
+// fall back to allsportsapi2 for actual live matches of other sports.
+const ODDS_KEY = process.env.ODDS_KEY || "31ee070a54mshd6171aacb85b007p1443ccjsnf7c39463a592";
+const ODDS_HOST = "odds-api1.p.rapidapi.com";
+async function fetchOddsSports() {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), 9000);
+  try {
+    const r = await fetch(`https://${ODDS_HOST}/sports`, {
+      signal: ctrl.signal,
+      headers: { "x-rapidapi-key": ODDS_KEY, "x-rapidapi-host": ODDS_HOST },
+    });
+    if (!r.ok) throw new Error("odds " + r.status);
+    return await r.json();
+  } catch (e) {
+    console.error("Odds sports failed", e.message);
+    return [];
+  } finally {
+    clearTimeout(t);
+  }
+}
+
 // Cricket-live-line1 matches (live + upcoming + recent) with real team logos.
 async function fetchCricketLineMatches() {
   const [live, up, rec] = await Promise.all([
@@ -4786,32 +5165,7 @@ async function fetchCricketLineMatches() {
   ]);
   const out = [];
   const push = (list, forceStatus) => {
-    (list || []).forEach((m) => {
-      const status = forceStatus || (m.match_status || "").toString().toUpperCase();
-      let statusStr = "UPCOMING";
-      if (status.includes("LIVE")) statusStr = "LIVE";
-      else if (status.includes("COMPLETE") || status.includes("RESULT")) statusStr = "COMPLETED";
-      const aScore = m.team_a_scores || "";
-      const bScore = m.team_b_scores || "";
-      out.push({
-        sport: "cricket",
-        league: m.series || "",
-        status: statusStr,
-        state: m.match_status || "",
-        time: `${m.match_date || ""} ${m.match_time || ""}`.trim(),
-        date: "",
-        matchId: m.match_id || "",
-        homeName: m.team_a || "TBD",
-        homeAbbr: m.team_a_short || "",
-        homeLogo: m.team_a_img || "",
-        awayName: m.team_b || "TBD",
-        awayAbbr: m.team_b_short || "",
-        awayLogo: m.team_b_img || "",
-        homeScore: aScore,
-        awayScore: bScore,
-        venue: m.venue || "",
-      });
-    });
+    (list || []).forEach((m) => out.push(mapCricketLineMatch(m, forceStatus)));
   };
   push(live, "LIVE");
   push(up, "UPCOMING");
@@ -4819,9 +5173,93 @@ async function fetchCricketLineMatches() {
   return out;
 }
 
+// Map a single cricket-live-line1 match object into our normalized shape.
+function mapCricketLineMatch(m, forceStatus) {
+  const status = forceStatus || (m.match_status || "").toString().toUpperCase();
+  let statusStr = "UPCOMING";
+  if (status.includes("LIVE")) statusStr = "LIVE";
+  else if (status.includes("COMPLETE") || status.includes("RESULT")) statusStr = "COMPLETED";
+  const aScore = m.team_a_scores || "";
+  const bScore = m.team_b_scores || "";
+  return {
+    sport: "cricket",
+    league: m.series || "",
+    status: statusStr,
+    state: m.match_status || "",
+    time: `${m.match_date || ""} ${m.match_time || ""}`.trim(),
+    date: "",
+    matchId: m.match_id || "",
+    homeName: m.team_a || "TBD",
+    homeAbbr: m.team_a_short || "",
+    homeLogo: m.team_a_img || "",
+    awayName: m.team_b || "TBD",
+    awayAbbr: m.team_b_short || "",
+    awayLogo: m.team_b_img || "",
+    homeScore: aScore,
+    awayScore: bScore,
+    venue: m.venue || "",
+  };
+}
+
+// Single-match detail. For cricket we hit the free cricket-live-line1 /match/:id
+// endpoint (no quota cost) and merge it with the live list entry for scores.
+app.get("/api/live-matches/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const sport = (req.query.sport || "cricket").toString();
+    let match = null;
+
+    if (sport === "cricket") {
+      const detail = await fetchCricketLine("/match/" + id);
+      if (detail && detail.data) {
+        const d = detail.data;
+        // Find the matching list entry (for live scores) by id.
+        const list = await fetchCricketLineMatches();
+        const base = list.find((x) => String(x.matchId) === String(id)) || {};
+        match = {
+          ...mapCricketLineMatch({
+            ...d,
+            match_status: d.match_status,
+            team_a_scores: base.homeScore || d.team_a_scores || "",
+            team_b_scores: base.awayScore || d.team_b_scores || "",
+          }, (d.match_status || "").toString().toUpperCase()),
+          matchId: id,
+          result: d.result || "",
+          toss: d.toss || "",
+          matchType: d.match_type || "",
+          venue: d.venue || base.venue || "",
+          series: d.series || base.league || "",
+          homeName: d.team_a || base.homeName || "TBD",
+          awayName: d.team_b || base.awayName || "TBD",
+          homeAbbr: d.team_a_short || base.homeAbbr || "",
+          awayAbbr: d.team_b_short || base.awayAbbr || "",
+          homeLogo: d.team_a_img || base.homeLogo || "",
+          awayLogo: d.team_b_img || base.awayLogo || "",
+        };
+      }
+      // Fallback: if cricket-live-line1 failed/limited, use cricbuzz hscard.
+      if (!match) {
+        const cb = await fetchCricbuzzHscard(id);
+        if (cb) match = { ...cb, matchId: id };
+      }
+    }
+
+    if (!match) {
+      // Fallback: search the live list for this id.
+      const list = await fetchCricketLineMatches();
+      match = list.find((x) => String(x.matchId) === String(id)) || null;
+    }
+
+    if (!match) return res.status(404).json({ error: "Match not found" });
+    res.json({ source: "realtime", match });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
 app.get("/api/live-matches", async (req, res) => {
   try {
-    const sport = (req.query.sport || "all").toString();
+    const sport = resolveSportKey((req.query.sport || "all").toString());
     const cacheKey = "matches|" + sport;
     const cached = matchCache.get(cacheKey);
     if (cached && Date.now() - cached.ts < MATCH_CACHE_TTL) return res.json(cached.data);
@@ -4835,20 +5273,31 @@ app.get("/api/live-matches", async (req, res) => {
     let results = [];
     if (!quotaExhausted()) {
       if (sport === "all") {
-        const [bb, bs, af, cb, cl] = await Promise.all([
-          fetchAllsportsLive("basketball"),
-          fetchAllsportsLive("baseball"),
-          fetchAllsportsLive("american-football"),
-          fetchCricbuzzLive(),
+        // Fetch ALL sports in parallel: ESPN (free, real logos) for most,
+        // cricket-live-line1 + cricbuzz for cricket (real, with logos).
+        const [espnSports, cricket] = await Promise.all([
+          Promise.all(
+            Object.keys(SPORT_ESPN_PATHS)
+              .filter((k) => k !== "cricket")
+              .map((k) => fetchEspnMatchesForSport(k))
+          ),
           fetchCricketLineMatches(),
         ]);
-        results = [...bb, ...bs, ...af, ...cb, ...cl];
+        results = [...espnSports.flat(), ...cricket];
       } else if (sport === "cricket") {
         results = await fetchCricketLineMatches();
+      } else if (SPORT_ESPN_PATHS[sport] && SPORT_ESPN_PATHS[sport].length) {
+        // ESPN-covered sport: real matches + real logos, free, no quota.
+        results = await fetchEspnMatchesForSport(sport);
       } else {
-        const slug = APP_TO_ALLSPORTS[sport];
-        results = slug ? await fetchAllsportsLive(slug) : [];
+        // Sports not on ESPN scoreboard (kabaddi, volleyball, etc.):
+        // try allsportsapi2 live, enrich with ESPN logos, else static.
+        const slug = APP_TO_ALLSPORTS[sport]
+          ? await fetchAllsportsLive(APP_TO_ALLSPORTS[sport])
+          : [];
+        results = slug && slug.length ? slug : [];
         if (!results.length) results = staticMatchesFor(sport);
+        results = await enrichWithLogos(sport, results);
       }
     }
     if (results.length === 0) {

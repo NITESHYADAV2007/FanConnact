@@ -10,7 +10,8 @@ import '../data.dart';
 
 class LiveMatchService {
   // Short TTL: live scores change often, but we still avoid hammering the API.
-  static const Duration cacheTtl = Duration(seconds: 30);
+  // Kept below the backend's 20s cache so the 5s polling receives fresh data.
+  static const Duration cacheTtl = Duration(seconds: 15);
 
   static final Map<String, List<MatchItem>> _cache = {};
   static final Map<String, DateTime> _cacheTime = {};
@@ -67,5 +68,30 @@ class LiveMatchService {
     }
     if (_cache.containsKey(sport)) return _cache[sport]!;
     return [];
+  }
+
+  // Fetch a single match's live detail (used by the match detail screen for
+  // real-time score updates). For cricket this hits the free /match/:id
+  // endpoint so it costs no API quota.
+  static Future<MatchItem?> fetchMatchDetail({
+    required String matchId,
+    String sport = 'cricket',
+  }) async {
+    try {
+      final uri = Uri.parse('$apiBaseUrl/api/live-matches/$matchId').replace(
+        queryParameters: {'sport': sport},
+      );
+      final res = await http.get(uri).timeout(const Duration(seconds: 9));
+      if (res.statusCode == 200) {
+        final json = jsonDecode(res.body) as Map<String, dynamic>;
+        final m = json['match'] as Map<String, dynamic>?;
+        if (m != null) {
+          return MatchItem.fromApi(m, sportKey: sport);
+        }
+      }
+    } catch (e) {
+      debugPrint('LiveMatchService: detail fetch failed ($e)');
+    }
+    return null;
   }
 }

@@ -1,5 +1,23 @@
 # Session Summary
 
+## All-Sports Scores + Players + Crex-style Team Click (CURRENT)
+- **Backend** (`backend/server.js`, LOCAL only — NOT yet on Render):
+  - Rewrote `/api/live-matches` to fetch ALL sports via ESPN scoreboard (free, real logos) + cricket API. sport=all → 101 matches (11 live, 85 w/ logos).
+  - Added rugby, golf, mma to `SPORTS` config + `makeRugbyPlayers`/`makeGolfPlayers`/`makeMmaPlayers` generators.
+  - Added `SPORT_ALIASES` map so app keys (`kabaddi`, `esports`, `tabletennis`) resolve to config keys (`kabbaddi`, `e-sports`, `table-tennis`). Applied in `/api/rankings/:sport`, `/api/sports/:sport`, `/api/live-matches`.
+  - Rankings now return 100 players for ALL 13 sports (cricket=icc real, football/basketball/tennis/hockey/baseball/volleyball=kabaddi/tabletennis=database, rugby/golf/mma/esports=generated).
+- **Flutter app**:
+  - `lib/data.dart`: added rugby 🏉, golf ⛳, mma 🥊 to `sports` list + emojiMap.
+  - `lib/services/player_ranking_service.dart` (NEW): typed client for `/api/rankings/:sport/:category` with filters/columns.
+  - `lib/screens/player_rankings_screen.dart` (NEW): Crex-style rankings table with filter chips + source badge.
+  - `lib/screens/team_matches_screen.dart` (NEW): Crex-style "tap team → all that team's matches" screen.
+  - `lib/widgets/match_card.dart`: added `onTeamTap` callback; team rows now tappable (navigate to TeamMatchesScreen).
+  - `lib/screens/sports_screen.dart`: added "Rankings" button (opens PlayerRankingsScreen for selected sport) + wired `onTeamTap` on MatchCards.
+  - Deleted unused `lib/services/match_service.dart` (referenced removed static `matches` list → broke analyze).
+  - `lib/config.dart` temporarily set to `http://127.0.0.1:3001` for USB test (Render lacks these changes). **Must revert to Render URL before final deploy.**
+- **Testing**: `flutter analyze` → 0 errors. Built debug APK, installed on Xiaomi (V4JVSCF67X99759L) via `adb install -r`. USB reverse `tcp:3001 tcp:3001` active so phone hits local backend.
+- **TODO before shipping**: (1) Redeploy backend to Render, (2) Revert `apiBaseUrl` to `https://fanconnact-api.onrender.com`, (3) Rebuild + reinstall APK, (4) gh auth login (failed) → commit/push.
+
 ## News API Enhancement (Reverted)
 - GNews API addition was reverted by user request (no second API)
 - News flow is back to: **Currents API** → **static fallback**
