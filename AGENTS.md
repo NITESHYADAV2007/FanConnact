@@ -1,6 +1,15 @@
 # Session Summary
 
-## All-Sports Scores + Players + Crex-style Team Click (CURRENT)
+## Match Detail Screen (Crex-style) + Detail API Fix (CURRENT)
+- **Backend** (`backend/server.js`, DEPLOYED to Render):
+  - **FIXED `/api/live-matches/:id`**: previously returned generic "Team A vs Team B" with empty scores/venue for cricket. Root cause: it merged cricket-live-line1 `/match/:id` placeholder names over the real list data, and read from the stale persisted DB (`getLast`) instead of the in-memory `matchCache` that `/api/live-matches` actually serves. Fix: (1) search `matchCache` for the exact sport key (`matches|cricket`) before `matches|all`, (2) prefer the real list entry for names/scores/logos, only using the detail call when the list entry is missing, (3) detect "Team A"/"Team B" placeholders and fall back to `base`, (4) added a 20s detail cache keyed `detail|sport|id` so the app's 3s polling doesn't hammer upstream APIs. Verified: `/api/live-matches/13845?sport=cricket` → "West Indies vs New Zealand", 188-10 / 46-2, Providence Stadium, LIVE.
+  - News endpoint returns key `"articles"` (NOT `"news"`) — `lib/services/news_service.dart` already parses `articles` correctly.
+- **Flutter app**:
+  - `lib/data.dart`: added `abbrA`/`abbrB` fields to `MatchItem` + parsing from `homeAbbr`/`awayAbbr`.
+  - `lib/screens/match_detail_screen.dart`: expanded to 6 tabs (Info, Live Chat, Summary, Series, News, Games). Professional `_ScoreHeader` (logos, abbr, venue/time, share via Clipboard), richer Info (head-to-head card), richer Summary (commentary feed + wagon wheel chart), richer Series (H2H record bar + recent meetings), NEW `_NewsTab` using `NewsService`. `flutter analyze` → 0 errors; `flutter build apk --debug` builds `app-debug.apk`.
+  - `lib/config.dart`: `apiBaseUrl = 'https://fanconnact-api.onrender.com'` (reverted from local test URL).
+
+## All-Sports Scores + Players + Crex-style Team Click
 - **Backend** (`backend/server.js`, LOCAL only — NOT yet on Render):
   - Rewrote `/api/live-matches` to fetch ALL sports via ESPN scoreboard (free, real logos) + cricket API. sport=all → 101 matches (11 live, 85 w/ logos).
   - Added rugby, golf, mma to `SPORTS` config + `makeRugbyPlayers`/`makeGolfPlayers`/`makeMmaPlayers` generators.
