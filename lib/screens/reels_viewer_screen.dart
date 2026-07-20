@@ -2,6 +2,7 @@
 // Swipe vertically between reels; videos auto-play, tap to pause/resume.
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:video_player/video_player.dart';
 import '../services/reels_service.dart';
 
@@ -106,6 +107,7 @@ class _ReelPageState extends State<_ReelPage> {
   VideoPlayerController? _controller;
   bool _showPlayIcon = false;
   bool _videoError = false;
+  bool _liked = false;
 
   @override
   void initState() {
@@ -241,24 +243,52 @@ class _ReelPageState extends State<_ReelPage> {
             bottom: 28,
             child: Column(
               children: [
-                _action(Icons.favorite_border, _formatCount(reel.likeCount)),
+                _action(
+                  _liked ? Icons.favorite : Icons.favorite_border,
+                  _formatCount(reel.likeCount + (_liked ? 1 : 0)),
+                  onTap: () => setState(() => _liked = !_liked),
+                  active: _liked,
+                ),
                 const SizedBox(height: 18),
-                _action(Icons.comment_outlined, _formatCount(reel.commentCount)),
+                _action(
+                  Icons.comment_outlined,
+                  _formatCount(reel.commentCount),
+                  onTap: () => ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Comments coming soon'),
+                      duration: Duration(seconds: 1),
+                    ),
+                  ),
+                ),
                 const SizedBox(height: 18),
-                _action(Icons.remove_red_eye_outlined, _formatCount(reel.viewCount)),
+                _action(
+                  Icons.remove_red_eye_outlined,
+                  _formatCount(reel.viewCount),
+                ),
                 const SizedBox(height: 18),
                 IconButton(
                   icon: const Icon(Icons.bookmark_border, color: Colors.white, size: 28),
-                  onPressed: () {},
+                  onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Saved'),
+                      duration: Duration(seconds: 1),
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 8),
                 IconButton(
-                  icon: const Icon(Icons.open_in_new, color: Colors.white, size: 26),
+                  icon: const Icon(Icons.share_outlined, color: Colors.white, size: 26),
                   onPressed: () {
-                    if (reel.link.isNotEmpty) {
-                      // Best-effort: open in browser via url_launcher would go here.
-                      // For now copy/share intent is out of scope; keep simple.
-                    }
+                    final text = reel.link.isNotEmpty
+                        ? '${reel.caption}\n${reel.link}'
+                        : reel.caption;
+                    Clipboard.setData(ClipboardData(text: text));
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Link copied to clipboard'),
+                        duration: Duration(seconds: 1),
+                      ),
+                    );
                   },
                 ),
               ],
@@ -269,12 +299,13 @@ class _ReelPageState extends State<_ReelPage> {
     );
   }
 
-  Widget _action(IconData icon, String label) {
+  Widget _action(IconData icon, String label,
+      {VoidCallback? onTap, bool active = false}) {
     return Column(
       children: [
         IconButton(
-          icon: Icon(icon, color: Colors.white, size: 28),
-          onPressed: () {},
+          icon: Icon(icon, color: active ? Colors.redAccent : Colors.white, size: 28),
+          onPressed: onTap ?? () {},
         ),
         Text(label, style: const TextStyle(color: Colors.white, fontSize: 12)),
       ],

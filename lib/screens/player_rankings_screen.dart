@@ -5,8 +5,9 @@
 import 'package:flutter/material.dart';
 import '../data.dart';
 import '../theme.dart';
-import '../l10n.dart';
 import '../services/player_ranking_service.dart';
+import '../services/rapid_api_service.dart';
+import 'player_detail_screen.dart';
 
 class PlayerRankingsScreen extends StatefulWidget {
   final String sportKey;
@@ -76,6 +77,73 @@ class _PlayerRankingsScreenState extends State<PlayerRankingsScreen> {
       _loading = true;
       _error = null;
     });
+
+    // Cricket: fetch REAL player data directly from the RapidAPI cricket
+    // endpoint (cricket-live-line-advance /players) instead of the backend.
+    if (widget.sportKey == 'cricket') {
+      try {
+        final players = await RapidApiService.fetchCricketPlayers();
+        if (!mounted) return;
+        if (players.isEmpty) {
+          setState(() {
+            _loading = false;
+            _error = 'No cricket players returned';
+          });
+          return;
+        }
+        final rankingPlayers = players.asMap().entries.map((e) {
+          final p = e.value;
+          final rating =
+              double.tryParse('${p['fantasy_player_rating'] ?? 0}') ?? 0;
+          return PlayerRanking(
+            rank: e.key + 1,
+            name: (p['title'] ?? p['short_name'] ?? 'Unknown').toString(),
+            country: _countryName(p['country']?.toString()),
+            extra: {
+              'team': (p['primary_team'] is List &&
+                      (p['primary_team'] as List).isNotEmpty)
+                  ? (p['primary_team'][0]['title'] ?? '').toString()
+                  : '',
+              'role': (p['playing_role'] ?? '').toString(),
+              'rating': rating.toStringAsFixed(1),
+              'pid': p['pid']?.toString() ?? '',
+            },
+          );
+        }).toList();
+
+        final resp = PlayerRankingResponse(
+          sport: 'cricket',
+          label: 'Cricket',
+          title: '$_sportEmoji  Cricket Players',
+          subtitle: 'Live from cricket-live-line-advance API',
+          category: 'all',
+          defaultCategory: 'all',
+          filters: const [],
+          columns: const [
+            RankingColumn(key: 'name', label: 'Player'),
+            RankingColumn(key: 'role', label: 'Role', align: 'center'),
+            RankingColumn(key: 'rating', label: 'Rating', align: 'center'),
+          ],
+          source: 'RapidAPI · Cricket',
+          players: rankingPlayers,
+          lastSync: null,
+        );
+        setState(() {
+          _loading = false;
+          _data = resp;
+        });
+        return;
+      } catch (e) {
+        if (!mounted) return;
+        setState(() {
+          _loading = false;
+          _error = 'Cricket API error: $e';
+        });
+        return;
+      }
+    }
+
+    // Other sports: use the backend aggregation (real + fallback).
     final resp = await PlayerRankingService.fetchRankings(
       sport: widget.sportKey,
       category: keepFilters ? _currentCategory : widget.initialCategory,
@@ -98,6 +166,24 @@ class _PlayerRankingsScreenState extends State<PlayerRankingsScreen> {
         }
       }
     });
+  }
+
+  String? _countryName(String? code) {
+    if (code == null || code.isEmpty) return null;
+    const map = {
+      'lk': 'Sri Lanka',
+      'ae': 'UAE',
+      'in': 'India',
+      'au': 'Australia',
+      'en': 'England',
+      'za': 'South Africa',
+      'pk': 'Pakistan',
+      'bd': 'Bangladesh',
+      'nz': 'New Zealand',
+      'us': 'USA',
+      'ca': 'Canada',
+    };
+    return map[code.toLowerCase()] ?? code.toUpperCase();
   }
 
   @override
@@ -225,10 +311,24 @@ class _PlayerRankingsScreenState extends State<PlayerRankingsScreen> {
                           separatorBuilder: (_, __) => const Divider(height: 1),
                           itemBuilder: (context, i) {
                             final p = _data!.players[i];
-                            return _PlayerRow(
-                              player: p,
-                              columns: _data!.columns,
-                              isDark: isDark,
+                            return InkWell(
+                              onTap: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => PlayerDetailScreen(
+                                      sportKey: widget.sportKey,
+                                      name: p.name,
+                                      country: p.country,
+                                      extra: p.extra,
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: _PlayerRow(
+                                player: p,
+                                columns: _data!.columns,
+                                isDark: isDark,
+                              ),
                             );
                           },
                         ),

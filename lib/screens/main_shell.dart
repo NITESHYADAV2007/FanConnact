@@ -4,6 +4,7 @@ import '../theme.dart';
 import '../l10n.dart';
 import 'home_screen.dart';
 import 'sports_screen.dart';
+import 'series_screen.dart';
 import 'settings_screen.dart';
 import 'leaderboard_screen.dart';
 import 'profile_screen.dart';
@@ -44,11 +45,10 @@ class _MainShellState extends State<MainShell> {
 
   final List<_NavItem> _tabs = const [
     _NavItem(icon: Icons.home_outlined, active: Icons.home, label: 'Home'),
-    _NavItem(icon: Icons.sports_outlined, active: Icons.sports, label: 'Sports'),
-    _NavItem(icon: Icons.leaderboard_outlined, active: Icons.leaderboard, label: 'Leaderboard'),
+    _NavItem(icon: Icons.emoji_events_outlined, active: Icons.emoji_events, label: 'Series'),
+    _NavItem(icon: Icons.sports_outlined, active: Icons.sports, label: 'Matches'),
     _NavItem(icon: Icons.casino_outlined, active: Icons.casino, label: 'Predict'),
     _NavItem(icon: Icons.person_outline, active: Icons.person, label: 'Profile'),
-    _NavItem(icon: Icons.settings_outlined, active: Icons.settings, label: 'Settings'),
   ];
 
   @override
@@ -62,35 +62,21 @@ class _MainShellState extends State<MainShell> {
             isDark: widget.isDark,
             onToggleTheme: widget.onToggleTheme,
           ),
+          SeriesScreen(
+            locale: widget.locale,
+            isDark: widget.isDark,
+          ),
           SportsScreen(
             locale: widget.locale,
             isDark: widget.isDark,
           ),
-          LeaderboardScreen(locale: widget.locale, isDark: widget.isDark),
           PredictionScreen(locale: widget.locale, isDark: widget.isDark),
           ProfileScreen(locale: widget.locale, isDark: widget.isDark),
-          SettingsScreen(),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _index,
-        onTap: (i) {
-          if (_tabs[i].label == 'Settings') {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => SettingsScreenWithTheme(
-                  onToggleTheme: widget.onToggleTheme,
-                  isDark: widget.isDark,
-                  onLocaleChanged: widget.onLocaleChanged,
-                  locale: widget.locale,
-                ),
-              ),
-            );
-          } else {
-            setState(() => _index = i);
-          }
-        },
+        onTap: (i) => setState(() => _index = i),
         type: BottomNavigationBarType.fixed,
         selectedItemColor: AppColors.brandBlue,
         unselectedItemColor: Colors.grey,

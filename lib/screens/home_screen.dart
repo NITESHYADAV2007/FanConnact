@@ -8,9 +8,9 @@ import '../services/live_match_service.dart';
 import '../widgets/news_post_card.dart';
 import '../widgets/reels_card.dart';
 import '../widgets/live_score_card.dart';
-import '../widgets/glow_wrapper.dart';
 import '../screens/match_detail_screen.dart';
 import '../screens/reels_viewer_screen.dart';
+import '../screens/profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final Locale locale;
@@ -143,25 +143,42 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   // Live matches section shown at the top of Home with real-time scores.
-  // Home shows ONLY live matches across all sports.
+  // ── Live matches: ONLY live matches across all sports, swipeable cards ──
   Widget _buildLiveMatches(String Function(String) t) {
     final liveMatches = _matches
         .where((m) => (m.status).toUpperCase() == 'LIVE')
         .toList();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(14, 12, 14, 6),
+          padding: const EdgeInsets.fromLTRB(14, 14, 14, 8),
           child: Row(
             children: [
-              const Icon(Icons.sports_cricket, size: 18, color: AppColors.brandBlue),
+              Container(
+                width: 8,
+                height: 8,
+                decoration: BoxDecoration(
+                  color: AppColors.liveRed,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.liveRed.withValues(alpha: 0.6),
+                      blurRadius: 6,
+                      spreadRadius: 1,
+                    ),
+                  ],
+                ),
+              ),
               const SizedBox(width: 8),
               Text(
-                t('matches'),
-                style: const TextStyle(
-                  fontWeight: FontWeight.w800,
+                'LIVE MATCHES',
+                style: TextStyle(
+                  fontWeight: FontWeight.w900,
                   fontSize: 16,
+                  letterSpacing: 0.5,
+                  color: widget.isDark ? Colors.white : Colors.black87,
                 ),
               ),
               const Spacer(),
@@ -172,44 +189,82 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
               else
-                Text(
-                  'LIVE',
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.liveRed,
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: AppColors.liveRed.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    '${liveMatches.length} LIVE',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.liveRed,
+                    ),
                   ),
                 ),
             ],
           ),
         ),
-        if (_matches.isEmpty && !_loadingMatches)
+        if (_loadingMatches && _matches.isEmpty)
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 30),
+            child: Center(child: CircularProgressIndicator()),
+          )
+        else if (liveMatches.isEmpty)
           Padding(
-            padding: const EdgeInsets.fromLTRB(14, 4, 14, 12),
-            child: Text(t('noMatches'),
-                style: const TextStyle(color: Colors.grey)),
+            padding: const EdgeInsets.fromLTRB(14, 8, 14, 20),
+            child: Container(
+              padding: const EdgeInsets.all(18),
+              decoration: BoxDecoration(
+                color: widget.isDark ? AppColors.darkCard : Colors.white,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(
+                  color: Colors.grey.withValues(alpha: 0.15),
+                ),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.sports_outlined,
+                      color: AppColors.liveRed, size: 22),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'No live matches right now. Pull to refresh or check back soon.',
+                      style: TextStyle(
+                        color: widget.isDark
+                            ? Colors.white70
+                            : Colors.black54,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           )
         else
           SizedBox(
-            height: 150,
+            height: 168,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              itemCount: _matches.length,
-              separatorBuilder: (_, _) => const SizedBox(width: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 14),
+              itemCount: liveMatches.length,
+              separatorBuilder: (_, _) => const SizedBox(width: 12),
               itemBuilder: (_, i) => LiveScoreCard(
-                match: _matches[i],
+                match: liveMatches[i],
                 onTap: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (_) => MatchDetailScreen(match: _matches[i]),
+                      builder: (_) => MatchDetailScreen(match: liveMatches[i]),
                     ),
                   );
                 },
               ),
             ),
           ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 12),
       ],
     );
   }
@@ -290,100 +345,103 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  // ── Top bar: logo + two-tone "Fanconnact" wordmark + action icons ──
+  PreferredSizeWidget _buildAppBar(String Function(String) t) {
+    final isDark = widget.isDark;
+    // "Fan" is white in dark mode / black in light mode.
+    final fanColor = isDark ? Colors.white : Colors.black;
+    // "connact" is blue in light mode / green in dark mode.
+    final connactColor = isDark ? AppColors.brandGreen : AppColors.brandBlue;
+
+    return AppBar(
+      automaticallyImplyLeading: false,
+      elevation: 0,
+      scrolledUnderElevation: 0,
+      backgroundColor: isDark ? AppColors.darkSurface : AppColors.lightSurface,
+      titleSpacing: 12,
+      title: Row(
+        children: [
+          // Single brand logo (no duplicate)
+          Image.asset(
+            'assets/fancoin/fanconnactlogo.png',
+            height: 30,
+            width: 30,
+            fit: BoxFit.contain,
+            errorBuilder: (_, __, ___) =>
+                Icon(Icons.sports, color: connactColor, size: 26),
+          ),
+          const SizedBox(width: 8),
+          // Two-tone wordmark — smaller text per request
+          RichText(
+            text: TextSpan(
+              children: [
+                TextSpan(
+                  text: 'Fan',
+                  style: TextStyle(
+                    color: fanColor,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 14,
+                    letterSpacing: -0.5,
+                  ),
+                ),
+                TextSpan(
+                  text: 'connact',
+                  style: TextStyle(
+                    color: connactColor,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 14,
+                    letterSpacing: -0.5,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+      actions: [
+        // Notifications
+        IconButton(
+          icon: const Icon(Icons.notifications_outlined),
+          tooltip: t('notifications'),
+          onPressed: () {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(t('notifications'))),
+            );
+          },
+        ),
+        // Theme toggle
+        IconButton(
+          icon: Icon(widget.isDark ? Icons.light_mode : Icons.dark_mode),
+          tooltip: t('darkMode'),
+          onPressed: widget.onToggleTheme,
+        ),
+        // Profile
+        IconButton(
+          icon: const Icon(Icons.person_outline),
+          tooltip: t('account'),
+          onPressed: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => ProfileScreen(
+                  locale: widget.locale,
+                  isDark: widget.isDark,
+                ),
+              ),
+            );
+          },
+        ),
+        const SizedBox(width: 4),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final lang = widget.locale.languageCode;
     String t(String k) => AppStrings.get(lang, k);
 
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Row(
-          children: [
-            GlowWrapper(
-              pulse: true,
-              glowColor: AppColors.brandBlue,
-              glowBlur: 18,
-              glowSpread: 3,
-              borderRadius: BorderRadius.circular(10),
-              child: Container(
-                padding: const EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  color: widget.isDark ? Colors.white : AppColors.brandBlue,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Image.asset(
-                  'assets/fancoin/fanconnactlogo.png',
-                  height: 26,
-                  width: 26,
-                  color: widget.isDark ? null : Colors.white,
-                ),
-              ),
-            ),
-            const SizedBox(width: 10),
-            Text(
-              t('appName'),
-              style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 20),
-            ),
-          ],
-        ),
-        actions: [
-          // Language selector (quick preview; full switch in Settings)
-          PopupMenuButton<String>(
-            icon: const Icon(Icons.language),
-            tooltip: t('language'),
-            onSelected: (code) {
-              // Reload news in the chosen language immediately.
-              setState(() => _langOverride = code);
-              _loadNews();
-            },
-            itemBuilder: (_) => AppStrings.languages
-                .map((l) => PopupMenuItem<String>(
-                      value: l['code'],
-                      child: Text(l['name']!),
-                    ))
-                .toList(),
-          ),
-          // FanCoin badge
-          Container(
-            margin: const EdgeInsets.only(right: 6),
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-            decoration: BoxDecoration(
-              color: AppColors.brandBlue.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Row(
-              children: [
-                Image.asset(
-                  'assets/fancoin/fancoin.png',
-                  height: 18,
-                  width: 18,
-                ),
-                const SizedBox(width: 4),
-                const Text(
-                  '120',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w800,
-                    fontSize: 12,
-                    color: AppColors.brandBlue,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          IconButton(
-            icon: Icon(
-              widget.isDark ? Icons.light_mode : Icons.dark_mode,
-            ),
-            onPressed: widget.onToggleTheme,
-            tooltip: t('darkMode'),
-          ),
-          IconButton(
-            icon: const Icon(Icons.notifications_outlined),
-            onPressed: () {},
-          ),
-        ],
-      ),
+      appBar: _buildAppBar(t),
       body: Column(
         children: [
           Expanded(

@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../theme.dart';
 import '../l10n.dart';
+import 'main_shell.dart';
 
 // Profile screen — mirrors the web profile.html / user-profile.html.
 class ProfileScreen extends StatefulWidget {
@@ -103,6 +104,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
         title: Text(AppStrings.get(lang, 'editProfile'),
             style: const TextStyle(fontWeight: FontWeight.w800)),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.settings_outlined),
+            tooltip: AppStrings.get(lang, 'settings'),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => SettingsScreenWithTheme(
+                    onToggleTheme: () {},
+                    isDark: widget.isDark,
+                    onLocaleChanged: (l) {},
+                    locale: widget.locale,
+                  ),
+                ),
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () => FirebaseAuth.instance.signOut(),

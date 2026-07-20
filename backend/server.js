@@ -4900,6 +4900,49 @@ async function fetchCricketLine(path, key = CRICKET_KEY) {
     clearTimeout(t);
   }
 }
+
+// ─── Cricket Live Line ADVANCE (user-specified real API) ────────────────────
+// Exposes /players and /matches (real cricket player + match data).
+const CRICKET_ADV_HOST = "cricket-live-line-advance.p.rapidapi.com";
+async function fetchCricketAdvance(path) {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), 9000);
+  try {
+    const r = await fetch(`https://${CRICKET_ADV_HOST}${path}`, {
+      signal: ctrl.signal,
+      headers: { "x-rapidapi-key": CRICKET_KEY, "x-rapidapi-host": CRICKET_ADV_HOST, "Content-Type": "application/json" },
+    });
+    if (!r.ok) throw new Error("cricketAdvance " + r.status);
+    const j = await r.json();
+    return j.status === "ok" ? j.response : null;
+  } catch (e) {
+    console.error("CricketAdvance fetch failed", path, e.message);
+    return null;
+  } finally {
+    clearTimeout(t);
+  }
+}
+
+// ─── Table Tennis API (user-specified real API) ─────────────────────────────
+const TT_KEY = process.env.TT_KEY || "31ee070a54mshd6171aacb85b007p1443ccjsnf7c39463a592";
+const TT_HOST = "tabletennisapi.p.rapidapi.com";
+async function fetchTableTennis(path) {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), 9000);
+  try {
+    const r = await fetch(`https://${TT_HOST}${path}`, {
+      signal: ctrl.signal,
+      headers: { "x-rapidapi-key": TT_KEY, "x-rapidapi-host": TT_HOST, "Content-Type": "application/json" },
+    });
+    if (!r.ok) throw new Error("tt " + r.status);
+    return await r.json();
+  } catch (e) {
+    console.error("TableTennis fetch failed", path, e.message);
+    return null;
+  } finally {
+    clearTimeout(t);
+  }
+}
 // allsportsapi2 live endpoints that actually return data.
 const ALLSPORTS_LIVE = {
   basketball: "/api/basketball/matches/live",
@@ -5350,6 +5393,59 @@ app.get("/api/live-matches", async (req, res) => {
     const data = { source: "realtime", count: results.length, matches: results, cached: results.length > 0 && quotaExhausted() };
     matchCache.set(cacheKey, { ts: Date.now(), data });
     res.json(data);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// ─── REAL-API PROXY ROUTES (user-specified RapidAPI sources) ────────────────
+// These proxy the exact APIs the app should use, so the Flutter client can
+// call our backend (one key, one origin) and we fan out to the real providers.
+
+// Cricket players + matches from cricket-live-line-advance (real API).
+app.get("/api/real/cricket/players", async (req, res) => {
+  try {
+    const data = await fetchCricketAdvance("/players");
+    const items = (data && data.items) || [];
+    res.json({ source: "cricket-live-line-advance", count: items.length, players: items });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+app.get("/api/real/cricket/matches", async (req, res) => {
+  try {
+    const data = await fetchCricketAdvance("/matches");
+    const items = (data && data.items) || [];
+    res.json({ source: "cricket-live-line-advance", count: items.length, matches: items });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// Football player search from free-api-live-football-data (real API).
+app.get("/api/real/football/players", async (req, res) => {
+  try {
+    const q = (req.query.search || "m").toString();
+    const sugg = await fetchFootballPlayers(q);
+    res.json({ source: "free-api-live-football-data", query: q, count: sugg.length, players: sugg });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// Table-tennis team + event from tabletennisapi (real API).
+app.get("/api/real/table-tennis/team/:id", async (req, res) => {
+  try {
+    const data = await fetchTableTennis(`/api/table-tennis/team/${req.params.id}`);
+    res.json({ source: "tabletennisapi", team: (data && data.team) || null });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+app.get("/api/real/table-tennis/event/:id", async (req, res) => {
+  try {
+    const data = await fetchTableTennis(`/api/table-tennis/event/${req.params.id}`);
+    res.json({ source: "tabletennisapi", event: (data && data.event) || null });
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
