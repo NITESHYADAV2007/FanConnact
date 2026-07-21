@@ -1669,10 +1669,15 @@
     const el = document.createElement('div');
     el.className = 'crex-ball crex-ball-' + type;
     el.textContent = label;
-    // random horizontal start near center-top
-    const leftPct = 35 + Math.random() * 30;
-    el.style.left = leftPct + 'vw';
-    el.style.top = '30vh';
+    const sh = $('score-header');
+    if (sh) {
+      const rect = sh.getBoundingClientRect();
+      el.style.left = '50vw';
+      el.style.top = Math.max(0, rect.bottom - 50) + 'px';
+    } else {
+      el.style.left = '50vw';
+      el.style.top = '40vh';
+    }
     host.appendChild(el);
     setTimeout(() => el.remove(), 1600);
   }

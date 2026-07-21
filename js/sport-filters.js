@@ -14,7 +14,6 @@
       var cards = matchesContainer.querySelectorAll('[data-tournament]');
       var anyVisible = false;
       cards.forEach(function (card) {
-        // Match by sport name (tab text) OR by tournament name
         var sport = (card.getAttribute('data-sport') || '').toLowerCase();
         var tournament = (card.getAttribute('data-tournament') || '').toLowerCase();
         var tMatch = activeTournament === 'All' ||
@@ -48,23 +47,48 @@
       var cards = matchesContainer.querySelectorAll('[data-tournament]');
       var btns = statusContainer.querySelectorAll('button');
       btns.forEach(function (btn) {
-        var text = btn.textContent.trim().toLowerCase();
-        var status = 'All';
-        if (text.indexOf('live') !== -1) status = 'live';
-        else if (text.indexOf('upcoming') !== -1) status = 'upcoming';
-        else if (text.indexOf('finished') !== -1) status = 'finished';
+        var status = btn.getAttribute('data-status') || '';
+        if (!status) {
+          var text = btn.textContent.trim().toLowerCase();
+          if (text.indexOf('live') !== -1) status = 'live';
+          else if (text.indexOf('upcoming') !== -1) status = 'upcoming';
+          else if (text.indexOf('finished') !== -1) status = 'finished';
+        }
         var count = 0;
         cards.forEach(function (c) {
           var tMatch = activeTournament === 'All' || c.getAttribute('data-tournament') === activeTournament;
-          var sMatch = status === 'All' || c.getAttribute('data-status') === status;
+          var sMatch = status === 'All' || status === '' || c.getAttribute('data-status') === status;
           if (tMatch && sMatch) count++;
         });
-        var span = btn.querySelector('span:last-child');
-        if (span) {
-          var label = text.replace(/\(\d+\)/g, '').trim();
-          span.textContent = label.charAt(0).toUpperCase() + label.slice(1) + ' (' + count + ')';
+        var countSpan = btn.querySelector('[data-count]');
+        if (countSpan) {
+          countSpan.textContent = count;
+        } else {
+          var span = btn.querySelector('span:last-child');
+          if (span) {
+            var label = (btn.textContent || '').replace(/\(\d+\)/g, '').trim();
+            span.innerHTML = label.charAt(0).toUpperCase() + label.slice(1) + ' (<span data-count="' + status + '">' + count + '</span>)';
+          }
         }
       });
+    }
+
+    function watchForCards() {
+      if (!matchesContainer) return;
+      var check = function () {
+        if (matchesContainer.querySelectorAll('[data-tournament]').length > 0) {
+          updateCountLabels();
+          return true;
+        }
+        return false;
+      };
+      if (!check()) {
+        var obs = new MutationObserver(function () {
+          if (check()) obs.disconnect();
+        });
+        obs.observe(matchesContainer, { childList: true, subtree: true });
+        setTimeout(function () { obs.disconnect(); }, 8000);
+      }
     }
 
     function setActiveTab(btn) {
@@ -133,6 +157,7 @@
     }
 
     filterMatches();
+    watchForCards();
   }
 
   if (document.readyState === 'loading') {
