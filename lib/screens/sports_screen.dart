@@ -7,6 +7,7 @@ import '../widgets/sport_selector.dart';
 import '../widgets/match_card.dart';
 import '../screens/team_matches_screen.dart';
 import '../screens/player_rankings_screen.dart';
+import '../screens/cricket_hub_screen.dart';
 
 class SportsScreen extends StatefulWidget {
   final Locale locale;
@@ -115,7 +116,19 @@ class _SportsScreenState extends State<SportsScreen> {
           style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 20),
         ),
         actions: [
-          if (_selectedSport != 'all')
+          if (_selectedSport != 'all') ...[
+            if (_selectedSport == 'cricket')
+              TextButton.icon(
+                icon: const Icon(Icons.sports_cricket, size: 18),
+                label: const Text('Hub'),
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => CricketHubScreen(isDark: isDark),
+                    ),
+                  );
+                },
+              ),
             TextButton.icon(
               icon: const Icon(Icons.leaderboard, size: 18),
               label: const Text('Rankings'),
@@ -129,6 +142,7 @@ class _SportsScreenState extends State<SportsScreen> {
                 );
               },
             ),
+          ],
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: _load,

@@ -5451,6 +5451,97 @@ app.get("/api/real/table-tennis/event/:id", async (req, res) => {
   }
 });
 
+// Cricket TEAM rankings from cricket-live-line1 (real ICC-style team rankings).
+// category: 1=test, 2=odi, 3=t20 (men). Returns top teams with rating + image.
+app.get("/api/real/cricket/team-rankings/:category?", async (req, res) => {
+  try {
+    const cat = parseInt(req.params.category || "1", 10);
+    const data = await fetchCricketLine(`/teamRanking/${cat}`);
+    if (!data) return res.status(502).json({ error: "cricket team rankings unavailable" });
+    const teams = (Array.isArray(data) ? data : data.items || []).map((t, i) => ({
+      rank: i + 1,
+      name: t.name || t.team || "Unknown",
+      country: t.country || t.code || "",
+      rating: t.rating || t.points || 0,
+      image: t.img || t.logo || t.flag || null,
+      teamId: t.team_id || t.id || null,
+    }));
+    res.json({ source: "cricket-live-line1", category: cat, count: teams.length, teams });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// Cricket tournaments from cricket-live-line-advance (real logos, grouped by
+// country). Returns a flat list of {tournament_id,name,logo_url,country,type}.
+app.get("/api/real/cricket/tournaments", async (req, res) => {
+  try {
+    const data = await fetchCricketAdvance("/tournaments");
+    const groups = (data && data.items) || [];
+    const flat = [];
+    groups.forEach((g) => {
+      const country = g.country || "International";
+      (g.tournaments || []).forEach((t) => {
+        flat.push({
+          tournament_id: t.tournament_id,
+          name: t.name,
+          logo_url: t.logo_url || null,
+          country,
+          type: t.type || "",
+        });
+      });
+    });
+    res.json({ source: "cricket-live-line-advance", count: flat.length, tournaments: flat });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// Cricket matches for a specific tournament (from /matches, filtered by
+// competition.tournament_id). Returns MatchItem-compatible list.
+app.get("/api/real/cricket/tournament-matches/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const data = await fetchCricketAdvance("/matches");
+    const items = (data && data.items) || [];
+    const matches = items
+      .filter((m) => (m.competition && m.competition.tournament_id === id) ||
+                     (m.tournament_id && m.tournament_id === id))
+      .map((m) => ({
+        match_id: m.match_id,
+        title: m.title,
+        short_title: m.short_title,
+        format_str: m.format_str,
+        status: m.status,
+        status_str: m.status_str,
+        teama: m.teama,
+        teamb: m.teamb,
+        competition: m.competition,
+        date_start: m.date_start,
+        venue: m.venue,
+        logo_url: m.competition ? m.competition.logo_url : null,
+      }));
+    res.json({ source: "cricket-live-line-advance", tournament_id: id, count: matches.length, matches });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// ─── Generic proxy for ALL cricket-live-line-advance endpoints ──────────────
+// Flutter calls /api/real/cricket/proxy/matches/12345/info and this proxies
+// to cricket-live-line-advance /matches/12345/info. Covers every endpoint:
+// matches/*, competitions/*, players/*, teams/*, tournaments/*, venues/*,
+// season/*, iccranks, etc. No need for individual route handlers.
+app.get("/api/real/cricket/proxy/*", async (req, res) => {
+  try {
+    const targetPath = req.params[0] ? '/' + req.params[0] : '/';
+    const data = await fetchCricketAdvance(targetPath);
+    res.json({ source: "cricket-live-line-advance", path: targetPath, data });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
 // ─── START SERVER ────────────────────────────────────────────────────────────
 
 server.listen(PORT, "0.0.0.0", () => {
