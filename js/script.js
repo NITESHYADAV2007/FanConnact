@@ -2117,12 +2117,12 @@ document.addEventListener("DOMContentLoaded", () => {
       // Desktop: collapse/expand via width (sidebar is static here)
       sidebar.classList.remove("sidebar-collapsed");
     } else {
-      sidebar.classList.remove("-translate-x-full");
+      sidebar.classList.remove("-translate-x-full", "sidebar-collapsed");
     }
     localStorage.setItem("sidebar-hidden", "false");
     headerLogo?.classList.add("header-logo-hidden");
     headerLogo?.classList.remove("header-logo-show");
-    sidebarBackdrop?.classList.add("opacity-0", "pointer-events-none");
+    sidebarBackdrop?.classList.remove("opacity-0", "pointer-events-none");
   }
   function closeSidebar() {
     if (!sidebar) return;
