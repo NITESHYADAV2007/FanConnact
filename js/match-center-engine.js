@@ -1213,31 +1213,38 @@
   function renderCommentary() {
     const p = $('panel-commentary'); if (!p) return;
     const feed = M.comm.items.map(it => commItemHtml(it)).join('');
-    const liveTag = STATE === 'live'
-      ? '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-500/20 text-red-300 text-[11px] font-semibold border border-red-500/30"><span class="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse"></span> LIVE</span>'
-      : '';
-    p.innerHTML =
-      '<div class="col-span-12 lg:col-span-8 space-y-6">' +
-      '<div id="comm-players" class="bg-white dark:bg-[#12172D] rounded-lg shadow-sm border border-gray-200 dark:border-gray-800 p-4 flex items-center gap-4 overflow-x-auto"><span class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wide shrink-0">' + esc(M.comm.label) + '</span></div>' +
-      '<div class="bg-white dark:bg-[#12172D] rounded-lg shadow-sm border border-gray-200 dark:border-gray-800 p-4 flex flex-col sm:flex-row sm:items-center gap-4"><div class="inline-flex rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700" id="comm-filters"><button class="comm-filter px-3.5 py-1.5 text-xs font-semibold rounded-md text-white bg-crexGold" data-filter="all">All</button><button class="comm-filter px-3.5 py-1.5 text-xs font-semibold rounded-md text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white" data-filter="four">4s/PTS</button><button class="comm-filter px-3.5 py-1.5 text-xs font-semibold rounded-md text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white" data-filter="six">6s/GOAL</button><button class="comm-filter px-3.5 py-1.5 text-xs font-semibold rounded-md text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white" data-filter="wicket">Wickets</button><button class="comm-filter px-3.5 py-1.5 text-xs font-semibold rounded-md text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white" data-filter="milestone">Milestones</button></div>' + (STATE === 'live' ? '<span class="text-xs text-gray-400 ml-auto hidden sm:block">Updates every few seconds · scroll for history</span>' : '') + '</div>' +
-      '<section class="bg-white dark:bg-[#12172D] rounded-lg shadow-sm overflow-hidden border border-gray-200 dark:border-gray-800"><div class="flex items-center justify-between px-5 py-4 bg-[#0b1626] text-white"><h3 class="font-bold text-sm uppercase tracking-wide">Commentary</h3>' + liveTag + '<span id="comm-innings-label" class="text-xs text-gray-300">' + esc(M.comm.label) + '</span></div><div id="comm-feed" class="divide-y divide-gray-100 dark:divide-gray-800">' + (feed || '<p class="p-6 text-sm text-gray-400">No commentary yet.</p>') + '</div></section>' +
-      '</div>' +
-      '<aside class="col-span-12 lg:col-span-4 space-y-6">' +
-      '<section class="bg-white dark:bg-[#12172D] rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-800"><h3 class="font-bold text-gray-800 dark:text-white text-sm uppercase tracking-wide mb-4">This ' + (SC.isCricket ? 'Over' : 'Minute') + '</h3><div id="this-over-widget"><div class="flex items-center justify-between text-sm mb-2"><span class="text-gray-500 dark:text-gray-400">Over 0</span><span class="font-mono text-emerald-600 dark:text-emerald-400 font-bold">— = 0</span></div><div class="flex gap-1.5"><span class="text-xs text-gray-400">Waiting for first ball…</span></div></div></section>' +
-      '<section class="bg-white dark:bg-[#12172D] rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-800"><h3 class="font-bold text-gray-800 dark:text-white text-sm uppercase tracking-wide mb-4">Over-by-Over</h3><div id="over-history"><p class="text-xs text-gray-400">Over-by-over summary will appear here.</p></div></section>' +
-      '<section class="bg-white dark:bg-[#12172D] rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-800"><h3 class="font-bold text-gray-800 dark:text-white text-sm uppercase tracking-wide mb-4">Live Positions</h3><div id="live-positions"><p class="text-xs text-gray-400">Live player positions appear here during the match.</p></div></section>' +
-      '</aside>';
+    const feedEl = $('comm-feed');
+    if (feedEl) {
+      feedEl.innerHTML = feed || '<p class="p-6 text-sm text-gray-400">No commentary yet.</p>';
+      const labelEl = $('comm-innings-label');
+      if (labelEl) labelEl.textContent = M.comm.label;
+    } else {
+      const liveTag = STATE === 'live'
+        ? '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-500/20 text-red-300 text-[11px] font-semibold border border-red-500/30"><span class="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse"></span> LIVE</span>'
+        : '';
+      p.innerHTML =
+        '<div class="col-span-12 lg:col-span-8 space-y-6">' +
+        '<div id="comm-players" class="bg-white dark:bg-[#12172D] rounded-lg shadow-sm border border-gray-200 dark:border-gray-800 p-4 flex items-center gap-4 overflow-x-auto"><span class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wide shrink-0">' + esc(M.comm.label) + '</span></div>' +
+        '<div class="bg-white dark:bg-[#12172D] rounded-lg shadow-sm border border-gray-200 dark:border-gray-800 p-4 flex flex-col sm:flex-row sm:items-center gap-4"><div class="inline-flex rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700" id="comm-filters"><button class="comm-filter px-3.5 py-1.5 text-xs font-semibold rounded-md text-white bg-crexGold" data-filter="all">All</button><button class="comm-filter px-3.5 py-1.5 text-xs font-semibold rounded-md text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white" data-filter="four">4s/PTS</button><button class="comm-filter px-3.5 py-1.5 text-xs font-semibold rounded-md text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white" data-filter="six">6s/GOAL</button><button class="comm-filter px-3.5 py-1.5 text-xs font-semibold rounded-md text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white" data-filter="wicket">Wickets</button><button class="comm-filter px-3.5 py-1.5 text-xs font-semibold rounded-md text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white" data-filter="milestone">Milestones</button></div>' + (STATE === 'live' ? '<span class="text-xs text-gray-400 ml-auto hidden sm:block">Updates every few seconds · scroll for history</span>' : '') + '</div>' +
+        '<section class="bg-white dark:bg-[#12172D] rounded-lg shadow-sm overflow-hidden border border-gray-200 dark:border-gray-800"><div class="flex items-center justify-between px-5 py-4 bg-[#0b1626] text-white"><h3 class="font-bold text-sm uppercase tracking-wide">Commentary</h3>' + liveTag + '<span id="comm-innings-label" class="text-xs text-gray-300">' + esc(M.comm.label) + '</span></div><div id="comm-feed" class="divide-y divide-gray-100 dark:divide-gray-800">' + (feed || '<p class="p-6 text-sm text-gray-400">No commentary yet.</p>') + '</div></section>' +
+        '</div>' +
+        '<aside class="col-span-12 lg:col-span-4 space-y-6">' +
+        '<section class="bg-white dark:bg-[#12172D] rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-800"><h3 class="font-bold text-gray-800 dark:text-white text-sm uppercase tracking-wide mb-4">This ' + (SC.isCricket ? 'Over' : 'Minute') + '</h3><div id="this-over-widget"><div class="flex items-center justify-between text-sm mb-2"><span class="text-gray-500 dark:text-gray-400">Over 0</span><span class="font-mono text-emerald-600 dark:text-emerald-400 font-bold">— = 0</span></div><div class="flex gap-1.5"><span class="text-xs text-gray-400">Waiting for first ball…</span></div></div></section>' +
+        '<section class="bg-white dark:bg-[#12172D] rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-800"><h3 class="font-bold text-gray-800 dark:text-white text-sm uppercase tracking-wide mb-4">Over-by-Over</h3><div id="over-history"><p class="text-xs text-gray-400">Over-by-over summary will appear here.</p></div></section>' +
+        '<section class="bg-white dark:bg-[#12172D] rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-800"><h3 class="font-bold text-gray-800 dark:text-white text-sm uppercase tracking-wide mb-4">Live Positions</h3><div id="live-positions"><p class="text-xs text-gray-400">Live player positions appear here during the game.</p></div></section>' +
+        '</aside>';
+    }
 
     // filter handlers
-    const feedEl = $('comm-feed');
+    const filterFeed = $('comm-feed');
     p.querySelectorAll('.comm-filter').forEach(btn => btn.addEventListener('click', () => {
       const f = btn.dataset.filter;
       p.querySelectorAll('.comm-filter').forEach(b => { const on = b === btn; b.classList.toggle('bg-crexGold', on); b.classList.toggle('text-white', on); b.classList.toggle('text-gray-500', !on); b.classList.toggle('dark:text-gray-400', !on); });
-      feedEl.querySelectorAll('.comm-item').forEach(it => { it.style.display = (f === 'all' || it.dataset.type === f) ? '' : 'none'; });
+      (filterFeed || $('comm-feed'))?.querySelectorAll('.comm-item').forEach(it => { it.style.display = (f === 'all' || it.dataset.type === f) ? '' : 'none'; });
     }));
 
     // live loop — only for live matches (score + commentary update live)
-    if (STATE === 'live') startLiveLoop(feedEl);
+    if (STATE === 'live') startLiveLoop($('comm-feed'));
   }
 
   // Rules & Regulations panel (sport-aware, proper for ALL games)
@@ -1541,7 +1548,7 @@
       const wrap = document.createElement('div');
       wrap.innerHTML = commItemHtml(it);
       const item = wrap.firstElementChild;
-      item.classList.add('score-flash');
+      item.classList.add('comm-flash');
       feedEl.insertBefore(item, feedEl.firstChild);
       // ---- Score update logic (innings-wise for cricket) ----
       const isGoalLike = (type === 'six' || type === 'four' || type === 'goal' || type === 'set' || type === 'raid' || type === 'pts' || type === 'hit');
