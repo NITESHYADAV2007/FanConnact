@@ -1,0 +1,36 @@
+# Render.com Blueprint file — MUST live at the repo ROOT for Render's
+# "New" -> "Blueprint" flow to detect it. (Render only scans the root.)
+# This deploys the Node backend found in the `backend/` subfolder.
+#
+# Deploy steps:
+#   1. Push this repo to GitHub.
+#   2. On Render: "New" -> "Blueprint" -> select the FanConnact repo.
+#   3. Render reads this file and creates the `fanconnact-api` web service.
+#
+# The backend persists the last successful fetch to db/cache.json and
+# auto-refreshes on a quota-safe schedule, so it survives restarts and the
+# 100/day upstream API quota.
+services:
+  - type: web
+    name: fanconnact-api
+    runtime: node
+    rootDir: backend
+    plan: free
+    buildCommand: npm install
+    startCommand: node server.js
+    healthCheckPath: /api/sync/status
+    envVars:
+      - key: PORT
+        value: 3001
+      - key: DAILY_API_LIMIT
+        value: 100
+      # API keys (optional — server falls back to bundled defaults if omitted).
+      # For best security, set these as "secret" env vars in the Render dashboard.
+      - key: NEWSDATA_KEY
+        sync: false
+      - key: ALLSPORTS_KEY
+        sync: false
+      - key: IG_KEY
+        sync: false
+      - key: CRICKET_KEY
+        sync: false

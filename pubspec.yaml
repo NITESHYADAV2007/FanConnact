@@ -1,7 +1,7 @@
 name: fanconnact
 description: "A new Flutter project."
 publish_to: 'none'
-version: 0.1.0+1
+version: 0.1.0+2002
 
 environment:
   sdk: ^3.12.2
@@ -10,9 +10,15 @@ dependencies:
   flutter:
     sdk: flutter
   http: ^1.2.0
+  web_socket_channel: ^3.0.1
+  video_player: ^2.8.0
   flutter_localizations:
     sdk: flutter
   intl: ^0.20.2
+  firebase_core: ^3.6.0
+  firebase_auth: ^5.3.0
+  cloud_firestore: ^5.4.0
+  google_sign_in: ^6.2.1
 
 dev_dependencies:
   flutter_test:
@@ -24,7 +30,7 @@ flutter_launcher_icons:
   android: "ic_launcher"
   ios: true
   image_path: "assets/fancoin/fanconnactlogo.png"
-  adaptive_background_color: "#2196F3"
+  adaptive_background_image: "assets/fancoin/icon_bg_transparent.png"
   min_sdk_android: 21
 
 flutter:

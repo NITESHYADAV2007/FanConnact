@@ -1,0 +1,29 @@
+# Render.com blueprint for the FanConnact backend.
+# Deploy: push this repo to GitHub, then "New" -> "Blueprint" on Render.
+# The backend persists the last successful fetch to db/cache.json and
+# auto-refreshes every 20 min, so it survives restarts and the 100/day
+# upstream API quota.
+services:
+  - type: web
+    name: fanconnact-api
+    runtime: node
+    rootDir: backend
+    plan: free
+    buildCommand: npm install
+    startCommand: node server.js
+    healthCheckPath: /api/sync/status
+    envVars:
+      - key: PORT
+        value: 3001
+      - key: DAILY_API_LIMIT
+        value: 100
+      # API keys (optional — server falls back to bundled defaults if omitted).
+      # For best security, set these as "secret" env vars in the Render dashboard.
+      - key: NEWSDATA_KEY
+        sync: false
+      - key: ALLSPORTS_KEY
+        sync: false
+      - key: IG_KEY
+        sync: false
+      - key: CRICKET_KEY
+        sync: false

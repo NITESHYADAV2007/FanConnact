@@ -22,6 +22,9 @@ const List<Sport> sports = [
   Sport(key: 'volleyball', name: 'Volleyball', emoji: '🏐'),
   Sport(key: 'tabletennis', name: 'Table Tennis', emoji: '🏓'),
   Sport(key: 'esports', name: 'E-Sports', emoji: '🎮'),
+  Sport(key: 'rugby', name: 'Rugby', emoji: '🏉'),
+  Sport(key: 'golf', name: 'Golf', emoji: '⛳'),
+  Sport(key: 'mma', name: 'MMA', emoji: '🥊'),
 ];
 
 class MatchItem {
@@ -32,10 +35,17 @@ class MatchItem {
   final String teamB;
   final String? logoA;
   final String? logoB;
+  final String? abbrA;
+  final String? abbrB;
   final String? scoreA;
   final String? scoreB;
   final String status; // "LIVE", "UPCOMING", "COMPLETED"
   final String time;
+  final String? matchId;
+  final String? result;
+  final String? toss;
+  final String? matchType;
+  final String? venue;
 
   const MatchItem({
     required this.sport,
@@ -45,10 +55,17 @@ class MatchItem {
     required this.teamB,
     this.logoA,
     this.logoB,
+    this.abbrA,
+    this.abbrB,
     this.scoreA,
     this.scoreB,
     required this.status,
     required this.time,
+    this.matchId,
+    this.result,
+    this.toss,
+    this.matchType,
+    this.venue,
   });
 
   // Build from the backend /api/matches payload (ESPN real data).
@@ -64,6 +81,9 @@ class MatchItem {
       'tabletennis': '🏓',
       'kabaddi': '🤼',
       'esports': '🎮',
+      'rugby': '🏉',
+      'golf': '⛳',
+      'mma': '🥊',
     };
     return MatchItem(
       sport: sportKey,
@@ -77,6 +97,12 @@ class MatchItem {
       logoB: (m['awayLogo'] ?? '').toString().isNotEmpty
           ? m['awayLogo'].toString()
           : null,
+      abbrA: (m['homeAbbr'] ?? '').toString().isNotEmpty
+          ? m['homeAbbr'].toString()
+          : null,
+      abbrB: (m['awayAbbr'] ?? '').toString().isNotEmpty
+          ? m['awayAbbr'].toString()
+          : null,
       scoreA: (m['homeScore'] ?? '').toString().isNotEmpty
           ? m['homeScore'].toString()
           : null,
@@ -85,6 +111,21 @@ class MatchItem {
           : null,
       status: (m['status'] ?? 'UPCOMING').toString(),
       time: (m['time'] ?? '').toString(),
+      matchId: (m['matchId'] ?? '').toString().isNotEmpty
+          ? m['matchId'].toString()
+          : null,
+      result: (m['result'] ?? '').toString().isNotEmpty
+          ? m['result'].toString()
+          : null,
+      toss: (m['toss'] ?? '').toString().isNotEmpty
+          ? m['toss'].toString()
+          : null,
+      matchType: (m['matchType'] ?? '').toString().isNotEmpty
+          ? m['matchType'].toString()
+          : null,
+      venue: (m['venue'] ?? '').toString().isNotEmpty
+          ? m['venue'].toString()
+          : null,
     );
   }
 }
@@ -97,6 +138,8 @@ class NewsItem {
   final String timeAgo;
   final String tag;
   final String? image;
+  final String? description;
+  final String? link;
 
   const NewsItem({
     required this.sport,
@@ -106,74 +149,15 @@ class NewsItem {
     required this.timeAgo,
     required this.tag,
     this.image,
+    this.description,
+    this.link,
   });
 }
 
-// ─── Mock matches ───────────────────────────────────────────────
-const List<MatchItem> matches = [
-  MatchItem(
-    sport: 'cricket',
-    sportEmoji: '🏏',
-    series: 'IND vs AUS • 3rd T20I',
-    teamA: 'India',
-    teamB: 'Australia',
-    scoreA: '182/4',
-    scoreB: '176/9',
-    status: 'LIVE',
-    time: '16.2 ov',
-  ),
-  MatchItem(
-    sport: 'football',
-    sportEmoji: '⚽',
-    series: 'Premier League • Matchday 12',
-    teamA: 'Arsenal',
-    teamB: 'Chelsea',
-    scoreA: '2',
-    scoreB: '1',
-    status: 'LIVE',
-    time: '67\'',
-  ),
-  MatchItem(
-    sport: 'basketball',
-    sportEmoji: '🏀',
-    series: 'NBA • Regular Season',
-    teamA: 'Lakers',
-    teamB: 'Celtics',
-    status: 'UPCOMING',
-    time: 'Tonight 8:30 PM',
-  ),
-  MatchItem(
-    sport: 'tennis',
-    sportEmoji: '🎾',
-    series: 'Wimbledon • Quarter Final',
-    teamA: 'Djokovic',
-    teamB: 'Alcaraz',
-    status: 'UPCOMING',
-    time: 'Tomorrow 3:00 PM',
-  ),
-  MatchItem(
-    sport: 'kabaddi',
-    sportEmoji: '🤼',
-    series: 'Pro Kabaddi • Match 45',
-    teamA: 'Bengaluru Bulls',
-    teamB: 'Patna Pirates',
-    scoreA: '34',
-    scoreB: '31',
-    status: 'COMPLETED',
-    time: 'FT',
-  ),
-  MatchItem(
-    sport: 'hockey',
-    sportEmoji: '🏑',
-    series: 'Hockey WC • Pool A',
-    teamA: 'India',
-    teamB: 'Germany',
-    status: 'UPCOMING',
-    time: 'Sun 6:00 PM',
-  ),
-];
-
 // ─── Mock news feed (replaces "reels" from Crex-style layout) ────
+// NOTE: This is only used as the initial empty-state placeholder in
+// HomeScreen before real API data loads. The app never renders static
+// match data — all matches come from LiveMatchService (backend API).
 const List<NewsItem> news = [
   NewsItem(
     sport: 'cricket',

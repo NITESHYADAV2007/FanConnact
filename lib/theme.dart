@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 class AppColors {
   static const Color brandBlue = Color(0xFF2196F3);
   static const Color brandBlueDark = Color(0xFF1565C0);
+  // "connact" accent: blue in light mode, green in dark mode.
+  static const Color brandGreen = Color(0xFF21C25A);
   static const Color liveRed = Color(0xFFE53935);
   static const Color completedGrey = Color(0xFF9E9E9E);
   static const Color upcomingAmber = Color(0xFFFF9800);
