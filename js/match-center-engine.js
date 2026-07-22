@@ -805,9 +805,9 @@
     const bowlerTeam = it.bowler && it.bowler !== '—' && it.bowler !== 'Serve' ? (M.players.home.indexOf(it.bowler) >= 0 ? HOME : (M.players.away.indexOf(it.bowler) >= 0 ? AWAY : (rng() > 0.5 ? AWAY : HOME))) : (rng() > 0.5 ? AWAY : HOME);
     let avatars = '';
     if (it.bowler && it.bowler !== '—' && it.bowler !== 'Serve') {
-      avatars = '<div class="comm-avatars shrink-0 flex items-center -space-x-2">' + av(it.striker, strikerTeam, 30) + av(it.bowler, bowlerTeam, 20) + (it.nonstriker ? av(it.nonstriker, strikerTeam, 10) : '') + '</div>';
+      avatars = '<div class="comm-avatars shrink-0 flex items-center -space-x-2">' + av(it.striker, strikerTeam, 3) + av(it.bowler, bowlerTeam, 2) + (it.nonstriker ? av(it.nonstriker, strikerTeam, 1) : '') + '</div>';
     } else {
-      avatars = '<div class="comm-avatars shrink-0 flex items-center -space-x-2">' + av(it.striker, strikerTeam, 30) + '</div>';
+      avatars = '<div class="comm-avatars shrink-0 flex items-center -space-x-2">' + av(it.striker, strikerTeam, 3) + '</div>';
     }
     const newBat = it.type === 'wicket' && it.newBatsman
       ? '<div class="mt-1 text-[11px] text-crexGold font-semibold">🏏 New batsman: ' + esc(it.newBatsman) + '</div>' : '';
@@ -830,6 +830,10 @@
         ? '<span class="inline-flex items-center gap-1.5 self-start sm:self-auto px-3 py-1 rounded-full bg-blue-500/15 text-blue-300 text-[11px] font-semibold border border-blue-500/30">Upcoming</span>'
         : '<span class="inline-flex items-center gap-1.5 self-start sm:self-auto px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-300 text-[11px] font-semibold border border-emerald-500/30"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Result</span>';
 
+    const homeId = 'score-val-home';
+    const awayId = 'score-val-away';
+    const homeSubId = 'score-sub-home';
+    const awaySubId = 'score-sub-away';
     const teamPanel = (tm, sc, reverse) => {
       const won = sc.won;
       const resBadge = st.status === 'finished'
@@ -839,7 +843,7 @@
         '<img alt="' + esc(tm.name) + '" class="w-14 h-14 md:w-16 md:h-16 rounded-full border-2 border-slate-200 dark:border-white/20 shadow-lg shrink-0" src="' + tm.img + '" onerror="this.src=\'https://ui-avatars.com/api/?name=' + encodeURIComponent(tm.code.toUpperCase()) + '&background=6B7280&color=fff&size=64\'">' +
         '<div class="min-w-0">' +
         '<div class="flex items-center gap-2 ' + (reverse ? 'md:justify-end' : '') + '"><p class="text-base font-semibold text-slate-900 dark:text-white">' + esc(tm.name) + '</p>' + resBadge + '</div>' +
-        '<div class="flex items-baseline gap-1.5 mt-1 ' + (reverse ? 'md:justify-end' : '') + '"><span class="score-flash text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white">' + esc(sc.score) + '</span><span class="text-xl font-semibold text-slate-500 dark:text-gray-300">' + esc(sc.sub) + '</span></div>' +
+        '<div class="flex items-baseline gap-1.5 mt-1 ' + (reverse ? 'md:justify-end' : '') + '"><span id="' + (reverse ? awayId : homeId) + '" class="score-flash text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white">' + esc(sc.score) + '</span><span id="' + (reverse ? awaySubId : homeSubId) + '" class="text-xl font-semibold text-slate-500 dark:text-gray-300">' + esc(sc.sub) + '</span></div>' +
         '<p class="text-xs text-slate-500 dark:text-gray-400 mt-1 ' + (reverse ? 'md:text-right' : '') + '">' + esc(sc.detail || '') + '</p>' +
         '</div></div>';
     };
@@ -850,8 +854,8 @@
     const center = '<div class="relative flex flex-col items-center justify-center px-4 py-4 md:py-0 md:px-8 border-y md:border-y-0 md:border-x border-gray-200 dark:border-gray-800 bg-slate-50 dark:bg-white/5">' +
       '<div id="center-anim-host" class="pointer-events-none absolute inset-0 flex items-center justify-center z-10"></div>' +
       '<div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-crexGold/20 mb-2"><span class="text-2xl">' + st.icon + '</span></div>' +
-      '<h2 class="text-crexGold text-center text-lg md:text-xl font-bold leading-tight">' + esc(st.resultText) + '</h2>' +
-      '<p class="text-[11px] text-slate-500 dark:text-gray-400 mt-1 text-center">' + esc(st.subText || '') + '</p>' + clockHtml + '</div>';
+      '<h2 id="score-result-text" class="text-crexGold text-center text-lg md:text-xl font-bold leading-tight">' + esc(st.resultText) + '</h2>' +
+      '<p id="score-sub-text" class="text-[11px] text-slate-500 dark:text-gray-400 mt-1 text-center">' + esc(st.subText || '') + '</p>' + clockHtml + '</div>';
 
     sec.innerHTML =
       '<div class="max-w-7xl mx-auto">' +
@@ -1548,7 +1552,6 @@
       const wrap = document.createElement('div');
       wrap.innerHTML = commItemHtml(it);
       const item = wrap.firstElementChild;
-      item.classList.add('comm-flash');
       feedEl.insertBefore(item, feedEl.firstChild);
       // ---- Score update logic (innings-wise for cricket) ----
       const isGoalLike = (type === 'six' || type === 'four' || type === 'goal' || type === 'set' || type === 'raid' || type === 'pts' || type === 'hit');
@@ -1648,6 +1651,8 @@
   }
   // Big centre animation (between the two team scores) on a real score event.
   function animateCenterEvent(type, label) {
+    const activeTab = document.querySelector('#match-tabs .tab-link.border-crexGold');
+    if (activeTab && activeTab.dataset.tab === 'commentary') return;
     const host = $('center-anim-host'); if (!host) return;
     const el = document.createElement('div');
     el.className = 'center-event center-event-' + type;
@@ -1659,6 +1664,8 @@
 
   // ---- Crex-style floating ball animation ----
   function animateBall(type, label) {
+    const activeTab = document.querySelector('#match-tabs .tab-link.border-crexGold');
+    if (activeTab && activeTab.dataset.tab === 'commentary') return;
     let host = $('ball-anim-host');
     if (!host) {
       host = document.createElement('div');
@@ -1669,15 +1676,8 @@
     const el = document.createElement('div');
     el.className = 'crex-ball crex-ball-' + type;
     el.textContent = label;
-    const sh = $('score-header');
-    if (sh) {
-      const rect = sh.getBoundingClientRect();
-      el.style.left = '50vw';
-      el.style.top = Math.max(0, rect.bottom - 50) + 'px';
-    } else {
-      el.style.left = '50vw';
-      el.style.top = '40vh';
-    }
+    el.style.left = '50vw';
+    el.style.top = '12vh';
     host.appendChild(el);
     setTimeout(() => el.remove(), 1600);
   }
