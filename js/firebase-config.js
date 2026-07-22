@@ -112,11 +112,11 @@ const handleSocialLogin = async(provider) => {
 
                 // ========= GAMIFICATION =========
 
-                level: 0,
+                level: 1,
 
                 xp: 0,
 
-                coins: 0,
+                coins: 100,
 
                 totalPredictions: 0,
 
@@ -486,11 +486,11 @@ signupForm?.addEventListener("submit", async(e) => {
 
             // ========= GAMIFICATION =========
 
-            level: 0,
+            level: 1,
 
             xp: 0,
 
-            coins: 0,
+            coins: 100,
 
             totalPredictions: 0,
 
