@@ -17,3 +17,31 @@ Thumbs.db
 # ─── Build output ───
 dist/
 build/
+
+# ─── Flutter / Dart / Pub related ───
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+/coverage/
+app.*.symbols
+app.*.map.json
+/android/app/debug
+/android/app/profile
+/android/app/release
+
+# ─── Misc ───
+*.class
+*.pyc
+*.swp
+.atom/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
+*.iml
+*.ipr
+*.iws
+.idea/

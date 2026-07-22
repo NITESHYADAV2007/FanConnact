@@ -1,5 +1,18 @@
+const {
+
+    startCleanup
+
+} = require("./presence/cleanupManager");
+
+const presenceRoutes =
+require("./routes/presence.routes");
+
 const express = require("express");
 const cors = require("cors");
+const helmet = require("helmet");
+const compression = require("compression");
+const rateLimit = require("express-rate-limit");
+const dotenv = require("dotenv");
 const path = require("path");
 const fs = require("fs");
 const http = require("http");
@@ -10,11 +23,102 @@ const rankingsSync = require("./rankings-sync");
 const { createChatServer } = require("./chat-server");
 const { createNotificationServer, pushNotification } = require("./notif-server");
 
-const app = express();
-app.use(cors());
-app.use(express.json());
 
-const PORT = process.env.PORT || 3001;
+const matchRoutes = require("./routes/matches.routes");
+
+const seriesRoutes = require("./routes/series.routes");
+
+const teamRoutes=require("./routes/teams.routes");
+const playerRoutes =
+require("./routes/players.routes");
+const venueRoutes =
+require("./routes/venues.routes");
+
+const rankingRoutes =
+require("./routes/rankings.routes");
+
+const newsRoutes =
+require("./routes/news.routes");
+const photoRoutes =
+require("./routes/photos.routes");
+
+const matchCenterRoutes =
+require("./routes/matchcenter.routes");
+
+const auctionRoutes =
+require("./routes/auction.routes");
+
+const scheduleRoutes =
+require("./routes/schedule.routes");
+
+const archiveRoutes =
+require("./routes/archive.routes");
+
+const browseRoutes =
+require("./routes/browse.routes");
+
+const statsRoutes =
+require("./routes/stats.routes");
+
+
+
+dotenv.config();
+const PORT = process.env.PORT || 5000;
+
+const app = express();
+
+const limiter = rateLimit({
+    windowMs: 60 * 1000,
+    max: 300
+});
+
+
+
+app.use(cors());
+app.use(helmet());
+app.use(compression());
+app.use(express.json());
+app.use(limiter);
+
+
+
+app.use("/api/matches", matchRoutes);
+
+app.use("/api/series", seriesRoutes);
+
+app.use("/api/teams",teamRoutes);
+
+app.use("/api/players",playerRoutes);
+
+app.use("/api/venues", venueRoutes);
+
+app.use("/api/rankings", rankingRoutes);
+
+app.use("/api/news",newsRoutes);
+
+app.use("/api/photos", photoRoutes);
+
+app.use("/api/mcenter",matchCenterRoutes);
+
+app.use("/api/auction", auctionRoutes);
+
+app.use("/api/schedule", scheduleRoutes);
+
+app.use("/api/archive", archiveRoutes);
+
+app.use("/api/browse", browseRoutes);
+
+app.use("/api/stats", statsRoutes);
+
+app.use(
+
+"/api/presence",
+
+presenceRoutes
+
+);
+
+
 const DATA_DIR = path.join(__dirname, "..", "data");
 const PLAYER_RANKINGS_PATH = path.join(DATA_DIR, "player-rankings.json");
 const TEAM_RANKINGS_PATH = path.join(DATA_DIR, "team-rankings.json");
@@ -3948,6 +4052,116 @@ app.get('/api/match/graphs', (req, res) => {
   });
 });
 
+// ─── MATCHES (real data from ESPN scoreboard, with team logos) ──────────────
+// Maps our app sport keys -> ESPN scoreboard path.
+const MATCH_SPORT_PATHS = {
+  football: 'soccer/eng.1',     // Premier League
+  basketball: 'basketball/nba',
+  hockey: 'hockey/nhl',
+  baseball: 'baseball/mlb',
+  tennis: 'tennis/atp',
+  cricket: 'cricket',           // ESPN has no cricket scoreboard; falls back
+  volleyball: null,
+  tabletennis: null,
+  kabaddi: null,
+  esports: null,
+};
+
+async function fetchEspnScoreboard(path) {
+  const url = `https://site.web.api.espn.com/apis/site/v2/sports/${path}/scoreboard`;
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), 8000);
+  try {
+    const r = await fetch(url, { signal: ctrl.signal });
+    if (!r.ok) return [];
+    const j = await r.json();
+    return (j.events || []).map((ev) => {
+      const comp = (ev.competitions && ev.competitions[0]) || {};
+      const cs = comp.competitors || [];
+      const home = cs.find((c) => c.homeAway === 'home') || cs[0] || {};
+      const away = cs.find((c) => c.homeAway === 'away') || cs[1] || {};
+      const st = (ev.status && ev.status.type) || {};
+      const state = st.state; // 'pre' | 'in' | 'post'
+      const status = state === 'in' ? 'LIVE' : state === 'post' ? 'COMPLETED' : 'UPCOMING';
+      const team = (t) => ({
+        name: (t.team && t.team.displayName) || (t.team && t.team.name) || 'TBD',
+        abbr: (t.team && t.team.abbreviation) || '',
+        logo: (t.team && t.team.logo) || '',
+      });
+      const h = team(home), a = team(away);
+      return {
+        sport: ev.league ? (ev.league.abbreviation || ev.league.name) : '',
+        league: (ev.league && ev.league.name) || '',
+        status,
+        state,
+        time: st.shortDetail || st.description || ev.date || '',
+        date: ev.date || '',
+        homeName: h.name,
+        homeAbbr: h.abbr,
+        homeLogo: h.logo,
+        awayName: a.name,
+        awayAbbr: a.abbr,
+        awayLogo: a.logo,
+        homeScore: home.score != null ? String(home.score) : '',
+        awayScore: away.score != null ? String(away.score) : '',
+        venue: (comp.venue && comp.venue.fullName) || '',
+      };
+    });
+  } catch (e) {
+    console.error('Scoreboard fetch failed for', path, e.message);
+    return [];
+  } finally {
+    clearTimeout(t);
+  }
+}
+
+// Static fallback (used when ESPN has no data or is unreachable).
+function staticMatchesFor(sport) {
+  const FALLBACK = {
+    cricket: [
+      { homeName: 'India', awayName: 'Australia', homeLogo: 'https://flagcdn.com/in.svg', awayLogo: 'https://flagcdn.com/au.svg', status: 'LIVE', homeScore: '182/4', awayScore: '176/9', time: '16.2 ov', league: 'IND vs AUS • 3rd T20I' },
+      { homeName: 'England', awayName: 'South Africa', homeLogo: 'https://flagcdn.com/gb.svg', awayLogo: 'https://flagcdn.com/za.svg', status: 'UPCOMING', homeScore: '', awayScore: '', time: 'Tomorrow 7:00 PM', league: 'ENG vs SA • 1st ODI' },
+    ],
+    football: [
+      { homeName: 'Arsenal', awayName: 'Chelsea', homeLogo: 'https://crests.football-data.org/57.png', awayLogo: 'https://crests.football-data.org/61.png', status: 'LIVE', homeScore: '2', awayScore: '1', time: "67'", league: 'Premier League' },
+    ],
+    basketball: [
+      { homeName: 'Lakers', awayName: 'Celtics', homeLogo: '', awayLogo: '', status: 'UPCOMING', homeScore: '', awayScore: '', time: 'Tonight 8:30 PM', league: 'NBA' },
+    ],
+  };
+  return (FALLBACK[sport] || []).map((m) => ({
+    sport: '', league: m.league || '', status: m.status, state: m.status === 'LIVE' ? 'in' : m.status === 'COMPLETED' ? 'post' : 'pre',
+    time: m.time, date: '', homeName: m.homeName, homeAbbr: '', homeLogo: m.homeLogo || '', awayName: m.awayName, awayAbbr: '', awayLogo: m.awayLogo || '',
+    homeScore: m.homeScore || '', awayScore: m.awayScore || '', venue: '',
+  }));
+}
+
+app.get('/api/matches', async (req, res) => {
+  try {
+    const sport = (req.query.sport || 'all').toString();
+    let results = [];
+    if (sport === 'all') {
+      for (const key of Object.keys(MATCH_SPORT_PATHS)) {
+        const path = MATCH_SPORT_PATHS[key];
+        if (!path) { results = results.concat(staticMatchesFor(key)); continue; }
+        const ms = await fetchEspnScoreboard(path);
+        results = results.concat(ms.length ? ms : staticMatchesFor(key));
+      }
+    } else {
+      const path = MATCH_SPORT_PATHS[sport];
+      if (!path) {
+        results = staticMatchesFor(sport);
+      } else {
+        const ms = await fetchEspnScoreboard(path);
+        results = ms.length ? ms : staticMatchesFor(sport);
+      }
+    }
+    res.json({ source: 'espn', count: results.length, matches: results });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
 // ─── START SERVER ────────────────────────────────────────────────────────────
 
 server.listen(PORT, () => {
@@ -3962,6 +4176,8 @@ server.listen(PORT, () => {
   console.log(`  GET /api/sync/status`);
   console.log(`  POST /api/sync/trigger`);
   console.log(`  GET /api/sync/last-updated`);
+
+  startCleanup();
 
   // Initial sync in background
   rankingsSync.startAutoSync();

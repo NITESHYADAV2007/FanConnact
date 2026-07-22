@@ -10,8 +10,13 @@
   "dependencies": {
     "axios": "^1.18.1",
     "cheerio": "^1.2.0",
-    "cors": "^2.8.5",
-    "express": "^4.18.2",
+    "compression": "^1.8.1",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^4.22.2",
+    "express-rate-limit": "^8.6.0",
+    "helmet": "^8.3.0",
+    "node-cache": "^5.1.2",
     "node-cron": "^4.6.0",
     "ws": "^8.21.0"
   }
