@@ -94,7 +94,7 @@ app.use("/api/venues", venueRoutes);
 
 app.use("/api/rankings", rankingRoutes);
 
-app.use("/api/news",newsRoutes);
+// app.use("/api/news",newsRoutes); // doesn't work
 
 app.use("/api/photos", photoRoutes);
 
@@ -4832,22 +4832,30 @@ app.get("/api/news", async (req, res) => {
     let articles = newsListCache.get(listKey);
     if (!articles) {
       articles = [];
-      // 1) Free RSS news (no quota) — the bulk of an "unlimited" feed.
-      const rss = await fetchRssNews(sport);
-      if (rss.length) articles.push(...rss);
-      // 2) Free Currents API news (no quota).
-      const currents = await fetchCurrentsNews({ sport, language });
-      if (currents.length) articles.push(...currents);
-      // 3) Free cricket-line news (no quota).
-      if (sport === "cricket" || sport === "all") {
-        const clNews = await fetchCricketLineNews();
-        if (clNews.length) articles.push(...clNews);
-      }
-      // 4) newsdata.io (uses daily quota) — only if not exhausted.
-      if (!quotaExhausted()) {
-        const data = await fetchSportsNews({ sport, language });
-        if (data && data.articles) articles.push(...data.articles);
-      }
+      try {
+        // 1) Free RSS news (no quota) — the bulk of an "unlimited" feed.
+        const rss = await fetchRssNews(sport);
+        if (rss.length) articles.push(...rss);
+      } catch (e) { console.error("RSS error:", e.message); }
+      try {
+        // 2) Free Currents API news (no quota).
+        const currents = await fetchCurrentsNews({ sport, language });
+        if (currents.length) articles.push(...currents);
+      } catch (e) { console.error("Currents error:", e.message); }
+      try {
+        // 3) Free cricket-line news (no quota).
+        if (sport === "cricket" || sport === "all") {
+          const clNews = await fetchCricketLineNews();
+          if (clNews.length) articles.push(...clNews);
+        }
+      } catch (e) { console.error("CricketLineNews error:", e.message); }
+      try {
+        // 4) newsdata.io (uses daily quota) — only if not exhausted.
+        if (!quotaExhausted()) {
+          const data = await fetchSportsNews({ sport, language });
+          if (data && data.articles) articles.push(...data.articles);
+        }
+      } catch (e) { console.error("Newsdata error:", e.message); }
       // De-dupe by id/link, keep newest first.
       const seen = new Set();
       articles = articles.filter((a) => {
