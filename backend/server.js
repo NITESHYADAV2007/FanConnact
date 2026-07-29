@@ -4635,6 +4635,40 @@ async function fetchSportsNews({ sport = "all", language = "en" }) {
   }
 }
 
+// Currents API (free tier, no daily-quota cost for individual users).
+const CURRENTS_KEY = process.env.CURRENTS_KEY || "BrnWuEr94XsAc5qamVCNN-RJGYqobJvE6u43RUqrGC08prWS";
+async function fetchCurrentsNews({ sport = "all", language = "en" }) {
+  try {
+    const cat = sport === "all" ? "sports" : sport;
+    const url = `https://api.currentsapi.services/v1/latest-news?apiKey=${CURRENTS_KEY}&language=${language}&category=${cat}`;
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 8000);
+    const r = await fetch(url, { signal: ctrl.signal });
+    clearTimeout(t);
+    if (!r.ok) throw new Error("currents " + r.status);
+    const j = await r.json();
+    if (!j.news || !j.news.length) return [];
+    return j.news.map((a) => ({
+      id: a.id || "",
+      title: a.title || "",
+      description: (a.description || "").slice(0, 300),
+      image: a.image || null,
+      video: null,
+      source: (a.source && a.source.name) || a.source || "Currents",
+      sourceIcon: null,
+      link: a.url || "",
+      pubDate: a.published ? new Date(a.published).toISOString() : "",
+      category: cat,
+      language: language,
+      aiTag: null,
+      aiSummary: a.content ? a.content.slice(0, 200) : null,
+    }));
+  } catch (e) {
+    console.error("Currents fetch failed", e.message);
+    return [];
+  }
+}
+
 // Cricket news from cricket-live-line1 (free, no daily-quota cost).
 async function fetchCricketLineNews() {
   const data = await fetchCricketLine("/news");
@@ -4801,12 +4835,15 @@ app.get("/api/news", async (req, res) => {
       // 1) Free RSS news (no quota) — the bulk of an "unlimited" feed.
       const rss = await fetchRssNews(sport);
       if (rss.length) articles.push(...rss);
-      // 2) Free cricket-line news (no quota).
+      // 2) Free Currents API news (no quota).
+      const currents = await fetchCurrentsNews({ sport, language });
+      if (currents.length) articles.push(...currents);
+      // 3) Free cricket-line news (no quota).
       if (sport === "cricket" || sport === "all") {
         const clNews = await fetchCricketLineNews();
         if (clNews.length) articles.push(...clNews);
       }
-      // 3) newsdata.io (uses daily quota) — only if not exhausted.
+      // 4) newsdata.io (uses daily quota) — only if not exhausted.
       if (!quotaExhausted()) {
         const data = await fetchSportsNews({ sport, language });
         if (data && data.articles) articles.push(...data.articles);
@@ -4830,7 +4867,7 @@ app.get("/api/news", async (req, res) => {
     const slice = articles.slice(start, start + pageSize);
     const hasMore = start + pageSize < articles.length;
     res.json({
-      source: "rss+cricketline+newsdata",
+      source: "rss+currents+cricketline+newsdata",
       sport,
       language,
       page,
@@ -5004,49 +5041,6 @@ async function fetchCricketLine(path, key = CRICKET_KEY) {
     clearTimeout(t);
   }
 }
-
-// ─── Cricket Live Line ADVANCE (user-specified real API) ────────────────────
-// Exposes /players and /matches (real cricket player + match data).
-const CRICKET_ADV_HOST = "cricket-live-line-advance.p.rapidapi.com";
-async function fetchCricketAdvance(path) {
-  const ctrl = new AbortController();
-  const t = setTimeout(() => ctrl.abort(), 9000);
-  try {
-    const r = await fetch(`https://${CRICKET_ADV_HOST}${path}`, {
-      signal: ctrl.signal,
-      headers: { "x-rapidapi-key": CRICKET_KEY, "x-rapidapi-host": CRICKET_ADV_HOST, "Content-Type": "application/json" },
-    });
-    if (!r.ok) throw new Error("cricketAdvance " + r.status);
-    const j = await r.json();
-    return j.status === "ok" ? j.response : null;
-  } catch (e) {
-    console.error("CricketAdvance fetch failed", path, e.message);
-    return null;
-  } finally {
-    clearTimeout(t);
-  }
-}
-
-// ─── Table Tennis API (user-specified real API) ─────────────────────────────
-const TT_KEY = process.env.TT_KEY || "31ee070a54mshd6171aacb85b007p1443ccjsnf7c39463a592";
-const TT_HOST = "tabletennisapi.p.rapidapi.com";
-async function fetchTableTennis(path) {
-  const ctrl = new AbortController();
-  const t = setTimeout(() => ctrl.abort(), 9000);
-  try {
-    const r = await fetch(`https://${TT_HOST}${path}`, {
-      signal: ctrl.signal,
-      headers: { "x-rapidapi-key": TT_KEY, "x-rapidapi-host": TT_HOST, "Content-Type": "application/json" },
-    });
-    if (!r.ok) throw new Error("tt " + r.status);
-    return await r.json();
-  } catch (e) {
-    console.error("TableTennis fetch failed", path, e.message);
-    return null;
-  } finally {
-    clearTimeout(t);
-  }
-}
 // allsportsapi2 live endpoints that actually return data.
 const ALLSPORTS_LIVE = {
   basketball: "/api/basketball/matches/live",
@@ -5120,6 +5114,24 @@ async function fetchAllsportsLive(sportSlug) {
   } finally {
     clearTimeout(t);
   }
+}
+
+// Fetch live matches for every non-cricket sport in parallel.
+// Primary source: allsportsapi2 live; fallback: ESPN scoreboard (free, real).
+async function fetchAllSportsForAll() {
+  const sportKeys = Object.keys(SPORTS).filter((k) => k !== "cricket" && k !== "all");
+  const lists = await Promise.all(
+    sportKeys.map(async (k) => {
+      let slug = APP_TO_ALLSPORTS[k] ? await fetchAllsportsLive(APP_TO_ALLSPORTS[k]) : [];
+      if (!slug || !slug.length) {
+        if (SPORT_ESPN_PATHS[k] && SPORT_ESPN_PATHS[k].length) {
+          slug = await fetchEspnMatchesForSport(k);
+        }
+      }
+      return slug && slug.length ? slug : [];
+    })
+  );
+  return lists.flat();
 }
 
 // Cricbuzz matches (live + upcoming + recent). Live-only returned 0 when no
@@ -5452,37 +5464,44 @@ app.get("/api/live-matches", async (req, res) => {
     const cached = matchCache.get(cacheKey);
     if (cached && Date.now() - cached.ts < MATCH_CACHE_TTL) return res.json(cached.data);
 
-    // Serve the persisted DB immediately if it's still fresh (free, no quota).
+    // Always try a fresh live fetch on startup/reopen. The persisted DB is
+    // only a last-resort fallback when the upstream calls fail or the quota is
+    // exhausted, so the app no longer renders stale cards before it refreshes.
     const last = getLast("matches", sport);
-    if (last && dbAge("matches", sport) < MATCH_CACHE_TTL) {
-      return res.json({ ...last, cached: true });
-    }
 
     let results = [];
     if (!quotaExhausted()) {
       if (sport === "all") {
-        // Fetch ALL sports in parallel: ESPN (free, real logos) for most,
-        // cricket-live-line1 + cricbuzz for cricket (real, with logos).
-        const [espnSports, cricket] = await Promise.all([
-          Promise.all(
-            Object.keys(SPORT_ESPN_PATHS)
-              .filter((k) => k !== "cricket")
-              .map((k) => fetchEspnMatchesForSport(k))
-          ),
-          fetchCricketLineMatches(),
+        // Cricket from cricbuzz (real, with logos); the rest from
+        // allsportsapi2 live endpoints (real, with logos), falling back
+        // to ESPN scoreboard when allsportsapi2 has no live data.
+        const [cricket, others] = await Promise.all([
+          fetchCricbuzzLive(),
+          fetchAllSportsForAll(),
         ]);
-        results = [...espnSports.flat(), ...cricket];
+        results = [...cricket, ...others];
       } else if (sport === "cricket") {
-        results = await fetchCricketLineMatches();
-      } else if (SPORT_ESPN_PATHS[sport] && SPORT_ESPN_PATHS[sport].length) {
-        // ESPN-covered sport: real matches + real logos, free, no quota.
-        results = await fetchEspnMatchesForSport(sport);
+        // Cricket data from cricbuzz (live + upcoming + recent).
+        results = await fetchCricbuzzLive();
+      } else if (APP_TO_ALLSPORTS[sport]) {
+        // All other sports from allsportsapi2 live endpoints (per request).
+        // Fall back to ESPN (free, real, with logos) when allsportsapi2
+        // has no live data for that sport right now.
+        let slug = await fetchAllsportsLive(APP_TO_ALLSPORTS[sport]);
+        if (!slug || !slug.length) {
+          if (SPORT_ESPN_PATHS[sport] && SPORT_ESPN_PATHS[sport].length) {
+            slug = await fetchEspnMatchesForSport(sport);
+          }
+        }
+        results = slug && slug.length ? slug : [];
+        if (!results.length) results = staticMatchesFor(sport);
+        results = await enrichWithLogos(sport, results);
       } else {
-        // Sports not on ESPN scoreboard (kabaddi, volleyball, etc.):
-        // try allsportsapi2 live, enrich with ESPN logos, else static.
-        const slug = APP_TO_ALLSPORTS[sport]
-          ? await fetchAllsportsLive(APP_TO_ALLSPORTS[sport])
-          : [];
+        // Sports not covered by allsportsapi2: ESPN if available, else static.
+        let slug = [];
+        if (SPORT_ESPN_PATHS[sport] && SPORT_ESPN_PATHS[sport].length) {
+          slug = await fetchEspnMatchesForSport(sport);
+        }
         results = slug && slug.length ? slug : [];
         if (!results.length) results = staticMatchesFor(sport);
         results = await enrichWithLogos(sport, results);
@@ -5497,150 +5516,6 @@ app.get("/api/live-matches", async (req, res) => {
     const data = { source: "realtime", count: results.length, matches: results, cached: results.length > 0 && quotaExhausted() };
     matchCache.set(cacheKey, { ts: Date.now(), data });
     res.json(data);
-  } catch (e) {
-    res.status(500).json({ error: e.message });
-  }
-});
-
-// ─── REAL-API PROXY ROUTES (user-specified RapidAPI sources) ────────────────
-// These proxy the exact APIs the app should use, so the Flutter client can
-// call our backend (one key, one origin) and we fan out to the real providers.
-
-// Cricket players + matches from cricket-live-line-advance (real API).
-app.get("/api/real/cricket/players", async (req, res) => {
-  try {
-    const data = await fetchCricketAdvance("/players");
-    const items = (data && data.items) || [];
-    res.json({ source: "cricket-live-line-advance", count: items.length, players: items });
-  } catch (e) {
-    res.status(500).json({ error: e.message });
-  }
-});
-app.get("/api/real/cricket/matches", async (req, res) => {
-  try {
-    const data = await fetchCricketAdvance("/matches");
-    const items = (data && data.items) || [];
-    res.json({ source: "cricket-live-line-advance", count: items.length, matches: items });
-  } catch (e) {
-    res.status(500).json({ error: e.message });
-  }
-});
-
-// Football player search from free-api-live-football-data (real API).
-app.get("/api/real/football/players", async (req, res) => {
-  try {
-    const q = (req.query.search || "m").toString();
-    const sugg = await fetchFootballPlayers(q);
-    res.json({ source: "free-api-live-football-data", query: q, count: sugg.length, players: sugg });
-  } catch (e) {
-    res.status(500).json({ error: e.message });
-  }
-});
-
-// Table-tennis team + event from tabletennisapi (real API).
-app.get("/api/real/table-tennis/team/:id", async (req, res) => {
-  try {
-    const data = await fetchTableTennis(`/api/table-tennis/team/${req.params.id}`);
-    res.json({ source: "tabletennisapi", team: (data && data.team) || null });
-  } catch (e) {
-    res.status(500).json({ error: e.message });
-  }
-});
-app.get("/api/real/table-tennis/event/:id", async (req, res) => {
-  try {
-    const data = await fetchTableTennis(`/api/table-tennis/event/${req.params.id}`);
-    res.json({ source: "tabletennisapi", event: (data && data.event) || null });
-  } catch (e) {
-    res.status(500).json({ error: e.message });
-  }
-});
-
-// Cricket TEAM rankings from cricket-live-line1 (real ICC-style team rankings).
-// category: 1=test, 2=odi, 3=t20 (men). Returns top teams with rating + image.
-app.get("/api/real/cricket/team-rankings/:category?", async (req, res) => {
-  try {
-    const cat = parseInt(req.params.category || "1", 10);
-    const data = await fetchCricketLine(`/teamRanking/${cat}`);
-    if (!data) return res.status(502).json({ error: "cricket team rankings unavailable" });
-    const teams = (Array.isArray(data) ? data : data.items || []).map((t, i) => ({
-      rank: i + 1,
-      name: t.name || t.team || "Unknown",
-      country: t.country || t.code || "",
-      rating: t.rating || t.points || 0,
-      image: t.img || t.logo || t.flag || null,
-      teamId: t.team_id || t.id || null,
-    }));
-    res.json({ source: "cricket-live-line1", category: cat, count: teams.length, teams });
-  } catch (e) {
-    res.status(500).json({ error: e.message });
-  }
-});
-
-// Cricket tournaments from cricket-live-line-advance (real logos, grouped by
-// country). Returns a flat list of {tournament_id,name,logo_url,country,type}.
-app.get("/api/real/cricket/tournaments", async (req, res) => {
-  try {
-    const data = await fetchCricketAdvance("/tournaments");
-    const groups = (data && data.items) || [];
-    const flat = [];
-    groups.forEach((g) => {
-      const country = g.country || "International";
-      (g.tournaments || []).forEach((t) => {
-        flat.push({
-          tournament_id: t.tournament_id,
-          name: t.name,
-          logo_url: t.logo_url || null,
-          country,
-          type: t.type || "",
-        });
-      });
-    });
-    res.json({ source: "cricket-live-line-advance", count: flat.length, tournaments: flat });
-  } catch (e) {
-    res.status(500).json({ error: e.message });
-  }
-});
-
-// Cricket matches for a specific tournament (from /matches, filtered by
-// competition.tournament_id). Returns MatchItem-compatible list.
-app.get("/api/real/cricket/tournament-matches/:id", async (req, res) => {
-  try {
-    const id = req.params.id;
-    const data = await fetchCricketAdvance("/matches");
-    const items = (data && data.items) || [];
-    const matches = items
-      .filter((m) => (m.competition && m.competition.tournament_id === id) ||
-                     (m.tournament_id && m.tournament_id === id))
-      .map((m) => ({
-        match_id: m.match_id,
-        title: m.title,
-        short_title: m.short_title,
-        format_str: m.format_str,
-        status: m.status,
-        status_str: m.status_str,
-        teama: m.teama,
-        teamb: m.teamb,
-        competition: m.competition,
-        date_start: m.date_start,
-        venue: m.venue,
-        logo_url: m.competition ? m.competition.logo_url : null,
-      }));
-    res.json({ source: "cricket-live-line-advance", tournament_id: id, count: matches.length, matches });
-  } catch (e) {
-    res.status(500).json({ error: e.message });
-  }
-});
-
-// ─── Generic proxy for ALL cricket-live-line-advance endpoints ──────────────
-// Flutter calls /api/real/cricket/proxy/matches/12345/info and this proxies
-// to cricket-live-line-advance /matches/12345/info. Covers every endpoint:
-// matches/*, competitions/*, players/*, teams/*, tournaments/*, venues/*,
-// season/*, iccranks, etc. No need for individual route handlers.
-app.get("/api/real/cricket/proxy/*", async (req, res) => {
-  try {
-    const targetPath = req.params[0] ? '/' + req.params[0] : '/';
-    const data = await fetchCricketAdvance(targetPath);
-    res.json({ source: "cricket-live-line-advance", path: targetPath, data });
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
