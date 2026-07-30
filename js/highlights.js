@@ -2,8 +2,8 @@
 // NEVER exposed to the browser. All live-score calls go through the backend
 // proxy (/api/matches/:sport) which enforces the 100/day quota + cache.
 const API_PROXY_BASE = (location.protocol === 'file:')
-  ? 'http://localhost:3001'
-  : (location.origin.includes('localhost') ? 'http://localhost:3001' : location.origin);
+  ?  "http://192.168.1.11:5000/api"
+  : (location.origin.includes('localhost') ?  "http://192.168.1.11:5000/api" : location.origin);
 
 const SPORT_APIS = {
   football: { base: 'https://v3.football.api-sports.io', endpoint: '/fixtures', dateParam: 'date', leagueParam: 'league' },

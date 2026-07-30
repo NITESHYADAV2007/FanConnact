@@ -263,56 +263,73 @@ function normalizeMatchDetails(apiResponse) {
 
     if (!apiResponse) return null;
 
-    const info = apiResponse.matchHeader || {};
-    const score = apiResponse.scoreCard || {};
-
     return {
 
-        id: String(info.matchId),
+        id: String(apiResponse.matchid),
 
-        series: info.seriesName,
+        series: apiResponse.seriesname,
 
-        matchType: info.matchFormat,
+        matchType:
+            apiResponse.matchformat,
 
-        status: info.state,
+        status:
+            apiResponse.state,
 
-        startTime: info.startDate,
+        statusText:
+            apiResponse.status,
+
+        startTime:
+            apiResponse.startdate,
 
         venue: {
 
-            name: info.venueInfo?.ground,
+            name:
+                apiResponse.venueinfo?.ground,
 
-            city: info.venueInfo?.city,
+            city:
+                apiResponse.venueinfo?.city,
 
-            timezone: info.venueInfo?.timezone
+            timezone:
+                apiResponse.venueinfo?.timezone
 
         },
 
         teams: {
 
-            home: info.team1,
+            home:
+                apiResponse.team1,
 
-            away: info.team2
+            away:
+                apiResponse.team2
 
         },
 
-        toss: info.tossResults,
+        toss:
+            apiResponse.tossstatus,
 
-        score,
+        score:
+            apiResponse.scoreCard || {},
 
-        players: apiResponse.players || {},
+        players:
+            apiResponse.players || {},
 
-        innings: apiResponse.innings || [],
+        innings:
+            apiResponse.innings || [],
 
-        currentBatters: apiResponse.batsmen || [],
+        currentBatters:
+            apiResponse.batsmen || [],
 
-        currentBowlers: apiResponse.bowlers || [],
+        currentBowlers:
+            apiResponse.bowlers || [],
 
-        partnership: apiResponse.partnership || {},
+        partnership:
+            apiResponse.partnership || {},
 
-        currentRunRate: apiResponse.currentRunRate,
+        currentRunRate:
+            apiResponse.currentRunRate,
 
-        requiredRunRate: apiResponse.requiredRunRate
+        requiredRunRate:
+            apiResponse.requiredRunRate
 
     };
 

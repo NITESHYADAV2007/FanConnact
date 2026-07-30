@@ -636,7 +636,7 @@
       </div>
       <p class="">© 2024 FanConnect Sports. All rights reserved.</p>
     </footer>
-  <script type="module">
+ <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
@@ -820,6 +820,60 @@ async function fetchWikipediaImage(name) {
 
 // --- Populate Hero Section ---
 if (player) {
+
+  /* ===========================
+   HERO PROFILE HELPERS
+   (REAL BACKEND ONLY)
+=========================== */
+
+function profileValue(...values) {
+    for (const v of values) {
+        if (
+            v !== undefined &&
+            v !== null &&
+            v !== "" &&
+            v !== "-"
+        ) {
+            return v;
+        }
+    }
+    return "—";
+}
+const profile = player.profile || {};
+
+const basic = {
+    ...profile,
+    ...(player.basic || {})
+};
+const ranking = {
+    ...(player.ranking || {}),
+
+    rank:
+        player.rank ??
+        player.basic?.rank ??
+        player.profile?.rank ??
+        player.ranking?.rank,
+
+    rating:
+        player.rating ??
+        player.basic?.rating ??
+        player.profile?.rating ??
+        player.ranking?.rating
+};
+
+const batting = player.batting || {};
+const bowling = player.bowling || {};
+const career = player.career || {};
+
+function heroValue(...keys) {
+    for (const key of keys) {
+        if (basic[key] !== undefined && basic[key] !== null && basic[key] !== "")
+            return basic[key];
+
+    }
+
+    return "—";
+}
   // For Cricket we ONLY use real API data (from the rankings feed). We never
   // fabricate personal details — missing fields show "—" instead of random
   // values, per the "no static/random data" requirement.
@@ -878,55 +932,223 @@ if (player) {
     var pool = sportTeamPool[sportName] || ["Manchester United","FC Barcelona","LA Lakers","Mumbai Indians"];
     player.team = pool[~~(Math.random() * pool.length)];
   }
-  document.title = "FanConnect - " + player.name + " Profile";
-  var flagEl = document.getElementById("player-country-flag");
-  var nameEl = document.getElementById("player-fullname");
-  var roleEl = document.getElementById("player-role");
-  var bioEl = document.getElementById("player-bio");
-  var portraitEl = document.getElementById("player-portrait");
-  if (flagEl) flagEl.textContent = getFlag(player.country);
-  if (nameEl) nameEl.textContent = player.name;
-  var roleMap = { Cricket:"Batsman",Football:"Forward",Basketball:"Guard",Tennis:"Player",
-    Baseball:"Batter",Hockey:"Forward",Volleyball:"Spiker",Kabaddi:"Raider",
-    "Table Tennis":"Player","E-Sports":"Player" };
-  if (roleEl) roleEl.textContent = (player.country || "International") + " • " + (roleMap[sportName] || "Player");
-  if (bioEl) bioEl.textContent = player.name + " is a professional " + (sportName || "sports") + " player from " + (player.country || "the world") + ". Known for exceptional skills and match-winning performances.";
-  var rankEl = document.getElementById("player-rank");
-  var ratingEl = document.getElementById("player-rating");
-  var statusEl = document.getElementById("player-status");
-  if (rankEl) rankEl.textContent = "#" + (player.rank || "-");
-  if (ratingEl) ratingEl.textContent = player.rating || player.pts || player.points || "—";
-  if (statusEl) statusEl.textContent = player.status || "Active";
-  // Try real profile pic from Wikipedia
-  (async function() {
-    var wikiUrl = await fetchWikipediaImage(player.name);
-    if (wikiUrl && portraitEl) {
-      portraitEl.src = wikiUrl;
-      portraitEl.onerror = function () {
-        this.src = "https://ui-avatars.com/api/?name=" + encodeURIComponent(player.name) + "&background=8b5cf6&color=fff&size=200";
-      };
+ /* ==========================
+   HERO (REAL BACKEND)
+========================== */
+document.title =
+`FanConnact - ${basic.name || "Player"} Profile`;
+
+var flagEl = document.getElementById("player-country-flag");
+var nameEl = document.getElementById("player-fullname");
+var roleEl = document.getElementById("player-role");
+var bioEl = document.getElementById("player-bio");
+var portraitEl = document.getElementById("player-portrait");
+
+if(flagEl){
+    flagEl.textContent=getFlag(basic.country || "");
+}
+
+if(nameEl){
+    nameEl.textContent=basic.name || "Unknown Player";
+}
+if(roleEl){
+
+    const country =
+        basic.country ||
+        basic.nationality ||
+        "International";
+
+    const role =
+        basic.role ||
+        basic.playingRole ||
+        basic.position ||
+        "Player";
+
+    roleEl.textContent =
+        `${country} • ${role}`;
+
+}
+
+if (bioEl) {
+
+    let bio =
+        basic.bio ||
+        basic.description ||
+        `${basic.name || "This player"} is a professional ${sportName} player representing ${basic.country || "their country"}.`;
+
+    // Remove HTML tags
+    bio = bio.replace(/<[^>]*>/g, " ");
+
+    // Decode HTML entities
+    bio = bio
+        .replace(/&nbsp;/g, " ")
+        .replace(/&amp;/g, "&")
+        .replace(/&quot;/g, '"')
+        .replace(/&#39;/g, "'");
+
+    // Clean spaces
+    bio = bio.replace(/\s+/g, " ").trim();
+
+    // Limit to ~550 characters without cutting a word
+    const LIMIT = 550;
+
+    if (bio.length > LIMIT) {
+        bio = bio.substring(0, LIMIT);
+        bio = bio.substring(0, bio.lastIndexOf(" "));
+        bio += "...";
     }
-  })();
-  if (portraitEl && !portraitEl.src) {
-    var url = "https://ui-avatars.com/api/?name=" + encodeURIComponent(player.name) + "&background=8b5cf6&color=fff&size=200";
-    portraitEl.src = url;
-    portraitEl.onerror = function () {
-      this.src = "https://ui-avatars.com/api/?name=" + encodeURIComponent(player.name) + "&background=8b5cf6&color=fff&size=200";
+
+    bioEl.textContent = bio;
+}
+
+/* ---------- IMAGE ---------- */
+
+if (portraitEl) {
+
+    const avatar =
+        "https://ui-avatars.com/api/?name=" +
+        encodeURIComponent(basic.name || "Player") +
+        "&background=8b5cf6&color=fff&size=300";
+
+    portraitEl.src = basic.image || avatar;
+
+    portraitEl.onerror = async function () {
+
+        try {
+
+            const wiki =
+                await fetchWikipediaImage(
+                    basic.name
+                );
+
+            if (wiki) {
+
+                this.onerror = null;
+                this.src = wiki;
+                return;
+
+            }
+
+        } catch (e) {}
+
+        this.src = avatar;
+
     };
-  }
+
+}
+
+/* ---------- RANK ---------- */
+
+var rankEl=document.getElementById("player-rank");
+
+if(rankEl){
+
+    rankEl.textContent =
+        ranking.rank
+        ? "#" + ranking.rank
+        : "—";
+
+}
+
+/* ---------- RATING ---------- */
+
+var ratingEl=document.getElementById("player-rating");
+
+if(ratingEl){
+
+    ratingEl.textContent =
+        ranking.rating ||
+        ranking.points ||
+        ranking.value ||
+        "—";
+
+}
+
+/* ---------- STATUS ---------- */
+
+var statusEl=document.getElementById("player-status");
+
+if(statusEl){
+
+    statusEl.textContent=
+    basic.status || "Active";
+
+}
+
+  
   // Info section: all personal details
   function setInfo(id, val) {
     var el = document.getElementById(id);
     if (el) el.textContent = val || "—";
   }
-  setInfo("info-born", player.birthDate || player.born || player.dob || "—");
-  setInfo("info-age", player.age || "—");
-  setInfo("info-batting", player.batting || player.battingStyle || player.position || player.plays || player.foot || "—");
-  setInfo("info-bowling", player.bowling || player.bowlingStyle || player.style || player.grip || "—");
-  setInfo("info-height", player.height || "—");
-  setInfo("info-weight", player.weight || "—");
-  setInfo("info-jersey", player.jersey || player.jerseyNumber || player.number || "—");
-  setInfo("info-debut", player.debut || player.debutYear || "—");
+  setInfo(
+    "info-debut",
+    profileValue(
+
+        career.debut,
+
+        career.firstMatch,
+
+        career.startYear,
+
+        career.values?.[0]?.debut
+
+    )
+);
+
+
+setInfo(
+    "info-age",
+    profileValue(
+        heroValue("age")
+    )
+);
+
+setInfo(
+    "info-batting",
+    profileValue(
+        heroValue("battingStyle"),
+        heroValue("batting")
+    )
+);
+
+setInfo(
+    "info-bowling",
+    profileValue(
+        heroValue("bowlingStyle"),
+        heroValue("bowling")
+    )
+);
+
+setInfo(
+    "info-height",
+    profileValue(
+        heroValue("height")
+    )
+);
+
+setInfo(
+    "info-weight",
+    profileValue(
+        heroValue("weight")
+    )
+);
+
+setInfo(
+    "info-jersey",
+    profileValue(
+        heroValue("jersey"),
+        heroValue("jerseyNumber")
+    )
+);
+
+setInfo(
+    "info-debut",
+    profileValue(
+       player.career?.values?.[0]?.debut
+    )
+);
+
   // Sport-adaptive info labels
   var labelMap = {
     Cricket:["Batting","Bowling"], Football:["Position","Foot"],
@@ -1110,83 +1332,6 @@ var FORMAT_KEYS = {
 };
 
 // --- Format-specific stat multipliers (all 10 sports) ---
-var FORMAT_MULTIPLIERS = {
-  Cricket: {
-    all:{m:1.0,r:1.0,a:1.0,hs:1.0,sr:1.0,b:1.0,f:1.0,s:1.0,w:1.0},
-    test:{m:0.28,r:0.30,a:1.15,hs:1.1,sr:0.75,b:0.33,f:0.30,s:0.25,w:0.33},
-    odi:{m:0.30,r:0.32,a:1.05,hs:1.0,sr:0.95,b:0.32,f:0.33,s:0.30,w:0.30},
-    t20i:{m:0.18,r:0.16,a:0.85,hs:0.7,sr:1.25,b:0.14,f:0.15,s:0.20,w:0.18},
-    league:{m:0.14,r:0.14,a:0.90,hs:0.6,sr:1.15,b:0.13,f:0.14,s:0.17,w:0.12},
-    domestic:{m:0.10,r:0.08,a:1.0,hs:0.5,sr:0.90,b:0.08,f:0.08,s:0.08,w:0.07}
-  },
-  Football: {
-    all:{m:1.0,g:1.0,a:1.0,r:1.0},
-    premier:{m:0.35,g:0.40,a:0.38,r:1.05},
-    laliga:{m:0.30,g:0.35,a:0.32,r:1.0},
-    bundesliga:{m:0.22,g:0.25,a:0.24,r:0.95},
-    champs:{m:0.18,g:0.22,a:0.20,r:1.15},
-    worldcup:{m:0.10,g:0.12,a:0.10,r:1.20}
-  },
-  Basketball: {
-    all:{m:1.0,p:1.0,r:1.0,a:1.0,fg:1.0,rt:1.0},
-    nba:{m:0.40,p:0.45,r:0.40,a:0.42,fg:1.05,rt:1.0},
-    euroleague:{m:0.25,p:0.22,r:0.28,a:0.25,fg:0.95,rt:0.90},
-    fiba:{m:0.15,p:0.12,r:0.15,a:0.13,fg:0.90,rt:1.10},
-    playoffs:{m:0.12,p:0.14,r:0.12,a:0.14,fg:1.0,rt:1.05},
-    allstar:{m:0.08,p:0.07,r:0.05,a:0.06,fg:1.20,rt:0.80}
-  },
-  Tennis: {
-    all:{m:1.0,t:1.0,wr:1.0,pr:1.0,rnk:1.0,pts:1.0},
-    grandslam:{m:0.25,t:0.30,wr:1.10,pr:0.50,rnk:1.0,pts:0.40},
-    atpfinals:{m:0.12,t:0.15,wr:1.05,pr:0.30,rnk:1.0,pts:0.25},
-    masters:{m:0.20,t:0.22,wr:1.0,pr:0.35,rnk:1.0,pts:0.30},
-    daviscup:{m:0.10,t:0.08,wr:0.90,pr:0.10,rnk:1.0,pts:0.10},
-    olympics:{m:0.08,t:0.10,wr:1.15,pr:0.15,rnk:1.0,pts:0.15}
-  },
-  Baseball: {
-    all:{m:1.0,hr:1.0,avg:1.0,rbi:1.0,ops:1.0,rt:1.0},
-    mlb:{m:0.45,hr:0.50,avg:1.05,rbi:0.48,ops:1.0,rt:1.0},
-    spring:{m:0.15,hr:0.12,avg:0.90,rbi:0.10,ops:0.85,rt:0.80},
-    playoffs:{m:0.12,hr:0.15,avg:1.0,rbi:0.14,ops:1.05,rt:1.10},
-    worldseries:{m:0.08,hr:0.10,avg:1.10,rbi:0.10,ops:1.10,rt:1.20},
-    allstar:{m:0.05,hr:0.06,avg:1.20,rbi:0.05,ops:1.15,rt:0.90}
-  },
-  Hockey: {
-    all:{m:1.0,g:1.0,a:1.0,r:1.0},
-    nhl:{m:0.45,g:0.50,a:0.48,r:1.0},
-    olympics:{m:0.15,g:0.12,a:0.10,r:1.15},
-    worldcup:{m:0.12,g:0.10,a:0.12,r:1.10},
-    playoffs:{m:0.10,g:0.12,a:0.10,r:1.05}
-  },
-  Volleyball: {
-    all:{m:1.0,p:1.0,s:1.0,b:1.0,a:1.0,r:1.0},
-    worldleague:{m:0.40,p:0.45,s:0.42,b:0.40,a:0.44,r:1.0},
-    olympics:{m:0.15,p:0.12,s:0.10,b:0.15,a:0.10,r:1.15},
-    worldcup:{m:0.12,p:0.10,s:0.12,b:0.10,a:0.12,r:1.10},
-    club:{m:0.20,p:0.22,s:0.20,b:0.22,a:0.20,r:0.95}
-  },
-  Kabaddi: {
-    all:{m:1.0,rp:1.0,tp:1.0,tot:1.0,rt:1.0},
-    prokabaddi:{m:0.45,rp:0.50,tp:0.48,tot:0.50,rt:1.0},
-    worldcup:{m:0.15,rp:0.12,tp:0.14,tot:0.13,rt:1.15},
-    asiangames:{m:0.12,rp:0.10,tp:0.10,tot:0.10,rt:1.10},
-    domestic:{m:0.20,rp:0.22,tp:0.20,tot:0.20,rt:0.95}
-  },
-  "E-Sports": {
-    all:{m:1.0,e:1.0,wr:1.0,rt:1.0,g:1.0},
-    major:{m:0.35,e:0.50,wr:1.10,rt:1.0,g:1.0},
-    minor:{m:0.25,e:0.20,wr:1.0,rt:0.95,g:1.0},
-    online:{m:0.20,e:0.10,wr:0.95,rt:0.90,g:1.0},
-    regional:{m:0.20,e:0.20,wr:1.0,rt:0.95,g:1.0}
-  },
-  "Table Tennis": {
-    all:{m:1.0,t:1.0,wr:1.0,pr:1.0,pts:1.0},
-    worldtour:{m:0.40,t:0.45,wr:1.05,pr:0.50,pts:0.45},
-    olympics:{m:0.12,t:0.15,wr:1.15,pr:0.20,pts:0.15},
-    worldcup:{m:0.15,t:0.18,wr:1.10,pr:0.18,pts:0.18},
-    asiangames:{m:0.10,t:0.12,wr:1.05,pr:0.12,pts:0.12}
-  }
-};
 
 // --- Stat card icon generator ---
 function getStatIconHtml(label) {
@@ -1241,28 +1386,6 @@ function generateStatCardsHtml(labels, values) {
   return html;
 }
 
-function getFormatStats(p, sport, format) {
-  var cfg = STAT_CONFIGS[sport] || STAT_CONFIGS.Cricket;
-  var vals = cfg.values(p);
-  var mults = (FORMAT_MULTIPLIERS[sport] || FORMAT_MULTIPLIERS.Cricket);
-  var fm = mults[format] || mults.all;
-  return vals.map(function(v, i) {
-    if (v === "—" || v === "") return v;
-    var num = parseFloat(v);
-    if (isNaN(num)) return v;
-    var multKeys = [fm.m, fm.r, fm.a, 1, fm.hs, fm.sr, fm.b, fm.f, fm.s, fm.w];
-    var multKey = multKeys[i] || 1;
-    if (i === 2) return (num * multKey).toFixed(2);
-    if (i === 3) {
-      var parts = String(v).split(" / ");
-      var h = Math.round(parseInt(parts[0] || 0) * multKey * 0.9);
-      var f = Math.round(parseInt(parts[1] || 0) * multKey * 0.85);
-      return h + " / " + f;
-    }
-    return String(Math.round(num * multKey));
-  });
-}
-
 // --- Career Stats + Dynamic Format Tabs ---
 (function () {
   if (!player) return;
@@ -1289,11 +1412,62 @@ function getFormatStats(p, sport, format) {
       tabContainer.appendChild(btn);
     });
   }
+function renderCards(format) {
 
-  function renderCards(format) {
-    var vals = getFormatStats(player, sportName, format);
-    container.innerHTML = generateStatCardsHtml(cfg.labels, vals);
-  }
+    // Non-cricket sports remain unchanged
+    if (sportName !== "Cricket") {
+        var vals = STAT_CONFIGS[sportName].values(player);
+        container.innerHTML = generateStatCardsHtml(cfg.labels, vals);
+        return;
+    }
+
+    const career = player.career || {};
+
+    const stats =
+        career[format] ||
+        career.all ||
+        {};
+
+    const values = [
+
+        stats.matches ?? "—",
+
+        stats.runs ?? "—",
+
+        stats.average ?? stats.avg ?? "—",
+
+        `${stats.hundreds ?? stats.centuries ?? 0} / ${stats.fifties ?? 0}`,
+
+        stats.highest ??
+        stats.highestScore ??
+        "—",
+
+        stats.strikeRate ??
+        stats.sr ??
+        "—",
+
+        stats.balls ??
+        stats.ballsFaced ??
+        "—",
+
+        stats.fours ??
+        "—",
+
+        stats.sixes ??
+        "—",
+
+        stats.wickets ??
+        "—"
+
+    ];
+
+    container.innerHTML =
+        generateStatCardsHtml(
+            cfg.labels,
+            values
+        );
+
+}
 
   // Format tab clicks
   var formatBtns = document.querySelectorAll(".format-btn");
@@ -1980,6 +2154,9 @@ function refreshTimeline(p, s) {
   }
 })();
 </script>
+
 <script type="module" src="js/script.js"></script>
+
 <script src="js/notif-ws.js"></script></body>
+
 </html>

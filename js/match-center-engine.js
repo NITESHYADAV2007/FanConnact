@@ -28,7 +28,11 @@
   }
   const HS = parseScore(HS_PARAM);
   const AS = parseScore(AS_PARAM);
-  const MATCHID = params.get('match') || (SPORT + '-' + HOME + '-' + AWAY);
+  const MATCHID =
+    params.get("id") ||
+    params.get("match") ||
+    (SPORT + "-" + HOME + "-" + AWAY);
+
   window.__MC_MATCH_ID__ = MATCHID;
   const SERIES_PARAM = params.get('series') || params.get('tournament') || '';
   const FORMAT_PARAM = params.get('format') || '';
@@ -53,8 +57,1125 @@
   const REAL_MATCH = findRealMatch();
 
   // Backend proxy base (same as highlights.js) for real team rankings
-  const API_PROXY = (location.protocol === 'file:') ? 'http://localhost:3001'
-    : (location.origin.indexOf('localhost') >= 0 ? 'http://localhost:3001' : location.origin);
+  const API_PROXY = "http://localhost:5000/api";
+
+  // ============================================================================
+  // FANCONNECT API MANAGER (PART-1)
+  // ============================================================================
+
+  const API = {
+
+    async request(url) {
+
+      try {
+
+        const fullUrl = API_PROXY + url;
+
+        console.log("FETCH =>", fullUrl);
+
+        const res = await fetch(fullUrl, {
+          method: "GET",
+          headers: {
+            "Accept": "application/json"
+          }
+        });
+
+        console.log("STATUS =>", res.status);
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}`);
+        }
+
+        const json = await res.json();
+
+        console.log("FETCH URL =", API_PROXY + url);
+        console.log("FETCH JSON =", json);
+
+        return json;
+
+
+      }
+      catch (err) {
+
+        console.error("API ERROR:", API_PROXY + url);
+
+        console.error(err);
+
+        throw err;
+
+      }
+
+    },
+
+
+
+    async getMatch() {
+
+      return await this.request(
+        `/matches/${MATCHID}`
+      );
+
+    },
+
+
+
+    async getScorecard() {
+
+      return await this.request(
+        `/matches/${MATCHID}/scorecard`
+      );
+
+    },
+
+
+
+    async getCommentary() {
+
+      return await this.request(
+        `/matches/${MATCHID}/commentary`
+      );
+
+    },
+
+
+
+    async getSquads() {
+
+      return await this.request(
+        `/matches/${MATCHID}/squads`
+      );
+
+    },
+
+
+
+    async getOvers() {
+
+      return await this.request(
+        `/matches/${MATCHID}/overs`
+      );
+
+    },
+
+
+
+    async getHighlights() {
+
+      return await this.request(
+        `/matches/${MATCHID}/highlights`
+      );
+
+    }
+
+  };
+
+
+  // ============================================================================
+  // GLOBAL MATCH DATA
+  // ============================================================================
+
+  let REAL_DATA = {
+
+    match: null,
+
+    scorecard: null,
+
+    commentary: null,
+
+    squads: null,
+
+    overs: null,
+
+    highlights: null
+
+  };
+
+  // ============================================================================
+  // LOAD REAL MATCH DATA
+  // ============================================================================
+
+  async function loadRealMatchData() {
+
+    console.log("Loading Match:", MATCHID);
+
+    
+
+    let match = null;
+    let scorecard = null;
+    let commentary = null;
+    let squads = null;
+    let overs = null;
+    let highlights = null;
+
+    try {
+
+      match = await API.getMatch();
+
+      scorecard = await API.getScorecard();
+
+      commentary = await API.getCommentary();
+
+      squads = await API.getSquads();
+
+      overs = await API.getOvers();
+
+      highlights = await API.getHighlights();
+
+    }
+    catch (e) {
+
+      console.error("LOAD FAILED", e);
+
+    }
+
+
+    REAL_DATA.match = match;
+
+    console.log("MATCH =", match);
+    REAL_DATA.scorecard = scorecard;
+
+    REAL_DATA.commentary = commentary;
+
+    REAL_DATA.squads = squads;
+
+    REAL_DATA.overs = overs;
+
+    REAL_DATA.highlights = highlights;
+
+
+    console.log("REAL DATA");
+    console.log(JSON.stringify(REAL_DATA, null, 2));
+
+    console.log("MATCH RESPONSE");
+    console.log(REAL_DATA.match);
+    console.log("================================");
+
+    BACKEND_READY =
+      !!REAL_DATA.match &&
+      !!REAL_DATA.scorecard &&
+      !!REAL_DATA.commentary &&
+      !!REAL_DATA.squads &&
+      !!REAL_DATA.overs;
+
+    console.log("BACKEND_READY =", BACKEND_READY);
+
+    if (!BACKEND_READY) {
+
+      if (!REAL_DATA.scorecard) {
+        M.scorecard = buildScorecard();
+      }
+
+      if (!REAL_DATA.commentary) {
+        M.comm = buildCommentary();
+      }
+
+      if (!REAL_DATA.overs) {
+        M.graph = buildGraph();
+      }
+
+    }
+
+    console.log("Mapped Scorecard");
+    console.log(JSON.stringify(M.scorecard, null, 2));
+
+    console.log("REAL SCORECARD");
+    console.log(JSON.stringify(REAL_DATA.scorecard, null, 2));
+
+    console.log("INNINGS 1", JSON.stringify(REAL_DATA.scorecard.scorecard[0], null, 2));
+console.log("INNINGS 2", JSON.stringify(REAL_DATA.scorecard.scorecard[1], null, 2));
+    
+updateTeamsFromBackend();
+
+const NORMALIZED =
+    normalizeBackendData();
+
+applyNormalizedModel(
+    NORMALIZED
+);
+
+applyBackendMatchData();
+
+  }
+
+  let BACKEND_READY = false;
+
+  // ============================================================================
+// MATCH NORMALIZER
+// PART 1.1
+// ============================================================================
+
+function getMatchData() {
+
+    return (
+        REAL_DATA.match?.data ||
+        REAL_DATA.match?.match ||
+        REAL_DATA.match ||
+        {}
+    );
+
+}
+
+function safeArray(value) {
+
+    return Array.isArray(value)
+        ? value
+        : [];
+
+}
+
+function safeString(value) {
+
+    return value == null
+        ? ""
+        : String(value);
+
+}
+
+function safeNumber(value, fallback = 0) {
+
+    const n = Number(value);
+
+    return Number.isFinite(n)
+        ? n
+        : fallback;
+
+}
+
+function normalizeHeader(data, innings) {
+
+    return {
+
+        status:
+            safeString(data.status).toLowerCase(),
+
+        result:
+            data.statusText ||
+            data.result ||
+            "",
+
+        innings,
+
+        currentInnings:
+
+            innings.find(i => i.iscurrentinnings) ||
+
+            innings.find(i => i.current) ||
+
+            innings.find(i => i.isCurrent) ||
+
+            innings.at(-1) ||
+
+            null
+
+    };
+
+}
+
+function normalizeMatchInfo(data) {
+
+    return {
+
+        title:
+
+            `${HOME_T.name} vs ${AWAY_T.name}`,
+
+        subtitle:
+
+            data.series ||
+
+            SC.label ||
+
+            "",
+
+        venue:
+
+            data.venue?.name ||
+
+            data.venue ||
+
+            "",
+
+        series:
+
+            data.series ||
+
+            "",
+
+        toss:
+
+            data.toss ||
+
+            "",
+
+        result:
+
+            data.result ||
+
+            "",
+
+        playerOfMatch:
+
+            data.playerOfMatch ||
+
+            ""
+
+    };
+
+}
+
+// ============================================================================
+// SCORE NORMALIZER
+// PART 1.2
+// ============================================================================
+
+function normalizeScore(data, header) {
+
+    const current = header.currentInnings;
+
+    const score = {
+
+        status:
+            header.status,
+
+        resultText:
+            header.result,
+
+        subText: "",
+
+        home: {
+
+            score: "",
+
+            sub: "",
+
+            detail: ""
+
+        },
+
+        away: {
+
+            score: "",
+
+            sub: "",
+
+            detail: ""
+
+        }
+
+    };
+
+    header.innings.forEach(inn => {
+
+        const teamName =
+            safeString(inn.batteamname);
+
+        const target =
+            teamName.toLowerCase();
+
+        if (
+            target ===
+            HOME_T.name.toLowerCase()
+        ) {
+
+            score.home.score =
+                safeString(inn.score);
+
+            score.home.sub =
+                "/" + safeString(inn.wickets);
+
+            score.home.detail =
+                `${safeString(inn.overs)} Overs`;
+
+        }
+
+        if (
+            target ===
+            AWAY_T.name.toLowerCase()
+        ) {
+
+            score.away.score =
+                safeString(inn.score);
+
+            score.away.sub =
+                "/" + safeString(inn.wickets);
+
+            score.away.detail =
+                `${safeString(inn.overs)} Overs`;
+
+        }
+
+    });
+
+    if (current) {
+
+        score.subText =
+            `${current.batteamname} ${current.score}/${current.wickets}`;
+
+    }
+
+    score.current = current;
+
+    score.target =
+        current?.target ||
+        current?.targetscore ||
+        null;
+
+    score.requiredRuns =
+        current?.requiredruns ||
+        current?.requiredRuns ||
+        null;
+
+    score.requiredBalls =
+        current?.requiredballs ||
+        current?.requiredBalls ||
+        null;
+
+    return score;
+
+}
+
+// ============================================================================
+// SCORECARD NORMALIZER
+// PART 1.4
+// ============================================================================
+
+function normalizeScorecard() {
+
+    const innings =
+        safeArray(
+            REAL_DATA.scorecard?.scorecard
+        );
+
+    return {
+
+        type: "cricket",
+
+        innings: innings.map((inn, index) => ({
+
+            id: index + 1,
+
+            label:
+                `${index + 1}${
+                    index === 0 ? "st" :
+                    index === 1 ? "nd" :
+                    index === 2 ? "rd" : "th"
+                } Innings`,
+
+            isCurrent:
+                !!(
+                    inn.iscurrentinnings ||
+                    inn.current ||
+                    inn.isCurrent
+                ),
+
+            team: {
+
+                ...(index % 2 === 0
+                    ? HOME_T
+                    : AWAY_T),
+
+                name:
+                    inn.batteamname ||
+                    (index % 2 === 0
+                        ? HOME_T.name
+                        : AWAY_T.name),
+
+                code:
+                    inn.batteamshortname ||
+                    inn.batteamcode ||
+                    (index % 2 === 0
+                        ? HOME
+                        : AWAY)
+
+            },
+
+            total:
+                safeString(inn.score),
+
+            wkts:
+                safeString(inn.wickets),
+
+            ov:
+                safeString(inn.overs),
+
+            crr:
+                safeString(
+                    inn.runrate ||
+                    inn.crr
+                ),
+
+            bat:
+
+                safeArray(inn.batsman)
+
+                .filter(p =>
+                    safeNumber(p.runs) > 0 ||
+                    safeNumber(p.balls) > 0
+                )
+
+                .map(p => ({
+
+                    n:
+                        safeString(p.name),
+
+                    r:
+                        safeNumber(p.runs),
+
+                    b:
+                        safeNumber(p.balls),
+
+                    f:
+                        safeNumber(p.fours),
+
+                    sx:
+                        safeNumber(p.sixes),
+
+                    sr:
+                        safeString(
+                            p.strkrate ||
+                            p.strikerate
+                        ),
+
+                    out:
+
+                        safeString(
+                            p.outdec
+                        ).toLowerCase() !== "not out"
+
+                })),
+
+            bowl:
+
+                safeArray(inn.bowler)
+
+                .filter(p =>
+                    safeString(
+                        p.overs
+                    ) !== "0"
+                )
+
+                .map(p => ({
+
+                    n:
+                        safeString(p.name),
+
+                    o:
+                        safeString(p.overs),
+
+                    m:
+                        safeNumber(p.maidens),
+
+                    r:
+                        safeNumber(p.runs),
+
+                    w:
+                        safeNumber(p.wickets),
+
+                    econ:
+                        safeString(
+                            p.economy
+                        )
+
+                }))
+
+        }))
+
+    };
+
+}
+
+// ============================================================================
+// COMMENTARY NORMALIZER
+// PART 2.4
+// ============================================================================
+
+function normalizeCommentary() {
+
+    const wrapper =
+        safeArray(
+            REAL_DATA.commentary?.comwrapper
+        );
+
+    return wrapper.map(item => {
+
+        const c =
+            item.commentary || {};
+
+        return {
+
+            over:
+                safeString(
+                    c.overnum
+                ),
+
+            badge:
+                safeString(
+                    c.eventtype
+                ) || "•",
+
+            text:
+                safeString(
+                    c.commtxt
+                ),
+
+            type:
+
+                c.eventtype === "WICKET"
+                    ? "wicket"
+
+                : c.eventtype === "FOUR"
+                    ? "four"
+
+                : c.eventtype === "SIX"
+                    ? "six"
+
+                : "normal",
+
+            striker:
+
+                safeString(
+                    c.batsmanName ||
+                    c.strikerName
+                ),
+
+            nonstriker:
+
+                safeString(
+                    c.nonStrikerName
+                ),
+
+            bowler:
+
+                safeString(
+                    c.bowlerName
+                ),
+
+            newBatsman:
+
+                safeString(
+                    c.newBatsmanName
+                ),
+
+            time:
+
+                c.timestamp
+
+                    ? new Date(
+                        Number(c.timestamp)
+                    ).toLocaleTimeString()
+
+                    : ""
+
+        };
+
+    });
+
+}
+
+// ============================================================================
+// SQUADS NORMALIZER
+// PART 2.5
+// ============================================================================
+
+function normalizeSquads() {
+
+    const home =
+        REAL_DATA.squads?.team1;
+
+    const away =
+        REAL_DATA.squads?.team2;
+
+    if (!home || !away) {
+
+        return null;
+
+    }
+
+    return {
+
+        home: {
+
+            xi:
+
+                safeArray(
+                    home.players?.[0]?.player
+                ).map(p => ({
+
+                    n:
+                        safeString(p.name),
+
+                    r:
+                        safeString(
+                            p.role
+                        ) || "Player",
+
+                    c:
+                        !!p.captain,
+
+                    wk:
+                        !!p.keeper
+
+                })),
+
+            bench:
+
+                safeArray(
+                    home.players?.[1]?.player
+                ).map(p =>
+                    safeString(p.name)
+                )
+
+        },
+
+        away: {
+
+            xi:
+
+                safeArray(
+                    away.players?.[0]?.player
+                ).map(p => ({
+
+                    n:
+                        safeString(p.name),
+
+                    r:
+                        safeString(
+                            p.role
+                        ) || "Player",
+
+                    c:
+                        !!p.captain,
+
+                    wk:
+                        !!p.keeper
+
+                })),
+
+            bench:
+
+                safeArray(
+                    away.players?.[1]?.player
+                ).map(p =>
+                    safeString(p.name)
+                )
+
+        }
+
+    };
+
+}
+
+// ============================================================================
+// GRAPH NORMALIZER
+// PART 2.6
+// ============================================================================
+
+function normalizeOvers() {
+
+    const overs = safeArray(
+        REAL_DATA.overs
+    );
+
+    return overs.map(o => ({
+
+        over:
+
+            safeNumber(
+                o.over
+            ),
+
+        runs:
+
+            safeNumber(
+                o.runs
+            ),
+
+        wickets:
+
+            safeNumber(
+                o.wickets
+            ),
+
+        score:
+
+            safeString(
+                o.score
+            ),
+
+        rate:
+
+            safeNumber(
+                o.rate
+            )
+
+    }));
+
+}
+
+// ============================================================================
+// HIGHLIGHTS NORMALIZER
+// PART 2.7
+// ============================================================================
+
+function normalizeHighlights() {
+
+    return safeArray(
+        REAL_DATA.highlights
+    ).map(item => ({
+
+        title:
+
+            safeString(
+                item.title
+            ),
+
+        text:
+
+            safeString(
+                item.text
+            ),
+
+        image:
+
+            safeString(
+                item.image
+            ),
+
+        time:
+
+            safeString(
+                item.time
+            ),
+
+        type:
+
+            safeString(
+                item.type
+            ) || "news"
+
+    }));
+
+}
+
+function normalizeBackendData() {
+
+    const data = getMatchData();
+
+    const innings = safeArray(
+        REAL_DATA.scorecard?.scorecard
+    );
+
+   
+const header =
+    normalizeHeader(
+        data,
+        innings
+    );
+
+return {
+
+    header,
+
+    match:
+
+        normalizeMatchInfo(
+            data
+        ),
+
+    score:
+
+        normalizeScore(
+            data,
+            header
+        ),
+
+    summary:
+
+        normalizeSummary(
+            data
+        ),
+
+   scorecard:
+
+    normalizeScorecard(),
+    
+    commentary:
+
+    normalizeCommentary(),
+
+   squads:
+
+    normalizeSquads(),
+
+   overs:
+
+    normalizeOvers(),
+
+    highlights:
+
+    normalizeHighlights(),
+
+};
+}
+
+  
+// ============================================================================
+// APPLY NORMALIZED MODEL
+// PART 2.1
+// ============================================================================
+
+function applyNormalizedModel(model) {
+
+    if (!model) return;
+
+    // ------------------------------------------------
+    // SCORE
+    // ------------------------------------------------
+
+    if (model.score) {
+
+        M.score.status =
+            model.score.status;
+
+        M.score.resultText =
+            model.score.resultText;
+
+        M.score.subText =
+            model.score.subText;
+
+        Object.assign(
+            M.score.home,
+            model.score.home
+        );
+
+        Object.assign(
+            M.score.away,
+            model.score.away
+        );
+
+    }
+
+    // ------------------------------------------------
+    // SUMMARY
+    // ------------------------------------------------
+
+    if (model.summary) {
+
+        M.summary = {
+
+            ...M.summary,
+
+            ...model.summary
+
+        };
+
+    }
+
+    // ------------------------------------------------
+    // SCORECARD
+    // ------------------------------------------------
+
+   if (
+
+    model.scorecard &&
+
+    model.scorecard.innings?.length
+
+){
+
+    M.scorecard =
+
+        model.scorecard;
+
+}
+
+    // ------------------------------------------------
+    // COMMENTARY
+    // ------------------------------------------------
+
+   if (
+
+    model.commentary?.length
+
+){
+
+    M.comm =
+
+        model.commentary;
+
+}
+
+    // ------------------------------------------------
+    // SQUADS
+    // ------------------------------------------------
+
+   if (
+
+    model.squads
+
+){
+
+    M.squads =
+
+        model.squads;
+
+}
+
+    // ------------------------------------------------
+    // GRAPH
+    // ------------------------------------------------
+if (
+
+    model.overs?.length
+
+){
+
+    M.graph =
+
+        model.overs;
+
+}
+
+    // ------------------------------------------------
+    // HIGHLIGHTS
+    // ------------------------------------------------
+
+    if (
+
+    model.highlights?.length
+
+){
+
+    M.news =
+
+        model.highlights;
+
+}
+
+}
+
+
+  // ============================================================================
+  // APPLY BACKEND DATA TO MATCH MODEL
+  // ============================================================================
+
+  function applyBackendMatchData() {
+
+    /*if (!REAL_DATA.match) return;
+
+    const data =
+      REAL_DATA.match.data ||
+      REAL_DATA.match.match ||
+      REAL_DATA.match;
+
+    if (!data) return;
+
+    */
+    
+   
+   
+
+  }
+
 
   function formatDate(iso) {
     if (!iso) return '';
@@ -135,40 +1256,40 @@
 
   // Real player rosters per team (used for squads, scorecard, commentary, live)
   const REAL_PLAYERS = {
-    ind: ['Rohit Sharma','Shubman Gill','Virat Kohli','Shreyas Iyer','KL Rahul','Hardik Pandya','Ravindra Jadeja','Axar Patel','Washington Sundar','Jasprit Bumrah','Mohammed Siraj','Kuldeep Yadav','Rishabh Pant','Yuzvendra Chahal','Shivam Dube'],
-    eng: ['Ben Duckett','Jamie Smith','Joe Root','Harry Brook','Jos Buttler','Liam Livingstone','Jacob Bethell','Will Jacks','Adil Rashid','Jofra Archer','Josh Tongue','Sam Curran','Ben Stokes','Mark Wood','Gus Atkinson'],
-    aus: ['Travis Head','David Warner','Steve Smith','Marnus Labuschagne','Glenn Maxwell','Mitchell Marsh','Alex Carey','Pat Cummins','Mitchell Starc','Adam Zampa','Josh Hazlewood','Cameron Green'],
-    sa: ['Temba Bavuma','Quinton de Kock','Aiden Markram','Heinrich Klaasen','David Miller','Kagiso Rabada','Anrich Nortje','Keshav Maharaj','Lungi Ngidi','Rassie van der Dussen'],
-    nz: ['Kane Williamson','Devon Conway','Daryl Mitchell','Tom Latham','Glenn Phillips','Mitchell Santner','Trent Boult','Lockie Ferguson','Tim Southee','Matt Henry'],
-    pak: ['Babar Azam','Mohammad Rizwan','Fakhar Zaman','Imam-ul-Haq','Shaheen Afridi','Haris Rauf','Shadab Khan','Naseem Shah','Mohammad Nawaz','Iftikhar Ahmed'],
-    sl: ['Pathum Nissanka','Kusal Perera','Kusal Mendis','Charith Asalanka','Wanindu Hasaranga','Maheesh Theekshana','Dhananjaya de Silva','Dimuth Karunaratne'],
-    ban: ['Litton Das','Najmul Hossain','Shakib Al Hasan','Mushfiqur Rahim','Towhid Hridoy','Taskin Ahmed','Mustafizur Rahman','Mehidy Hasan'],
-    wi: ['Brandon King','Shai Hope','Nicholas Pooran','Rovman Powell','Shimron Hetmyer','Andre Russell','Jason Holder','Alzarri Joseph','Akeal Hosein','Shamar Joseph'],
-    'wi-w': ['Hayley Matthews','Shemaine Campbelle','Stafanie Taylor','Chinelle Henry','Chedean Nation','Shabika Gajnabi','Aaliyah Alleyne','Karishma Ramharack','Afy Fletcher','Shamilia Connell'],
-    'ire-w': ['Laura Delany','Gaby Lewis','Orla Prendergast','Leah Paul','Amy Hunter','Caoimhe Bray','Arlene Kelly','Cara Murray','Jane Maguire','Freya Sargent'],
-    afg: ['Rahmanullah Gurbaz','Ibrahim Zadran','Hashmatullah Shahidi','Azmatullah Omarzai','Mohammad Nabi','Rashid Khan','Mujeeb Ur Rahman','Fazalhaq Farooqi','Naveen-ul-Haq'],
-    mi: ['Rohit Sharma','Ishan Kishan','Suryakumar Yadav','Tilak Varma','Hardik Pandya','Tim David','Jasprit Bumrah','Trent Boult','Piyush Chawla','Gerald Coetzee','Dewald Brevis','Nehal Wadhera'],
-    csk: ['Ruturaj Gaikwad','Devon Conway','Ajinkya Rahane','Shivam Dube','MS Dhoni','Ravindra Jadeja','Sam Curran','Deepak Chahar','Matheesha Pathirana','Maheesh Theekshana','Ambati Rayudu'],
-    rcb: ['Virat Kohli','Faf du Plessis','Glenn Maxwell','Cameron Green','Dinesh Karthik','Mohammed Siraj','Yuzvendra Chahal','Wanindu Hasaranga','Josh Hazlewood','Rajat Patidar'],
-    kkr: ['Shreyas Iyer','Nitish Rana','Rinku Singh','Andre Russell','Sunil Narine','Venkatesh Iyer','Varun Chakravarthy','Harshit Rana','Phil Salt','Ramandeep Singh'],
-    liv: ['Mohamed Salah','Virgil van Dijk','Trent Alexander-Arnold','Alisson','Darwin Nunez','Cody Gakpo','Alexis Mac Allister','Dominik Szoboszlai','Luis Diaz','Andrew Robertson'],
-    mci: ['Erling Haaland','Kevin De Bruyne','Phil Foden','Rodri','Bernardo Silva','Kyle Walker','Ederson','Julian Alvarez','Jack Grealish','Ruben Dias'],
-    mun: ['Bruno Fernandes','Marcus Rashford','Casemiro','Lisandro Martinez','Alejandro Garnacho','Kobbie Mainoo','Raphael Varane','Andre Onana'],
-    che: ['Enzo Fernandez','Cole Palmer','Reece James','Thiago Silva','Raheem Sterling','Nicolas Jackson','Moises Caicedo','Marc Cucurella'],
-    ars: ['Bukayo Saka','Martin Odegaard','Declan Rice','Gabriel Jesus','William Saliba','Kai Havertz','Leandro Trossard','Aaron Ramsdale'],
-    real: ['Vinicius Jr','Jude Bellingham','Kylian Mbappe','Luka Modric','Toni Kroos','Rodrygo','Antonio Rudiger','Federico Valverde','Eduardo Camavinga'],
-    bar: ['Robert Lewandowski','Lamine Yamal','Pedri','Gavi','Frenkie de Jong','Raphinha','Jules Kounde','Marc-Andre ter Stegen','Fermin Lopez'],
-    lal: ['LeBron James','Anthony Davis','Luka Doncic','Austin Reaves','D\'Angelo Russell','Rui Hachimura','Jarred Vanderbilt','Gabe Vincent'],
-    gsw: ['Stephen Curry','Klay Thompson','Draymond Green','Jimmy Butler','Brandin Podziemski','Jonathan Kuminga','Moses Moody','Buddy Hield'],
-    bos: ['Jayson Tatum','Jaylen Brown','Derrick White','Kristaps Porzingis','Jrue Holiday','Al Horford','Payton Pritchard'],
+    ind: ['Rohit Sharma', 'Shubman Gill', 'Virat Kohli', 'Shreyas Iyer', 'KL Rahul', 'Hardik Pandya', 'Ravindra Jadeja', 'Axar Patel', 'Washington Sundar', 'Jasprit Bumrah', 'Mohammed Siraj', 'Kuldeep Yadav', 'Rishabh Pant', 'Yuzvendra Chahal', 'Shivam Dube'],
+    eng: ['Ben Duckett', 'Jamie Smith', 'Joe Root', 'Harry Brook', 'Jos Buttler', 'Liam Livingstone', 'Jacob Bethell', 'Will Jacks', 'Adil Rashid', 'Jofra Archer', 'Josh Tongue', 'Sam Curran', 'Ben Stokes', 'Mark Wood', 'Gus Atkinson'],
+    aus: ['Travis Head', 'David Warner', 'Steve Smith', 'Marnus Labuschagne', 'Glenn Maxwell', 'Mitchell Marsh', 'Alex Carey', 'Pat Cummins', 'Mitchell Starc', 'Adam Zampa', 'Josh Hazlewood', 'Cameron Green'],
+    sa: ['Temba Bavuma', 'Quinton de Kock', 'Aiden Markram', 'Heinrich Klaasen', 'David Miller', 'Kagiso Rabada', 'Anrich Nortje', 'Keshav Maharaj', 'Lungi Ngidi', 'Rassie van der Dussen'],
+    nz: ['Kane Williamson', 'Devon Conway', 'Daryl Mitchell', 'Tom Latham', 'Glenn Phillips', 'Mitchell Santner', 'Trent Boult', 'Lockie Ferguson', 'Tim Southee', 'Matt Henry'],
+    pak: ['Babar Azam', 'Mohammad Rizwan', 'Fakhar Zaman', 'Imam-ul-Haq', 'Shaheen Afridi', 'Haris Rauf', 'Shadab Khan', 'Naseem Shah', 'Mohammad Nawaz', 'Iftikhar Ahmed'],
+    sl: ['Pathum Nissanka', 'Kusal Perera', 'Kusal Mendis', 'Charith Asalanka', 'Wanindu Hasaranga', 'Maheesh Theekshana', 'Dhananjaya de Silva', 'Dimuth Karunaratne'],
+    ban: ['Litton Das', 'Najmul Hossain', 'Shakib Al Hasan', 'Mushfiqur Rahim', 'Towhid Hridoy', 'Taskin Ahmed', 'Mustafizur Rahman', 'Mehidy Hasan'],
+    wi: ['Brandon King', 'Shai Hope', 'Nicholas Pooran', 'Rovman Powell', 'Shimron Hetmyer', 'Andre Russell', 'Jason Holder', 'Alzarri Joseph', 'Akeal Hosein', 'Shamar Joseph'],
+    'wi-w': ['Hayley Matthews', 'Shemaine Campbelle', 'Stafanie Taylor', 'Chinelle Henry', 'Chedean Nation', 'Shabika Gajnabi', 'Aaliyah Alleyne', 'Karishma Ramharack', 'Afy Fletcher', 'Shamilia Connell'],
+    'ire-w': ['Laura Delany', 'Gaby Lewis', 'Orla Prendergast', 'Leah Paul', 'Amy Hunter', 'Caoimhe Bray', 'Arlene Kelly', 'Cara Murray', 'Jane Maguire', 'Freya Sargent'],
+    afg: ['Rahmanullah Gurbaz', 'Ibrahim Zadran', 'Hashmatullah Shahidi', 'Azmatullah Omarzai', 'Mohammad Nabi', 'Rashid Khan', 'Mujeeb Ur Rahman', 'Fazalhaq Farooqi', 'Naveen-ul-Haq'],
+    mi: ['Rohit Sharma', 'Ishan Kishan', 'Suryakumar Yadav', 'Tilak Varma', 'Hardik Pandya', 'Tim David', 'Jasprit Bumrah', 'Trent Boult', 'Piyush Chawla', 'Gerald Coetzee', 'Dewald Brevis', 'Nehal Wadhera'],
+    csk: ['Ruturaj Gaikwad', 'Devon Conway', 'Ajinkya Rahane', 'Shivam Dube', 'MS Dhoni', 'Ravindra Jadeja', 'Sam Curran', 'Deepak Chahar', 'Matheesha Pathirana', 'Maheesh Theekshana', 'Ambati Rayudu'],
+    rcb: ['Virat Kohli', 'Faf du Plessis', 'Glenn Maxwell', 'Cameron Green', 'Dinesh Karthik', 'Mohammed Siraj', 'Yuzvendra Chahal', 'Wanindu Hasaranga', 'Josh Hazlewood', 'Rajat Patidar'],
+    kkr: ['Shreyas Iyer', 'Nitish Rana', 'Rinku Singh', 'Andre Russell', 'Sunil Narine', 'Venkatesh Iyer', 'Varun Chakravarthy', 'Harshit Rana', 'Phil Salt', 'Ramandeep Singh'],
+    liv: ['Mohamed Salah', 'Virgil van Dijk', 'Trent Alexander-Arnold', 'Alisson', 'Darwin Nunez', 'Cody Gakpo', 'Alexis Mac Allister', 'Dominik Szoboszlai', 'Luis Diaz', 'Andrew Robertson'],
+    mci: ['Erling Haaland', 'Kevin De Bruyne', 'Phil Foden', 'Rodri', 'Bernardo Silva', 'Kyle Walker', 'Ederson', 'Julian Alvarez', 'Jack Grealish', 'Ruben Dias'],
+    mun: ['Bruno Fernandes', 'Marcus Rashford', 'Casemiro', 'Lisandro Martinez', 'Alejandro Garnacho', 'Kobbie Mainoo', 'Raphael Varane', 'Andre Onana'],
+    che: ['Enzo Fernandez', 'Cole Palmer', 'Reece James', 'Thiago Silva', 'Raheem Sterling', 'Nicolas Jackson', 'Moises Caicedo', 'Marc Cucurella'],
+    ars: ['Bukayo Saka', 'Martin Odegaard', 'Declan Rice', 'Gabriel Jesus', 'William Saliba', 'Kai Havertz', 'Leandro Trossard', 'Aaron Ramsdale'],
+    real: ['Vinicius Jr', 'Jude Bellingham', 'Kylian Mbappe', 'Luka Modric', 'Toni Kroos', 'Rodrygo', 'Antonio Rudiger', 'Federico Valverde', 'Eduardo Camavinga'],
+    bar: ['Robert Lewandowski', 'Lamine Yamal', 'Pedri', 'Gavi', 'Frenkie de Jong', 'Raphinha', 'Jules Kounde', 'Marc-Andre ter Stegen', 'Fermin Lopez'],
+    lal: ['LeBron James', 'Anthony Davis', 'Luka Doncic', 'Austin Reaves', 'D\'Angelo Russell', 'Rui Hachimura', 'Jarred Vanderbilt', 'Gabe Vincent'],
+    gsw: ['Stephen Curry', 'Klay Thompson', 'Draymond Green', 'Jimmy Butler', 'Brandin Podziemski', 'Jonathan Kuminga', 'Moses Moody', 'Buddy Hield'],
+    bos: ['Jayson Tatum', 'Jaylen Brown', 'Derrick White', 'Kristaps Porzingis', 'Jrue Holiday', 'Al Horford', 'Payton Pritchard'],
     alc: ['Carlos Alcaraz'],
     djo: ['Novak Djokovic'],
-    lad: ['Shohei Ohtani','Mookie Betts','Freddie Freeman','Will Smith','Teoscar Hernandez','Tyler Glasnow','Yoshinobu Yamamoto','Max Muncy'],
-    nyy: ['Aaron Judge','Giancarlo Stanton','Juan Soto','Anthony Volpe','Gerrit Cole','Anthony Rizzo','Gleyber Torres','DJ LeMahieu'],
-    wsh: ['Alex Ovechkin','Nicklas Backstrom','Tom Wilson','John Carlson','Dylan Strome','Connor McMichael','T.J. Oshie','Martin Fehervary'],
-    vgk: ['Jack Eichel','Mark Stone','William Karlsson','Jonathan Marchessault','Shea Theodore','Adin Hill','Tomas Hertl','Pavel Dorofeyev'],
+    lad: ['Shohei Ohtani', 'Mookie Betts', 'Freddie Freeman', 'Will Smith', 'Teoscar Hernandez', 'Tyler Glasnow', 'Yoshinobu Yamamoto', 'Max Muncy'],
+    nyy: ['Aaron Judge', 'Giancarlo Stanton', 'Juan Soto', 'Anthony Volpe', 'Gerrit Cole', 'Anthony Rizzo', 'Gleyber Torres', 'DJ LeMahieu'],
+    wsh: ['Alex Ovechkin', 'Nicklas Backstrom', 'Tom Wilson', 'John Carlson', 'Dylan Strome', 'Connor McMichael', 'T.J. Oshie', 'Martin Fehervary'],
+    vgk: ['Jack Eichel', 'Mark Stone', 'William Karlsson', 'Jonathan Marchessault', 'Shea Theodore', 'Adin Hill', 'Tomas Hertl', 'Pavel Dorofeyev'],
     // ---- Football (soccer) national teams ----
-    'eng-fb': ['Harry Kane','Bukayo Saka','Jude Bellingham','Phil Foden','Declan Rice','Harry Maguire','John Stones','Kyle Walker','Kieran Trippier','Jordan Pickford','Marcus Rashford','James Maddison','Conor Gallagher','Ezri Konsa','Cole Palmer'],
+    'eng-fb': ['Harry Kane', 'Bukayo Saka', 'Jude Bellingham', 'Phil Foden', 'Declan Rice', 'Harry Maguire', 'John Stones', 'Kyle Walker', 'Kieran Trippier', 'Jordan Pickford', 'Marcus Rashford', 'James Maddison', 'Conor Gallagher', 'Ezri Konsa', 'Cole Palmer'],
     // rankName maps a short code to the canonical team name used in team-rankings.json
     'arg': { name: 'Argentina', flag: '🇦🇷', cc: 'ar', color: '#75AADB', rankName: 'Argentina' },
     'fra_f': { name: 'France', flag: '🇫🇷', cc: 'fr', color: '#0055A4', rankName: 'France' },
@@ -194,18 +1315,18 @@
     'bel_f': { name: 'Belgium', flag: '🇧🇪', cc: 'be', color: '#E30613', rankName: 'Belgium' },
     'lal': { name: 'LA Lakers', flag: '🟣', cc: null, color: '#552583', rankName: 'Los Angeles Lakers' },
     'bos': { name: 'Boston Celtics', flag: '🍀', cc: null, color: '#007A33', rankName: 'Boston Celtics' },
-    'fra-fb': ['Kylian Mbappe','Antoine Griezmann','Ousmane Dembele','Aurelien Tchouameni','Eduardo Camavinga','William Saliba','Dayot Upamecano','Theo Hernandez','Mike Maignan','Olivier Giroud','Randal Kolo Muani','Adrien Rabiot','Jules Kounde','N\'Golo Kante','Bradley Barcola'],
-    'bra-fb': ['Neymar Jr','Vinicius Jr','Rodrygo','Bruno Guimaraes','Casemiro','Marquinhos','Eder Militao','Alisson','Gabriel Jesus','Raphinha','Lucas Paqueta','Richarlison','Fred','Alex Sandro','Ederson'],
-    'arg-fb': ['Lionel Messi','Julian Alvarez','Lautaro Martinez','Angel Di Maria','Enzo Fernandez','Alexis Mac Allister','Rodrigo De Paul','Cristian Romero','Nicolas Otamendi','Emiliano Martinez','Giovani Lo Celso','Leandro Paredes','Nahuel Molina','Lisandro Martinez','Nicolas Tagliafico'],
-    'ger-fb': ['Jamal Musiala','Kai Havertz','Florian Wirtz','Ilkay Gundogan','Toni Kroos','Antonio Rudiger','Joshua Kimmich','Leroy Sane','Serge Gnabry','Manuel Neuer','Thomas Muller','Niclas Fullkrug','Nico Schlotterbeck','Emre Can','Robin Gosens'],
-    'esp-fb': ['Rodri','Alvaro Morata','Ferran Torres','Gavi','Pedri','Dani Carvajal','Aymeric Laporte','Unai Simon','Mikel Oyarzabal','Dani Olmo','Fabian Ruiz','Robin Le Normand','Lamine Yamal','Nico Williams','Joselu'],
-    'por-fb': ['Cristiano Ronaldo','Bruno Fernandes','Bernardo Silva','Joao Felix','Ruben Dias','Pepe','Diogo Jota','Joao Cancelo','Rafael Leao','Vitnha','Joao Palhinha','Goncalo Ramos','Danilo Pereira','Diogo Dalot','Rui Patricio'],
-    'ned-fb': ['Virgil van Dijk','Frenkie de Jong','Cody Gakpo','Denzel Dumfries','Matthijs de Ligt','Steven Bergwijn','Teun Koopmeiners','Xavi Simons','Wout Weghorst','Nathan Ake','Daley Blind','Jerdy Schouten','Brian Brobbey','Micky van de Ven','Mark Flekken'],
-    'ita-fb': ['Gianluigi Donnarumma','Federico Chiesa','Nicolo Barella','Marco Verratti','Leonardo Bonucci','Giorgio Chiellini','Lorenzo Insigne','Ciro Immobile','Federico Dimarco','Nicolo Zaniolo','Davide Frattesi','Giacomo Raspadori','Riccardo Calafiori','Andrea Cambiaso','Moise Kean'],
-    'bel-fb': ['Kevin De Bruyne','Romelu Lukaku','Eden Hazard','Youri Tielemans','Jan Vertonghen','Toby Alderweireld','Thibaut Courtois','Leandro Trossard','Jeremy Doku','Amadou Onana','Arthur Theate','Charles De Ketelaere','Dries Mertens','Yannick Carrasco','Thomas Meunier'],
+    'fra-fb': ['Kylian Mbappe', 'Antoine Griezmann', 'Ousmane Dembele', 'Aurelien Tchouameni', 'Eduardo Camavinga', 'William Saliba', 'Dayot Upamecano', 'Theo Hernandez', 'Mike Maignan', 'Olivier Giroud', 'Randal Kolo Muani', 'Adrien Rabiot', 'Jules Kounde', 'N\'Golo Kante', 'Bradley Barcola'],
+    'bra-fb': ['Neymar Jr', 'Vinicius Jr', 'Rodrygo', 'Bruno Guimaraes', 'Casemiro', 'Marquinhos', 'Eder Militao', 'Alisson', 'Gabriel Jesus', 'Raphinha', 'Lucas Paqueta', 'Richarlison', 'Fred', 'Alex Sandro', 'Ederson'],
+    'arg-fb': ['Lionel Messi', 'Julian Alvarez', 'Lautaro Martinez', 'Angel Di Maria', 'Enzo Fernandez', 'Alexis Mac Allister', 'Rodrigo De Paul', 'Cristian Romero', 'Nicolas Otamendi', 'Emiliano Martinez', 'Giovani Lo Celso', 'Leandro Paredes', 'Nahuel Molina', 'Lisandro Martinez', 'Nicolas Tagliafico'],
+    'ger-fb': ['Jamal Musiala', 'Kai Havertz', 'Florian Wirtz', 'Ilkay Gundogan', 'Toni Kroos', 'Antonio Rudiger', 'Joshua Kimmich', 'Leroy Sane', 'Serge Gnabry', 'Manuel Neuer', 'Thomas Muller', 'Niclas Fullkrug', 'Nico Schlotterbeck', 'Emre Can', 'Robin Gosens'],
+    'esp-fb': ['Rodri', 'Alvaro Morata', 'Ferran Torres', 'Gavi', 'Pedri', 'Dani Carvajal', 'Aymeric Laporte', 'Unai Simon', 'Mikel Oyarzabal', 'Dani Olmo', 'Fabian Ruiz', 'Robin Le Normand', 'Lamine Yamal', 'Nico Williams', 'Joselu'],
+    'por-fb': ['Cristiano Ronaldo', 'Bruno Fernandes', 'Bernardo Silva', 'Joao Felix', 'Ruben Dias', 'Pepe', 'Diogo Jota', 'Joao Cancelo', 'Rafael Leao', 'Vitnha', 'Joao Palhinha', 'Goncalo Ramos', 'Danilo Pereira', 'Diogo Dalot', 'Rui Patricio'],
+    'ned-fb': ['Virgil van Dijk', 'Frenkie de Jong', 'Cody Gakpo', 'Denzel Dumfries', 'Matthijs de Ligt', 'Steven Bergwijn', 'Teun Koopmeiners', 'Xavi Simons', 'Wout Weghorst', 'Nathan Ake', 'Daley Blind', 'Jerdy Schouten', 'Brian Brobbey', 'Micky van de Ven', 'Mark Flekken'],
+    'ita-fb': ['Gianluigi Donnarumma', 'Federico Chiesa', 'Nicolo Barella', 'Marco Verratti', 'Leonardo Bonucci', 'Giorgio Chiellini', 'Lorenzo Insigne', 'Ciro Immobile', 'Federico Dimarco', 'Nicolo Zaniolo', 'Davide Frattesi', 'Giacomo Raspadori', 'Riccardo Calafiori', 'Andrea Cambiaso', 'Moise Kean'],
+    'bel-fb': ['Kevin De Bruyne', 'Romelu Lukaku', 'Eden Hazard', 'Youri Tielemans', 'Jan Vertonghen', 'Toby Alderweireld', 'Thibaut Courtois', 'Leandro Trossard', 'Jeremy Doku', 'Amadou Onana', 'Arthur Theate', 'Charles De Ketelaere', 'Dries Mertens', 'Yannick Carrasco', 'Thomas Meunier'],
     // ---- Basketball national teams ----
-    'usa-bb': ['LeBron James','Stephen Curry','Kevin Durant','Joel Embiid','Jayson Tatum','Devin Booker','Anthony Edwards','Bam Adebayo','Tyrese Haliburton','Anthony Davis','Kawhi Leonard','Jrue Holiday','Derrick White','Paolo Banchero','Austin Reaves'],
-    'fra-bb': ['Victor Wembanyama','Rudy Gobert','Evan Fournier','Nicolas Batum','Frank Ntilikina','Guerschon Yabusele','Matthew Strazel','Bilal Coulibaly','Nando de Colo','Mathias Lessort','Isaia Cordinier','Terrence Maledon','Mouhammadou Jaiteh','Sidy Cissoko','Yakhouba Diawara']
+    'usa-bb': ['LeBron James', 'Stephen Curry', 'Kevin Durant', 'Joel Embiid', 'Jayson Tatum', 'Devin Booker', 'Anthony Edwards', 'Bam Adebayo', 'Tyrese Haliburton', 'Anthony Davis', 'Kawhi Leonard', 'Jrue Holiday', 'Derrick White', 'Paolo Banchero', 'Austin Reaves'],
+    'fra-bb': ['Victor Wembanyama', 'Rudy Gobert', 'Evan Fournier', 'Nicolas Batum', 'Frank Ntilikina', 'Guerschon Yabusele', 'Matthew Strazel', 'Bilal Coulibaly', 'Nando de Colo', 'Mathias Lessort', 'Isaia Cordinier', 'Terrence Maledon', 'Mouhammadou Jaiteh', 'Sidy Cissoko', 'Yakhouba Diawara']
   };
 
   // Build a squad (XI + bench) from real players when available
@@ -225,7 +1346,7 @@
       let r;
       if (i === 0) r = 'Captain';
       else if (i === 1 && sport === 'cricket') r = 'WK-Batter';
-      else r = sport === 'cricket' ? pick(['Batter','Batter','All-rounder','Bowler','Bowler']) : 'Player';
+      else r = sport === 'cricket' ? pick(['Batter', 'Batter', 'All-rounder', 'Bowler', 'Bowler']) : 'Player';
       out.push({ n: names[i], r: r, c: i === 0, wk: r === 'WK-Batter' });
     }
     const bench = names.slice(n, n + Math.max(0, names.length - n));
@@ -246,6 +1367,84 @@
 
   const HOME_T = teamMeta(HOME);
   const AWAY_T = teamMeta(AWAY);
+
+  let HOME_CODE = HOME;
+  let AWAY_CODE = AWAY;
+
+  function updateTeamsFromBackend() {
+
+    console.log("MATCH =", REAL_DATA.match);
+    console.log("TEAMS =", REAL_DATA.match?.teams);
+
+
+    if (!REAL_DATA.match) return;
+
+    const data =
+      REAL_DATA.match.data ||
+      REAL_DATA.match.match ||
+      REAL_DATA.match;
+
+    if (!data) return;
+
+    HOME_T.name =
+      data.teams?.home?.teamname ||
+      data.teams?.home?.teamName ||
+      data.team1?.name ||
+      HOME_T.name;
+
+    AWAY_T.name =
+      data.teams?.away?.teamname ||
+      data.teams?.away?.teamName ||
+      data.team2?.name ||
+      AWAY_T.name;
+
+    HOME_CODE =
+      (
+        data.teams?.home?.teamsname ||
+        data.teams?.home?.teamSName ||
+        HOME_CODE
+      ).toLowerCase();
+
+    AWAY_CODE =
+      (
+        data.teams?.away?.teamsname ||
+        data.teams?.away?.teamSName ||
+        AWAY_CODE
+      ).toLowerCase();
+
+    const TEAM_CODE_MAP = {
+      indu19: "ind",
+      slu19: "sl",
+      engu19: "eng",
+      nzu19: "nz",
+      wiu19: "wi",
+      ausu19: "aus",
+      paku19: "pak",
+      banu19: "ban",
+      sau19: "sa",
+      afgu19: "afg"
+    };
+
+    HOME_CODE = TEAM_CODE_MAP[HOME_CODE] || HOME_CODE;
+    AWAY_CODE = TEAM_CODE_MAP[AWAY_CODE] || AWAY_CODE;
+
+    Object.assign(HOME_T, teamMeta(HOME_CODE), {
+      name: data.teams?.home?.teamname || HOME_T.name
+    });
+
+    Object.assign(AWAY_T, teamMeta(AWAY_CODE), {
+      name: data.teams?.away?.teamname || AWAY_T.name
+    });
+
+    console.log("HOME TEAM =", HOME_T);
+
+    console.log("AWAY TEAM =", AWAY_T);
+
+    console.log("HOME RAW =", REAL_DATA.match?.teams?.home);
+
+    console.log("AWAY RAW =", REAL_DATA.match?.teams?.away);
+
+  }
 
   // ------------------------------------------------------------------ sport config
   const SPORTS = {
@@ -421,15 +1620,19 @@
   const REAL_TIME = REAL_MATCH && REAL_MATCH.time ? REAL_MATCH.time : null;
   const REAL_SERIES = (REAL_MATCH && (REAL_MATCH.tournament || REAL_MATCH.series)) ? (REAL_MATCH.tournament || REAL_MATCH.series) : (SERIES_PARAM || SERIES[0]);
   M.meta = {
-    title: HOME_T.name + ' vs ' + AWAY_T.name,
-    sub: SC.label + ' · ' + REAL_SERIES,
-    venue: REAL_VENUE || pick(VENUES),
+    title: "",
+
+    sub: "",
+
+    venue: "",
+
+    series: "",
     date: REAL_DATE
       ? (STATE === 'upcoming'
-          ? formatDate(REAL_DATE) + (REAL_TIME ? ' · ' + REAL_TIME : '')
-          : (STATE === 'live' ? 'Live · ' + formatDate(REAL_DATE) : 'Played ' + formatDate(REAL_DATE)))
+        ? formatDate(REAL_DATE) + (REAL_TIME ? ' · ' + REAL_TIME : '')
+        : (STATE === 'live' ? 'Live · ' + formatDate(REAL_DATE) : 'Played ' + formatDate(REAL_DATE)))
       : (STATE === 'upcoming' ? 'Starts in ' + ri(2, 48) + 'h ' + ri(1, 59) + 'm' : 'Played ' + ri(1, 28) + ' ' + pick(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']) + ' 2026'),
-    series: REAL_SERIES,
+
     format: FORMAT_PARAM || SC.label,
     toss: pick([HOME_T.name, AWAY_T.name]) + ' won the toss',
     umpires: pick(['K Dharmasena, M Burns', 'A Wharf, R Illingworth', 'R Tucker, C Gaffaney', 'M Erasmus, J Wilson']),
@@ -489,10 +1692,10 @@
     if (STATE === 'upcoming') {
       M.score = { home: { score: '—', sub: '', detail: '' }, away: { score: '—', sub: '', detail: '' }, resultText: 'Match begins soon', subText: M.meta.date, status: 'upcoming', icon: '⏳' };
     } else if (STATE === 'live') {
-      const hs = HS ? parseInt(HS.score,10) : ri(1, 2), as = AS ? parseInt(AS.score,10) : ri(0, 1);
+      const hs = HS ? parseInt(HS.score, 10) : ri(1, 2), as = AS ? parseInt(AS.score, 10) : ri(0, 1);
       M.score = { home: { score: hs, sub: ' sets', detail: 'Set ' + (hs + as + 1) }, away: { score: as, sub: ' sets', detail: '' }, resultText: 'Live', subText: 'Set ' + (hs + as + 1), status: 'live', icon: '🔴' };
     } else {
-      const hs = HS ? parseInt(HS.score,10) : ri(2, 3), as = AS ? parseInt(AS.score,10) : (HS ? 0 : 3 - hs);
+      const hs = HS ? parseInt(HS.score, 10) : ri(2, 3), as = AS ? parseInt(AS.score, 10) : (HS ? 0 : 3 - hs);
       M.score = { home: { score: hs, sub: ' sets', detail: 'Winner', won: hs > as }, away: { score: as, sub: ' sets', detail: '', won: as > hs }, resultText: (hs > as ? HOME_T.name : AWAY_T.name) + ' won', subText: hs + '–' + as + ' sets', status: 'finished', icon: '🏆' };
     }
   } else {
@@ -528,8 +1731,13 @@
     away: squadFor(AWAY, SPORT)
   };
   M.players = {
-    home: M.squads.home.xi.map(p => p.n),
-    away: M.squads.away.xi.map(p => p.n)
+
+    home:
+      M.squads.home.xi.map(p => p.n),
+
+    away:
+      M.squads.away.xi.map(p => p.n)
+
   };
 
   // summary
@@ -550,15 +1758,33 @@
     ],
     potm: { name: pick(M.players.home.length ? M.players.home : [genName()]), desc: ri(40, 130) + (SC.isCricket ? ' runs' : ' points') + ' · Player of the Match' }
   };
+  if (BACKEND_READY) {
+
+    M.summary.sub =
+      (REAL_DATA.match?.series || "") +
+      " · " +
+      (REAL_DATA.match?.venue?.name || "");
+
+    M.summary.resultLine =
+      REAL_DATA.match?.statusText ||
+      REAL_DATA.match?.result ||
+      "";
+
+  }
 
   // scorecard (sport-aware)
-  M.scorecard = buildScorecard();
+  if (!REAL_DATA.scorecard || !M.scorecard) {
+    M.scorecard = buildScorecard();
+  }
 
   // commentary
-  M.comm = buildCommentary();
-
+  if (!REAL_DATA.commentary || !Array.isArray(M.comm)) {
+    M.comm = buildCommentary();
+  }
   // graph
-  M.graph = buildGraph();
+  if (!REAL_DATA.overs || !M.graph) {
+    M.graph = buildGraph();
+  }
 
   // news
   M.news = buildNews();
@@ -787,11 +2013,28 @@
   // avatar for a player name — uses a real Wikipedia photo when cached,
   // otherwise falls back to a team-coloured initials avatar.
   function avatarFor(name, teamCode) {
+
+    name = String(name || "Player");
+
     const cached = _wikiImg(name);
+
     if (cached) return cached;
+
     const tm = teamMeta(teamCode);
-    const initials = name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
-    return 'https://ui-avatars.com/api/?name=' + encodeURIComponent(initials) + '&background=' + tm.color.replace('#', '') + '&color=ffffff&size=64&bold=true&format=png';
+
+    const initials = name
+      .split(" ")
+      .map(w => w[0] || "")
+      .join("")
+      .slice(0, 2)
+      .toUpperCase();
+
+    return "https://ui-avatars.com/api/?name=" +
+      encodeURIComponent(initials) +
+      "&background=" +
+      tm.color.replace("#", "") +
+      "&color=ffffff&size=64&bold=true&format=png";
+
   }
   function nowStr() {
     const d = new Date(), p = n => String(n).padStart(2, '0');
@@ -833,7 +2076,7 @@
     const teamPanel = (tm, sc, reverse) => {
       const won = sc.won;
       const resBadge = st.status === 'finished'
-        ? '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full ' + (won ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-300' : 'bg-red-500/15 text-red-600 dark:text-red-300') + ' text-[10px] font-bold uppercase tracking-wide">' + (won ? 'Won' : 'Lost') + '</span>'
+        ? '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full ' + (won ? 'bg-emerald-500/15 bak dark:text-emerald-300' : 'bg-red-500/15 text-red-600 dark:text-red-300') + ' text-[10px] font-bold uppercase tracking-wide">' + (won ? 'Won' : 'Lost') + '</span>'
         : '';
       return '<div class="flex items-center gap-4 p-5 md:p-6 ' + (reverse ? 'md:flex-row-reverse md:text-right' : '') + '">' +
         '<img alt="' + esc(tm.name) + '" class="w-14 h-14 md:w-16 md:h-16 rounded-full border-2 border-slate-200 dark:border-white/20 shadow-lg shrink-0" src="' + tm.img + '" onerror="this.src=\'https://ui-avatars.com/api/?name=' + encodeURIComponent(tm.code.toUpperCase()) + '&background=6B7280&color=fff&size=64\'">' +
@@ -963,13 +2206,14 @@
         const raw = match._raw;
         // Scorecard: prefer real batting/bowling arrays if present
         const sc = raw.scorecard || raw.score_card || raw.innings || raw.score;
-        if (sc) M.scorecard = normalizeApiScorecard(sc) || M.scorecard;
-        // Commentary: prefer real ball-by-ball if present
+if (sc && !BACKEND_READY) {
+    M.scorecard = normalizeApiScorecard(sc) || M.scorecard;
+}        // Commentary: prefer real ball-by-ball if present
         const comm = raw.commentary || raw.ball_by_ball || raw.commentries;
-        if (comm) M.comm = normalizeApiCommentary(comm) || M.comm;
+      if (comm && !BACKEND_READY) M.comm = normalizeApiCommentary(comm) || M.comm;
         // Wagon wheel / run-rate / partnership
         const w = raw.wagons || raw.wagon_wheel || raw.wagon;
-        if (w) { const g = normalizeApiGraph(w); if (g) { M.graph.wagon = g.wagon; M.graph.runrate = g.runrate; M.graph.partnership = g.partnership; } }
+        if (w && !BACKEND_READY) { const g = normalizeApiGraph(w); if (g) { M.graph.wagon = g.wagon; M.graph.runrate = g.runrate; M.graph.partnership = g.partnership; } }
         renderScorecard(); renderCommentary(); renderGraph();
       }
       // Wagon wheel is a separate endpoint
@@ -983,31 +2227,103 @@
   // Normalise whatever shape the provider returns into our scorecard object.
   function normalizeApiScorecard(sc) {
     try {
-      const innings = Array.isArray(sc) ? sc : (sc.innings || sc);
+      const innings =
+        Array.isArray(sc)
+          ? sc
+          : (
+            sc.scorecard ||
+            sc.innings ||
+            sc.score_card ||
+            []
+          );
       if (!Array.isArray(innings)) return null;
       const out = innings.slice(0, 2).map((inn, idx) => {
-        const teamName = inn.team || inn.team_name || (idx === 0 ? HOME_T.name : AWAY_T.name);
-        const bat = (inn.batting || inn.batsmen || inn.bat || []).map(b => ({
-          n: b.name || b.batter || b.player || "—",
-          r: b.runs != null ? b.runs : (b.r != null ? b.r : 0),
-          b: b.balls != null ? b.balls : (b.b != null ? b.b : 0),
-          f: b.fours != null ? b.fours : (b.f != null ? b.f : 0),
-          sx: b.sixes != null ? b.sixes : (b.sx != null ? b.sx : 0),
-          sr: b.strike_rate != null ? b.strike_rate : (b.sr != null ? b.sr : "0.00"),
-          out: b.out != null ? b.out : (b.dismissed != null ? b.dismissed : true)
-        }));
-        const bowl = (inn.bowling || inn.bowlers || inn.bowl || []).map(b => ({
-          n: b.name || b.bowler || b.player || "—",
-          o: b.overs != null ? b.overs : (b.o != null ? b.o : "0.0"),
-          m: b.maidens != null ? b.maidens : (b.m != null ? b.m : 0),
-          r: b.runs != null ? b.runs : (b.r != null ? b.r : 0),
-          w: b.wickets != null ? b.wickets : (b.w != null ? b.w : 0),
-          econ: b.economy != null ? b.economy : (b.econ != null ? b.econ : "0.00")
-        }));
-        const total = inn.total != null ? inn.total : (inn.score != null ? inn.score : bat.reduce((s, x) => s + (parseInt(x.r, 10) || 0), 0));
-        const wkts = inn.wickets != null ? inn.wickets : (inn.wkts != null ? inn.wkts : bat.filter(x => x.out).length);
-        const ov = inn.overs != null ? inn.overs : (inn.ov != null ? inn.ov : "0.0");
-        return { team: { name: teamName, code: (idx === 0 ? HOME : AWAY), img: (idx === 0 ? HOME_T : AWAY_T).img }, label: (idx === 0 ? "1st" : "2nd") + " Innings", bat, bowl, total, wkts, ov, crr: inn.crr || inn.run_rate || "0.00" };
+        const teamName =
+          inn.teamname ||
+          inn.team_name ||
+          inn.team ||
+          (idx === 0 ? HOME_T.name : AWAY_T.name);
+
+
+        const bat =
+          (
+            inn.batsman ||
+            inn.batting ||
+            inn.batsmen ||
+            inn.bat ||
+            []
+          ).map(b => ({
+            n: b.name || b.batter || b.player || "—",
+            r: b.runs != null ? b.runs : (b.r != null ? b.r : 0),
+            b: b.balls != null ? b.balls : (b.b != null ? b.b : 0),
+            f: b.fours != null ? b.fours : (b.f != null ? b.f : 0),
+            sx: b.sixes != null ? b.sixes : (b.sx != null ? b.sx : 0),
+            sr: b.strike_rate != null ? b.strike_rate : (b.sr != null ? b.sr : "0.00"),
+            out: b.out != null ? b.out : (b.dismissed != null ? b.dismissed : true)
+          }));
+        const bowl =
+          (
+            inn.bowler ||
+            inn.bowling ||
+            inn.bowlers ||
+            inn.bowl ||
+            []
+          ).map(b => ({
+            n: b.name || b.bowler || b.player || "—",
+            o: b.overs != null ? b.overs : (b.o != null ? b.o : "0.0"),
+            m: b.maidens != null ? b.maidens : (b.m != null ? b.m : 0),
+            r: b.runs != null ? b.runs : (b.r != null ? b.r : 0),
+            w: b.wickets != null ? b.wickets : (b.w != null ? b.w : 0),
+            econ: b.economy != null ? b.economy : (b.econ != null ? b.econ : "0.00")
+          }));
+        const total =
+          inn.total ??
+          inn.score ??
+          inn.runs ??
+          0;
+
+        const wkts =
+          inn.wickets ??
+          inn.wkts ??
+          inn.wicketslost ??
+          bat.filter(x => x.out).length;
+
+        const ov =
+          inn.overs ??
+          inn.ov ??
+          inn.over ??
+          "0.0";
+
+        return {
+          team: {
+            name: teamName,
+            code: (idx === 0 ? HOME : AWAY),
+            img: (idx === 0 ? HOME_T : AWAY_T).img
+          },
+
+          inningsid: inn.inningsid || idx + 1,
+
+          label:
+            inn.label ||
+            ((idx + 1) + " Innings"),
+
+          bat,
+
+          bowl,
+
+          total,
+
+          wkts,
+
+          ov,
+
+          crr:
+            inn.crr ??
+            inn.runrate ??
+            inn.run_rate ??
+            "0.00"
+        };
+
       });
       if (!out.length) return null;
       return { type: "cricket", innings: out };
@@ -1124,12 +2440,19 @@
   function renderSummary() {
     const p = $('panel-summary'); if (!p) return;
     const st = M.score;
+    if (!M.summary.points) {
+      M.summary.points = [];
+    }
+
+    if (!M.summary.performers) {
+      M.summary.performers = [];
+    }
     const resBadge = st.status === 'finished'
       ? '<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-[11px] font-semibold border border-emerald-500/30"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Result</span>'
       : st.status === 'live' ? '<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-500/20 text-red-300 text-[11px] font-semibold border border-red-500/30"><span class="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse"></span> Live</span>'
         : '<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/15 text-blue-300 text-[11px] font-semibold border border-blue-500/30">Upcoming</span>';
-    const points = M.summary.points.map(pt => '<li class="flex items-start gap-3"><span class="text-xl mt-0.5">' + pt.i + '</span><span>' + pt.t + '</span></li>').join('');
-    const perf = M.summary.performers.map(pf => '<div class="flex items-center gap-3 bg-gray-50 dark:bg-white/5 rounded-lg p-3"><span class="text-2xl">' + pf.flag + '</span><div><p class="text-xs text-gray-400">' + esc(pf.label) + '</p><p class="font-bold text-gray-800 dark:text-white">' + esc(pf.name) + '</p></div></div>').join('');
+    const points = (M.summary.points || []).map(pt => '<li class="flex items-start gap-3"><span class="text-xl mt-0.5">' + pt.i + '</span><span>' + pt.t + '</span></li>').join('');
+    const perf = (M.summary.performers || []).map(pf => '<div class="flex items-center gap-3 bg-gray-50 dark:bg-white/5 rounded-lg p-3"><span class="text-2xl">' + pf.flag + '</span><div><p class="text-xs text-gray-400">' + esc(pf.label) + '</p><p class="font-bold text-gray-800 dark:text-white">' + esc(pf.name) + '</p></div></div>').join('');
     p.innerHTML =
       '<div class="col-span-12 lg:col-span-8 space-y-6">' +
       '<section class="rounded-2xl overflow-hidden shadow-lg bg-white dark:bg-[#12172D] border border-gray-200 dark:border-gray-800"><div class="bg-gradient-to-r from-[#0b1626] to-[#1c2e4a] px-6 py-5 flex items-center justify-between"><div class="flex items-center gap-3"><span class="text-3xl">' + st.icon + '</span><div><h2 class="text-white text-xl font-bold leading-tight">' + esc(st.resultText) + '</h2><p class="text-gray-300 text-xs mt-0.5">' + esc(M.summary.sub) + '</p></div></div>' + resBadge + '</div>' +
@@ -1166,7 +2489,30 @@
   function renderScorecard() {
     const p = $('panel-scorecard'); if (!p) return;
     const sc = M.scorecard;
+    // ======================================================
+    // USE REAL BACKEND SCORECARD
+    // ======================================================
+
+    if (REAL_DATA.scorecard) {
+
+      const apiScorecard =
+        REAL_DATA.scorecard.data ||
+        REAL_DATA.scorecard.scorecard ||
+        REAL_DATA.scorecard;
+
+      if (apiScorecard) {
+
+        M.scorecard = apiScorecard;
+
+      }
+
+    }
     let html = '<div class="col-span-12 space-y-6">';
+    if (REAL_DATA.scorecard && sc.innings) {
+
+      console.log("Using Backend Scorecard");
+
+    }
     if (sc.type === 'cricket') {
       sc.innings.forEach(inn => {
         const batRows = inn.bat.map(b => '<tr class="border-b border-gray-100 dark:border-gray-800"><td class="py-2 pr-4">' + esc(b.n) + (b.out ? '' : ' <span class="text-emerald-600 dark:text-emerald-400 text-xs font-semibold">NOT OUT</span>') + '</td><td class="py-2 px-2 text-right font-semibold">' + b.r + '</td><td class="py-2 px-2 text-right">' + b.b + '</td><td class="py-2 px-2 text-right">' + b.f + '</td><td class="py-2 px-2 text-right">' + b.sx + '</td><td class="py-2 px-2 text-right">' + b.sr + '</td></tr>').join('');
@@ -1194,6 +2540,12 @@
   }
 
   function renderSquads() {
+
+    if (REAL_DATA.squads) {
+
+      console.log("Using Backend Squads");
+
+    }
     const p = $('panel-squads'); if (!p) return;
     const squadCol = (tm, key) => {
       const xi = M.squads[key].xi.map(p => {
@@ -1211,8 +2563,21 @@
   }
 
   function renderCommentary() {
+
+    if (REAL_DATA.commentary) {
+
+      console.log("Using Backend Commentary");
+
+    }
+
     const p = $('panel-commentary'); if (!p) return;
-    const feed = M.comm.items.map(it => commItemHtml(it)).join('');
+    const comments = Array.isArray(M.comm)
+      ? M.comm
+      : (M.comm?.items || []);
+
+    const feed = comments
+      .map(it => commItemHtml(it))
+      .join('');
     const liveTag = STATE === 'live'
       ? '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-500/20 text-red-300 text-[11px] font-semibold border border-red-500/30"><span class="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse"></span> LIVE</span>'
       : '';
@@ -1733,7 +3098,7 @@
       const home = M.squads.home.xi.slice(0, 5).map((p, i) => p.n);
       const away = M.squads.away.xi.slice(0, 5).map((p, i) => p.n);
       let html = '<div class="football-pitch"><div class="pitch-line center"></div><div class="pitch-line circle"></div>';
-      const spots = [[20,30],[35,55],[50,40],[65,60],[80,35],[20,70],[40,75],[60,25],[75,65],[50,80]];
+      const spots = [[20, 30], [35, 55], [50, 40], [65, 60], [80, 35], [20, 70], [40, 75], [60, 25], [75, 65], [50, 80]];
       home.concat(away).forEach((n, i) => { const s = spots[i % spots.length]; html += f(n, s[0], s[1]); });
       html += '</div>';
       el.innerHTML = html;
@@ -1743,6 +3108,13 @@
   }
 
   function renderGraph() {
+
+    if (REAL_DATA.overs) {
+
+      console.log("Using Backend Overs");
+
+    }
+
     const p = $('panel-graph'); if (!p) return;
     const filtersEl = $('graph-filters'); const svg = $('graph-svg'); const legend = $('graph-legend'); const loading = $('graph-loading');
     if (!svg) return;
@@ -1878,6 +3250,62 @@
     if (sec) sec.classList.add(cls);
   }
 
+  // ============================================================================
+  // LOAD BACKEND DATA BEFORE RENDER
+  // ============================================================================
+  async function bootMatchCenter() {
+
+    // Page ko temporarily hide rakho
+    document.body.style.visibility = "hidden";
+
+    try {
+
+      await loadRealMatchData();
+
+      // Backend se team mapping
+      updateTeamsFromBackend();
+
+      // Backend data ko model me copy karo
+      applyBackendMatchData();
+
+      // Header meta
+      M.meta.title =
+        HOME_T.name + " vs " + AWAY_T.name;
+
+      const match =
+        REAL_DATA.match?.data ||
+        REAL_DATA.match;
+
+      M.meta.sub =
+        match?.series ||
+        SC.label;
+
+      M.meta.venue =
+        match?.venue?.name ||
+        match?.venue ||
+        "";
+
+      M.meta.series =
+        match?.series ||
+        "";
+
+      console.log("✅ Backend Match Loaded");
+
+    }
+    catch (err) {
+
+      console.error("Boot Error:", err);
+
+    }
+
+    // Sirf ek baar render
+    init();
+
+    // Ab page dikhao
+    document.body.style.visibility = "visible";
+
+  }
+
   function init() {
     try { applySportBackground(); } catch (e) { console.error('bg', e); }
     try { renderScoreHeader(); } catch (e) { console.error('scoreHeader', e); }
@@ -1895,6 +3323,17 @@
     document.title = M.meta.title + ' | Fanconnact Match Center';
   }
 
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
-  else init();
+  if (document.readyState === "loading") {
+
+    document.addEventListener(
+      "DOMContentLoaded",
+      bootMatchCenter
+    );
+
+  }
+  else {
+
+    bootMatchCenter();
+
+  }
 })();

@@ -53,14 +53,14 @@ class MatchesProvider {
 
     async getMatchInfo(matchId) {
 
-        const { data } = await api.get(
+      const { data } = await api.get(
 
-            endpoints.MATCH_INFO(matchId)
+    endpoints.MATCH_INFO(matchId)
 
-        );
+);
 
-        return normalizeMatchDetails(data);
 
+return normalizeMatchDetails(data);
     }
 
     async getCommentary(matchId){

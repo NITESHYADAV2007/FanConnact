@@ -1,10 +1,16 @@
 const express = require("express");
 const router = express.Router();
+const rankingsProvider =
+require("../providers/cricbuzz/rankings.provider");
 
 const cacheManager = require("../cache/cacheManager");
 
 const players =
 require("../providers/cricbuzz/players.provider");
+
+const { normalizePlayer } =
+require("../normalizers/playerNormalizer");
+
 
 /* ==========================================
         TRENDING PLAYERS
@@ -86,6 +92,53 @@ router.get("/search", async (req, res) => {
 
 });
 
+router.get(
+"/resolve/:name",
+
+async (req,res)=>{
+
+try{
+
+const id=
+
+await players.resolvePlayerId(
+req.params.name
+
+);
+
+if(!id){
+
+return res.status(404).json({
+
+success:false
+
+});
+
+}
+
+res.json({
+
+success:true,
+
+id
+
+});
+
+}
+
+catch(err){
+
+res.status(500).json({
+
+success:false,
+
+message:err.message
+
+});
+
+}
+
+});
 /* ==========================================
         PLAYER INFO
 ========================================== */
@@ -280,6 +333,126 @@ router.get("/:id/news", async (req, res) => {
             success: false,
 
             message: "Unable to fetch player news"
+
+        });
+
+    }
+
+});
+
+router.get("/:id/profile", async (req, res) => {
+
+    try {
+
+    const { id } = req.params;
+
+    const key = `PLAYER_PROFILE_${id}`;
+
+    const player = await cacheManager.getOrCreate(
+
+        key,
+
+        3600,
+
+        async () => {
+
+           const [
+
+info,
+
+batting,
+
+bowling,
+
+career,
+
+news,
+
+profile
+
+] = await Promise.allSettled([
+
+players.getPlayerInfo(id),
+
+players.getPlayerBatting(id),
+
+players.getPlayerBowling(id),
+
+players.getPlayerCareer(id),
+
+players.getPlayerNews(id),
+
+players.getPlayerProfile(id)
+
+]);
+
+const playerData = {
+
+info:
+info.status==="fulfilled"
+?info.value:{},
+
+batting:
+batting.status==="fulfilled"
+?batting.value:{},
+
+bowling:
+bowling.status==="fulfilled"
+?bowling.value:{},
+
+career:
+career.status==="fulfilled"
+?career.value:{},
+
+news:
+news.status==="fulfilled"
+?news.value:[],
+
+profile:
+profile.status==="fulfilled"
+?profile.value:{}
+
+};
+        const player = normalizePlayer(playerData);
+
+player.profile = playerData.profile || {};
+
+player.rank =
+    player.profile.rank ||
+    player.profile.worldRank ||
+    player.profile.position ||
+    null;
+
+player.rating =
+    player.profile.rating ||
+    player.profile.points ||
+    player.profile.value ||
+    null;
+
+player.ranking = {
+    rank: player.rank,
+    rating: player.rating
+};
+
+return player;
+
+        }
+
+    );
+
+    res.json(player);
+
+}
+
+    catch(err){
+
+        console.error(err);
+
+        res.status(500).json({
+
+            success:false,
+
+            message:"Failed to load player profile."
 
         });
 

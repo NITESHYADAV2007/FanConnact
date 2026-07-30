@@ -252,7 +252,7 @@
     <script src="js/top-players-fallback.js"></script>
 
     <script>
-      const API_BASE = 'http://localhost:3001';
+      const API_BASE = 'http://localhost:5000';
       let currentSport = 'cricket';
       let sportConfig = null;
       let players = [];
@@ -278,6 +278,40 @@
         "Ghana":"gh","Senegal":"sn","Mali":"ml","Ivory Coast":"ci","Congo":"cg"
       };
       function getFlag(country) { const code = COUNTRY_FLAGS[country] || "in"; return `https://flagcdn.com/16x12/${code}.png`; }
+
+      async function fetchWithRetry(url, retries = 3) {
+
+    let lastError;
+
+    for (let i = 0; i < retries; i++) {
+
+        try {
+
+            const response = await fetch(url, {
+                signal: AbortSignal.timeout(7000)
+            });
+
+            if (!response.ok) {
+                throw new Error("Request Failed");
+            }
+
+            return response;
+
+        } catch (err) {
+
+            lastError = err;
+
+            if (i < retries - 1) {
+                await new Promise(r => setTimeout(r, 700));
+            }
+
+        }
+
+    }
+
+    throw lastError;
+
+}
 
       function showLoading() {
         document.getElementById('result-count').textContent = 'Loading...';
@@ -389,7 +423,9 @@
         }
         try {
           var now = Date.now();
-          const res = await fetch(API_BASE + '/api/rankings/' + currentSport + '/' + buildKey(), { signal: AbortSignal.timeout(5000) });
+const res = await fetchWithRetry(
+    API_BASE + '/api/rankings/' + currentSport + '/' + buildKey()
+);
           if (!res.ok) throw new Error('Rankings fetch failed');
           const data = await res.json();
           players = data.players || [];
@@ -453,6 +489,134 @@
         });
       }
 
+      async function openPlayerProfile(player) {
+
+    try {
+
+       let id =
+
+player.playerId ||
+
+player.player_id ||
+
+player.id ||
+
+player.pid ||
+
+null;
+
+const playerName =
+
+    player.name ||
+
+    player.fullName ||
+
+    player.playerName ||
+
+    "";
+
+if(!id){
+
+  const playerName =
+
+    player.name ||
+
+    player.fullName ||
+
+    player.playerName ||
+
+    "";
+
+const r = await fetch(
+
+`${API_BASE}/api/players/resolve/${encodeURIComponent(playerName)}`
+
+);
+
+const j=await r.json();
+
+if(j.success){
+
+id=j.id;
+
+}
+
+}
+
+        if (!id) {
+            alert("Player ID not found");
+            return;
+        }
+const response = await fetch(
+
+`${API_BASE}/api/players/${id}/profile`
+
+);
+
+if(!response.ok){
+
+    alert("Player profile unavailable");
+
+    return;
+
+}
+const fullPlayer = await response.json();
+
+const rank =
+    player.rank ??
+    player.ranking?.rank ??
+    player.ranking?.position ??
+    null;
+
+const rating =
+    player.rating ??
+    player.points ??
+    player.ranking?.rating ??
+    player.ranking?.points ??
+    null;
+
+fullPlayer.basic = fullPlayer.basic || {};
+
+fullPlayer.basic.rank = player.rank;
+fullPlayer.basic.rating = player.rating;
+
+fullPlayer.rank = player.rank;
+fullPlayer.rating = player.rating;
+
+fullPlayer.ranking = {
+    rank: player.rank,
+    rating: player.rating
+};
+
+fullPlayer.profile = {
+    ...(fullPlayer.profile || {}),
+    rank: player.rank,
+    rating: player.rating
+};
+
+console.log("Saving:", fullPlayer);
+
+sessionStorage.setItem(
+    "playerView",
+    JSON.stringify({
+        id,
+        player: fullPlayer
+    })
+);
+
+console.log("FINAL PLAYER", fullPlayer);
+
+window.location.href = "player.html";
+    } catch (err) {
+
+        console.error(err);
+
+        alert("Unable to load player profile.");
+
+    }
+
+}
+
       function renderTable() {
         var head = document.getElementById('table-head');
         var body = document.getElementById('table-body');
@@ -504,9 +668,13 @@
               if (sportName === "E-sports") sportName = "E-Sports";
               if (sportName === "Table-tennis") sportName = "Table Tennis";
               if (sportName === "Kabbaddi") sportName = "Kabaddi";
-              sessionStorage.setItem('playerSport', sportName);
-              sessionStorage.setItem('playerView', JSON.stringify({ player: p, sport: sportName }));
-              window.location.href = 'player.html';
+             
+              sessionStorage.setItem(
+    "playerSport",
+    sportName
+);
+
+openPlayerProfile(p);
             }
           });
         });

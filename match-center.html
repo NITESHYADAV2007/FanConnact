@@ -1790,7 +1790,7 @@
     }, { passive: true });
 
     function loadGraph() {
-      fetch('http://localhost:3001/api/match/graphs').then(r => r.json()).then(d => {
+      fetch('http://localhost:5000/api/match/graphs').then(r => r.json()).then(d => {
         graphData = d;
         graphFilters.innerHTML = '';
         d.filters.forEach(f => {
@@ -1823,7 +1823,7 @@
     const newsLoading = document.getElementById('news-loading');
     const newsSource = document.getElementById('news-source');
     function loadNews() {
-      fetch('http://localhost:3001/api/match/news').then(r => r.json()).then(d => {
+      fetch(' http://localhost:5000/api/match/news').then(r => r.json()).then(d => {
         if (d.source) newsSource.textContent = d.source;
         newsList.innerHTML = '';
         (d.articles || []).forEach(a => {
