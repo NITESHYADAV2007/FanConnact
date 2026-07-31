@@ -5052,6 +5052,67 @@ const ALLSPORTS_LIVE = {
   "american-football": "/api/american-football/matches/live",
   cricket: "/api/cricket/matches/live",
 };
+
+// Cricket live scores from cricket-live-line-advance (entitysport).
+// status: 3=Live, 1=Upcoming, 2=Completed — merged into one list.
+const CRICKET_ADV_HOST = "cricket-live-line-advance.p.rapidapi.com";
+async function fetchCricketAdvance() {
+  const statuses = [3, 1, 2]; // live first, then upcoming, then completed
+  const out = [];
+  const seen = new Set();
+  const results = await Promise.all(statuses.map(async (status) => {
+    try {
+      const r = await fetch(`https://${CRICKET_ADV_HOST}/matches?status=${status}&per_paged=50&paged=1`, {
+        headers: { "X-Rapidapi-Key": CRICKET_KEY, "X-Rapidapi-Host": CRICKET_ADV_HOST, "Content-Type": "application/json" },
+        signal: AbortSignal.timeout(20000),
+      });
+      if (!r.ok) throw new Error("advance " + r.status);
+      const j = await r.json().catch(() => null);
+      const items = (j && j.response && j.response.items) || [];
+      return items.map((m) => {
+        const comp = m.competition || {};
+        const teama = m.teama || {};
+        const teamb = m.teamb || {};
+        let statusStr = "UPCOMING";
+        if (m.status === 3) statusStr = "LIVE";
+        else if (m.status === 2) statusStr = "COMPLETED";
+        return {
+          sport: "cricket",
+          league: comp.title || "",
+          seriesId: comp.cid ? String(comp.cid) : "",
+          status: statusStr,
+          state: m.status_str || "",
+          time: m.status_note || "",
+          date: m.date_start_ist || m.date_start || "",
+          matchId: String(m.match_id || ""),
+          homeName: teama.name || "TBD",
+          homeAbbr: teama.short_name || "",
+          homeLogo: teama.logo_url || "",
+          awayName: teamb.name || "TBD",
+          awayAbbr: teamb.short_name || "",
+          awayLogo: teamb.logo_url || "",
+          homeScore: teama.scores_full || "",
+          awayScore: teamb.scores_full || "",
+          venue: (m.venue && m.venue.name) || "",
+          toss: (m.toss && m.toss.text) || "",
+          result: m.result || "",
+          matchType: m.format_str || "",
+        };
+      });
+    } catch (e) {
+      console.error("CricketAdvance fetch failed", status, e.message);
+      return [];
+    }
+  }));
+  for (const list of results) {
+    for (const m of list) {
+      if (seen.has(m.matchId)) continue;
+      seen.add(m.matchId);
+      out.push(m);
+    }
+  }
+  return out;
+}
 // Map app sport key -> allsportsapi2 sport slug.
 const APP_TO_ALLSPORTS = {
   basketball: "basketball",
@@ -5477,17 +5538,18 @@ app.get("/api/live-matches", async (req, res) => {
     let results = [];
     if (!quotaExhausted()) {
       if (sport === "all") {
-        // Cricket from cricbuzz (real, with logos); the rest from
-        // allsportsapi2 live endpoints (real, with logos), falling back
-        // to ESPN scoreboard when allsportsapi2 has no live data.
+        // Cricket from cricket-live-line-advance (real, with logos + live
+        // scores); the rest from allsportsapi2 live endpoints (real, with
+        // logos), falling back to ESPN scoreboard when allsportsapi2 has no
+        // live data.
         const [cricket, others] = await Promise.all([
-          fetchCricbuzzLive(),
+          fetchCricketAdvance(),
           fetchAllSportsForAll(),
         ]);
         results = [...cricket, ...others];
       } else if (sport === "cricket") {
-        // Cricket data from cricbuzz (live + upcoming + recent).
-        results = await fetchCricbuzzLive();
+        // Cricket data from cricket-live-line-advance (live + upcoming + recent).
+        results = await fetchCricketAdvance();
       } else if (APP_TO_ALLSPORTS[sport]) {
         // All other sports from allsportsapi2 live endpoints (per request).
         // Fall back to ESPN (free, real, with logos) when allsportsapi2
@@ -5528,10 +5590,65 @@ app.get("/api/live-matches", async (req, res) => {
 
 // ─── TOURNAMENT STATS (cricbuzz series stats, cached) ──────────────────────
 // Returns top run-scorers + wicket-takers + six-hitters for a tournament.
+// Accepts a cricbuzz seriesId OR a tournament title (league name from the
+// advance API) which is resolved to a cricbuzz seriesId via a cached series
+// name lookup.
+async function resolveCricbuzzSeriesId(title) {
+  if (!title) return "";
+  const cacheKey = "cricbuzz-series-map";
+  const cached = matchCache.get(cacheKey);
+  let map = cached ? cached.data : null;
+  if (!map || Date.now() - cached.ts > 6 * 60 * 60 * 1000) {
+    map = {};
+    try {
+      const sections = await Promise.all([
+        fetch("https://cricbuzz-cricket.p.rapidapi.com/matches/v1/live", {
+          headers: { "X-Rapidapi-Key": ALLSPORTS_KEY, "X-Rapidapi-Host": "cricbuzz-cricket.p.rapidapi.com" },
+          signal: AbortSignal.timeout(10000),
+        }).catch(() => null),
+        fetch("https://cricbuzz-cricket.p.rapidapi.com/matches/v1/upcoming", {
+          headers: { "X-Rapidapi-Key": ALLSPORTS_KEY, "X-Rapidapi-Host": "cricbuzz-cricket.p.rapidapi.com" },
+          signal: AbortSignal.timeout(10000),
+        }).catch(() => null),
+        fetch("https://cricbuzz-cricket.p.rapidapi.com/matches/v1/recent", {
+          headers: { "X-Rapidapi-Key": ALLSPORTS_KEY, "X-Rapidapi-Host": "cricbuzz-cricket.p.rapidapi.com" },
+          signal: AbortSignal.timeout(10000),
+        }).catch(() => null),
+      ]);
+      for (const r of sections) {
+        if (!r || !r.ok) continue;
+        const j = await r.json().catch(() => null);
+        if (!j) continue;
+        (j.typeMatches || []).forEach((tm) => {
+          (tm.seriesMatches || []).forEach((sm) => {
+            const wrap = sm.seriesAdWrapper;
+            if (!wrap) return;
+            const sid = wrap.seriesId;
+            const name = wrap.seriesName;
+            if (sid && name && !map[name]) map[name] = String(sid);
+          });
+        });
+      }
+    } catch (e) {
+      console.error("Cricbuzz series map failed", e.message);
+    }
+    matchCache.set(cacheKey, { ts: Date.now(), data: map });
+  }
+  // Exact match first, then a contains-match on the title.
+  if (map[title]) return map[title];
+  const hit = Object.keys(map).find((k) =>
+    k.toLowerCase().includes(title.toLowerCase()) ||
+    title.toLowerCase().includes(k.toLowerCase())
+  );
+  return hit ? map[hit] : "";
+}
+
 app.get("/api/tournament-stats", async (req, res) => {
   try {
-    const seriesId = (req.query.seriesId || "").toString();
-    if (!seriesId) return res.status(400).json({ error: "seriesId required" });
+    let seriesId = (req.query.seriesId || "").toString();
+    const title = (req.query.title || "").toString();
+    if (!seriesId && title) seriesId = await resolveCricbuzzSeriesId(title);
+    if (!seriesId) return res.status(400).json({ error: "seriesId or title required" });
 
     const cacheKey = "tournament-stats|" + seriesId;
     const cached = matchCache.get(cacheKey);
@@ -5556,7 +5673,7 @@ app.get("/api/tournament-stats", async (req, res) => {
       return { type, values };
     }));
 
-    const data = { source: "cricbuzz", seriesId, stats: results };
+    const data = { source: "cricbuzz", seriesId, title, stats: results };
     matchCache.set(cacheKey, { ts: Date.now(), data });
     res.json(data);
   } catch (e) {

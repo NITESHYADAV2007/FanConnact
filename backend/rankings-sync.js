@@ -18,6 +18,7 @@ function loadEnv() {
 }
 loadEnv();
 const API_SPORTS_KEY = process.env.API_SPORTS_KEY || '';
+const RAPID_API_KEY = process.env.CRICKET_KEY || "31ee070a54mshd6171aacb85b007p1443ccjsnf7c39463a592";
 
 const DATA_DIR = path.join(__dirname, '..', 'data');
 const PLAYER_RANKINGS_PATH = path.join(DATA_DIR, 'player-rankings.json');
@@ -155,8 +156,69 @@ async function fetchAPISportsRankings(sport, endpoint) {
   }
 }
 
-// Cricket "Live Line / Advance" via API-Sports — returns current teams/series.
-// Routed through the quota+cache layer so the 100/day budget is protected.
+// cricket-live-line-advance (entitysport) — OFFICIAL ICC rankings:
+// both TEAM (Test/ODI/T20I, men + women) and PLAYER (batting/bowling/
+// all-rounders) rankings, plus the Test Championship table.
+// GET https://cricket-live-line-advance.p.rapidapi.com/iccranks
+async function fetchICCranksFromAdvance() {
+  const url = 'https://cricket-live-line-advance.p.rapidapi.com/iccranks';
+  log('Fetching ICC rankings (teams + players) from cricket-live-line-advance');
+  try {
+    const data = await fetchWithTimeout(url, {
+      timeout: 20000,
+      headers: {
+        'x-rapidapi-key': RAPID_API_KEY,
+        'x-rapidapi-host': 'cricket-live-line-advance.p.rapidapi.com'
+      }
+    });
+    if (!data || !data.response) return null;
+    const resp = data.response;
+    if (!resp.ranks) return null;
+    return resp;
+  } catch (e) {
+    log(`ICC ranks (advance) failed: ${e.message}`);
+    return null;
+  }
+}
+
+// Map a single rank list to normalized player rows for player-rankings.json
+function normalizeICCPlayers(list, formatLabel) {
+  if (!Array.isArray(list)) return null;
+  return list.map((r, i) => ({
+    rank: parseInt(r.rank) || i + 1,
+    name: r.player || 'Unknown',
+    country: r.team || '',
+    rating: parseFloat(r.rating) || 0,
+    points: parseInt(r.points) || 0,
+    matches: parseInt(r.matches) || 0,
+    runs: 0, wkts: 0, avg: 0, econ: 0,
+    image: r.image_url || '',
+    format: formatLabel,
+    _source: 'icc-advance'
+  }));
+}
+
+// Map a single team rank list to normalized rows for team-rankings.json
+function normalizeICCTeams(list) {
+  if (!Array.isArray(list)) return null;
+  return list.map((r, i) => ({
+    rank: parseInt(r.rank) || i + 1,
+    team: r.team || 'Unknown',
+    code: r.team_short_name || (r.team || '').slice(0, 3).toUpperCase(),
+    flag: '',
+    logo: r.image_url || '',
+    points: parseInt(r.points) || 0,
+    rating: parseFloat(r.rating) || 0,
+    matches: parseInt(r.matches) || 0,
+    wins: parseInt(r.win) || 0,
+    losses: parseInt(r.loss) || 0,
+    draws: parseInt(r.drawn) || 0,
+    winPct: parseFloat(r.pct) || 0,
+    _source: 'icc-advance'
+  }));
+}
+
+// Cricket "Live Line / Advance" via API-Sports — returns current teams/series.// Routed through the quota+cache layer so the 100/day budget is protected.
 async function fetchCricketFromAPISports() {
   if (!API_SPORTS_KEY) { log('No API-Sports key configured — skipping cricket API'); return null; }
   try {
@@ -176,8 +238,7 @@ async function fetchCricketFromAPISports() {
   }
 }
 
-async function fetchESPNRankings(sport, category) {
-  const endpoints = {
+async function fetchESPNRankings(sport, category) {  const endpoints = {
     basketball: {
       url: `https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/statistics/byathlete?season=2026&seasontype=2&limit=100`,
       parse: (data) => {
@@ -237,6 +298,133 @@ async function fetchESPNRankings(sport, category) {
   }
 }
 
+// ════════════════════════════════════════════════════════════════
+// REAL TEAM RANKINGS (per game → league/format via live APIs)
+// ════════════════════════════════════════════════════════════════
+
+// FIFA API v3 — official world team rankings (men/women), no key needed.
+// GET https://api.fifa.com/api/v3/rankings?gender=MALE|FEMALE&type=FIFA
+async function fetchFIFATeamRankings(gender) {
+  const url = `https://api.fifa.com/api/v3/rankings?gender=${gender}&type=FIFA`;
+  log(`Fetching FIFA team rankings (${gender})`);
+  try {
+    const data = await fetchWithTimeout(url, { timeout: 15000 });
+    if (!data || !Array.isArray(data.Results) || !data.Results.length) return null;
+    return data.Results
+      .filter(r => r.StatusRanked === 1)
+      .map(r => ({
+        rank: r.Rank || 0,
+        team: (r.TeamName && r.TeamName[0] && r.TeamName[0].Description) || r.IdCountry || 'Unknown',
+        code: r.IdCountry || '',
+        flag: r.IdCountry ? `https://flagcdn.com/${r.IdCountry.toLowerCase()}.svg` : '',
+        points: r.TotalPoints || 0,
+        previousRank: r.PrevRank || r.Rank || 0,
+        matches: r.Matches || 0,
+        confederation: r.ConfederationName || '',
+        trend: (r.Rank != null && r.PrevRank != null) ? (r.Rank < r.PrevRank ? 'up' : r.Rank > r.PrevRank ? 'down' : 'neutral') : 'neutral',
+        trendVal: (r.Rank != null && r.PrevRank != null) ? Math.abs(r.Rank - r.PrevRank) : 0,
+        _source: 'fifa-api'
+      }))
+      .sort((a, b) => (a.rank || 999) - (b.rank || 999));
+  } catch (e) {
+    log(`FIFA API ${gender} failed: ${e.message}`);
+    return null;
+  }
+}
+
+// ESPN standings API — real league tables with logos, free, no key.
+// GET https://site.web.api.espn.com/apis/v2/sports/{sport}/{league}/standings
+async function fetchESPNTeamStandings(sport, league, leagueLabel) {
+  const url = `https://site.web.api.espn.com/apis/v2/sports/${sport}/${league}/standings`;
+  log(`Fetching ESPN ${leagueLabel} standings`);
+  try {
+    const data = await fetchWithTimeout(url, { timeout: 15000 });
+    if (!data || !data.children) return null;
+    const rows = [];
+    (data.children || []).forEach(child => {
+      const entries = (child.standings && child.standings.entries) || [];
+      entries.forEach(e => {
+        const stats = {};
+        (e.stats || []).forEach(s => { stats[s.name] = s.value; });
+        const wins = parseInt(stats.wins) || 0;
+        const losses = parseInt(stats.losses) || 0;
+        const ties = parseInt(stats.ties) || 0;
+        const played = parseInt(stats.gamesPlayed) || (wins + losses + ties) || 0;
+        const winPct = stats.winPercent != null ? parseFloat(stats.winPercent) * 100 : (played ? (wins / played) * 100 : 0);
+        const rank = stats.rank != null ? parseInt(stats.rank) : stats.playoffSeed != null ? parseInt(stats.playoffSeed) : 0;
+        rows.push({
+          rank: rank || 0,
+          team: (e.team && (e.team.displayName || e.team.name)) || 'Unknown',
+          code: (e.team && e.team.abbreviation) || '',
+          flag: '',
+          logo: (e.team && e.team.logos && e.team.logos[0] && e.team.logos[0].href) || '',
+          matches: played,
+          wins,
+          losses,
+          draws: ties,
+          winPct: Math.round(winPct * 100) / 100,
+          rating: stats.points != null ? parseFloat(stats.points) : Math.round(winPct * 100) / 100,
+          points: stats.points != null ? parseFloat(stats.points) : 0,
+          streak: stats.streak || '',
+          division: (child.name || '').split(' ')[0],
+          _source: 'espn-standings',
+          _league: leagueLabel
+        });
+      });
+    });
+    if (!rows.length) return null;
+    rows.sort((a, b) => (a.rank || 999) - (b.rank || 999));
+    rows.forEach((r, i) => { if (!r.rank) r.rank = i + 1; });
+    return rows;
+  } catch (e) {
+    log(`ESPN ${leagueLabel} standings failed: ${e.message}`);
+    return null;
+  }
+}
+
+// allsportsapi2 (RapidAPI) — official ATP/WTA live rankings.
+// GET https://allsportsapi2.p.rapidapi.com/api/tennis/rankings/atp|wta/live
+async function fetchTennisLiveRankings(tour) {
+  const url = `https://allsportsapi2.p.rapidapi.com/api/tennis/rankings/${tour}/live`;
+  log(`Fetching tennis ${tour.toUpperCase()} live rankings`);
+  try {
+    const data = await fetchWithTimeout(url, {
+      timeout: 15000,
+      headers: {
+        'x-rapidapi-key': RAPID_API_KEY,
+        'x-rapidapi-host': 'allsportsapi2.p.rapidapi.com'
+      }
+    });
+    if (!data || !Array.isArray(data.rankings) || !data.rankings.length) return null;
+    return data.rankings
+      .filter(r => r.team)
+      .map(r => ({
+        rank: r.ranking || 0,
+        team: (r.team && r.team.name) || r.rowName || 'Unknown',
+        code: (r.team && r.team.country && r.team.country.alpha2) || (r.country && r.country.alpha2) || '',
+        flag: (() => {
+          const c = (r.team && r.team.country && r.team.country.alpha2) || (r.country && r.country.alpha2) || '';
+          return c ? `https://flagcdn.com/${c.toLowerCase()}.svg` : '';
+        })(),
+        points: r.points || 0,
+        previousRank: r.previousRanking || r.ranking || 0,
+        matches: 0,
+        wins: 0,
+        losses: 0,
+        draws: 0,
+        winPct: 0,
+        rating: r.points || 0,
+        trend: (r.ranking != null && r.previousRanking != null) ? (r.ranking < r.previousRanking ? 'up' : r.ranking > r.previousRanking ? 'down' : 'neutral') : 'neutral',
+        trendVal: (r.ranking != null && r.previousRanking != null) ? Math.abs(r.ranking - r.previousRanking) : 0,
+        _source: 'allsportsapi'
+      }))
+      .sort((a, b) => (a.rank || 999) - (b.rank || 999));
+  } catch (e) {
+    log(`Tennis ${tour} failed: ${e.message}`);
+    return null;
+  }
+}
+
 function initializeDefaultData() {
   let playerData = loadJSON(PLAYER_RANKINGS_PATH);
   let teamData = loadJSON(TEAM_RANKINGS_PATH);
@@ -261,32 +449,56 @@ async function syncPlayerRankings() {
 
   const updates = [];
 
+  // ICC rankings (men + women, teams + players) via cricket-live-line-advance
   updates.push(
-    scrapeICCRankings('odi', 'men').then(data => {
-      if (data) {
-        if (!playerData.cricket) playerData.cricket = {};
-        playerData.cricket.odi_bat_men = data;
-        log(`Updated ICC ODI batting (men): ${data.length} players`);
-      }
-    }).catch(() => {})
-  );
+    fetchICCranksFromAdvance().then(resp => {
+      if (!resp) return;
+      if (!playerData.cricket) playerData.cricket = {};
+      const formatMap = { odis: 'ODI', tests: 'Test', t20s: 'T20I' };
 
-  updates.push(
-    scrapeICCRankings('t20', 'men').then(data => {
-      if (data) {
-        if (!playerData.cricket) playerData.cricket = {};
-        playerData.cricket.t20_bat_men = data;
-        log(`Updated ICC T20 batting (men): ${data.length} players`);
-      }
-    }).catch(() => {})
-  );
+      // Men: batting / bowling / all-rounders per format
+      ['batsmen', 'bowlers', 'all-rounders'].forEach(cat => {
+        const suffix = cat === 'batsmen' ? 'bat' : cat === 'bowlers' ? 'bowl' : 'all';
+        Object.keys(formatMap).forEach(k => {
+          const list = normalizeICCPlayers(resp.ranks[cat][k], formatMap[k]);
+          if (list && list.length) {
+            playerData.cricket[`${formatMap[k].toLowerCase()}_${suffix}_men`] = list;
+            log(`Updated ICC ${formatMap[k]} ${cat} (men): ${list.length} players`);
+          }
+        });
+      });
 
-  updates.push(
-    scrapeICCRankings('test', 'men').then(data => {
-      if (data) {
-        if (!playerData.cricket) playerData.cricket = {};
-        playerData.cricket.test_bat_men = data;
-        log(`Updated ICC Test batting (men): ${data.length} players`);
+      // Women: batting / bowling / all-rounders per format
+      if (resp.women_ranks) {
+        ['batsmen', 'bowlers', 'all-rounders'].forEach(cat => {
+          const suffix = cat === 'batsmen' ? 'bat' : cat === 'bowlers' ? 'bowl' : 'all';
+          Object.keys(formatMap).forEach(k => {
+            const list = resp.women_ranks[cat] && normalizeICCPlayers(resp.women_ranks[cat][k], formatMap[k]);
+            if (list && list.length) {
+              playerData.cricket[`${formatMap[k].toLowerCase()}_${suffix}_women`] = list;
+              log(`Updated ICC ${formatMap[k]} ${cat} (women): ${list.length} players`);
+            }
+          });
+        });
+      }
+
+      // WTC standings (Test Championship table) as team list
+      if (Array.isArray(resp.test_championship_ranking) && resp.test_championship_ranking.length) {
+        const wtc = resp.test_championship_ranking.map((r, i) => ({
+          rank: parseInt(r.rank) || i + 1,
+          team: r.team_name || r.team || 'Unknown',
+          code: r.team_short_name || '',
+          logo: r.team_logo || '',
+          matches: parseInt(r.total_match) || 0,
+          wins: parseInt(r.win) || 0,
+          losses: parseInt(r.loss) || 0,
+          draws: parseInt(r.drawn) || 0,
+          points: parseInt(r.points) || 0,
+          winPct: parseFloat(r.pct) || 0,
+          _source: 'icc-advance'
+        }));
+        playerData.cricket.wtc = wtc;
+        log(`Updated ICC WTC table: ${wtc.length} teams`);
       }
     }).catch(() => {})
   );
@@ -328,18 +540,6 @@ async function syncPlayerRankings() {
         if (!playerData.football) playerData.football = {};
         playerData.football.fifa_rankings = data;
         log(`Updated FIFA rankings: ${data.length} teams`);
-        if (teamData.football) {
-          teamData.football.rankings.fifa_men = data.map(t => ({
-            rank: t.rank,
-            team: t.team,
-            code: t.code,
-            flag: t.flag,
-            points: t.points,
-            previousRank: t.previousRank,
-            trend: t.rank < t.previousRank ? 'up' : t.rank > t.previousRank ? 'down' : 'neutral',
-            trendVal: Math.abs(t.rank - t.previousRank)
-          }));
-        }
       }
     }).catch(() => {})
   );
@@ -361,20 +561,75 @@ async function syncPlayerRankings() {
 }
 
 async function syncTeamRankings() {
-  log('Starting team rankings sync...');
+  log('Starting team rankings sync (real APIs)...');
   const teamData = loadJSON(TEAM_RANKINGS_PATH);
   if (!teamData) {
     log('No team rankings file found, creating default');
     return;
   }
 
-  if (teamData.cricket?.rankings) {
-    try {
-      const odiData = await scrapeICCRankings('odi', 'men');
-      const t20Data = await scrapeICCRankings('t20', 'men');
-      const testData = await scrapeICCRankings('test', 'men');
-    } catch {}
+  const apply = (sportId, gender, category, list) => {
+    if (!list || !list.length) return false;
+    if (!teamData[sportId]) return false;
+    if (!teamData[sportId].rankings) teamData[sportId].rankings = {};
+    if (!teamData[sportId].rankings[gender]) teamData[sportId].rankings[gender] = {};
+    teamData[sportId].rankings[gender][category] = list;
+    log(`  Updated ${sportId} ${gender}/${category}: ${list.length} teams`);
+    return true;
+  };
+
+  // ── Football: FIFA world ranking (Men/Women) + ESPN league tables ──
+  const [fifaMen, fifaWomen, epl, laliga] = await Promise.allSettled([
+    fetchFIFATeamRankings('MALE'),
+    fetchFIFATeamRankings('FEMALE'),
+    fetchESPNTeamStandings('soccer', 'eng.1', 'EPL'),
+    fetchESPNTeamStandings('soccer', 'esp.1', 'La Liga'),
+  ]);
+  if (fifaMen.status === 'fulfilled') apply('football', 'Men', 'FIFA', fifaMen.value);
+  if (fifaWomen.status === 'fulfilled') apply('football', 'Women', 'FIFA', fifaWomen.value);
+  if (epl.status === 'fulfilled') apply('football', 'Men', 'EPL', epl.value);
+  if (laliga.status === 'fulfilled') apply('football', 'Men', 'La Liga', laliga.value);
+
+  // ── Basketball: ESPN NBA standings ──
+  const nba = await fetchESPNTeamStandings('basketball', 'nba', 'NBA');
+  apply('basketball', 'Men', 'NBA', nba);
+
+  // ── Baseball: ESPN MLB standings ──
+  const mlb = await fetchESPNTeamStandings('baseball', 'mlb', 'MLB');
+  apply('baseball', 'Men', 'MLB', mlb);
+
+  // ── Hockey: ESPN NHL standings ──
+  const nhl = await fetchESPNTeamStandings('hockey', 'nhl', 'NHL');
+  apply('hockey', 'Men', 'NHL', nhl);
+
+  // ── Tennis: ATP (Men) / WTA (Women) live rankings via RapidAPI ──
+  const [atp, wta] = await Promise.allSettled([
+    fetchTennisLiveRankings('atp'),
+    fetchTennisLiveRankings('wta'),
+  ]);
+  if (atp.status === 'fulfilled') apply('tennis', 'Men', 'ATP', atp.value);
+  if (wta.status === 'fulfilled') apply('tennis', 'Women', 'WTA', wta.value);
+
+  // ── Cricket: official ICC team rankings (Test/ODI/T20I, Men + Women)
+  //    via cricket-live-line-advance /iccranks ──
+  const iccResp = await fetchICCranksFromAdvance();
+  if (iccResp) {
+    const formatMap = { odis: 'ODI', tests: 'Test', t20s: 'T20I' };
+    // Men
+    Object.keys(formatMap).forEach(k => {
+      apply('cricket', 'Men', formatMap[k], normalizeICCTeams(iccResp.ranks.teams[k]));
+    });
+    // Women (ICC only ranks ODI + T20I for women)
+    if (iccResp.women_ranks && iccResp.women_ranks.teams) {
+      ['odis', 't20s'].forEach(k => {
+        apply('cricket', 'Women', formatMap[k], normalizeICCTeams(iccResp.women_ranks.teams[k]));
+      });
+    }
   }
+
+  if (!teamData._meta) teamData._meta = {};
+  teamData._meta.lastSync = new Date().toISOString();
+  teamData._meta.syncInterval = `${CACHE_DURATION / 1000 / 60 / 60}h`;
 
   saveJSON(TEAM_RANKINGS_PATH, teamData);
   log('Team rankings sync complete');
