@@ -5142,17 +5142,17 @@ async function fetchAllSportsForAll() {
 // match is currently in play, so we merge all three to always show cricket.
 async function fetchCricbuzzLive() {
   const ctrl = new AbortController();
-  const t = setTimeout(() => ctrl.abort(), 9000);
+  const t = setTimeout(() => ctrl.abort(), 20000);
   try {
     const sections = await Promise.all([
       fetch("https://cricbuzz-cricket.p.rapidapi.com/matches/v1/live", {
         signal: ctrl.signal,
         headers: { "X-Rapidapi-Key": ALLSPORTS_KEY, "X-Rapidapi-Host": "cricbuzz-cricket.p.rapidapi.com" },
-      }),
+      }).catch(() => null),
       fetch("https://cricbuzz-cricket.p.rapidapi.com/matches/v1/upcoming", {
         signal: ctrl.signal,
         headers: { "X-Rapidapi-Key": ALLSPORTS_KEY, "X-Rapidapi-Host": "cricbuzz-cricket.p.rapidapi.com" },
-      }),
+      }).catch(() => null),
       fetch("https://cricbuzz-cricket.p.rapidapi.com/matches/v1/recent", {
         signal: ctrl.signal,
         headers: { "X-Rapidapi-Key": ALLSPORTS_KEY, "X-Rapidapi-Host": "cricbuzz-cricket.p.rapidapi.com" },
