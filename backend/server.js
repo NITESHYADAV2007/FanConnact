@@ -4833,24 +4833,20 @@ app.get("/api/news", async (req, res) => {
     if (!articles) {
       articles = [];
       try {
-        // 1) Free RSS news (no quota) — the bulk of an "unlimited" feed.
         const rss = await fetchRssNews(sport);
         if (rss.length) articles.push(...rss);
       } catch (e) { console.error("RSS error:", e.message); }
       try {
-        // 2) Free Currents API news (no quota).
         const currents = await fetchCurrentsNews({ sport, language });
         if (currents.length) articles.push(...currents);
       } catch (e) { console.error("Currents error:", e.message); }
       try {
-        // 3) Free cricket-line news (no quota).
         if (sport === "cricket" || sport === "all") {
           const clNews = await fetchCricketLineNews();
           if (clNews.length) articles.push(...clNews);
         }
       } catch (e) { console.error("CricketLineNews error:", e.message); }
       try {
-        // 4) newsdata.io (uses daily quota) — only if not exhausted.
         if (!quotaExhausted()) {
           const data = await fetchSportsNews({ sport, language });
           if (data && data.articles) articles.push(...data.articles);
@@ -5195,6 +5191,7 @@ async function fetchCricbuzzLive() {
           out.push({
             sport: "cricket",
             league: info.seriesName || "",
+            seriesId: info.seriesId || "",
             status: statusStr,
             state: info.state || "",
             time: info.status || "",
@@ -5522,6 +5519,44 @@ app.get("/api/live-matches", async (req, res) => {
       storeLast("matches", sport, { source: "realtime", count: results.length, matches: results });
     }
     const data = { source: "realtime", count: results.length, matches: results, cached: results.length > 0 && quotaExhausted() };
+    matchCache.set(cacheKey, { ts: Date.now(), data });
+    res.json(data);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// ─── TOURNAMENT STATS (cricbuzz series stats, cached) ──────────────────────
+// Returns top run-scorers + wicket-takers + six-hitters for a tournament.
+app.get("/api/tournament-stats", async (req, res) => {
+  try {
+    const seriesId = (req.query.seriesId || "").toString();
+    if (!seriesId) return res.status(400).json({ error: "seriesId required" });
+
+    const cacheKey = "tournament-stats|" + seriesId;
+    const cached = matchCache.get(cacheKey);
+    if (cached && Date.now() - cached.ts < 60 * 60 * 1000) {
+      return res.json(cached.data);
+    }
+
+    const types = ["mostRuns", "mostWickets", "mostSixes"];
+    const results = await Promise.all(types.map(async (type) => {
+      const r = await fetch(`https://cricbuzz-cricket.p.rapidapi.com/stats/v1/series/${seriesId}?statsType=${type}`, {
+        headers: {
+          "X-Rapidapi-Key": ALLSPORTS_KEY,
+          "X-Rapidapi-Host": "cricbuzz-cricket.p.rapidapi.com",
+        },
+        signal: AbortSignal.timeout(9000),
+      });
+      if (!r.ok) return { type, values: [] };
+      const j = await r.json().catch(() => null);
+      if (!j) return { type, values: [] };
+      const list = j.odiStatsList || j.t20StatsList;
+      const values = (list && Array.isArray(list.values)) ? list.values.map((v) => v.values) : [];
+      return { type, values };
+    }));
+
+    const data = { source: "cricbuzz", seriesId, stats: results };
     matchCache.set(cacheKey, { ts: Date.now(), data });
     res.json(data);
   } catch (e) {
