@@ -284,6 +284,29 @@ async function fetchESPNRankings(sport, category) {  const endpoints = {
           };
         });
       }
+    },
+    hockey: {
+      url: `https://site.web.api.espn.com/apis/common/v3/sports/hockey/nhl/statistics/byathlete?season=2026&seasontype=2&limit=100`,
+      parse: (data) => {
+        if (!data.athletes) return null;
+        return data.athletes.map((a, i) => {
+          const ath = a.athlete;
+          const o = a.categories?.find(c => c.name === 'offensive')?.values || [];
+          const g = a.categories?.find(c => c.name === 'general')?.values || [];
+          return {
+            rank: i + 1,
+            name: ath.displayName || '',
+            team: ath.teamShortName || '',
+            position: ath.position?.abbreviation || '',
+            goals: parseInt(o[0]) || 0,
+            assists: parseInt(o[1]) || 0,
+            points: parseInt(o[2]) || 0,
+            games: parseInt(g[0]) || 0,
+            rating: parseInt(o[2]) || 0,
+            _source: 'espn'
+          };
+        });
+      }
     }
   };
   const config = endpoints[sport];
@@ -294,6 +317,34 @@ async function fetchESPNRankings(sport, category) {  const endpoints = {
     return config.parse(data);
   } catch (e) {
     log(`ESPN ${sport} failed: ${e.message}`);
+    return null;
+  }
+}
+
+// sportscore.com — real football top scorers/assists (free, no key).
+// GET https://sportscore.com/api/widget/topscorers/?sport=football&slug=english-premier-league&limit=50&stat=goals|assists
+async function fetchFootballScorers(stat) {
+  const url = `https://sportscore.com/api/widget/topscorers/?sport=football&slug=english-premier-league&limit=50&stat=${stat}&src=fanconnact`;
+  log(`Fetching football ${stat} (sportscore.com)`);
+  try {
+    const data = await fetchWithTimeout(url, { timeout: 12000 });
+    if (!data || !Array.isArray(data.scorers) || !data.scorers.length) return null;
+    return data.scorers.map((s, i) => ({
+      rank: i + 1,
+      name: s.player || 'Unknown',
+      team: s.team || '',
+      country: '',
+      position: '',
+      goals: s.goals != null ? s.goals : 0,
+      assists: s.assists != null ? s.assists : 0,
+      matches: s.matches || 0,
+      minutes: s.minutes || 0,
+      rating: s.rating != null ? parseFloat(s.rating) : 0,
+      logo: s.player_logo || '',
+      _source: 'sportscore'
+    }));
+  } catch (e) {
+    log(`Football ${stat} failed: ${e.message}`);
     return null;
   }
 }
@@ -401,7 +452,9 @@ async function fetchTennisLiveRankings(tour) {
       .map(r => ({
         rank: r.ranking || 0,
         team: (r.team && r.team.name) || r.rowName || 'Unknown',
+        name: (r.team && r.team.name) || r.rowName || 'Unknown',
         code: (r.team && r.team.country && r.team.country.alpha2) || (r.country && r.country.alpha2) || '',
+        country: (r.team && r.team.country && r.team.country.name) || '',
         flag: (() => {
           const c = (r.team && r.team.country && r.team.country.alpha2) || (r.country && r.country.alpha2) || '';
           return c ? `https://flagcdn.com/${c.toLowerCase()}.svg` : '';
@@ -530,6 +583,59 @@ async function syncPlayerRankings() {
         if (!playerData.baseball) playerData.baseball = {};
         playerData.baseball.hr = data;
         log(`Updated MLB HR: ${data.length} players`);
+      }
+    }).catch(() => {})
+  );
+
+  // NHL scoring leaders via ESPN byathlete (real stats)
+  updates.push(
+    fetchESPNRankings('hockey', 'goals').then(data => {
+      if (data) {
+        if (!playerData.hockey) playerData.hockey = {};
+        playerData.hockey.goals_men = data;
+        log(`Updated NHL goals: ${data.length} players`);
+      }
+    }).catch(() => {})
+  );
+
+  // Football top scorers + assists via sportscore.com (real, free)
+  updates.push(
+    fetchFootballScorers('goals').then(data => {
+      if (data) {
+        if (!playerData.football) playerData.football = {};
+        playerData.football.scorers_men = data;
+        log(`Updated football scorers: ${data.length} players`);
+      }
+    }).catch(() => {})
+  );
+
+  updates.push(
+    fetchFootballScorers('assists').then(data => {
+      if (data) {
+        if (!playerData.football) playerData.football = {};
+        playerData.football.assists_men = data;
+        log(`Updated football assists: ${data.length} players`);
+      }
+    }).catch(() => {})
+  );
+
+  // Tennis ATP/WTA player rankings via allsportsapi2 (real live rankings)
+  updates.push(
+    fetchTennisLiveRankings('atp').then(data => {
+      if (data) {
+        if (!playerData.tennis) playerData.tennis = {};
+        playerData.tennis.atp_singles = data;
+        log(`Updated tennis ATP: ${data.length} players`);
+      }
+    }).catch(() => {})
+  );
+
+  updates.push(
+    fetchTennisLiveRankings('wta').then(data => {
+      if (data) {
+        if (!playerData.tennis) playerData.tennis = {};
+        playerData.tennis.wta_singles = data;
+        log(`Updated tennis WTA: ${data.length} players`);
       }
     }).catch(() => {})
   );

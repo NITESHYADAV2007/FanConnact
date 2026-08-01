@@ -2,12 +2,15 @@
 // from the backend /api/rankings/:sport/:category endpoint. Crex-style table
 // with filter chips and a responsive column layout.
 
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import '../config.dart';
 import '../data.dart';
 import '../theme.dart';
 import '../services/player_ranking_service.dart';
-import '../services/rapid_api_service.dart';
 import 'player_detail_screen.dart';
+import 'team_matches_screen.dart';
 
 class PlayerRankingsScreen extends StatefulWidget {
   final String sportKey;
@@ -26,7 +29,18 @@ class _PlayerRankingsScreenState extends State<PlayerRankingsScreen> {
   PlayerRankingResponse? _data;
   bool _loading = true;
   String? _error;
+  bool _stale = false;
   final Map<String, String> _selectedFilters = {};
+  String _rankType = 'players';
+
+  // Cricket-specific filters
+  String _cricketFormat = '1'; // 1=test, 2=odi, 3=t20
+  String _cricketGender = 'men';
+  String _cricketCategory = '1'; // 1=batsmen, 2=bowlers, 3=all-rounders
+
+  static const _formats = ['Test', 'ODI', 'T20'];
+  static const _genders = ['Men', 'Women'];
+  static const _playerCategories = ['Batsmen', 'Bowlers', 'All-rounders'];
 
   @override
   void initState() {
@@ -46,9 +60,7 @@ class _PlayerRankingsScreenState extends State<PlayerRankingsScreen> {
       'kabaddi': '🤼',
       'tabletennis': '🏓',
       'esports': '🎮',
-      'rugby': '🏉',
-      'golf': '⛳',
-      'mma': '🥊',
+
     };
     return map[widget.sportKey] ?? '🏟️';
   }
@@ -78,87 +90,48 @@ class _PlayerRankingsScreenState extends State<PlayerRankingsScreen> {
       _error = null;
     });
 
-    // Cricket: fetch REAL player data directly from the RapidAPI cricket
-    // endpoint (cricket-live-line-advance /players) instead of the backend.
-    if (widget.sportKey == 'cricket') {
-      try {
-        final players = await RapidApiService.fetchCricketPlayers();
-        if (!mounted) return;
-        if (players.isEmpty) {
-          setState(() {
-            _loading = false;
-            _error = 'No cricket players returned';
-          });
-          return;
-        }
-        final rankingPlayers = players.asMap().entries.map((e) {
-          final p = e.value;
-          final rating =
-              double.tryParse('${p['fantasy_player_rating'] ?? 0}') ?? 0;
-          return PlayerRanking(
-            rank: e.key + 1,
-            name: (p['title'] ?? p['short_name'] ?? 'Unknown').toString(),
-            country: _countryName(p['country']?.toString()),
-            extra: {
-              'team': (p['primary_team'] is List &&
-                      (p['primary_team'] as List).isNotEmpty)
-                  ? (p['primary_team'][0]['title'] ?? '').toString()
-                  : '',
-              'role': (p['playing_role'] ?? '').toString(),
-              'rating': rating.toStringAsFixed(1),
-              'pid': p['pid']?.toString() ?? '',
-            },
-          );
-        }).toList();
-
-        final resp = PlayerRankingResponse(
-          sport: 'cricket',
-          label: 'Cricket',
-          title: '$_sportEmoji  Cricket Players',
-          subtitle: 'Live from cricket-live-line-advance API',
-          category: 'all',
-          defaultCategory: 'all',
-          filters: const [],
-          columns: const [
-            RankingColumn(key: 'name', label: 'Player'),
-            RankingColumn(key: 'role', label: 'Role', align: 'center'),
-            RankingColumn(key: 'rating', label: 'Rating', align: 'center'),
-          ],
-          source: 'RapidAPI · Cricket',
-          players: rankingPlayers,
-          lastSync: null,
-        );
-        setState(() {
-          _loading = false;
-          _data = resp;
-        });
-        return;
-      } catch (e) {
-        if (!mounted) return;
-        setState(() {
-          _loading = false;
-          _error = 'Cricket API error: $e';
-        });
-        return;
-      }
+    PlayerRankingResponse? resp;
+    if (widget.sportKey == 'cricket' && _rankType == 'teams') {
+      resp = await _loadCricketTeamsDirect();
+    } else if (widget.sportKey == 'cricket') {
+      resp = await _loadCricketDirect();
+    } else {
+      resp = await PlayerRankingService.fetchRankings(
+        sport: widget.sportKey,
+        category: keepFilters ? _currentCategory : widget.initialCategory,
+      );
     }
-
-    // Other sports: use the backend aggregation (real + fallback).
-    final resp = await PlayerRankingService.fetchRankings(
-      sport: widget.sportKey,
-      category: keepFilters ? _currentCategory : widget.initialCategory,
-    );
     if (!mounted) return;
     setState(() {
       _loading = false;
       if (resp == null) {
-        _error = 'Could not load rankings';
+        final cached = widget.sportKey == 'cricket'
+            ? (_rankType == 'teams' ? _lastGoodCricketTeams : _lastGoodCricket)
+            : PlayerRankingService.lastGood(
+                widget.sportKey,
+                keepFilters ? _currentCategory : widget.initialCategory,
+              );
+        if (cached != null) {
+          _data = cached;
+          _error = null;
+          _stale = true;
+          if (!keepFilters) {
+            _selectedFilters.clear();
+            for (final g in cached.filters) {
+              if (g.options.isNotEmpty) {
+                _selectedFilters[g.group] = g.options.first.value;
+              }
+            }
+          }
+        } else {
+          _error = 'Could not load rankings';
+        }
       } else {
         _data = resp;
+        _stale = false;
         if (!keepFilters) {
           _selectedFilters.clear();
           for (final g in resp.filters) {
-            // pick first option as default
             if (g.options.isNotEmpty) {
               _selectedFilters[g.group] = g.options.first.value;
             }
@@ -168,22 +141,106 @@ class _PlayerRankingsScreenState extends State<PlayerRankingsScreen> {
     });
   }
 
-  String? _countryName(String? code) {
-    if (code == null || code.isEmpty) return null;
-    const map = {
-      'lk': 'Sri Lanka',
-      'ae': 'UAE',
-      'in': 'India',
-      'au': 'Australia',
-      'en': 'England',
-      'za': 'South Africa',
-      'pk': 'Pakistan',
-      'bd': 'Bangladesh',
-      'nz': 'New Zealand',
-      'us': 'USA',
-      'ca': 'Canada',
+  PlayerRankingResponse? _lastGoodCricket;
+  PlayerRankingResponse? _lastGoodCricketTeams;
+
+  // Real ICC rankings from the backend (synced from advance /iccranks):
+  // every format (Test/ODI/T20I) × role (bat/bowl/all) × gender (men/women)
+  // combination is available in data/player-rankings.json.
+  static const _backendFormats = ['test', 'odi', 't20i'];
+  static const _backendRoles = ['bat', 'bowl', 'all'];
+
+  Future<PlayerRankingResponse?> _loadCricketDirect() async {
+    try {
+      final fmtIdx = ((int.tryParse(_cricketFormat) ?? 1) - 1).clamp(0, 2);
+      final roleIdx = ((int.tryParse(_cricketCategory) ?? 1) - 1).clamp(0, 2);
+      final fmt = _backendFormats[fmtIdx];
+      final role = _backendRoles[roleIdx];
+      final gender = _cricketGender;
+      // ICC publishes no women's Test rankings — fall back to last good.
+      if (fmt == 'test' && gender == 'women') return _lastGoodCricket;
+      final resp = await PlayerRankingService.fetchRankings(
+        sport: 'cricket',
+        category: '${fmt}_${role}_$gender',
+      );
+      if (resp == null) return _lastGoodCricket;
+      _lastGoodCricket = resp;
+      return resp;
+    } catch (e) {
+      debugPrint('PlayerRankingsScreen: ICC players failed ($e)');
+      return _lastGoodCricket;
+    }
+  }
+
+  Future<PlayerRankingResponse?> _loadCricketTeamsDirect() async {
+    try {
+      final fmtIdx = ((int.tryParse(_cricketFormat) ?? 1) - 1).clamp(0, 2);
+      final fmt = _backendFormats[fmtIdx];
+      final gender = _cricketGender;
+      // ICC publishes no women's Test team rankings — fall back to last good.
+      if (fmt == 'test' && gender == 'women') return _lastGoodCricketTeams;
+      final raw = await _fetchTeamRankingsBackend(gender, fmt);
+      if (raw == null || raw.isEmpty) return _lastGoodCricketTeams;
+      final players = <PlayerRanking>[];
+      final formatLabel = _formats[fmtIdx];
+      for (var i = 0; i < raw.length; i++) {
+        final r = raw[i];
+        players.add(PlayerRanking(
+          rank: i + 1,
+          name: r['team']?.toString() ?? r['name']?.toString() ?? 'Unknown',
+          country: r['code']?.toString() ?? r['country']?.toString() ?? '',
+          extra: {
+            'rating': r['rating']?.toString() ?? '',
+            'points': r['points']?.toString() ?? '',
+            'image': r['logo']?.toString() ?? r['flag']?.toString() ?? '',
+            'format': formatLabel,
+          },
+        ));
+      }
+      final resp = PlayerRankingResponse(
+        sport: 'cricket',
+        label: 'Cricket',
+        title: 'ICC Team Rankings ($formatLabel)',
+        subtitle: 'ICC team rankings — ${gender.toUpperCase()} — $formatLabel format',
+        category: 'all',
+        defaultCategory: 'all',
+        filters: const [],
+        columns: const [
+          RankingColumn(key: 'rank', label: '#'),
+          RankingColumn(key: 'name', label: 'Team'),
+          RankingColumn(key: 'country', label: 'Code'),
+          RankingColumn(key: 'rating', label: 'Rating', align: 'center'),
+        ],
+        source: 'ICC (advance /iccranks)',
+        players: players,
+      );
+      _lastGoodCricketTeams = resp;
+      return resp;
+    } catch (e) {
+      debugPrint('PlayerRankingsScreen: ICC teams failed ($e)');
+      return _lastGoodCricketTeams;
+    }
+  }
+
+  // Teams come from the backend's leaderboard data (synced ICC team ranks):
+  // /api/leaderboard/cricket/:Gender/:Category — e.g. Men/ODI, Women/T20I.
+  Future<List<Map<String, dynamic>>?> _fetchTeamRankingsBackend(
+      String gender, String fmt) async {
+    final genderLabel = gender == 'women' ? 'Women' : 'Men';
+    final fmtLabel = switch (fmt) {
+      'test' => 'Test',
+      'odi' => 'ODI',
+      _ => 'T20I',
     };
-    return map[code.toLowerCase()] ?? code.toUpperCase();
+    final uri = Uri.parse(
+        '$apiBaseUrl/api/leaderboard/cricket/$genderLabel/$fmtLabel');
+    final res = await http.get(uri).timeout(const Duration(seconds: 12));
+    if (res.statusCode != 200) return null;
+    final json = jsonDecode(res.body) as Map<String, dynamic>;
+    return (json['rankings'] as List? ?? [])
+        .whereType<Map>()
+        .map((m) => Map<String, dynamic>.from(m))
+        .toList();
   }
 
   @override
@@ -211,6 +268,86 @@ class _PlayerRankingsScreenState extends State<PlayerRankingsScreen> {
                 )
               : Column(
                   children: [
+                    if (widget.sportKey == 'cricket')
+                      Column(
+                        children: [
+                          // Players / Teams toggle
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
+                            child: SegmentedButton<String>(
+                              segments: const [
+                                ButtonSegment(value: 'players', label: Text('Players'), icon: Icon(Icons.people, size: 16)),
+                                ButtonSegment(value: 'teams', label: Text('Teams'), icon: Icon(Icons.groups, size: 16)),
+                              ],
+                              selected: {_rankType},
+                              onSelectionChanged: (set) {
+                                setState(() => _rankType = set.first);
+                                _load();
+                              },
+                              style: ButtonStyle(
+                                visualDensity: VisualDensity.compact,
+                                backgroundColor: WidgetStateProperty.resolveWith((states) =>
+                                    states.contains(WidgetState.selected) ? AppColors.brandBlue.withValues(alpha: 0.15) : null),
+                              ),
+                            ),
+                          ),
+                          // Format selector
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(12, 4, 12, 4),
+                            child: SegmentedButton<String>(
+                              segments: _formats.map((f) => ButtonSegment(value: '${_formats.indexOf(f) + 1}', label: Text(f))).toList(),
+                              selected: {_cricketFormat},
+                              onSelectionChanged: (set) {
+                                setState(() => _cricketFormat = set.first);
+                                _load();
+                              },
+                              style: ButtonStyle(
+                                visualDensity: VisualDensity.compact,
+                                backgroundColor: WidgetStateProperty.resolveWith((states) =>
+                                    states.contains(WidgetState.selected) ? AppColors.brandBlue.withValues(alpha: 0.12) : null),
+                              ),
+                            ),
+                          ),
+                          // Category selector (players only) + Gender row
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(12, 0, 12, 4),
+                            child: Row(
+                              children: [
+                                if (_rankType == 'players')
+                                  Expanded(
+                                    child: SegmentedButton<String>(
+                                      segments: _playerCategories.map((c) => ButtonSegment(value: '${_playerCategories.indexOf(c) + 1}', label: Text(c))).toList(),
+                                      selected: {_cricketCategory},
+                                      onSelectionChanged: (set) {
+                                        setState(() => _cricketCategory = set.first);
+                                        _load();
+                                      },
+                                      style: ButtonStyle(
+                                        visualDensity: VisualDensity.compact,
+                                        backgroundColor: WidgetStateProperty.resolveWith((states) =>
+                                            states.contains(WidgetState.selected) ? AppColors.brandBlue.withValues(alpha: 0.12) : null),
+                                      ),
+                                    ),
+                                  ),
+                                const SizedBox(width: 8),
+                                SegmentedButton<String>(
+                                  segments: _genders.map((g) => ButtonSegment(value: g.toLowerCase(), label: Text(g))).toList(),
+                                  selected: {_cricketGender},
+                                  onSelectionChanged: (set) {
+                                    setState(() => _cricketGender = set.first);
+                                    _load();
+                                  },
+                                  style: ButtonStyle(
+                                    visualDensity: VisualDensity.compact,
+                                    backgroundColor: WidgetStateProperty.resolveWith((states) =>
+                                        states.contains(WidgetState.selected) ? AppColors.brandBlue.withValues(alpha: 0.12) : null),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     // Filter chips (Crex-style)
                     if (_data!.filters.isNotEmpty)
                       Container(
@@ -299,6 +436,37 @@ class _PlayerRankingsScreenState extends State<PlayerRankingsScreen> {
                       ),
                     ),
                     const SizedBox(height: 6),
+                    // Stale-data banner: shown when the fresh fetch failed and
+                    // we are displaying the last successfully fetched data.
+                    if (_stale)
+                      Container(
+                        margin: const EdgeInsets.fromLTRB(14, 0, 14, 6),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: AppColors.upcomingAmber.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: AppColors.upcomingAmber.withValues(alpha: 0.4),
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(Icons.history,
+                                size: 14, color: AppColors.upcomingAmber),
+                            const SizedBox(width: 6),
+                            const Expanded(
+                              child: Text(
+                                'Showing last fetched data (live update unavailable)',
+                                style: TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.upcomingAmber),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     // Table header
                     _TableHeader(columns: _data!.columns, isDark: isDark),
                     const Divider(height: 1),
@@ -311,19 +479,31 @@ class _PlayerRankingsScreenState extends State<PlayerRankingsScreen> {
                           separatorBuilder: (_, __) => const Divider(height: 1),
                           itemBuilder: (context, i) {
                             final p = _data!.players[i];
-                            return InkWell(
-                              onTap: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (_) => PlayerDetailScreen(
-                                      sportKey: widget.sportKey,
-                                      name: p.name,
-                                      country: p.country,
-                                      extra: p.extra,
-                                    ),
-                                  ),
-                                );
-                              },
+                             return InkWell(
+                               onTap: () {
+                                 if (widget.sportKey == 'cricket' && _rankType == 'teams') {
+                                   Navigator.of(context).push(
+                                     MaterialPageRoute(
+                                       builder: (_) => TeamMatchesScreen(
+                                         sportKey: widget.sportKey,
+                                         teamName: p.name,
+                                         teamLogo: p.extra['image']?.toString(),
+                                       ),
+                                     ),
+                                   );
+                                 } else {
+                                   Navigator.of(context).push(
+                                     MaterialPageRoute(
+                                       builder: (_) => PlayerDetailScreen(
+                                         sportKey: widget.sportKey,
+                                         name: p.name,
+                                         country: p.country,
+                                         extra: p.extra,
+                                       ),
+                                     ),
+                                   );
+                                 }
+                               },
                               child: _PlayerRow(
                                 player: p,
                                 columns: _data!.columns,
@@ -395,6 +575,7 @@ class _PlayerRow extends StatelessWidget {
                   ? (player.country ?? '')
                   : player.extra[c.key]?.toString() ?? '';
           if (c.key == 'name') {
+            final img = player.extra['image']?.toString() ?? '';
             return Expanded(
               flex: 3,
               child: Row(
@@ -406,7 +587,7 @@ class _PlayerRow extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: player.rank <= 3
                           ? AppColors.brandBlue
-                          : Colors.grey.withOpacity(0.2),
+                          : Colors.grey.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
@@ -421,6 +602,20 @@ class _PlayerRow extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 10),
+                  if (img.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(6),
+                        child: Image.network(
+                          img,
+                          width: 28,
+                          height: 28,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                        ),
+                      ),
+                    ),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -439,6 +634,15 @@ class _PlayerRow extends StatelessWidget {
                             player.country!,
                             style: const TextStyle(
                                 fontSize: 11, color: Colors.grey),
+                          ),
+                        if (player.extra['category'] != null &&
+                            player.extra['category'].toString().isNotEmpty)
+                          Text(
+                            player.extra['category'].toString(),
+                            style: const TextStyle(
+                                fontSize: 10,
+                                color: AppColors.brandBlue,
+                                fontWeight: FontWeight.w700),
                           ),
                       ],
                     ),

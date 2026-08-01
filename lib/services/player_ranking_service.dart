@@ -130,18 +130,25 @@ class PlayerRankingResponse {
 
 class PlayerRankingService {
   static const Duration cacheTtl = Duration(minutes: 5);
+  // Fresh cache (used while still valid).
   static final Map<String, PlayerRankingResponse> _cache = {};
   static final Map<String, DateTime> _cacheTime = {};
+  // Persistent "last good" copy — never expires, used as a fallback when a
+  // fetch fails (network error, server down, or upstream quota/limit reached)
+  // so the user always sees the most recent successful data, not an error.
+  static final Map<String, PlayerRankingResponse> _lastGood = {};
   static final Map<String, Future<PlayerRankingResponse?>> _inflight = {};
 
   static void invalidate({String key = ''}) {
     if (key.isEmpty) {
       _cache.clear();
       _cacheTime.clear();
+      _lastGood.clear();
       _inflight.clear();
     } else {
       _cache.remove(key);
       _cacheTime.remove(key);
+      _lastGood.remove(key);
       _inflight.remove(key);
     }
   }
@@ -172,8 +179,14 @@ class PlayerRankingService {
     }
   }
 
+  // Returns the last successfully fetched data for a key, or null.
+  static PlayerRankingResponse? lastGood(String sport, String? category) {
+    return _lastGood['$sport|${category ?? ''}'];
+  }
+
   static Future<PlayerRankingResponse?> _doFetch(
       String sport, String? category) async {
+    final key = '$sport|${category ?? ''}';
     try {
       final query = <String, String>{};
       if (category != null && category.isNotEmpty) query['category'] = category;
@@ -182,17 +195,24 @@ class PlayerRankingService {
       final res = await http.get(uri).timeout(const Duration(seconds: 12));
       if (res.statusCode == 200) {
         final json = jsonDecode(res.body) as Map<String, dynamic>;
+        // Guard: if the body looks like an error/limit message, treat as a
+        // failed fetch and fall back to the last good copy.
+        if (json['error'] != null || json['message'] != null) {
+          if (_lastGood.containsKey(key)) return _lastGood[key];
+          return null;
+        }
         final resp = PlayerRankingResponse.fromJson(json);
-        final key = '$sport|${category ?? ''}';
         _cache[key] = resp;
         _cacheTime[key] = DateTime.now();
+        _lastGood[key] = resp;
         return resp;
       }
     } catch (e) {
       debugPrint('PlayerRankingService: failed ($e)');
     }
-    final key = '$sport|${category ?? ''}';
-    if (_cache.containsKey(key)) return _cache[key];
+    // On any failure (network, server error, quota/limit) return the last
+    // good data we have, even if stale — never surface a server error.
+    if (_lastGood.containsKey(key)) return _lastGood[key];
     return null;
   }
 }
