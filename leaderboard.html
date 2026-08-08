@@ -1087,45 +1087,293 @@ class="w-full flex items-center justify-center rounded-xl border border-purple-5
       loadTeamRankings();
     }
 
-    async function loadTeamRankings() {
-      const body = document.getElementById('team-table-body');
-      body.innerHTML = '<tr><td colspan="8" class="px-4 py-12 text-center"><div class="inline-block w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div><p class="text-gray-500 mt-2 text-sm">Loading...</p></td></tr>';
-      try {
-        if (!teamData || !teamData[currentTeamSport]) {
-          body.innerHTML = '<tr><td colspan="8" class="px-4 py-12 text-center text-gray-500">No rankings found for this sport</td></tr>';
-          return;
+   async function loadTeamRankings() {
+    const body = document.getElementById('team-table-body');
+
+    body.innerHTML = `
+        <tr>
+            <td colspan="8" class="px-4 py-12 text-center">
+                <div class="inline-block w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+                <p class="text-gray-500 mt-2 text-sm">Loading rankings...</p>
+            </td>
+        </tr>
+    `;
+
+    try {
+        // Men = 0, Women = 1
+        const women = currentTeamGender === 'Women' ? 1 : 0;
+
+        const formatMap = {
+            'Test': 'test',
+            'ODI': 'odi',
+            'T20I': 't20'
+        };
+
+        const format =
+            formatMap[currentTeamCategory] ||
+            currentTeamCategory?.toLowerCase() ||
+            'test';
+
+        const url =
+            `http://localhost:5000/api/rankings/teams?format=${encodeURIComponent(format)}&women=${women}`;
+
+        const res = await fetch(url, {
+            signal: AbortSignal.timeout(8000)
+        });
+
+        if (!res.ok) {
+            throw new Error(`HTTP ${res.status}`);
         }
-        let rankings = null;
-        if (usingBackendForTeams) {
-          // Fetch actual rankings from backend per sport + gender + category
-          try {
-            const res = await fetch(' http://localhost:5000/api/leaderboard/' + encodeURIComponent(currentTeamSport) + '/' + encodeURIComponent(currentTeamGender) + '/' + encodeURIComponent(currentTeamCategory), { signal: AbortSignal.timeout(4000) });
-            if (res.ok) {
-              const data = await res.json();
-              rankings = data.rankings || null;
-            }
-          } catch (e) { rankings = null; }
-        }
-        if (!rankings) {
-          rankings = teamData[currentTeamSport].rankings && teamData[currentTeamSport].rankings[currentTeamGender] && teamData[currentTeamSport].rankings[currentTeamGender][currentTeamCategory];
-        }
-        if (!rankings || !rankings.length) {
-          body.innerHTML = '<tr><td colspan="8" class="px-4 py-12 text-center text-gray-500">No rankings found</td></tr>';
-          return;
-        }
-        body.innerHTML = rankings.map(function(item) {
-          if (!item) return '';
-          var trendHtml = '<span class="text-gray-500">—</span>';
-          if (item.trend === 'up') trendHtml = '<span class="material-symbols-outlined text-emerald-400 text-sm">arrow_upward</span><span class="text-emerald-400 text-xs font-bold ml-0.5">' + (item.trendVal||'') + '</span>';
-          else if (item.trend === 'down') trendHtml = '<span class="material-symbols-outlined text-red-400 text-sm">arrow_downward</span><span class="text-red-400 text-xs font-bold ml-0.5">' + (item.trendVal||'') + '</span>';
-          var medal = item.rank === 1 ? '🥇' : item.rank === 2 ? '🥈' : item.rank === 3 ? '🥉' : '';
-          var sportPage = ({ 'esports':'e-sports', 'kabaddi':'kabbaddi', 'volleyball':'vollyeball' })[currentTeamSport] || currentTeamSport;
-          return '<tr class="border-b border-gray-200 dark:border-[#2A2E35] hover:bg-gray-50 dark:hover:bg-white/5 transition-colors cursor-pointer" onclick="window.location.href=\'' + sportPage + '.html\'"><td class="px-4 py-4 text-gray-900 dark:text-white font-bold text-sm">' + (medal || item.rank) + '</td><td class="px-4 py-4"><div class="flex items-center gap-3"><img src="' + (item.flag||'') + '" alt="' + (item.team||'') + '" class="w-7 h-4.5 object-cover rounded border border-gray-300 dark:border-gray-700" onerror="this.outerHTML=\'<span class=\\\'inline-flex items-center justify-center w-7 h-4.5 rounded bg-gray-200 dark:bg-gray-700 text-[8px] font-bold text-gray-500\\\'>' + ((item.code||item.team||'?').substring(0,3).toUpperCase()) + '</span>\'"><span class="text-gray-900 dark:text-white font-medium text-sm">' + (item.team||'') + '</span><span class="text-gray-500 text-xs uppercase">' + (item.code||'') + '</span></div></td><td class="px-4 py-4 text-center"><span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400">' + (currentTeamCategory||'') + '</span></td><td class="px-4 py-4 text-center text-gray-600 dark:text-gray-300 text-sm">' + (item.matches||0) + '</td><td class="px-4 py-4 text-center text-gray-600 dark:text-gray-300 text-sm">' + (item.wins||0) + '</td><td class="px-4 py-4 text-center text-gray-600 dark:text-gray-300 text-sm">' + (typeof item.winPct === 'number' ? item.winPct.toFixed(2) + '%' : (item.winPct||'—')) + '</td><td class="px-4 py-4 text-right text-emerald-600 dark:text-emerald-400 font-bold text-sm">' + (item.rating||'') + '</td><td class="px-4 py-4"><div class="flex items-center justify-center gap-0.5">' + trendHtml + '</div></td></tr>';
-        }).join('');
-      } catch (e) {
-        body.innerHTML = '<tr><td colspan="8" class="px-4 py-12 text-center text-red-400">Failed to load team rankings.</td></tr>';
-      }
+
+        const rankings = await res.json();
+// =====================================
+// REAL RANK TREND
+// =====================================
+
+const trendKey =
+    `fanconnact-team-ranking-${currentTeamGender}-${currentTeamCategory}`;
+
+let previousRanks = {};
+
+try {
+    previousRanks = JSON.parse(
+        localStorage.getItem(trendKey) || "{}"
+    );
+} catch (e) {
+    previousRanks = {};
+}
+
+rankings.forEach(item => {
+
+    const teamName =
+        item.team ||
+        item.name ||
+        item.country ||
+        "Unknown";
+
+    const currentRank = Number(
+        item.rank ??
+        item.position ??
+        0
+    );
+
+    const previousRank = Number(
+        previousRanks[teamName]
+    );
+
+    // First priority: API trend
+    if (item.trend && item.trend !== "neutral") {
+        return;
     }
+
+    // Otherwise calculate from previous visit
+    if (previousRank > 0 && currentRank > 0) {
+
+        const change =
+            previousRank - currentRank;
+
+        if (change > 0) {
+            item.trend = "up";
+            item.trendVal = change;
+        }
+
+        else if (change < 0) {
+            item.trend = "down";
+            item.trendVal = Math.abs(change);
+        }
+
+        else {
+            item.trend = "neutral";
+            item.trendVal = 0;
+        }
+
+    } else {
+
+        item.trend = "neutral";
+        item.trendVal = 0;
+    }
+});
+
+
+// Save current ranks AFTER calculation
+const newRanks = {};
+
+rankings.forEach(item => {
+
+    const teamName =
+        item.team ||
+        item.name ||
+        item.country ||
+        "Unknown";
+
+    newRanks[teamName] = Number(
+        item.rank ??
+        item.position ??
+        0
+    );
+});
+
+localStorage.setItem(
+    trendKey,
+    JSON.stringify(newRanks)
+);
+        console.log("REAL TEAM RANKINGS =", rankings);
+
+        if (!Array.isArray(rankings) || rankings.length === 0) {
+            body.innerHTML = `
+                <tr>
+                    <td colspan="8" class="px-4 py-12 text-center text-gray-500">
+                        No official rankings available
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        body.innerHTML = rankings.map((item, index) => {
+
+            const rank =
+                item.rank ??
+                index + 1;
+
+            const team =
+                item.team ||
+                item.name ||
+                'Unknown';
+
+            const code =
+                item.code ||
+                '';
+
+            const flag =
+                item.flag ||
+                (
+                    code
+                        ? `https://flagcdn.com/w40/${code.toLowerCase()}.png`
+                        : ''
+                );
+
+            const matches =
+                item.matches ??
+                '—';
+
+            const wins =
+                item.wins ??
+                '—';
+
+            const winPct =
+                item.winPct != null
+                    ? Number(item.winPct).toFixed(2) + '%'
+                    : '—';
+
+            const rating =
+                item.rating ??
+                '—';
+
+            let trendHtml = '—';
+
+            if (item.trend === 'up') {
+                trendHtml =
+                    `↑ ${item.trendVal ?? ''}`;
+            }
+            else if (item.trend === 'down') {
+                trendHtml =
+                    `↓ ${item.trendVal ?? ''}`;
+            }
+
+            return `
+                <tr class="border-t border-gray-200 dark:border-gray-800">
+
+                    <td class="px-4 py-3 font-bold text-center">
+                        ${
+                            rank === 1 ? '🥇' :
+                            rank === 2 ? '🥈' :
+                            rank === 3 ? '🥉' :
+                            rank
+                        }
+                    </td>
+
+                    <td class="px-4 py-3 font-semibold">
+                        <div class="flex items-center gap-3">
+
+                            ${
+                                flag
+                                    ? `
+                                    <img
+                                        src="${flag}"
+                                        alt="${team}"
+                                        class="w-7 h-5 object-cover rounded"
+                                        onerror="this.style.display='none'"
+                                    >
+                                    `
+                                    : ''
+                            }
+
+                            <span>${team}</span>
+
+                            ${
+                                code
+                                    ? `<span class="text-xs text-gray-500">${code}</span>`
+                                    : ''
+                            }
+
+                        </div>
+                    </td>
+
+                    <td class="px-4 py-3 text-center text-xs">
+                        ${format.toUpperCase()}
+                    </td>
+
+                    <td class="px-4 py-3 text-center">
+                        ${matches}
+                    </td>
+
+                    <td class="px-4 py-3 text-center">
+                        ${wins}
+                    </td>
+
+                    <td class="px-4 py-3 text-center">
+                        ${winPct}
+                    </td>
+
+                    <td class="px-4 py-3 text-center font-bold text-emerald-400">
+                        ${rating}
+                    </td>
+
+                 <td class="px-4 py-3 text-center font-bold">
+
+  ${
+    item.trend === "up"
+      ? `<span class="text-emerald-400">
+           ↑ ${item.trendVal}
+         </span>`
+      : item.trend === "down"
+      ? `<span class="text-red-400">
+           ↓ ${item.trendVal}
+         </span>`
+      : `<span class="text-gray-500">—</span>`
+  }
+
+</td>
+
+                </tr>
+            `;
+
+        }).join('');
+
+    } catch (error) {
+
+        console.error('Team rankings error:', error);
+
+        body.innerHTML = `
+            <tr>
+                <td colspan="8" class="px-4 py-12 text-center text-red-400">
+                    Unable to load official team rankings
+                </td>
+            </tr>
+        `;
+    }
+}
 
     // Game filter buttons now load team rankings
     function switchTeamGame(game) {
