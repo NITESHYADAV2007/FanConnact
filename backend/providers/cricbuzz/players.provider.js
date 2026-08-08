@@ -444,9 +444,21 @@ info?.debut || "",
                 bio:
                     info?.bio ||
                     info?.description ||
-                    ""
+                    "",
 
-                  
+                   // NEW
+    intlTeam:
+        info?.intlTeam ||
+        info?.country ||
+        "",
+
+    teams:
+        info?.teams ||
+        info?.teamsName ||
+        info?.teamNames ||
+        info?.teamName ||
+        info?.domesticTeams ||
+        ""
             };
 
         }

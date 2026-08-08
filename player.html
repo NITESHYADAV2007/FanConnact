@@ -7,7 +7,7 @@
     <link rel="icon" type="image/png" sizes="32x32" href="assets/fancoin/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="assets/fancoin/favicon-16x16.png" />
     <!-- Tailwind CSS v3 CDN -->
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script type="text/javascript" src="https://gc.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=FERkY_Ktppins2VRFU292YSwn2Ecb2xNLqqwgXp6ukIcR3spVDm12jKSAUekwbbwhbSmxOxuyZD6ZXaZGFk5PMyPpG3UUejNTl36OAIzMdRC-YGtdRTv4MboVtdcpmgjxTwRMmIZF3eEXj_jnAyhuCXCXq3QwMOVS_EfwTmUGksis_QfkscjYf2o_HHf1DII-xJQTIRR5WtZ5Zk4lTlmuP-7cUGTgQ8d8G7tYd2Awepzrs0ppykSTrvJUQJYWjqAsWWJ_za7FXrzVgV429Ud9gYXhPwWoavrN4RO90Fq1u2K_fhG_jFGTuIKQhkydyKliEFMx4P5C4ZfNCfKJcN5bg" charset="UTF-8"></script><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <!-- Font Configuration -->
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap"
@@ -498,128 +498,65 @@
       <!-- BEGIN: Detailed Sections - Full Width -->
       <div class="space-y-12 mb-12">
         <!-- Latest News -->
-        <section data-purpose="latest-news">
-          <h2 class="text-lg font-bold mb-4">Latest News</h2>
-          <div class="grid grid-cols-1 gap-4" id="news-container">
-            <!-- populated by JS from API or fallback -->
-          </div>
-        </section>
+       <section data-purpose="latest-news">
+  <h2 class="text-lg font-bold mb-4">
+    Latest News
+  </h2>
+
+  <div
+      id="news-container"
+      class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+  </div>
+
+</section>
+
         <!-- Current Teams -->
         <section data-purpose="current-teams">
           <h2 class="text-lg font-bold mb-4">Current Teams</h2>
-          <div class="glass-card rounded-2xl overflow-hidden divide-y divide-slate-800/50" id="teams-container">
-            <!-- populated by JS -->
+<div
+    id="teams-container"
+    class="glass-card rounded-2xl overflow-hidden divide-y divide-slate-800/50">            <!-- populated by JS -->
           </div>
         </section>
         <!-- Achievements -->
-        <section data-purpose="achievements">
-          <h2 class="text-lg font-bold mb-4">Achievements</h2>
-          <div class="space-y-3">
-            <!-- populated by JS -->
-          </div>
-        </section>
+       <section data-purpose="achievements">
+
+  <h2 class="text-lg font-bold mb-4">
+    Achievements
+  </h2>
+
+  <div
+      id="achievements-container"
+      class="space-y-3">
+  </div>
+
+</section>
       </div>
       <!-- END: Detailed Sections Grid -->
-      <!-- BEGIN: Career Highlights Timeline -->
-      <section class="mt-8" data-purpose="career-highlights">
-        <h2 class="text-xl font-bold mb-8">Career Highlights</h2>
-        <div class="relative pt-8 pb-4">
-          <!-- Horizontal Timeline Track -->
-          <div
-            class="absolute top-1/2 left-0 w-full h-[2px] bg-slate-800 -translate-y-1/2"
-          ></div>
-          <div class="grid grid-cols-5 gap-4 relative">
-            <!-- 2008 -->
-            <div class="flex flex-col items-center text-center">
-              <div
-                class="w-4 h-4 rounded-full border-4 border-blue-500 bg-slate-950 z-10 mb-8 relative"
-              >
-                <div
-                  class="absolute -top-10 left-1/2 -translate-x-1/2 text-xs font-bold text-slate-400"
-                >
-                  2008
-                </div>
-              </div>
-              <div class="glass-card p-4 rounded-2xl w-full">
-                <div class="text-sm font-bold mb-1 leading-tight">
-                  International Debut
-                </div>
-                <div class="text-[10px] text-slate-500">ODI vs Sri Lanka</div>
-              </div>
-            </div>
-            <!-- 2011 -->
-            <div class="flex flex-col items-center text-center">
-              <div
-                class="w-4 h-4 rounded-full border-4 border-blue-500 bg-slate-950 z-10 mb-8 relative"
-              >
-                <div
-                  class="absolute -top-10 left-1/2 -translate-x-1/2 text-xs font-bold text-slate-400"
-                >
-                  2011
-                </div>
-              </div>
-              <div class="glass-card p-4 rounded-2xl w-full">
-                <div class="text-sm font-bold mb-1 leading-tight">
-                  First ODI Century
-                </div>
-                <div class="text-[10px] text-slate-500">vs West Indies</div>
-              </div>
-            </div>
-            <!-- 2016 -->
-            <div class="flex flex-col items-center text-center scale-110">
-              <div
-                class="w-5 h-5 rounded-full border-4 border-blue-500 bg-slate-950 z-10 mb-8 relative ring-4 ring-blue-500/20"
-              >
-                <div
-                  class="absolute -top-10 left-1/2 -translate-x-1/2 text-xs font-bold text-blue-400"
-                >
-                  2016
-                </div>
-              </div>
-              <div class="glass-card p-4 rounded-2xl w-full border-blue-500/30">
-                <div class="text-sm font-bold mb-1 leading-tight text-blue-400">
-                  Most ODI Runs in a Year
-                </div>
-              </div>
-            </div>
-            <!-- 2018 -->
-            <div class="flex flex-col items-center text-center">
-              <div
-                class="w-4 h-4 rounded-full border-4 border-blue-500 bg-slate-950 z-10 mb-8 relative"
-              >
-                <div
-                  class="absolute -top-10 left-1/2 -translate-x-1/2 text-xs font-bold text-slate-400"
-                >
-                  2018
-                </div>
-              </div>
-              <div class="glass-card p-4 rounded-2xl w-full">
-                <div class="text-sm font-bold mb-1 leading-tight">
-                  71st International Century
-                </div>
-              </div>
-            </div>
-            <!-- 2023 -->
-            <div class="flex flex-col items-center text-center">
-              <div
-                class="w-4 h-4 rounded-full border-4 border-blue-500 bg-slate-950 z-10 mb-8 relative"
-              >
-                <div
-                  class="absolute -top-10 left-1/2 -translate-x-1/2 text-xs font-bold text-slate-400"
-                >
-                  2023
-                </div>
-              </div>
-              <div class="glass-card p-4 rounded-2xl w-full">
-                <div class="text-sm font-bold mb-1 leading-tight">
-                  Surpassed 27,000 Intl. Runs
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-      <!-- END: Career Highlights Timeline -->
+      <!-- BEGIN: Career Highlights -->
+<section class="mt-8" data-purpose="career-highlights">
+
+  <h2 class="text-xl font-bold mb-8">
+    Career Highlights
+  </h2>
+
+  <div class="relative pt-8 pb-4">
+
+    <!-- Timeline Line -->
+    <div
+      class="absolute top-[48px] left-0 w-full h-[2px] bg-slate-800">
+    </div>
+
+    <!-- Career Highlight Cards -->
+    <div
+      id="career-highlights-container"
+      class="grid grid-cols-5 gap-4 relative z-10">
+
+  </div>
+
+</section>
+<!-- END: Career Highlights -->
+    
     </main>
     <footer
       class="mt-20 py-12 px-6 border-t border-slate-900 bg-slate-950 text-slate-500 text-sm text-center"
@@ -692,6 +629,33 @@ if (!storedData || !storedData.player) {
   window.location.href = "top-players.html";
 }
 var player = storedData ? storedData.player : null;
+
+const API_BASE = "http://localhost:5000";
+window.API_BASE=API_BASE;
+
+async function loadCareer() {
+
+    if (!player.playerId && !player.id) return;
+
+    const id = player.playerId || player.id;
+
+    try {
+
+        const res = await fetch(
+            `${API_BASE}/api/players/${id}/career`
+        );
+
+        player.career = await res.json();
+
+    } catch(e){
+
+        console.error(e);
+
+    }
+
+}
+
+await loadCareer();
 var sportName = storedData ? storedData.sport : null;
 if (!sportName) sportName = sessionStorage.getItem("playerSport") || "Cricket";
 
@@ -839,41 +803,40 @@ function profileValue(...values) {
     }
     return "—";
 }
-const profile = player.profile || {};
-
 const basic = {
-    ...profile,
+    ...player,
+    ...(player.profile || {}),
     ...(player.basic || {})
 };
+
 const ranking = {
     ...(player.ranking || {}),
 
     rank:
         player.rank ??
-        player.basic?.rank ??
-        player.profile?.rank ??
         player.ranking?.rank,
 
     rating:
         player.rating ??
-        player.basic?.rating ??
-        player.profile?.rating ??
         player.ranking?.rating
 };
 
 const batting = player.batting || {};
 const bowling = player.bowling || {};
 const career = player.career || {};
-
 function heroValue(...keys) {
     for (const key of keys) {
-        if (basic[key] !== undefined && basic[key] !== null && basic[key] !== "")
-            return basic[key];
 
+        if (player[key] != null && player[key] !== "")
+            return player[key];
+
+        if (basic[key] != null && basic[key] !== "")
+            return basic[key];
     }
 
     return "—";
 }
+
   // For Cricket we ONLY use real API data (from the rankings feed). We never
   // fabricate personal details — missing fields show "—" instead of random
   // values, per the "no static/random data" requirement.
@@ -936,7 +899,7 @@ function heroValue(...keys) {
    HERO (REAL BACKEND)
 ========================== */
 document.title =
-`FanConnact - ${basic.name || "Player"} Profile`;
+`FanConnact - ${player.name || basic.name  || "Player"} Profile`;
 
 var flagEl = document.getElementById("player-country-flag");
 var nameEl = document.getElementById("player-fullname");
@@ -945,21 +908,21 @@ var bioEl = document.getElementById("player-bio");
 var portraitEl = document.getElementById("player-portrait");
 
 if(flagEl){
-    flagEl.textContent=getFlag(basic.country || "");
+    flagEl.textContent=getFlag(player.country || basic.country || "");
 }
 
 if(nameEl){
-    nameEl.textContent=basic.name || "Unknown Player";
+    nameEl.textContent=player.name || basic.name || "Unknown Player";
 }
 if(roleEl){
 
     const country =
-        basic.country ||
+      player.country || basic.country ||
         basic.nationality ||
         "International";
 
     const role =
-        basic.role ||
+      player.role || basic.role ||
         basic.playingRole ||
         basic.position ||
         "Player";
@@ -971,10 +934,11 @@ if(roleEl){
 
 if (bioEl) {
 
-    let bio =
-        basic.bio ||
-        basic.description ||
-        `${basic.name || "This player"} is a professional ${sportName} player representing ${basic.country || "their country"}.`;
+   let bio =
+    player.bio ||
+    basic.bio ||
+    basic.description ||
+    `${player.name} is a professional ${sportName} player.`;
 
     // Remove HTML tags
     bio = bio.replace(/<[^>]*>/g, " ");
@@ -1007,10 +971,13 @@ if (portraitEl) {
 
     const avatar =
         "https://ui-avatars.com/api/?name=" +
-        encodeURIComponent(basic.name || "Player") +
+        encodeURIComponent(player.name || basic.name || "Player") +
         "&background=8b5cf6&color=fff&size=300";
 
-    portraitEl.src = basic.image || avatar;
+portraitEl.src =
+    player.image ||
+    basic.image ||
+    avatar;
 
     portraitEl.onerror = async function () {
 
@@ -1018,7 +985,7 @@ if (portraitEl) {
 
             const wiki =
                 await fetchWikipediaImage(
-                    basic.name
+                   player.name || basic.name
                 );
 
             if (wiki) {
@@ -1096,6 +1063,15 @@ if(statusEl){
     )
 );
 
+setInfo(
+    "info-born",
+    profileValue(
+        heroValue("birthDate"),
+        heroValue("dateOfBirth"),
+        heroValue("dob"),
+        heroValue("born")
+    )
+);
 
 setInfo(
     "info-age",
@@ -1145,10 +1121,9 @@ setInfo(
 setInfo(
     "info-debut",
     profileValue(
-       player.career?.values?.[0]?.debut
+        heroValue("debut")
     )
 );
-
   // Sport-adaptive info labels
   var labelMap = {
     Cricket:["Batting","Bowling"], Football:["Position","Foot"],
@@ -1413,7 +1388,7 @@ function generateStatCardsHtml(labels, values) {
     });
   }
 function renderCards(format) {
-
+console.log(player.career);
     // Non-cricket sports remain unchanged
     if (sportName !== "Cricket") {
         var vals = STAT_CONFIGS[sportName].values(player);
@@ -1467,6 +1442,7 @@ function renderCards(format) {
             values
         );
 
+        
 }
 
   // Format tab clicks
@@ -1553,9 +1529,11 @@ if (player) {
   (function() {
     var newsSec = document.querySelector('[data-purpose="latest-news"]');
     if (!newsSec) return;
-    var newsContainer = newsSec.querySelector(".space-y-4");
-    if (!newsContainer) return;
-    newsContainer.className = "grid grid-cols-1 md:grid-cols-2 gap-4";
+   var newsContainer = document.getElementById("news-container");
+if (!newsContainer) return;
+
+
+
     var newsData = [
       {
         title: player.name + " delivers outstanding performance in recent " + sportName + " match",
@@ -1593,6 +1571,7 @@ if (player) {
 
   // Teams section — realistic team lists per sport
   (function() {
+   
     var teamsSec = document.querySelector('[data-purpose="current-teams"]');
     if (!teamsSec) return;
     var teamsContainer = teamsSec.querySelector(".glass-card.rounded-2xl");
@@ -1693,46 +1672,46 @@ if (player) {
         { name:"AS Pontoise-Cergy", league:"Pro A", color:"2563eb", badge:"Pro A" }
       ]
     };
-    // Build team list: national + 3 sport-specific teams
-    var natColor = teamColors[player.country] || "2563eb";
-    var natInitials = player.country ? player.country.substring(0,2).toUpperCase() : "NT";
-    var teams = [
-      { 
-        name: player.country || "International", 
-        role: "National Team • " + (roleMap[sportName] || "Player"), 
-        color: natColor,
-        years: sportName + " Career",
-        img: "https://ui-avatars.com/api/?name=" + natInitials + "&background=" + natColor + "&color=fff&size=40",
+ // Build REAL teams from API
+var teams = [];
+
+// International Team
+if (player.intlTeam) {
+    teams.push({
+        name: player.intlTeam,
+        role: "National Team",
+        color: "2563eb",
+        years: "International",
+        img: "https://ui-avatars.com/api/?name=" +
+            encodeURIComponent(player.intlTeam.substring(0,2)) +
+            "&background=2563eb&color=fff&size=40",
         badge: "National"
-      }
-    ];
-    var pool = sportTeams[sportName] || [];
-    if (pool.length > 0) {
-      // Pick up to 3 distinct real teams, seeded by player name hash for consistency
-      var seed = 0;
-      for (var si = 0; si < (player.name || "p").length; si++) seed += (player.name || "p").charCodeAt(si);
-      var picked = [];
-      for (var pi = 0; pi < Math.min(3, pool.length); pi++) {
-        var idx = (seed + pi * 7) % pool.length;
-        var t = pool[idx];
-        // Avoid duplicates with previously picked or national team name
-        var dup = false;
-        for (var di = 0; di < picked.length; di++) { if (picked[di].name === t.name) { dup = true; break; } }
-        if (!dup && t.name !== (player.country || "International")) {
-          picked.push(t);
-        }
-      }
-      picked.forEach(function(t) {
-        teams.push({ 
-          name: t.name, 
-          role: t.role || (t.league || "Professional"),
-          color: t.color,
-          years: t.league || sportName,
-          img: "https://ui-avatars.com/api/?name=" + t.name.substring(0,2).toUpperCase() + "&background=" + t.color + "&color=fff&size=40",
-          badge: t.badge || "Club"
+    });
+}
+
+// Other Teams
+if (player.teams) {
+    player.teams.split(",").forEach(function(team) {
+
+        team = team.trim();
+
+        if (!team) return;
+
+        if (player.intlTeam && team === player.intlTeam) return;
+
+        teams.push({
+            name: team,
+            role: "Cricket",
+            color: "10b981",
+            years: "Career",
+            img: "https://ui-avatars.com/api/?name=" +
+                 encodeURIComponent(team.substring(0,2)) +
+                 "&background=10b981&color=fff&size=40",
+            badge: "Team"
         });
-      });
-    }
+
+    });
+}
     teamsContainer.innerHTML = "";
     teams.forEach(function(t) {
       var div = document.createElement("div");
@@ -1741,6 +1720,7 @@ if (player) {
       teamsContainer.appendChild(div);
     });
   })();
+
 
   // Achievements section — async with realistic + Wikipedia data
   (async function() {
@@ -1893,83 +1873,308 @@ function generateRealisticStats(p, sport) {
 
 // --- Wikipedia achievements fetcher ---
 async function fetchWikipediaAchievements(name) {
-  if (!name) return [];
-  if (ACH_CACHE && ACH_CACHE[name]) return ACH_CACHE[name];
-  try {
-    var search = await fetch("https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=" + encodeURIComponent(name + " sports career achievements awards") + "&format=json&origin=*&srlimit=1");
-    var sData = await search.json();
-    var pageTitle = sData.query && sData.query.search && sData.query.search[0] ? sData.query.search[0].title : null;
-    if (!pageTitle) { ACH_CACHE[name] = []; return []; }
-    // Get page extract
-    var extract = await fetch("https://en.wikipedia.org/w/api.php?action=query&titles=" + encodeURIComponent(pageTitle) + "&prop=extracts&exintro&explaintext&format=json&origin=*");
-    var eData = await extract.json();
-    var pages = eData.query && eData.query.pages ? eData.query.pages : {};
-    var text = "";
-    for (var p in pages) { if (pages[p].extract) text = pages[p].extract; }
-    var achievements = [];
-    if (text) {
-      var lines = text.split(/[.\n]/);
-      var keywords = ["award","champion","gold","record","medal","winner","title","ranked #1","world cup","olympic","grand slam","mvp","player of the","hall of fame","century","hat-trick","captain","led","scored","won"];
-      for (var i = 0; i < lines.length && achievements.length < 6; i++) {
-        var line = lines[i].trim();
-        if (line.length < 20) continue;
-        for (var j = 0; j < keywords.length; j++) {
-          if (line.toLowerCase().indexOf(keywords[j]) !== -1) {
-            achievements.push(line.substring(0, 90) + (line.length > 90 ? "..." : ""));
-            break;
-          }
+
+    if (ACH_CACHE[name]) return ACH_CACHE[name];
+
+    try {
+
+        const search = await fetch(
+            "https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=" +
+            encodeURIComponent(name) +
+            "&format=json&origin=*&srlimit=1"
+        );
+
+        const s = await search.json();
+
+        const title = s.query?.search?.[0]?.title;
+
+        if (!title) return [];
+
+        const res = await fetch(
+            "https://en.wikipedia.org/w/api.php?action=query&prop=extracts&titles=" +
+            encodeURIComponent(title) +
+            "&format=json&origin=*&explaintext=1"
+        );
+
+        const data = await res.json();
+
+        const page = Object.values(data.query.pages)[0];
+
+        const text = page.extract || "";
+
+        const lines = text
+            .split(".")
+            .map(x => x.trim())
+            .filter(Boolean);
+
+        const goodKeywords = [
+
+            "won",
+            "winner",
+            "champion",
+            "championship",
+            "title",
+            "record",
+            "award",
+            "ranked",
+            "icc",
+            "player of the",
+            "century",
+            "double century",
+            "fastest",
+            "highest",
+            "most runs",
+            "orange cap",
+            "purple cap",
+            "medal"
+
+        ];
+
+        const badKeywords = [
+
+            "born",
+            "debut",
+            "married",
+            "plays for",
+            "is an",
+            "is a",
+            "captained",
+            "vice-captain",
+            "school",
+            "college",
+            "family"
+
+        ];
+
+        const achievements = [];
+
+        for (const line of lines) {
+
+            const l = line.toLowerCase();
+
+            if (badKeywords.some(k => l.includes(k)))
+                continue;
+
+            if (goodKeywords.some(k => l.includes(k))) {
+
+                achievements.push(line);
+
+            }
+
         }
-      }
+
+        ACH_CACHE[name] = achievements.slice(0,6);
+
+        return ACH_CACHE[name];
+
     }
-    ACH_CACHE[name] = achievements;
-    return achievements;
-  } catch (e) { console.error("Wiki ach error", e); }
-  ACH_CACHE[name] = [];
-  return [];
+    catch(e){
+
+        console.error(e);
+
+        return [];
+
+    }
+
 }
 
 // --- Generate sport-specific achievements from Wikipedia or realistic defaults ---
 async function buildRealAchievements(p, sport) {
+
   var now = new Date().getFullYear();
-  var icons = { Cricket:"🏏",Football:"⚽",Basketball:"🏀",Tennis:"🎾",Baseball:"⚾",Hockey:"🏑",Volleyball:"🏐",Kabaddi:"🤼","E-Sports":"🎮","Table Tennis":"🏓" };
+
+  var icons = {
+    Cricket: "🏏",
+    Football: "⚽",
+    Basketball: "🏀",
+    Tennis: "🎾",
+    Baseball: "⚾",
+    Hockey: "🏑",
+    Volleyball: "🏐",
+    Kabaddi: "🤼",
+    "E-Sports": "🎮",
+    "Table Tennis": "🏓"
+  };
+
   var sIcon = icons[sport] || "🏆";
   var items = [];
-  // Try Wikipedia first
+
+  // ===========================
+  // Wikipedia Achievements
+  // ===========================
+
   var wikiAch = await fetchWikipediaAchievements(p.name);
-  if (wikiAch.length >= 2) {
-    wikiAch.forEach(function(a, idx) {
-      items.push({ t: a, y: String(now - idx), i: idx === 0 ? "🏆" : "⭐", d: sport + " achievement" });
+if (wikiAch.length >= 2) {
+
+    wikiAch.forEach(function (a, idx) {
+
+        a = a.replace(/\[[^\]]+\]/g, "");
+
+        if (a.length > 90) {
+            a = a.substring(0, 90) + "...";
+        }
+
+        items.push({
+            t: a,
+            y: String(now - idx),
+            i: idx === 0 ? "🏆" : "⭐",
+            d: "Official achievement"
+        });
+
     });
-    items.push({ t: "Professional " + sport + " Player", y: String(now - 5), i: sIcon, d: "Started career in " + sport });
-    items.sort(function(a, b) { return parseInt(b.y) - parseInt(a.y); });
+
+    items.sort(function (a, b) {
+        return parseInt(b.y) - parseInt(a.y);
+    });
+
     return items;
+}
+
+  // ===========================
+  // REAL DATA ACHIEVEMENTS
+  // ===========================
+
+  if (p.rank && p.rank <= 3) {
+    items.push({
+      t: "Top 3 in " + sport + " World Rankings",
+      y: String(now),
+      i: "👑",
+      d: "Among the world's best players"
+    });
   }
-  // Fallback: realistic milestones based on player data
-  if (p.rank && p.rank <= 10) items.push({ t: "Ranked #" + p.rank + " globally in " + sport, y: String(now), i: "🏆", d: "Elite world ranking achieved" });
-  if (p.rank && p.rank <= 3) items.push({ t: "Top 3 in " + sport + " World Rankings", y: String(now), i: "👑", d: "Among the best in the world" });
-  if (p.rank > 3 && p.rank <= 20) items.push({ t: "Top 20 " + sport + " Player Worldwide", y: String(now - 1), i: "⭐", d: "Consistent high-level performance" });
-  if (p.rating && p.rating > 80) items.push({ t: "Elite Rating: " + p.rating, y: String(now - 1), i: "🔥", d: "Exceptional performance rating" });
-  if (p.matches && p.matches > 300) items.push({ t: p.matches + " Career Matches", y: String(now - 2), i: "🏅", d: "Remarkable longevity milestone" });
-  if (p.matches && p.matches > 100) items.push({ t: p.matches + " Professional Appearances", y: String(now - 2), i: "🏅", d: "Century of matches milestone" });
-  if (p.runs && p.runs > 10000) items.push({ t: p.runs.toLocaleString() + " Career Runs", y: String(now - 2), i: "🔥", d: "10,000+ runs milestone" });
-  if (p.runs && p.runs > 5000) items.push({ t: p.runs.toLocaleString() + " Total Runs", y: String(now - 2), i: "🔥", d: "5,000+ runs in career" });
-  if (p.hundreds && p.hundreds > 50) items.push({ t: p.hundreds + " International Centuries", y: String(now - 2), i: "💯", d: "Half-century of centuries" });
-  if (p.hundreds && p.hundreds > 20) items.push({ t: p.hundreds + " Career Centuries", y: String(now - 2), i: "💯", d: "Consistent century-maker" });
-  if (p.goals && p.goals > 100) items.push({ t: p.goals + " Career Goals", y: String(now - 2), i: "⚽", d: "Century of goals" });
-  if (p.goals && p.goals > 50) items.push({ t: p.goals + " Total Goals", y: String(now - 2), i: "⚽", d: "Goal-scoring milestone" });
-  if (p.points && p.points > 10000) items.push({ t: p.points.toLocaleString() + " Career Points", y: String(now - 2), i: "🏀", d: "10,000+ points milestone" });
-  if (p.wickets && p.wickets > 100) items.push({ t: p.wickets + " Career Wickets", y: String(now - 2), i: "🎯", d: "Century of wickets" });
-  if (p.assists && p.assists > 100) items.push({ t: p.assists + " Career Assists", y: String(now - 2), i: "🤝", d: "Playmaking milestone" });
-  if (p.titles && p.titles > 10) items.push({ t: p.titles + " Championship Titles", y: String(now - 1), i: "👑", d: "Multiple titles won" });
-  if (p.earnings) items.push({ t: p.earnings + " Career Earnings", y: String(now - 1), i: "💰", d: "Prize money accumulated" });
-  if (p.hr && p.hr > 100) items.push({ t: p.hr + " Career Home Runs", y: String(now - 2), i: "💪", d: "Power-hitting milestone" });
-  // Always add some universal achievements
-  if (items.length < 3) {
-    items.push({ t: "Professional " + sport + " Debut", y: String(now - 5), i: sIcon, d: "Started " + sport + " career" });
-    items.push({ t: "Consistent " + sport + " Performer", y: String(now - 2), i: "🎖️", d: "Recognized for consistency" });
-    items.push({ t: "Active " + sport + " Professional", y: String(now), i: "💫", d: "Currently active in " + sport });
+  else if (p.rank && p.rank <= 10) {
+    items.push({
+      t: "Ranked #" + p.rank + " Worldwide",
+      y: String(now),
+      i: "🏆",
+      d: "Elite international ranking"
+    });
   }
-  items.sort(function(a, b) { return parseInt(b.y) - parseInt(a.y); });
+  else if (p.rank && p.rank <= 20) {
+    items.push({
+      t: "Top 20 " + sport + " Player",
+      y: String(now - 1),
+      i: "⭐",
+      d: "Consistent world-class performer"
+    });
+  }
+
+  if (p.rating && p.rating >= 80) {
+    items.push({
+      t: "Elite Rating (" + p.rating + ")",
+      y: String(now - 1),
+      i: "🔥",
+      d: "Outstanding performance level"
+    });
+  }
+
+  if (p.matches && p.matches >= 300) {
+    items.push({
+      t: p.matches + " Career Matches",
+      y: String(now - 2),
+      i: "🏅",
+      d: "Long professional career"
+    });
+  }
+
+  if (p.runs && p.runs >= 10000) {
+    items.push({
+      t: p.runs.toLocaleString() + " Career Runs",
+      y: String(now - 2),
+      i: "💥",
+      d: "10,000+ career runs"
+    });
+  }
+
+  if (p.hundreds && p.hundreds >= 50) {
+    items.push({
+      t: p.hundreds + " International Centuries",
+      y: String(now - 2),
+      i: "💯",
+      d: "50+ international centuries"
+    });
+  }
+
+  if (p.wickets && p.wickets >= 100) {
+    items.push({
+      t: p.wickets + " Career Wickets",
+      y: String(now - 2),
+      i: "🎯",
+      d: "100+ career wickets"
+    });
+  }
+
+  if (p.goals && p.goals >= 100) {
+    items.push({
+      t: p.goals + " Career Goals",
+      y: String(now - 2),
+      i: "⚽",
+      d: "100+ career goals"
+    });
+  }
+
+  if (p.points && p.points >= 10000) {
+    items.push({
+      t: p.points.toLocaleString() + " Career Points",
+      y: String(now - 2),
+      i: "🏀",
+      d: "10,000+ career points"
+    });
+  }
+
+  if (p.assists && p.assists >= 100) {
+    items.push({
+      t: p.assists + " Career Assists",
+      y: String(now - 2),
+      i: "🤝",
+      d: "Playmaking milestone"
+    });
+  }
+
+  if (p.titles && p.titles >= 10) {
+    items.push({
+      t: p.titles + " Championship Titles",
+      y: String(now - 1),
+      i: "👑",
+      d: "Multiple championship victories"
+    });
+  }
+
+  if (p.hr && p.hr >= 100) {
+    items.push({
+      t: p.hr + " Career Home Runs",
+      y: String(now - 2),
+      i: "💪",
+      d: "Power hitting milestone"
+    });
+  }
+
+  // ===========================
+  // DEFAULT (ONLY IF NO DATA)
+  // ===========================
+
+  if (items.length === 0) {
+
+    items.push({
+      t: "Professional " + sport + " Debut",
+      y: String(now - 5),
+      i: sIcon,
+      d: "Started professional career"
+    });
+
+    items.push({
+      t: "Active " + sport + " Professional",
+      y: String(now),
+      i: "⭐",
+      d: "Currently competing professionally"
+    });
+
+  }
+
+  items.sort(function (a, b) {
+    return parseInt(b.y) - parseInt(a.y);
+  });
+
   return items;
 }
 
@@ -1991,29 +2196,79 @@ function generateFallbackNews(p) {
 }
 
 function replaceNewsWithReal(articles, p) {
-  var sec = document.querySelector('[data-purpose="latest-news"]');
-  if (!sec) return;
-  var con = document.getElementById("news-container");
-  if (!con) return;
-  con.innerHTML = "";
-  if (!articles || articles.length === 0) {
-    // Fallback: generate realistic news titles from player data
-    var fallbackNews = generateFallbackNews(p);
-    articles = fallbackNews;
-  }
-  articles.slice(0, 4).forEach(function(a) {
-    var img = a.image || "https://ui-avatars.com/api/?name=" + encodeURIComponent((p.name || "N").substring(0, 2)) + "&background=2563eb&color=fff&size=200";
-    var title = a.title || (p.name + " latest update");
-    var src = a.author || (a.category && a.category.length ? a.category[0] : "Sports News");
-    var t = a.published ? timeAgo(a.published) : "recent";
-    var d = document.createElement("div");
-    d.className = "glass-card rounded-xl overflow-hidden hover:bg-slate-800/50 cursor-pointer transition-all group";
-    d.innerHTML = '<img class="w-full h-36 object-cover" src="' + img + '" alt="" onerror="this.src=\'https://ui-avatars.com/api/?name=' + encodeURIComponent(src.substring(0, 2)) + '&background=1e293b&color=fff&size=200\'"/><div class="p-4"><div class="flex items-center justify-between mb-2"><span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">' + src + '</span><span class="text-[10px] text-slate-500">' + t + '</span></div><h3 class="text-sm font-bold leading-snug line-clamp-2 group-hover:text-blue-400 transition-colors">' + title + '</h3></div>';
-    if (a.url) {
-      d.addEventListener("click", function() { window.open(a.url, "_blank"); });
+
+  console.log("Articles received =", articles);
+    const container = document.getElementById("news-container");
+    if (!container) {
+        console.error("news-container not found");
+        return;
     }
-    con.appendChild(d);
-  });
+
+    container.innerHTML = "";
+
+    if (!articles || articles.length === 0) {
+      console.log("Fallback used");
+        articles = generateFallbackNews(p);
+    }
+
+    articles.slice(0,4).forEach(a => {
+
+        const img =
+            a.image ||
+            p.image ||
+            p.profile?.image ||
+            `https://ui-avatars.com/api/?name=${encodeURIComponent(p.name)}&background=2563eb&color=fff&size=600`;
+
+        const card = document.createElement("div");
+
+        card.className =
+        "glass-card rounded-2xl overflow-hidden border border-slate-700 hover:border-blue-500 transition-all duration-300 cursor-pointer";
+
+        card.innerHTML = `
+            <img
+                src="${img}"
+                class="w-full h-56 object-cover"
+                onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.name)}&background=2563eb&color=fff&size=600'">
+
+            <div class="p-5">
+
+                <div class="text-xs text-slate-400 mb-2">
+                    ${a.author || "FanConnact News"}
+                </div>
+
+                <h3 class="text-white text-lg font-bold leading-7 mb-3">
+                    ${a.title || ""}
+                </h3>
+
+                <p class="text-slate-400 text-sm line-clamp-3">
+                    ${a.intro || ""}
+                </p>
+
+            </div>
+        `;
+
+        if(a.url){
+            card.addEventListener("click",()=>{
+                window.open(a.url,"_blank");
+            });
+        }
+
+        container.appendChild(card);
+
+    });
+    console.log("NEWS RENDERED");
+
+setTimeout(() => {
+
+    console.log(
+        "After 2 sec:",
+        document.getElementById("news-container").children.length
+    );
+
+},2000);
+
+    console.log("Rendered Cards =", container.children.length);
+
 }
 
 // --- Global refresh helpers for enrichment ---
@@ -2047,33 +2302,611 @@ async function refreshAchievements(p, s) {
     achContainer.appendChild(d);
   });
 }
-function refreshTimeline(p, s) {
-  var hlSec = document.querySelector('[data-purpose="career-highlights"]');
-  if (!hlSec) return;
-  var tl = hlSec.querySelector(".grid.grid-cols-5");
-  if (!tl) return;
-  var now = new Date().getFullYear();
-  var ms = [
-    { y: String(now - 5), l: "Professional Debut in " + s, sub: "Season " + (now - 5) },
-    { y: String(now - 3), l: "First Major Victory", sub: s + " League" },
-    { y: String(now - 1), l: "Career Best Performance", sub: "Ranked #" + (p.rank || "Top") },
-    { y: String(now), l: "Milestone Achievement", sub: (p.matches || p.games || "100") + " matches played" },
-    { y: String(now + 1), l: "Current Season", sub: "Active in " + s }
-  ];
-  for (var i = 0; i < 5; i++) {
-    var card = tl.children[i];
-    if (!card) break;
-    var yr = card.querySelector(".text-xs.font-bold");
-    var title = card.querySelector(".text-sm.font-bold");
-    var sub = card.querySelector(".text-\\[10px\\]");
-    if (yr) yr.textContent = ms[i].y;
-    if (title) title.textContent = ms[i].l;
-    if (sub) sub.textContent = ms[i].sub;
-  }
+
+function renderRealCareerHighlights(player) {
+
+    var container =
+        document.getElementById("career-highlights-container");
+
+    if (!container) return;
+
+
+    // ==========================================
+    // CLEAN REAL API BIO
+    // ==========================================
+
+    function cleanText(value) {
+
+        return String(value || "")
+            .replace(/<br\s*\/?>/gi, " ")
+            .replace(/<[^>]*>/g, " ")
+            .replace(/&nbsp;/gi, " ")
+            .replace(/&amp;/gi, "&")
+            .replace(/&quot;/gi, '"')
+            .replace(/&#39;/gi, "'")
+            .replace(/\s+/g, " ")
+            .trim();
+
+    }
+
+
+    // ==========================================
+    // ESCAPE HTML
+    // ==========================================
+
+    function escapeHtml(value) {
+
+        return String(value || "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+
+    }
+
+
+    // ==========================================
+    // GET YEAR
+    // ==========================================
+
+    function getYear(text) {
+
+        var match =
+            String(text || "").match(/\b(19|20)\d{2}\b/);
+
+        return match ? match[0] : "—";
+
+    }
+
+
+    // ==========================================
+    // GENERATE TITLE FROM REAL BIO
+    // ==========================================
+
+    function getMilestoneTitle(text) {
+
+        var t =
+            String(text || "").toLowerCase();
+
+
+        if (t.includes("world cup"))
+            return "World Cup Breakthrough";
+
+
+        if (
+            t.includes("player of the tournament") ||
+            t.includes("award")
+        )
+            return "Major Award";
+
+
+        if (
+            t.includes("captain") ||
+            t.includes("captained")
+        )
+            return "Captaincy Milestone";
+
+
+        if (t.includes("debut")) {
+
+            if (t.includes("odi"))
+                return "ODI Debut";
+
+            if (t.includes("test"))
+                return "Test Debut";
+
+            if (t.includes("t20"))
+                return "T20I Debut";
+
+            if (t.includes("ipl"))
+                return "IPL Debut";
+
+            return "Career Debut";
+        }
+
+
+        if (
+            t.includes("double hundred") ||
+            t.includes("double century") ||
+            t.includes("century") ||
+            t.includes("hundred")
+        )
+            return "Century Milestone";
+
+
+        if (
+            t.includes("record") ||
+            t.includes("highest")
+        )
+            return "Record Achievement";
+
+
+        if (
+            t.includes("trophy") ||
+            t.includes("champion") ||
+            t.includes("title") ||
+            t.includes("won")
+        )
+            return "Major Achievement";
+
+
+        if (
+            t.includes("leading run scorer") ||
+            t.includes("top-scored")
+        )
+            return "Standout Season";
+
+
+        if (t.includes("milestone"))
+            return "Career Milestone";
+
+
+        return "Career Highlight";
+
+    }
+
+
+    // ==========================================
+    // EXTRACT REAL MILESTONES FROM API BIO
+    // ==========================================
+
+    function extractBioMilestones(bio) {
+
+        var text = cleanText(bio);
+
+        if (!text) return [];
+
+
+        var matches =
+            [...text.matchAll(/\b(19|20)\d{2}(?:-\d{2})?\b/g)];
+
+
+        var result = [];
+        var seen = new Set();
+
+
+        matches.forEach(function(match) {
+
+            var year = match[0];
+
+
+            // Find sentence containing the year
+            var start =
+                text.lastIndexOf(".", match.index - 1) + 1;
+
+
+            var nextDot =
+                text.indexOf(
+                    ".",
+                    match.index + match[0].length
+                );
+
+
+            var end =
+                nextDot === -1
+                    ? text.length
+                    : nextDot + 1;
+
+
+            var sentence =
+                text.slice(start, end).trim();
+
+
+            if (!sentence || sentence.length < 25)
+                return;
+
+
+            var key =
+                sentence.toLowerCase();
+
+
+            if (seen.has(key))
+                return;
+
+
+            seen.add(key);
+
+
+            result.push({
+
+                year: year.slice(0, 4),
+
+                title:
+                    getMilestoneTitle(sentence),
+
+                text: sentence,
+
+                index: result.length
+
+            });
+
+        });
+
+
+        // ==========================================
+        // PRIORITIZE ACTUAL CAREER EVENTS
+        // ==========================================
+
+        var keywords = [
+
+            "debut",
+            "world cup",
+            "award",
+            "player of the tournament",
+            "century",
+            "hundred",
+            "trophy",
+            "record",
+            "captain",
+            "won",
+            "leading run scorer",
+            "top-scored",
+            "milestone",
+            "title",
+            "champion"
+
+        ];
+
+
+        result.forEach(function(item) {
+
+            var lower =
+                item.text.toLowerCase();
+
+
+            item.score =
+                keywords.reduce(
+                    function(score, word) {
+
+                        return score +
+                            (lower.includes(word) ? 10 : 0);
+
+                    },
+                    0
+                );
+
+            // Slight preference for later career events
+            item.score +=
+                Number(item.year || 0) / 10000;
+
+        });
+
+
+        // Take strongest real milestones
+        result =
+            result
+                .sort(function(a, b) {
+
+                    return b.score - a.score;
+
+                })
+                .slice(0, 5);
+
+
+        // Put them back in chronological order
+        result.sort(function(a, b) {
+
+            var yearA =
+                Number(a.year) || 9999;
+
+            var yearB =
+                Number(b.year) || 9999;
+
+            if (yearA !== yearB)
+                return yearA - yearB;
+
+            return a.index - b.index;
+
+        });
+
+
+        return result;
+
+    }
+
+
+    // ==========================================
+    // REAL CAREER DEBUT DATA
+    // FALLBACK ONLY
+    // ==========================================
+
+    function extractCareerDebuts(career) {
+
+        var values =
+            Array.isArray(career?.values)
+                ? career.values
+                : [];
+
+
+        var result = [];
+
+
+        values.forEach(function(item) {
+
+            if (!item || !item.debut)
+                return;
+
+
+            var name =
+                String(item.name || "")
+                    .toLowerCase();
+
+
+            var label =
+                item.name || "Format Debut";
+
+
+            if (name === "odi")
+                label = "ODI Debut";
+
+            else if (name === "test")
+                label = "Test Debut";
+
+            else if (name === "t20")
+                label = "T20I Debut";
+
+            else if (name === "ipl")
+                label = "IPL Debut";
+
+            else if (name === "cl")
+                label = "League Debut";
+
+
+            result.push({
+
+                year:
+                    getYear(item.debut),
+
+                title:
+                    label,
+
+                text:
+                    String(item.debut)
+                        .replace(/^vs\s+/i, "vs ")
+
+            });
+
+        });
+
+
+        return result;
+
+    }
+
+
+    // ==========================================
+    // REAL API DATA
+    // ==========================================
+
+    var profile =
+        player.profile || {};
+
+    var career =
+        player.career || {};
+
+
+    var bio =
+        profile.bio ||
+        player.bio ||
+        "";
+
+
+    // First priority:
+    // real milestones from real API biography
+    var milestones =
+        extractBioMilestones(bio);
+
+
+    // ==========================================
+    // IF BIO DOES NOT HAVE 5 EVENTS
+    // USE REAL CAREER DEBUT DATA
+    // ==========================================
+
+    if (milestones.length < 5) {
+
+        var debuts =
+            extractCareerDebuts(career);
+
+
+        debuts.forEach(function(debut) {
+
+            if (milestones.length >= 5)
+                return;
+
+
+            var duplicate =
+                milestones.some(function(item) {
+
+                    return item.title === debut.title;
+
+                });
+
+
+            if (!duplicate) {
+
+                milestones.push(debut);
+
+            }
+
+        });
+
+    }
+
+
+    // Sort chronologically
+
+    milestones.sort(function(a, b) {
+
+        var yearA =
+            Number(a.year) || 9999;
+
+        var yearB =
+            Number(b.year) || 9999;
+
+        return yearA - yearB;
+
+    });
+
+
+    // Maximum 5 cards
+
+    milestones =
+        milestones.slice(0, 5);
+
+
+    // ==========================================
+    // RENDER
+    // ==========================================
+
+    container.innerHTML = "";
+
+
+    if (!milestones.length) {
+
+        container.innerHTML = `
+            <div class="col-span-5 text-center
+                        text-slate-500 text-sm py-8">
+                No career highlights available
+                from the API.
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    milestones.forEach(function(item, index) {
+
+        var active =
+            index === Math.floor(milestones.length / 2);
+
+
+        var subtitle =
+            cleanText(item.text);
+
+
+        // Keep card compact
+        if (subtitle.length > 110) {
+
+            subtitle =
+                subtitle.substring(0, 110) + "...";
+
+        }
+
+
+        container.innerHTML += `
+
+            <div
+                class="flex flex-col items-center
+                       text-center ${active ? "scale-110" : ""}"
+            >
+
+                <!-- Timeline point -->
+
+                <div
+                    class="${
+                        active
+                            ? "w-5 h-5 ring-4 ring-blue-500/20"
+                            : "w-4 h-4"
+                    }
+                    rounded-full
+                    border-4 border-blue-500
+                    bg-slate-950
+                    z-10 mb-8 relative"
+                >
+
+                    <div
+                        class="
+                            absolute
+                            -top-10
+                            left-1/2
+                            -translate-x-1/2
+                            text-xs
+                            font-bold
+                            ${
+                                active
+                                    ? "text-blue-400"
+                                    : "text-slate-400"
+                            }
+                            whitespace-nowrap
+                        "
+                    >
+                        ${escapeHtml(item.year)}
+                    </div>
+
+                </div>
+
+
+                <!-- Career Card -->
+
+                <div
+                    class="
+                        glass-card
+                        p-4
+                        rounded-2xl
+                        w-full
+                        min-h-[80px]
+                        flex
+                        flex-col
+                        justify-center
+                        ${
+                            active
+                                ? "border border-blue-500/30"
+                                : ""
+                        }
+                    "
+                >
+
+                    <div
+                        class="
+                            text-sm
+                            font-bold
+                            leading-tight
+                            ${
+                                active
+                                    ? "text-blue-400"
+                                    : "text-white"
+                            }
+                        "
+                    >
+                        ${escapeHtml(item.title)}
+                    </div>
+
+
+                    <div
+                        class="
+                            text-[10px]
+                            text-slate-500
+                            mt-1
+                        "
+                    >
+                        ${escapeHtml(subtitle)}
+                    </div>
+
+                </div>
+
+            </div>
+
+        `;
+
+    });
+
+
+    console.log(
+        "REAL API CAREER HIGHLIGHTS LOADED:",
+        milestones
+    );
+
 }
+
 
 // --- Async Data Enrichment ---
 (async function enrichPlayerData() {
+ 
+  console.log(player?.news?.storyList);
+
   if (!player || !player.name) return;
 
   // Sport → API sport ID mapping
@@ -2084,46 +2917,39 @@ function refreshTimeline(p, s) {
     "E-Sports": "e-sports", "Table Tennis": "table-tennis"
   };
   var sid = sidMap[sportName] || "cricket";
+try {
 
-  // 1. Fetch rankings API for the full player object
-  try {
-    var resp = await fetch("/api/rankings/" + sid + "?limit=200");
-    var data = await resp.json();
-    if (data && data.players) {
-      var found = null;
-      for (var i = 0; i < data.players.length; i++) {
-        if (data.players[i].name && data.players[i].name.toLowerCase() === player.name.toLowerCase()) {
-          found = data.players[i];
-          break;
-        }
-      }
-      if (found) {
-        for (var k in found) {
-          if (found.hasOwnProperty(k) && found[k] !== null && found[k] !== undefined && found[k] !== "") {
-            player[k] = found[k];
-          }
-        }
-        // Fill missing fields with realistic generated stats, then re-render
-        generateRealisticStats(player, sportName);
-        refreshStatCards(player, sportName);
-        refreshAchievements(player, sportName);
-        refreshTimeline(player, sportName);
-      } else {
-        // Player not in API — still generate realistic stats from whatever we have
-        generateRealisticStats(player, sportName);
-        refreshStatCards(player, sportName);
-        refreshAchievements(player, sportName);
-        refreshTimeline(player, sportName);
-      }
-    }
-  } catch (e) {
-    console.error("Rankings API fetch error:", e);
-    // API unavailable — fallback to what we have
+    const playerId =
+        player.profile?.id ||
+        player.id ||
+        11808;
+
+    const profileResp = await fetch(
+        `${API_BASE}/api/players/${playerId}/profile`
+    );
+
+    if (!profileResp.ok)
+        throw new Error("Profile API failed");
+
+    const profile = await profileResp.json();
+
+    console.log("PROFILE =", profile);
+
+    Object.assign(player, profile);
+
     generateRealisticStats(player, sportName);
-    refreshStatCards(player, sportName);
-    refreshAchievements(player, sportName);
-    refreshTimeline(player, sportName);
-  }
+
+    
+     renderRealCareerHighlights(player);
+    await refreshAchievements(player, sportName);
+  
+
+
+} catch (e) {
+
+    console.error("PROFILE ERROR:", e);
+
+}
 
   // 2. Fetch Wikipedia image if still using fallback
   try {
@@ -2139,19 +2965,81 @@ function refreshTimeline(p, s) {
     }
   } catch (e) { console.error("Wiki enrich error", e); }
 
-  // 3. Fetch real news from Currents API — fallback on failure
-  try {
-    var newsResp = await fetch("https://api.currentsapi.services/v1/search?apiKey=u4F078J4C8jKmhd8hkqVkVeyOzYQrs6maPdxVoK1YmuSVqQf&keywords=" + encodeURIComponent(player.name) + "&language=en&page_size=4");
-    var newsData = await newsResp.json();
-    if (newsData && newsData.news && newsData.news.length > 0) {
-      replaceNewsWithReal(newsData.news, player);
-    } else {
-      replaceNewsWithReal([], player);
-    }
-  } catch (e) {
-    console.error("News API fetch error:", e);
-    replaceNewsWithReal([], player);
-  }
+  // 3. Fetch Latest News -> Filter Player -> Fallback
+
+ /* ===========================
+   PLAYER NEWS
+=========================== */
+try {
+
+    const playerId =
+        player.profile?.id ||
+        player.id ||
+        11808;
+
+const newsResp = await fetch(
+    `${API_BASE}/api/players/${playerId}/news`
+);
+
+const newsData = await newsResp.json();
+
+player.news = newsData;
+
+let storyList = [];
+
+if (Array.isArray(newsData)) {
+    storyList = newsData;
+}
+else if (Array.isArray(newsData.storyList)) {
+    storyList = newsData.storyList;
+}
+else if (newsData.data && Array.isArray(newsData.data.storyList)) {
+    storyList = newsData.data.storyList;
+}
+else if (newsData.playerNews && Array.isArray(newsData.playerNews.storyList)) {
+    storyList = newsData.playerNews.storyList;
+}
+else if (newsData.result && Array.isArray(newsData.result.storyList)) {
+    storyList = newsData.result.storyList;
+}
+
+console.log("storyList =", storyList);
+console.log("storyList length =", storyList.length);
+const articles = storyList
+    .filter(item =>
+    item &&
+    item.story &&
+    item.story.hline
+)
+    .map(item => ({
+        title: item.story.hline,
+       intro:
+item.story.intro ||
+item.story.context ||
+"Tap to read full article.",
+        author:
+item.story.source ||
+"Cricbuzz",
+        published: Number(item.story.pubTime),
+       image:
+item.story.coverImage?.id
+? `https://www.cricbuzz.com/a/img/v1/600x400/i1/c${item.story.coverImage.id}/image.jpg`
+: player.image,
+        url: `https://www.cricbuzz.com/cricket-news/${item.story.id}`
+    }));
+console.log("STEP 4");
+console.log("ARTICLES =", articles);
+console.log("ARTICLES LENGTH =", articles.length);
+
+replaceNewsWithReal(articles, player);
+console.log("STEP 5");
+} catch (err) {
+
+    console.error(err);
+
+    
+
+}
 })();
 </script>
 
