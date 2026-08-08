@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1067605173307",
+    "project_id": "fanconnact",
+    "storage_bucket": "fanconnact.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1067605173307:android:cad8c731ab4fe8979ba81e",
+        "android_client_info": {
+          "package_name": "app.fanconnact"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1067605173307-0q4gl978h9f93olaa7udtmrcp9pmn27o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCBcziyHR-L3p5ijgNbai9PyhT7ymi6Sgk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1067605173307-0q4gl978h9f93olaa7udtmrcp9pmn27o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

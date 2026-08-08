@@ -4579,9 +4579,24 @@ const NEWS_CACHE_TTL = 10 * 60 * 1000; // 10 minutes
 // Merged article list cache (RSS + cricketline + newsdata) for pagination.
 const newsListCache = new Map(); // key -> articles[]
 
-async function fetchSportsNews({ sport = "all", language = "en" }) {
+// Region label (from the app's settings) -> ISO 3166-1 alpha-2 code used by
+// Currents / newsdata for geographically filtered news.
+const REGION_CODES = {
+  India: "IN",
+  USA: "US",
+  UAE: "AE",
+  UK: "GB",
+  Singapore: "SG",
+  Australia: "AU",
+  Canada: "CA",
+  Germany: "DE",
+  Japan: "JP",
+  Brazil: "BR",
+};
+
+async function fetchSportsNews({ sport = "all", language = "en", country = "" }) {
   const q = NEWS_SPORT_QUERY[sport] || "sports";
-  const cacheKey = `${sport}|${language}`;
+  const cacheKey = `${sport}|${language}|${country}`;
   const cached = newsCache.get(cacheKey);
   if (cached && Date.now() - cached.ts < NEWS_CACHE_TTL) return cached.data;
 
@@ -4599,6 +4614,7 @@ async function fetchSportsNews({ sport = "all", language = "en" }) {
     category: "sports",
     size: "10",
   });
+  if (country) params.set("country", country);
   const url = `https://newsdata.io/api/1/latest?${params.toString()}`;
   const ctrl = new AbortController();
   const t = setTimeout(() => ctrl.abort(), 9000);
@@ -4637,10 +4653,11 @@ async function fetchSportsNews({ sport = "all", language = "en" }) {
 
 // Currents API (free tier, no daily-quota cost for individual users).
 const CURRENTS_KEY = process.env.CURRENTS_KEY || "BrnWuEr94XsAc5qamVCNN-RJGYqobJvE6u43RUqrGC08prWS";
-async function fetchCurrentsNews({ sport = "all", language = "en" }) {
+async function fetchCurrentsNews({ sport = "all", language = "en", region = "" }) {
   try {
     const cat = sport === "all" ? "sports" : sport;
-    const url = `https://api.currentsapi.services/v1/latest-news?apiKey=${CURRENTS_KEY}&language=${language}&category=${cat}`;
+    let url = `https://api.currentsapi.services/v1/latest-news?apiKey=${CURRENTS_KEY}&language=${language}&category=${cat}`;
+    if (region) url += `&region=${region}`;
     const ctrl = new AbortController();
     const t = setTimeout(() => ctrl.abort(), 8000);
     const r = await fetch(url, { signal: ctrl.signal });
@@ -4823,11 +4840,13 @@ app.get("/api/news", async (req, res) => {
   try {
     const sport = (req.query.sport || "all").toString();
     const language = (req.query.language || "en").toString();
+    const region = (req.query.region || "all").toString();
+    const regionCode = REGION_CODES[region] || "";
     const page = Math.max(0, parseInt(req.query.page || "0", 10) || 0);
     const pageSize = Math.min(50, parseInt(req.query.pageSize || "20", 10) || 20);
-    const cacheKey = `${sport}|${language}`;
+    const cacheKey = `${sport}|${language}|${region}`;
 
-    // Build the full merged article list (cached per sport+language).
+    // Build the full merged article list (cached per sport+language+region).
     const listKey = `news|${cacheKey}`;
     let articles = newsListCache.get(listKey);
     if (!articles) {
@@ -4837,7 +4856,7 @@ app.get("/api/news", async (req, res) => {
         if (rss.length) articles.push(...rss);
       } catch (e) { console.error("RSS error:", e.message); }
       try {
-        const currents = await fetchCurrentsNews({ sport, language });
+        const currents = await fetchCurrentsNews({ sport, language, region: regionCode });
         if (currents.length) articles.push(...currents);
       } catch (e) { console.error("Currents error:", e.message); }
       try {
@@ -4848,7 +4867,7 @@ app.get("/api/news", async (req, res) => {
       } catch (e) { console.error("CricketLineNews error:", e.message); }
       try {
         if (!quotaExhausted()) {
-          const data = await fetchSportsNews({ sport, language });
+          const data = await fetchSportsNews({ sport, language, country: regionCode });
           if (data && data.articles) articles.push(...data.articles);
         }
       } catch (e) { console.error("Newsdata error:", e.message); }
@@ -4874,6 +4893,7 @@ app.get("/api/news", async (req, res) => {
       source: "rss+currents+cricketline+newsdata",
       sport,
       language,
+      region,
       page,
       pageSize,
       total: articles.length,
@@ -5183,19 +5203,136 @@ async function fetchAllsportsLive(sportSlug) {
 
 // Fetch live matches for every non-cricket sport in parallel.
 // Primary source: allsportsapi2 live; fallback: ESPN scoreboard (free, real).
+// FlashLive (RapidAPI, flashscore-style data) — real live + upcoming + recent
+// events with team logos for football and the sports allsportsapi2/ESPN don't
+// cover well (volleyball, kabaddi, table-tennis, esports, rugby, hockey).
+// Same RapidAPI key as the cricket host, separate host quota.
+const FLASH_KEY = process.env.FLASH_KEY || CRICKET_KEY;
+const FLASH_HOST = "flashlive-sports.p.rapidapi.com";
+// app/config sport key -> FlashLive sport id (v1/sports/list)
+const APP_TO_FLASH = {
+  football: 1, // SOCCER
+  hockey: 4, // HOCKEY (ice)
+  rugby: 8, // RUGBY_UNION
+  volleyball: 12, // VOLLEYBALL
+  tabletennis: 25, // TABLE_TENNIS
+  "table-tennis": 25,
+  kabaddi: 42, // KABADDI
+  kabbaddi: 42,
+  esports: 36, // ESPORTS
+  "e-sports": 36,
+};
+
+// Fetch one sport's events from FlashLive. `events/list` returns live +
+// scheduled + finished in a single call. Each event maps to the same shape the
+// app's MatchItem.fromApi expects (league, home/away name/abbr/logo/score,
+// status, time, matchId). Returns [] on any failure.
+async function fetchFlashLiveForSport(sportKey) {
+  const sportId = APP_TO_FLASH[sportKey];
+  if (!sportId) return [];
+  const url = `https://${FLASH_HOST}/v1/events/list?locale=en_GB&sport_id=${sportId}&timezone=0&indent_days=0`;
+  try {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 20000);
+    const r = await fetch(url, {
+      signal: ctrl.signal,
+      headers: {
+        "X-Rapidapi-Key": FLASH_KEY,
+        "X-Rapidapi-Host": FLASH_HOST,
+        "Content-Type": "application/json",
+      },
+    });
+    clearTimeout(t);
+    if (!r.ok) return [];
+    const j = await r.json();
+    const out = [];
+    for (const tour of j.DATA || []) {
+      const league = tour.SHORT_NAME || tour.NAME || "";
+      for (const ev of tour.EVENTS || []) {
+        const stage = ev.STAGE_TYPE || "";
+        let status = "UPCOMING";
+        if (stage === "LIVE") status = "LIVE";
+        else if (stage === "FINISHED") status = "COMPLETED";
+        const homeScore =
+          ev.HOME_SCORE_CURRENT != null
+            ? String(ev.HOME_SCORE_CURRENT)
+            : ev.HOME_SCORE_FULL != null
+              ? String(ev.HOME_SCORE_FULL)
+              : "";
+        const awayScore =
+          ev.AWAY_SCORE_CURRENT != null
+            ? String(ev.AWAY_SCORE_CURRENT)
+            : ev.AWAY_SCORE_FULL != null
+              ? String(ev.AWAY_SCORE_FULL)
+              : "";
+        out.push({
+          sport: sportKey,
+          league,
+          seriesId: "",
+          status,
+          state: ev.STAGE || stage,
+          time: ev.GAME_TIME && ev.GAME_TIME !== "-1" ? ev.GAME_TIME : "",
+          date: ev.START_TIME ? new Date(ev.START_TIME * 1000).toISOString() : "",
+          matchId: ev.EVENT_ID || "",
+          homeName: ev.HOME_NAME || "TBD",
+          homeAbbr: ev.SHORTNAME_HOME || "",
+          homeLogo: (ev.HOME_IMAGES && ev.HOME_IMAGES[0]) || "",
+          awayName: ev.AWAY_NAME || "TBD",
+          awayAbbr: ev.SHORTNAME_AWAY || "",
+          awayLogo: (ev.AWAY_IMAGES && ev.AWAY_IMAGES[0]) || "",
+          homeScore,
+          awayScore,
+          venue: "",
+        });
+      }
+    }
+    // Keep payloads sane: live first, then upcoming, then recent; cap per sport.
+    const prio = { LIVE: 0, UPCOMING: 1, COMPLETED: 2 };
+    out.sort((a, b) => (prio[a.status] ?? 3) - (prio[b.status] ?? 3));
+    return out.slice(0, 50);
+  } catch (e) {
+    console.error("FlashLive fetch failed:", sportKey, e.message);
+    return [];
+  }
+}
+
+// Best available live source for one sport: FlashLive -> allsportsapi2 -> ESPN.
+async function fetchLiveForSport(sport) {
+  let slug = await fetchFlashLiveForSport(sport);
+  if (slug && slug.length) return slug;
+  if (APP_TO_ALLSPORTS[sport]) {
+    slug = await fetchAllsportsLive(APP_TO_ALLSPORTS[sport]);
+    if (slug && slug.length) return slug;
+  }
+  if (SPORT_ESPN_PATHS[sport] && SPORT_ESPN_PATHS[sport].length) {
+    slug = await fetchEspnMatchesForSport(sport);
+  }
+  return slug && slug.length ? slug : [];
+}
+
+// Run async work with a bounded concurrency. Keeps peak upstream calls low so
+// the shared RapidAPI account concurrency limit isn't hit when the "all" feed
+// fans out across many sports (dropping sports from the response otherwise).
+async function mapLimit(items, limit, fn) {
+  const results = new Array(items.length);
+  let i = 0;
+  const workers = Array.from({ length: Math.min(limit, items.length) }, async () => {
+    while (true) {
+      const idx = i++;
+      if (idx >= items.length) return;
+      results[idx] = await fn(items[idx], idx);
+    }
+  });
+  await Promise.all(workers);
+  return results;
+}
+
 async function fetchAllSportsForAll() {
   const sportKeys = Object.keys(SPORTS).filter((k) => k !== "cricket" && k !== "all");
-  const lists = await Promise.all(
-    sportKeys.map(async (k) => {
-      let slug = APP_TO_ALLSPORTS[k] ? await fetchAllsportsLive(APP_TO_ALLSPORTS[k]) : [];
-      if (!slug || !slug.length) {
-        if (SPORT_ESPN_PATHS[k] && SPORT_ESPN_PATHS[k].length) {
-          slug = await fetchEspnMatchesForSport(k);
-        }
-      }
-      return slug && slug.length ? slug : [];
-    })
-  );
+  const lists = await mapLimit(sportKeys, 4, async (k) => {
+    const slug = await fetchLiveForSport(k);
+    return slug && slug.length ? slug : [];
+  });
   return lists.flat();
 }
 
@@ -5539,36 +5676,19 @@ app.get("/api/live-matches", async (req, res) => {
     if (!quotaExhausted()) {
       if (sport === "all") {
         // Cricket from cricket-live-line-advance (real, with logos + live
-        // scores); the rest from allsportsapi2 live endpoints (real, with
-        // logos), falling back to ESPN scoreboard when allsportsapi2 has no
-        // live data.
-        const [cricket, others] = await Promise.all([
-          fetchCricketAdvance(),
-          fetchAllSportsForAll(),
-        ]);
+        // scores); the rest from FlashLive -> allsportsapi2 -> ESPN (bounded
+        // concurrency so the shared RapidAPI account limit isn't hit).
+        const cricket = await fetchCricketAdvance();
+        const others = await fetchAllSportsForAll();
         results = [...cricket, ...others];
       } else if (sport === "cricket") {
         // Cricket data from cricket-live-line-advance (live + upcoming + recent).
         results = await fetchCricketAdvance();
-      } else if (APP_TO_ALLSPORTS[sport]) {
-        // All other sports from allsportsapi2 live endpoints (per request).
-        // Fall back to ESPN (free, real, with logos) when allsportsapi2
-        // has no live data for that sport right now.
-        let slug = await fetchAllsportsLive(APP_TO_ALLSPORTS[sport]);
-        if (!slug || !slug.length) {
-          if (SPORT_ESPN_PATHS[sport] && SPORT_ESPN_PATHS[sport].length) {
-            slug = await fetchEspnMatchesForSport(sport);
-          }
-        }
-        results = slug && slug.length ? slug : [];
-        if (!results.length) results = staticMatchesFor(sport);
-        results = await enrichWithLogos(sport, results);
       } else {
-        // Sports not covered by allsportsapi2: ESPN if available, else static.
-        let slug = [];
-        if (SPORT_ESPN_PATHS[sport] && SPORT_ESPN_PATHS[sport].length) {
-          slug = await fetchEspnMatchesForSport(sport);
-        }
+        // FlashLive (real, with logos) for football + the sports allsportsapi2
+        // doesn't cover (volleyball, kabaddi, table-tennis, esports, rugby,
+        // hockey), falling back to allsportsapi2 -> ESPN -> static.
+        let slug = await fetchLiveForSport(sport);
         results = slug && slug.length ? slug : [];
         if (!results.length) results = staticMatchesFor(sport);
         results = await enrichWithLogos(sport, results);

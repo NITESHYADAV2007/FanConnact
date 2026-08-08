@@ -1,6 +1,16 @@
 # Session Summary
 
-## Match Detail Screen (Crex-style) + Detail API Fix (CURRENT)
+## Full Crex-style Cricket Match Center (CURRENT)
+- **`lib/screens/match_detail_screen.dart`** fully redesigned for cricket:
+  - **Dynamic tabs**: Cricket shows Scorecard > Commentary > Info > Squads > Series > Live Chat > Games; non-cricket keeps Info > Live Chat > Summary > Series > News > Games
+  - **`_CricketScoreHeader`**: New dark gradient header (deep navy/purple) with 56px team logos, big score display (24px), match type badge, venue/time in muted white, pulsing live indicator
+  - **`_CricketScorecardTab`**: Stateful widget fetching from `CricketHubService.matchAdvance()`; innings selector (horizontal chip bar), batting table (batter, R, B, 4s, 6s, SR with OUT highlight), bowling table (bowler, O, M, R, W, Eco), total score header with overs/extras, fall-of-wickets chip list
+  - **`_CricketCommentaryTab`**: Fetches from `CricketHubService.matchCommentary()`; ball-by-ball cards with color-coded over badges (red=wicket, amber=six, blue=other), bold wicket/boundary text
+  - **`_CricketSquadsTab`**: Fetches from `CricketHubService.matchSquads()`; team cards with avatar, role, captain(C)/wicketkeeper(WK) badges, player count
+  - **Non-cricket**: Existing `_ScoreHeader`, `_ChatTab`, `_SummaryTab` preserved unchanged
+  - `flutter analyze` → 0 errors, 0 warnings; `flutter build apk --debug` builds successfully
+
+## Match Detail Screen (Crex-style) + Detail API Fix (PREVIOUS)
 - **Backend** (`backend/server.js`, DEPLOYED to Render):
   - **FIXED `/api/live-matches/:id`**: previously returned generic "Team A vs Team B" with empty scores/venue for cricket. Root cause: it merged cricket-live-line1 `/match/:id` placeholder names over the real list data, and read from the stale persisted DB (`getLast`) instead of the in-memory `matchCache` that `/api/live-matches` actually serves. Fix: (1) search `matchCache` for the exact sport key (`matches|cricket`) before `matches|all`, (2) prefer the real list entry for names/scores/logos, only using the detail call when the list entry is missing, (3) detect "Team A"/"Team B" placeholders and fall back to `base`, (4) added a 20s detail cache keyed `detail|sport|id` so the app's 3s polling doesn't hammer upstream APIs. Verified: `/api/live-matches/13845?sport=cricket` → "West Indies vs New Zealand", 188-10 / 46-2, Providence Stadium, LIVE.
   - News endpoint returns key `"articles"` (NOT `"news"`) — `lib/services/news_service.dart` already parses `articles` correctly.

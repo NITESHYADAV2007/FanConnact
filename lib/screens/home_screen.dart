@@ -1,27 +1,46 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../config.dart';
 import '../data.dart';
 import '../theme.dart';
 import '../l10n.dart';
-import '../services/news_service.dart';
 import '../services/reels_service.dart';
 import '../services/live_match_service.dart';
-import '../widgets/news_post_card.dart';
+import '../services/rapid_api_service.dart';
+import '../services/currents_service.dart';
 import '../widgets/reels_card.dart';
 import '../widgets/live_score_card.dart';
 import '../screens/match_detail_screen.dart';
 import '../screens/reels_viewer_screen.dart';
 import '../screens/profile_screen.dart';
+import '../screens/settings_screen.dart';
+import '../screens/news_screen.dart';
+import '../screens/login_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final Locale locale;
   final bool isDark;
+  final ThemeType themeType;
   final VoidCallback onToggleTheme;
+  final ValueChanged<ThemeType> onThemeChanged;
+  final ValueChanged<Locale> onLocaleChanged;
+  final Color accentColor;
+  final ValueChanged<Color> onAccentColorChanged;
 
   const HomeScreen({
     super.key,
     required this.locale,
     required this.isDark,
+    required this.themeType,
     required this.onToggleTheme,
+    required this.onThemeChanged,
+    required this.onLocaleChanged,
+    this.accentColor = AppColors.brandBlue,
+    required this.onAccentColorChanged,
   });
 
   @override
@@ -29,31 +48,50 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  String? _langOverride; // quick language preview from the top bar
-  String _feedSport = 'all'; // sport filter for the news/reels feed
+  String? _langOverride;
+  String _feedSport = 'all';
 
   List<MatchItem> _matches = [];
-  List<NewsItem> _news = news;
   List<ReelItem> _reels = [];
+  List<NewsItem> _headlines = [];
   bool _loadingMatches = true;
-  bool _loadingNews = true;
   bool _loadingReels = true;
+  bool _loadingHeadlines = true;
   bool _loadingMore = false;
 
-  // Real-time score updates: poll the backend every 20s.
   static const Duration _pollInterval = Duration(seconds: 20);
   bool _polling = true;
+
+  Timer? _headlineTimer;
+  late PageController _headlineCtrl;
+
+  static final NewsItem _dummyHeadline = NewsItem(
+    sport: 'all', sportEmoji: '📰',
+    title: 'Loading latest sports news…',
+    source: 'Fanconnact', timeAgo: '', tag: 'BREAKING',
+    image: null, description: null, link: '',
+  );
+  static final NewsItem _noNewsHeadline = NewsItem(
+    sport: 'all', sportEmoji: '📰',
+    title: 'No breaking news right now — pull to refresh',
+    source: 'Fanconnact', timeAgo: '', tag: 'BREAKING',
+    image: null, description: null, link: '',
+  );
 
   @override
   void initState() {
     super.initState();
+    _headlineCtrl = PageController();
     _loadAll();
     _startPolling();
+    _startHeadlineTimer();
   }
 
   @override
   void dispose() {
     _polling = false;
+    _headlineTimer?.cancel();
+    _headlineCtrl.dispose();
     super.dispose();
   }
 
@@ -62,84 +100,339 @@ class _HomeScreenState extends State<HomeScreen> {
       if (!_polling || !mounted) return false;
       await Future.delayed(_pollInterval);
       if (!_polling || !mounted) return false;
-      // Silent refresh of live scores (cache TTL 30s keeps it cheap).
-      final fetched = await LiveMatchService.fetchLiveMatches(sport: 'all');
+      // Force a fresh request on each poll so live cards visibly update after
+      // launch/reopen instead of reusing the short-lived cache.
+      final fetched = await LiveMatchService.fetchLiveMatches(
+        sport: 'all',
+        force: true,
+      );
       if (mounted) {
         setState(() {
           _matches = fetched;
           _loadingMatches = false;
         });
       }
+      // Also refresh headlines periodically (only if not real data yet).
+      if (_headlines.isEmpty) {
+        _loadHeadlines();
+      }
       return _polling;
     });
   }
 
   Future<void> _loadAll() async {
-    // Pull-to-refresh: bypass the client cache so we fetch fresh data.
-    LiveMatchService.invalidate(sport: 'all');
-    NewsService.invalidate(sport: _feedSport, language: _langOverride ?? widget.locale.languageCode);
-    ReelsService.invalidate(sport: _feedSport);
-    _loadMatches();
-    _loadNews(reset: true);
-    _loadReels(reset: true);
+    // Warm up the Render backend (wakes from free-tier sleep).
+    try { await http.get(Uri.parse('$apiBaseUrl/api/live-matches?sport=all')).timeout(const Duration(seconds: 5)); } catch (_) {}
+    // Hydrate disk caches first so UI shows data immediately on cold start.
+    await Future.wait([
+      LiveMatchService.hydrateFromDisk(),
+      ReelsService.hydrateFromDisk(),
+    ]);
+    // If disk cache has data, show it right away (stale-while-revalidate).
+    if (mounted) {
+      final cachedMatches = await LiveMatchService.fetchLiveMatches(sport: 'all', force: false);
+      if (cachedMatches.isNotEmpty) {
+        setState(() {
+          _matches = cachedMatches;
+          _loadingMatches = false;
+          _loadingReels = false;
+        });
+      }
+    }
+    // Fire all fresh network fetches in parallel.
+    // Reels load uses current _feedSport so filter takes effect on refresh.
+    await Future.wait([
+      _loadMatches(),
+      _loadReels(reset: true),
+      _loadHeadlines(),
+    ]);
   }
 
   Future<void> _loadMatches() async {
+    if (!mounted) return;
     setState(() => _loadingMatches = true);
-    final fetched = await LiveMatchService.fetchLiveMatches(sport: 'all');
+    final fetched = LiveMatchService.fetchLiveMatches(
+      sport: 'all',
+      force: true,
+    );
+    final cricketFuture = RapidApiService.fetchCricketLiveMatches();
+
+    final results = await Future.wait([
+      fetched,
+      cricketFuture.then((raw) => raw.map((m) => MatchItem.fromCricketAdvance(m)).toList())
+          .catchError((_) => <MatchItem>[]),
+    ]);
+
+    final allMatches = results[0];
+    final cricketMatches = results[1];
+
+    final merged = <MatchItem>[];
+    final seen = <String>{};
+    for (final item in allMatches) {
+      final key = item.matchId ?? '${item.teamA}-${item.teamB}-${item.series}';
+      if (!seen.contains(key)) {
+        merged.add(item);
+        seen.add(key);
+      }
+    }
+    for (final item in cricketMatches) {
+      final key = item.matchId ?? '${item.teamA}-${item.teamB}-${item.series}';
+      final idx = merged.indexWhere((m) =>
+          (m.matchId ?? '${m.teamA}-${m.teamB}-${m.series}') == key);
+      if (idx >= 0) {
+        merged[idx] = item;
+      } else {
+        merged.add(item);
+      }
+    }
+
     if (mounted) {
       setState(() {
-        _matches = fetched;
+        _matches = merged;
         _loadingMatches = false;
       });
     }
   }
 
-  Future<void> _loadNews({bool reset = false}) async {
-    if (reset) setState(() => _loadingNews = true);
-    final fetched = await NewsService.fetchNews(
-      sport: _feedSport,
-      language: _langOverride ?? widget.locale.languageCode,
-      reset: reset,
-    );
-    if (mounted) {
-      setState(() {
-        _news = fetched;
-        _loadingNews = false;
-      });
-    }
-  }
-
   Future<void> _loadReels({bool reset = false}) async {
+    if (!mounted) return;
     if (reset) setState(() => _loadingReels = true);
-    final fetched = await ReelsService.fetchReels(sport: _feedSport, reset: reset);
+    List<ReelItem> fetched;
+    bool first = true;
+    do {
+      fetched = await ReelsService.fetchReels(sport: _feedSport, reset: reset && first);
+      first = false;
+      if (mounted) setState(() => _reels = fetched);
+    } while (ReelsService.hasMore(_feedSport) && fetched.length < 100);
+    if (mounted) setState(() => _loadingReels = false);
+  }
+
+  Future<void> _loadHeadlines() async {
+    final articles = await CurrentsService.fetchHeadlines(language: _langOverride ?? widget.locale.languageCode);
     if (mounted) {
       setState(() {
-        _reels = fetched;
-        _loadingReels = false;
+        _headlines = articles;
+        _loadingHeadlines = false;
       });
     }
   }
 
-  // Load the next page of the feed (endless scroll).
+  void _startHeadlineTimer() {
+    _headlineTimer?.cancel();
+    _headlineTimer = Timer.periodic(const Duration(seconds: 3), (_) {
+      if (!mounted || _headlines.isEmpty) return;
+      final cur = _headlineCtrl.page?.round() ?? 0;
+      final next = cur + 1;
+      if (next >= _headlines.length) {
+        _headlineCtrl.animateToPage(0,
+            duration: const Duration(milliseconds: 350), curve: Curves.easeInOut);
+      } else {
+        _headlineCtrl.animateToPage(next,
+            duration: const Duration(milliseconds: 350), curve: Curves.easeInOut);
+      }
+    });
+  }
+
   Future<void> _loadMore() async {
     if (_loadingMore) return;
-    if (!NewsService.hasMore(_feedSport, _langOverride ?? widget.locale.languageCode) &&
-        !ReelsService.hasMore(_feedSport)) {
-      return;
-    }
+    if (!ReelsService.hasMore(_feedSport)) return;
     setState(() => _loadingMore = true);
-    await Future.wait([
-      _loadNews(),
-      _loadReels(),
-    ]);
+    await _loadReels();
     if (mounted) setState(() => _loadingMore = false);
   }
 
   void _onFeedSportChanged(String sport) {
     setState(() => _feedSport = sport);
-    _loadNews(reset: true);
     _loadReels(reset: true);
+  }
+
+  void _openNotifications(BuildContext context) {
+    final lang = widget.locale.languageCode;
+    final t = (String k) => AppStrings.get(lang, k);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final entries = [
+      (Icons.sensors, 'Live Match Alerts', 'liveMatchAlerts'),
+      (Icons.article_outlined, 'Breaking News', 'breakingNews'),
+      (Icons.analytics, 'Prediction Results', 'predictionResults'),
+      (Icons.group_outlined, 'Community Updates', 'communityUpdates'),
+      (Icons.mail_outline, 'Email Notifications', 'emailNotifications'),
+      (Icons.notifications_active, 'Push Notifications', 'pushNotifications'),
+      (Icons.alternate_email, 'Mentions & Replies', 'mentionsReplies'),
+      (Icons.person_add_alt, 'New Followers', 'newFollowers'),
+    ];
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setSheet) {
+          Widget row(IconData icon, String title, String key) {
+            return FutureBuilder<bool>(
+              future: SharedPreferences.getInstance().then((p) => p.getBool(key) ?? true),
+              builder: (ctx, snap) {
+                final val = snap.data ?? true;
+                return SwitchListTile(
+                  secondary: Icon(icon, color: Theme.of(context).colorScheme.primary),
+                  title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+                  value: val,
+                  onChanged: (v) async {
+                    final prefs = await SharedPreferences.getInstance();
+                    await prefs.setBool(key, v);
+                    setSheet(() {});
+                  },
+                );
+              },
+            );
+          }
+
+          return SafeArea(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  margin: const EdgeInsets.only(top: 12),
+                  width: 36, height: 4,
+                  decoration: BoxDecoration(color: Colors.grey.shade400, borderRadius: BorderRadius.circular(2)),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 16, 8, 4),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.notifications_outlined),
+                      const SizedBox(width: 8),
+                      Text(t('notifications'), style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 17)),
+                      const Spacer(),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(ctx);
+                          Navigator.of(context).push(MaterialPageRoute(
+                            builder: (_) => SettingsScreen(
+                              onToggleTheme: widget.onToggleTheme,
+                              isDark: widget.isDark,
+                              themeType: widget.themeType,
+                              onThemeChanged: widget.onThemeChanged,
+                              onLocaleChanged: widget.onLocaleChanged,
+                              locale: widget.locale,
+                              accentColor: widget.accentColor,
+                              onAccentColorChanged: widget.onAccentColorChanged,
+                            ),
+                          ));
+                        },
+                        child: Text('Open Settings', style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.primary)),
+                      ),
+                    ],
+                  ),
+                ),
+                Flexible(child: ListView(shrinkWrap: true, children: entries.map((e) => row(e.$1, e.$2, e.$3)).toList())),
+                const SizedBox(height: 8),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  // ── Breaking news ticker (auto-scroll carousel) above live matches ──
+  void _openNewsScreen() {
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (_) => NewsScreen(
+        themeType: widget.themeType,
+        onThemeChanged: widget.onThemeChanged,
+        locale: widget.locale,
+        onLocaleChanged: widget.onLocaleChanged,
+        accentColor: widget.accentColor,
+        onAccentColorChanged: widget.onAccentColorChanged,
+      ),
+    ));
+  }
+
+  Widget _buildBreakingNews() {
+    final items = _loadingHeadlines
+        ? [_dummyHeadline]
+        : (_headlines.isEmpty ? [_noNewsHeadline] : _headlines);
+
+    return SizedBox(
+      height: 190,
+      child: PageView.builder(
+        controller: _headlineCtrl,
+        itemCount: items.length,
+        itemBuilder: (_, i) {
+          final h = items[i];
+          final hasImage = h.image != null && h.image!.isNotEmpty;
+          return Padding(
+            padding: const EdgeInsets.fromLTRB(14, 4, 14, 0),
+            child: GestureDetector(
+              onTap: _headlines.isEmpty ? null : _openNewsScreen,
+              child: Stack(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: hasImage
+                        ? Image.network(h.image!, width: double.infinity, height: 190, fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => Container(color: Colors.grey.shade900))
+                        : Container(color: Colors.grey.shade900),
+                  ),
+                  Positioned.fill(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: Container(
+                        decoration: const BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter, end: Alignment.bottomCenter,
+                            colors: [Colors.transparent, Colors.black87],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 14, left: 14, right: 14,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                              decoration: BoxDecoration(
+                                color: AppColors.liveRed,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: const Text('BREAKING',
+                                  style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.w900, letterSpacing: 1)),
+                            ),
+                            const Spacer(),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                              decoration: BoxDecoration(
+                                color: Colors.black26,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(h.source, style: const TextStyle(color: Colors.white70, fontSize: 9)),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Text(h.title, maxLines: 2, overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 16)),
+                        const SizedBox(height: 6),
+                        Row(
+                          children: [
+                            const Text('View All News', style: TextStyle(color: Colors.white70, fontSize: 11, fontWeight: FontWeight.w600)),
+                            const SizedBox(width: 4),
+                            const Icon(Icons.arrow_forward, size: 12, color: Colors.white70),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
   }
 
   // Live matches section shown at the top of Home with real-time scores.
@@ -173,7 +466,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(width: 8),
               Text(
-                'LIVE MATCHES',
+                '${t('live')} ${t('matches')}',
                 style: TextStyle(
                   fontWeight: FontWeight.w900,
                   fontSize: 16,
@@ -196,7 +489,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    '${liveMatches.length} LIVE',
+                    '${liveMatches.length} ${t('live')}',
                     style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w800,
@@ -269,35 +562,25 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // Build a mixed vertical feed: reels interleaved with news (shorts style).
-  List<Widget> get _mixedFeed {
+  // Build vertical reels feed (no news interleaved).
+  List<Widget> get _reelsFeed {
     final List<Widget> items = [];
-    final reelCount = _reels.length;
-    final newsCount = _news.length;
-    final maxLen = reelCount > newsCount ? reelCount : newsCount;
-
-    for (int i = 0; i < maxLen; i++) {
-      if (i < reelCount) {
-        items.add(ReelsCard(
-          reel: _reels[i],
-          isDark: widget.isDark,
-          onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) => ReelsViewerScreen(
-                  reels: _reels,
-                  initialIndex: i,
-                ),
+    for (int i = 0; i < _reels.length; i++) {
+      items.add(ReelsCard(
+        reel: _reels[i],
+        isDark: widget.isDark,
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => ReelsViewerScreen(
+                reels: _reels,
+                initialIndex: i,
               ),
-            );
-          },
-        ));
-      }
-      if (i < newsCount) {
-        items.add(NewsPostCard(item: _news[i]));
-      }
+            ),
+          );
+        },
+      ));
     }
-    // Loading-more spinner at the end of the endless feed.
     if (_loadingMore) {
       items.add(const Padding(
         padding: EdgeInsets.symmetric(vertical: 24),
@@ -347,17 +630,18 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // ── Top bar: logo + two-tone "Fanconnact" wordmark + action icons ──
   PreferredSizeWidget _buildAppBar(String Function(String) t) {
-    final isDark = widget.isDark;
-    // "Fan" is white in dark mode / black in light mode.
-    final fanColor = isDark ? Colors.white : Colors.black;
-    // "connact" is blue in light mode / green in dark mode.
-    final connactColor = isDark ? AppColors.brandGreen : AppColors.brandBlue;
+    final cfg = themeConfigFor(widget.themeType);
+    final isCustom = widget.themeType == ThemeType.custom;
+    final fanColor = isCustom ? Colors.white : cfg.fanColor;
+    final connactColor = isCustom ? widget.accentColor : cfg.connactColor;
 
     return AppBar(
       automaticallyImplyLeading: false,
       elevation: 0,
       scrolledUnderElevation: 0,
-      backgroundColor: isDark ? AppColors.darkSurface : AppColors.lightSurface,
+      backgroundColor: (isCustom || cfg.glassCards)
+          ? Colors.transparent
+          : (widget.isDark ? AppColors.darkSurface : AppColors.lightSurface),
       titleSpacing: 12,
       title: Row(
         children: [
@@ -403,11 +687,7 @@ class _HomeScreenState extends State<HomeScreen> {
         IconButton(
           icon: const Icon(Icons.notifications_outlined),
           tooltip: t('notifications'),
-          onPressed: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(t('notifications'))),
-            );
-          },
+          onPressed: () => _openNotifications(context),
         ),
         // Theme toggle
         IconButton(
@@ -415,18 +695,88 @@ class _HomeScreenState extends State<HomeScreen> {
           tooltip: t('darkMode'),
           onPressed: widget.onToggleTheme,
         ),
-        // Profile
+        // Settings
         IconButton(
-          icon: const Icon(Icons.person_outline),
-          tooltip: t('account'),
+          icon: const Icon(Icons.settings_outlined),
+          tooltip: t('settings'),
           onPressed: () {
             Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (_) => ProfileScreen(
-                  locale: widget.locale,
+                builder: (_) => SettingsScreen(
+                  onToggleTheme: widget.onToggleTheme,
                   isDark: widget.isDark,
+                  themeType: widget.themeType,
+                  onThemeChanged: widget.onThemeChanged,
+                  onLocaleChanged: widget.onLocaleChanged,
+                  locale: widget.locale,
+                  accentColor: widget.accentColor,
+                  onAccentColorChanged: widget.onAccentColorChanged,
                 ),
               ),
+            );
+          },
+        ),
+        // Profile
+        Builder(
+          builder: (ctx) {
+            final u = FirebaseAuth.instance.currentUser;
+            return StreamBuilder<DocumentSnapshot>(
+              stream: u == null
+                  ? null
+                  : FirebaseFirestore.instance.collection('users').doc(u.uid).snapshots(),
+              builder: (ctx, snap) {
+                final doc = snap.data;
+                final photo = (doc?.data() as Map<String, dynamic>?)?['photoURL']?.toString() ?? u?.photoURL ?? '';
+                return IconButton(
+                  icon: photo.isNotEmpty
+                      ? Container(
+                          width: 28, height: 28,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            image: DecorationImage(
+                              image: NetworkImage(photo),
+                              onError: (_, __) {},
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        )
+                      : const Icon(Icons.person_outline),
+                  tooltip: t('account'),
+              onPressed: () async {
+                if (FirebaseAuth.instance.currentUser == null) {
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => LoginScreen(
+                        isDark: widget.isDark,
+                        onToggleTheme: widget.onToggleTheme,
+                        locale: widget.locale,
+                        onLocaleChanged: widget.onLocaleChanged,
+                        accentColor: widget.accentColor,
+                        onAccentColorChanged: widget.onAccentColorChanged,
+                      ),
+                    ),
+                  );
+                  return;
+                }
+                if (!ctx.mounted) return;
+                Navigator.of(ctx).push(
+                  MaterialPageRoute(
+                    builder: (_) => ProfileScreen(
+                      locale: widget.locale,
+                      isDark: widget.isDark,
+                      onToggleTheme: widget.onToggleTheme,
+                      themeType: widget.themeType,
+                      onThemeChanged: widget.onThemeChanged,
+                      onLocaleChanged: widget.onLocaleChanged,
+                      accentColor: widget.accentColor,
+                      onAccentColorChanged: widget.onAccentColorChanged,
+                    ),
+                  ),
+                );
+              },
+                );
+              },
             );
           },
         ),
@@ -450,7 +800,9 @@ class _HomeScreenState extends State<HomeScreen> {
               child: ListView(
                 padding: const EdgeInsets.only(top: 8, bottom: 16),
                 children: [
-                  // ── Live matches (real-time scores) at the top ──
+                  // ── Breaking news ticker (auto-scroll) ──
+                  _buildBreakingNews(),
+                  // ── Live matches (real-time scores) ──
                   _buildLiveMatches(t),
                   const Divider(height: 1),
                   // ── Sport filter for the feed ──
@@ -458,24 +810,24 @@ class _HomeScreenState extends State<HomeScreen> {
                     padding: const EdgeInsets.only(top: 8, bottom: 4),
                     child: _buildFeedFilter(t),
                   ),
-                  // ── Mixed reels + news feed (endless) ──
-                  if (_loadingReels && _reels.isEmpty && _loadingNews && _news.isEmpty)
+                  // ── Reels feed (short-form sports videos) ──
+                  if (_loadingReels && _reels.isEmpty)
                     const Padding(
                       padding: EdgeInsets.all(40),
                       child: Center(child: CircularProgressIndicator()),
                     )
-                  else if (_mixedFeed.isEmpty)
+                  else if (_reelsFeed.isEmpty)
                     Padding(
                       padding: const EdgeInsets.all(40),
                       child: Center(
-                        child: Text(t('noNews'),
+                        child: Text(t('noReels'),
                             style: const TextStyle(color: Colors.grey)),
                       ),
                     )
                   else
-                    ..._mixedFeed,
+                    ..._reelsFeed,
                   // Endless scroll trigger.
-                  if (_mixedFeed.isNotEmpty)
+                  if (_reelsFeed.isNotEmpty)
                     SizedBox(
                       height: 1,
                       child: NotificationListener<ScrollEndNotification>(

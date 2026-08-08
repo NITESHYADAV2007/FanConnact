@@ -22,10 +22,14 @@ const List<Sport> sports = [
   Sport(key: 'volleyball', name: 'Volleyball', emoji: '🏐'),
   Sport(key: 'tabletennis', name: 'Table Tennis', emoji: '🏓'),
   Sport(key: 'esports', name: 'E-Sports', emoji: '🎮'),
-  Sport(key: 'rugby', name: 'Rugby', emoji: '🏉'),
-  Sport(key: 'golf', name: 'Golf', emoji: '⛳'),
-  Sport(key: 'mma', name: 'MMA', emoji: '🥊'),
+
 ];
+
+String? _overFromScore(String s) {
+  final re = RegExp(r'\((\d+(?:\.\d+)?)\)');
+  final match = re.firstMatch(s);
+  return match?.group(1);
+}
 
 class MatchItem {
   final String sport;
@@ -39,6 +43,8 @@ class MatchItem {
   final String? abbrB;
   final String? scoreA;
   final String? scoreB;
+  final String? overA;
+  final String? overB;
   final String status; // "LIVE", "UPCOMING", "COMPLETED"
   final String time;
   final String? matchId;
@@ -46,6 +52,7 @@ class MatchItem {
   final String? toss;
   final String? matchType;
   final String? venue;
+  final String? seriesId;
 
   const MatchItem({
     required this.sport,
@@ -59,6 +66,8 @@ class MatchItem {
     this.abbrB,
     this.scoreA,
     this.scoreB,
+    this.overA,
+    this.overB,
     required this.status,
     required this.time,
     this.matchId,
@@ -66,7 +75,47 @@ class MatchItem {
     this.toss,
     this.matchType,
     this.venue,
+    this.seriesId,
   });
+
+  // Build from cricket-live-line-advance /matches endpoint.
+  factory MatchItem.fromCricketAdvance(Map<String, dynamic> m) {
+    final teama = m['teama'] is Map ? Map<String, dynamic>.from(m['teama']) : <String, dynamic>{};
+    final teamb = m['teamb'] is Map ? Map<String, dynamic>.from(m['teamb']) : <String, dynamic>{};
+    final comp = m['competition'] is Map ? Map<String, dynamic>.from(m['competition']) : <String, dynamic>{};
+    final statusRaw = (m['status_str'] ?? '').toString().toUpperCase();
+    final status = statusRaw == 'LIVE' ? 'LIVE' : (statusRaw == 'COMPLETED' ? 'COMPLETED' : 'UPCOMING');
+    final scoreA = (teama['scores_full'] ?? '').toString().isNotEmpty
+        ? teama['scores_full'].toString()
+        : (teama['scores']?.toString() ?? '');
+    final scoreB = (teamb['scores_full'] ?? '').toString().isNotEmpty
+        ? teamb['scores_full'].toString()
+        : (teamb['scores']?.toString() ?? '');
+
+    final format = comp['match_format']?.toString() ?? m['format_str']?.toString() ?? '';
+    return MatchItem(
+      sport: 'cricket',
+      sportEmoji: '🏏',
+      series: comp['title']?.toString() ?? '',
+      teamA: teama['name']?.toString() ?? m['title']?.toString() ?? 'Team A',
+      teamB: teamb['name']?.toString() ?? m['title']?.toString() ?? 'Team B',
+      logoA: teama['logo_url']?.toString(),
+      logoB: teamb['logo_url']?.toString(),
+      abbrA: teama['short_name']?.toString(),
+      abbrB: teamb['short_name']?.toString(),
+      scoreA: scoreA.isNotEmpty ? scoreA : null,
+      scoreB: scoreB.isNotEmpty ? scoreB : null,
+      overA: scoreA.isNotEmpty ? _overFromScore(scoreA) : null,
+      overB: scoreB.isNotEmpty ? _overFromScore(scoreB) : null,
+      status: status,
+      time: m['date_start_ist']?.toString() ?? m['timestamp_start']?.toString() ?? '',
+      matchId: m['match_id']?.toString(),
+      result: m['result']?.toString(),
+      toss: m['toss'] is Map ? m['toss']['text']?.toString() : null,
+      matchType: format.isNotEmpty ? format : null,
+      venue: m['venue'] is Map ? m['venue']['name']?.toString() : (m['venue']?.toString()),
+    );
+  }
 
   // Build from the backend /api/matches payload (ESPN real data).
   factory MatchItem.fromApi(Map<String, dynamic> m, {String sportKey = 'all'}) {
@@ -81,9 +130,7 @@ class MatchItem {
       'tabletennis': '🏓',
       'kabaddi': '🤼',
       'esports': '🎮',
-      'rugby': '🏉',
-      'golf': '⛳',
-      'mma': '🥊',
+
     };
     return MatchItem(
       sport: sportKey,
@@ -109,6 +156,16 @@ class MatchItem {
       scoreB: (m['awayScore'] ?? '').toString().isNotEmpty
           ? m['awayScore'].toString()
           : null,
+      overA: (m['homeOver'] ?? '').toString().isNotEmpty
+          ? m['homeOver'].toString()
+          : (m['homeScore'] ?? '').toString().isNotEmpty
+              ? _overFromScore(m['homeScore'].toString())
+              : null,
+      overB: (m['awayOver'] ?? '').toString().isNotEmpty
+          ? m['awayOver'].toString()
+          : (m['awayScore'] ?? '').toString().isNotEmpty
+              ? _overFromScore(m['awayScore'].toString())
+              : null,
       status: (m['status'] ?? 'UPCOMING').toString(),
       time: (m['time'] ?? '').toString(),
       matchId: (m['matchId'] ?? '').toString().isNotEmpty
@@ -125,6 +182,9 @@ class MatchItem {
           : null,
       venue: (m['venue'] ?? '').toString().isNotEmpty
           ? m['venue'].toString()
+          : null,
+      seriesId: (m['seriesId'] ?? '').toString().isNotEmpty
+          ? m['seriesId'].toString()
           : null,
     );
   }

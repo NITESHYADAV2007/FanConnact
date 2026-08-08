@@ -5,11 +5,12 @@ import 'dart:convert';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import '../config.dart';
 
 class ReelItem {
   final String code;
-  final int type; // 1=image, 2=video/clip, 8=carousel
+  final int type;
   final String productType;
   final String caption;
   final int likeCount;
@@ -41,19 +42,47 @@ class ReelItem {
 }
 
 class ReelsService {
-  // How long client-side results stay valid before we allow a backend call.
   static const Duration cacheTtl = Duration(minutes: 15);
-  static const int pageSize = 20;
+  static const int pageSize = 50;
+  static String _prefsKey(String sport) => 'cache_reels_$sport';
 
-  // sport key -> accumulated payload + timestamp
   static final Map<String, List<ReelItem>> _cache = {};
   static final Map<String, DateTime> _cacheTime = {};
   static final Map<String, int> _loadedPages = {};
   static final Map<String, bool> _hasMore = {};
-  // sport key -> in-flight future (so concurrent calls share ONE request)
   static final Map<String, Future<List<ReelItem>>> _inflight = {};
 
-  // Force a fresh fetch (bypasses cache). Used by pull-to-refresh.
+  static Future<void> hydrateFromDisk({String sport = 'all'}) async {
+    if (_cache.containsKey(sport)) return;
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final raw = prefs.getString(_prefsKey(sport));
+      if (raw == null) return;
+      final json = jsonDecode(raw) as List;
+      if (json.isEmpty) return;
+      final parsed = json.map<ReelItem>((r) {
+        final map = r as Map<String, dynamic>;
+        return ReelItem(
+          code: (map['code'] ?? '').toString(),
+          type: map['type'] is int ? map['type'] : 1,
+          productType: (map['productType'] ?? '').toString(),
+          caption: (map['caption'] ?? '').toString(),
+          likeCount: map['likeCount'] is int ? map['likeCount'] : 0,
+          commentCount: map['commentCount'] is int ? map['commentCount'] : 0,
+          viewCount: map['viewCount'] is int ? map['viewCount'] : 0,
+          takenAt: map['takenAt'] is int ? map['takenAt'] : 0,
+          videoUrl: (map['videoUrl'] ?? '').toString().isNotEmpty ? map['videoUrl'].toString() : null,
+          imageUrl: (map['imageUrl'] ?? '').toString().isNotEmpty ? map['imageUrl'].toString() : null,
+          link: (map['link'] ?? '').toString(),
+          username: (map['username'] ?? '').toString().isNotEmpty ? map['username'].toString() : null,
+        );
+      }).toList();
+      _cache[sport] = parsed;
+      _cacheTime[sport] = DateTime.now();
+      _hasMore[sport] = false;
+    } catch (_) {}
+  }
+
   static void invalidate({String sport = 'all'}) {
     _cache.remove(sport);
     _cacheTime.remove(sport);
@@ -141,7 +170,19 @@ class ReelsService {
               seen.add(r.code);
             }
           }
+
           _cache[sport] = existing;
+          // Persist to disk per-sport for fast cold-start switch.
+          SharedPreferences.getInstance().then((prefs) {
+            final simple = existing.map((r) => {
+              'code': r.code, 'type': r.type, 'productType': r.productType,
+              'caption': r.caption, 'likeCount': r.likeCount,
+              'commentCount': r.commentCount, 'viewCount': r.viewCount,
+              'takenAt': r.takenAt, 'videoUrl': r.videoUrl,
+              'imageUrl': r.imageUrl, 'link': r.link, 'username': r.username,
+            }).toList();
+            prefs.setString(_prefsKey(sport), jsonEncode(simple));
+          });
           return existing;
         }
       }

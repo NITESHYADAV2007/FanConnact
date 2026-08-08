@@ -4,7 +4,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:video_player/video_player.dart';
+import '../theme.dart';
 import '../services/reels_service.dart';
+import '../services/social_service.dart';
 
 class ReelsViewerScreen extends StatefulWidget {
   final List<ReelItem> reels;
@@ -108,13 +110,90 @@ class _ReelPageState extends State<_ReelPage> {
   bool _showPlayIcon = false;
   bool _videoError = false;
   bool _liked = false;
+  int _likeCount = 0;
+  int _commentCount = 0;
 
   @override
   void initState() {
     super.initState();
+    _likeCount = widget.reel.likeCount;
+    _commentCount = widget.reel.commentCount;
     if (widget.reel.isVideo && widget.reel.videoUrl != null) {
       _initVideo(widget.reel.videoUrl!);
     }
+    _loadStats();
+  }
+
+  Future<void> _loadStats() async {
+    final stats = await SocialService.getReelStats(widget.reel.code);
+    if (stats != null && mounted) {
+      setState(() {
+        _likeCount = (stats['likes'] as int?) ?? _likeCount;
+        _commentCount = (stats['comments'] as List?)?.length ?? _commentCount;
+      });
+    }
+  }
+
+  void _showCommentSheet(BuildContext context) {
+    final ctl = TextEditingController();
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(18)),
+        ),
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(ctx).viewInsets.bottom + 12,
+          left: 16, right: 16, top: 16,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('Comments ($_commentCount)',
+                style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
+            const SizedBox(height: 10),
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 12),
+              child: Text('Be the first to comment!'),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: ctl,
+                    decoration: const InputDecoration(
+                      hintText: 'Add a comment…',
+                      border: OutlineInputBorder(),
+                      isDense: true,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                IconButton(
+                  icon: const Icon(Icons.send, color: AppColors.brandBlue),
+                  onPressed: () async {
+                    final text = ctl.text.trim();
+                    if (text.isNotEmpty) {
+                      await SocialService.commentOnReel(widget.reel.code, text, 'Fan');
+                      if (mounted) {
+                        setState(() => _commentCount += 1);
+                        _loadStats();
+                      }
+                      ctl.clear();
+                      if (ctx.mounted) Navigator.of(ctx).pop();
+                    }
+                  },
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   void _initVideo(String url) {
@@ -245,20 +324,24 @@ class _ReelPageState extends State<_ReelPage> {
               children: [
                 _action(
                   _liked ? Icons.favorite : Icons.favorite_border,
-                  _formatCount(reel.likeCount + (_liked ? 1 : 0)),
-                  onTap: () => setState(() => _liked = !_liked),
+                  _formatCount(_likeCount),
+                  onTap: () async {
+                    setState(() => _liked = !_liked);
+                    if (_liked) {
+                      final c = await SocialService.likeReel(reel.code);
+                      if (mounted) setState(() => _likeCount = c);
+                    } else {
+                      final c = await SocialService.unlikeReel(reel.code);
+                      if (mounted) setState(() => _likeCount = c);
+                    }
+                  },
                   active: _liked,
                 ),
                 const SizedBox(height: 18),
                 _action(
                   Icons.comment_outlined,
-                  _formatCount(reel.commentCount),
-                  onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Comments coming soon'),
-                      duration: Duration(seconds: 1),
-                    ),
-                  ),
+                  _formatCount(_commentCount),
+                  onTap: () => _showCommentSheet(context),
                 ),
                 const SizedBox(height: 18),
                 _action(
@@ -278,17 +361,20 @@ class _ReelPageState extends State<_ReelPage> {
                 const SizedBox(height: 8),
                 IconButton(
                   icon: const Icon(Icons.share_outlined, color: Colors.white, size: 26),
-                  onPressed: () {
+                  onPressed: () async {
                     final text = reel.link.isNotEmpty
                         ? '${reel.caption}\n${reel.link}'
                         : reel.caption;
                     Clipboard.setData(ClipboardData(text: text));
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Link copied to clipboard'),
-                        duration: Duration(seconds: 1),
-                      ),
-                    );
+                    await SocialService.shareReel(reel.code);
+                    if (mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Link copied to clipboard'),
+                          duration: Duration(seconds: 1),
+                        ),
+                      );
+                    }
                   },
                 ),
               ],

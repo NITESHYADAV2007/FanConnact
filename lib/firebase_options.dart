@@ -18,7 +18,8 @@ class DefaultFirebaseOptions {
   static const String appId = '1:1067605173307:web:01c942ec550c4c889ba81e';
   static const String measurementId = 'G-Q02NEK5HMW';
 
-  // Web client id (used for Google sign-in on Android).
-  static const String webClientId =
-      '1067605173307-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com';
+  // Android OAuth client id (from google-services.json).
+  // Used for Google sign-in on Android devices.
+  static const String androidClientId =
+      '1067605173307-0q4gl978h9f93olaa7udtmrcp9pmn27o.apps.googleusercontent.com';
 }

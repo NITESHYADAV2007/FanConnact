@@ -209,7 +209,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
           'xp': xp,
           'coins': coins,
           'level': (xp / 500).floor() + 1,
-          'img': d['photoURL'] ?? '',
+          'img': (d['photoURL']?.toString() ?? '').replaceAll('/svg?', '/png?'),
           'followers': followers,
         };
       }).toList();

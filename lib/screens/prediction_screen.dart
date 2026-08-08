@@ -47,7 +47,7 @@ class _PredictionScreenState extends State<PredictionScreen> {
         _loading = false;
       });
     } catch (e) {
-      setState(() => _loading = false);
+      if (mounted) setState(() => _loading = false);
     }
   }
 

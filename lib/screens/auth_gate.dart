@@ -1,24 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../theme.dart';
-import '../l10n.dart';
-import 'login_screen.dart';
 import 'main_shell.dart';
 
-// Shows the login/signup flow on first open, then the main app once signed in.
 class AuthGate extends StatelessWidget {
-  final bool isDark;
-  final VoidCallback onToggleTheme;
+  final ThemeType themeType;
+  final ValueChanged<ThemeType> onThemeChanged;
   final Locale locale;
   final ValueChanged<Locale> onLocaleChanged;
+  final Color accentColor;
+  final ValueChanged<Color> onAccentColorChanged;
 
   const AuthGate({
     super.key,
-    required this.isDark,
-    required this.onToggleTheme,
+    required this.themeType,
+    required this.onThemeChanged,
     required this.locale,
     required this.onLocaleChanged,
+    required this.accentColor,
+    required this.onAccentColorChanged,
   });
+
+  bool get isDark => themeConfigFor(themeType).isDark;
 
   @override
   Widget build(BuildContext context) {
@@ -30,21 +33,14 @@ class AuthGate extends StatelessWidget {
             body: Center(child: CircularProgressIndicator()),
           );
         }
-        if (snapshot.hasData && snapshot.data != null) {
-          // Signed in — show the main app shell.
-          return MainShell(
-            isDark: isDark,
-            onToggleTheme: onToggleTheme,
-            locale: locale,
-            onLocaleChanged: onLocaleChanged,
-          );
-        }
-        // Not signed in — show login (which can navigate to signup).
-        return LoginScreen(
+        return MainShell(
+          themeType: themeType,
+          onThemeChanged: onThemeChanged,
           isDark: isDark,
-          onToggleTheme: onToggleTheme,
           locale: locale,
           onLocaleChanged: onLocaleChanged,
+          accentColor: accentColor,
+          onAccentColorChanged: onAccentColorChanged,
         );
       },
     );

@@ -7,30 +7,65 @@ import 'dart:convert';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import '../config.dart';
 import '../data.dart';
 
 class NewsService {
-  // How long client-side results stay valid before we allow a backend call.
   static const Duration cacheTtl = Duration(minutes: 10);
   static const int pageSize = 20;
+  static const String _prefsKey = 'cache_news';
 
-  // cache key ("$sport|$language") -> accumulated items + timestamp
   static final Map<String, List<NewsItem>> _cache = {};
   static final Map<String, DateTime> _cacheTime = {};
   static final Map<String, int> _loadedPages = {};
   static final Map<String, bool> _hasMore = {};
-  // in-flight futures keyed by cache key (concurrent calls share ONE request)
   static final Map<String, Future<List<NewsItem>>> _inflight = {};
 
-  // Force a fresh fetch (bypasses cache). Used by pull-to-refresh.
-  static void invalidate({String sport = 'all', String language = 'en'}) {
-    final key = '$sport|$language';
+  static Future<void> hydrateFromDisk() async {
+    if (_cache.containsKey('all|en')) return;
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final raw = prefs.getString(_prefsKey);
+      if (raw == null) return;
+      final json = jsonDecode(raw) as List;
+      if (json.isEmpty) return;
+      final parsed = json.map<NewsItem>((a) {
+        final map = a as Map<String, dynamic>;
+        return NewsItem(
+          sport: (map['sport'] ?? 'all').toString(),
+          sportEmoji: (map['sportEmoji'] ?? '').toString(),
+          title: (map['title'] ?? '').toString(),
+          source: (map['source'] ?? 'News').toString(),
+          timeAgo: (map['timeAgo'] ?? '').toString(),
+          tag: (map['tag'] ?? 'NEWS').toString(),
+          image: (map['image'] ?? '').toString().isNotEmpty ? map['image'].toString() : null,
+          description: (map['description'] ?? '').toString(),
+          link: (map['link'] ?? '').toString(),
+        );
+      }).toList();
+      _cache['all|en'] = parsed;
+      _cacheTime['all|en'] = DateTime.now();
+      _hasMore['all|en'] = false;
+    } catch (_) {}
+  }
+
+  static void invalidate({String sport = 'all', String language = 'en', String? region}) {
+    final key = region == null ? '$sport|$language' : '$sport|$language|$region';
     _cache.remove(key);
     _cacheTime.remove(key);
     _loadedPages.remove(key);
     _hasMore.remove(key);
     _inflight.remove(key);
+  }
+
+  // Drop every cached feed so the next fetch reflects the new language/region.
+  static void clearCache() {
+    _cache.clear();
+    _cacheTime.clear();
+    _loadedPages.clear();
+    _hasMore.clear();
+    _inflight.clear();
   }
 
   static bool _fresh(String key) {
@@ -40,17 +75,18 @@ class NewsService {
         DateTime.now().difference(t) < cacheTtl;
   }
 
-  static bool hasMore(String sport, String language) =>
-      _hasMore['$sport|$language'] ?? true;
+  static bool hasMore(String sport, String language, [String region = '']) =>
+      _hasMore['$sport|$language${region.isEmpty ? '' : '|$region'}'] ?? true;
 
   // Fetch the next page of sports news and append it to the cache.
   // Returns the full accumulated list. [reset] starts from page 0.
   static Future<List<NewsItem>> fetchNews({
     String sport = 'all',
     String language = 'en',
+    String region = '',
     bool reset = false,
   }) async {
-    final key = '$sport|$language';
+    final key = '$sport|$language${region.isEmpty ? '' : '|$region'}';
     if (reset) {
       _cache[key] = [];
       _loadedPages[key] = 0;
@@ -64,7 +100,7 @@ class NewsService {
     final reqKey = '$key#$page';
     if (_inflight.containsKey(reqKey)) return _inflight[reqKey]!;
 
-    final future = _doFetch(sport, language, key, page);
+    final future = _doFetch(sport, language, region, key, page);
     _inflight[reqKey] = future;
     try {
       return await future;
@@ -74,12 +110,13 @@ class NewsService {
   }
 
   static Future<List<NewsItem>> _doFetch(
-      String sport, String language, String key, int page) async {
+      String sport, String language, String region, String key, int page) async {
     try {
       final uri = Uri.parse('$apiBaseUrl/api/news').replace(
         queryParameters: {
           'sport': sport,
           'language': language,
+          if (region.isNotEmpty) 'region': region,
           'page': page.toString(),
           'pageSize': pageSize.toString(),
         },
@@ -123,6 +160,19 @@ class NewsService {
             }
           }
           _cache[key] = existing;
+          // Persist to disk for cold-start speed.
+          if (sport == 'all' && language == 'en') {
+            SharedPreferences.getInstance().then((prefs) {
+              final simple = existing.map((n) => {
+                'sport': n.sport, 'sportEmoji': n.sportEmoji,
+                'title': n.title, 'source': n.source,
+                'timeAgo': n.timeAgo, 'tag': n.tag,
+                'image': n.image, 'description': n.description,
+                'link': n.link,
+              }).toList();
+              prefs.setString(_prefsKey, jsonEncode(simple));
+            });
+          }
           return existing;
         }
       }

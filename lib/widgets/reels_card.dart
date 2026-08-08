@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../theme.dart';
 import '../services/reels_service.dart';
+import '../services/social_service.dart';
 
 class ReelsCard extends StatefulWidget {
   final ReelItem reel;
@@ -17,7 +18,7 @@ class ReelsCard extends StatefulWidget {
 class _ReelsCardState extends State<ReelsCard> {
   late bool _liked;
   late int _likeCount;
-  final List<String> _comments = [];
+  List<Map<String, dynamic>> _comments = [];
   final TextEditingController _commentCtl = TextEditingController();
 
   ReelItem get reel => widget.reel;
@@ -29,6 +30,17 @@ class _ReelsCardState extends State<ReelsCard> {
     super.initState();
     _liked = false;
     _likeCount = widget.reel.likeCount;
+    _loadStats();
+  }
+
+  Future<void> _loadStats() async {
+    final stats = await SocialService.getReelStats(widget.reel.code);
+    if (stats != null && mounted) {
+      setState(() {
+        _likeCount = (stats['likes'] as int?) ?? _likeCount;
+        _comments = (stats['comments'] as List?)?.cast<Map<String, dynamic>>() ?? _comments;
+      });
+    }
   }
 
   @override
@@ -37,17 +49,15 @@ class _ReelsCardState extends State<ReelsCard> {
     super.dispose();
   }
 
-  void _toggleLike() {
-    setState(() {
-      _liked = !_liked;
-      _likeCount += _liked ? 1 : -1;
-    });
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(_liked ? 'Liked' : 'Like removed'),
-        duration: const Duration(seconds: 1),
-      ),
-    );
+  void _toggleLike() async {
+    setState(() => _liked = !_liked);
+    if (_liked) {
+      final count = await SocialService.likeReel(widget.reel.code);
+      if (mounted) setState(() => _likeCount = count);
+    } else {
+      final count = await SocialService.unlikeReel(widget.reel.code);
+      if (mounted) setState(() => _likeCount = count);
+    }
   }
 
   void _addComment() {
@@ -81,7 +91,9 @@ class _ReelsCardState extends State<ReelsCard> {
               ),
             ..._comments.map((c) => ListTile(
                   leading: const Icon(Icons.comment_outlined),
-                  title: Text(c),
+                  title: Text(c['text']?.toString() ?? ''),
+                  subtitle: Text('by ${c['username'] ?? 'Anonymous'}',
+                      style: const TextStyle(fontSize: 11, color: Colors.grey)),
                   dense: true,
                 )),
             const SizedBox(height: 8),
@@ -100,12 +112,16 @@ class _ReelsCardState extends State<ReelsCard> {
                 const SizedBox(width: 8),
                 IconButton(
                   icon: const Icon(Icons.send, color: AppColors.brandBlue),
-                  onPressed: () {
+                  onPressed: () async {
                     final text = _commentCtl.text.trim();
                     if (text.isNotEmpty) {
-                      setState(() => _comments.add(text));
+                      final comment = await SocialService.commentOnReel(
+                          widget.reel.code, text, 'Fan');
+                      if (comment != null && mounted) {
+                        setState(() => _comments.add(comment));
+                      }
                       _commentCtl.clear();
-                      Navigator.of(ctx).pop();
+                      if (ctx.mounted) Navigator.of(ctx).pop();
                     }
                   },
                 ),
@@ -117,14 +133,17 @@ class _ReelsCardState extends State<ReelsCard> {
     );
   }
 
-  void _share() {
+  void _share() async {
     final text = widget.reel.caption.isNotEmpty
         ? widget.reel.caption
         : 'Check out this sports reel!';
     Clipboard.setData(ClipboardData(text: text));
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Link copied to clipboard')),
-    );
+    await SocialService.shareReel(widget.reel.code);
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Link copied to clipboard')),
+      );
+    }
   }
 
   String _formatCount(int n) {

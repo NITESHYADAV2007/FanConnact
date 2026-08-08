@@ -1,4 +1,6 @@
 {
   "aiderAgent.provider": "local",
-  "compile-hero.disable-compile-files-on-did-save-code": false
+  "compile-hero.disable-compile-files-on-did-save-code": false,
+  "java.configuration.updateBuildConfiguration": "interactive",
+  "cmake.sourceDirectory": "E:/famconnact/FanConnact/fanconnact/windows"
 }

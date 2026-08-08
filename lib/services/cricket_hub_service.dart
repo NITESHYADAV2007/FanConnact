@@ -6,7 +6,7 @@ class CricketHubService {
   static const _base = '${apiBaseUrl}/api/real/cricket/proxy';
 
   static Future<Map<String, dynamic>> _get(String path) async {
-    final r = await http.get(Uri.parse('$_base$path'));
+    final r = await http.get(Uri.parse('$_base$path')).timeout(const Duration(seconds: 9));
     if (r.statusCode != 200) throw Exception('CricketHub ${r.statusCode}: $path');
     final j = json.decode(r.body);
     if (j is Map && j['data'] != null) {

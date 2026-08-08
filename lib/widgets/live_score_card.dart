@@ -20,47 +20,61 @@ class LiveScoreCard extends StatelessWidget {
     }
   }
 
-  Widget _team(String name, String? logo, String? score) {
+  Widget _team(BuildContext context, String name, String? logo, String? score, String? over) {
     return Expanded(
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          if (logo != null)
-            GlowWrapper(
-              glowColor: AppColors.brandBlue,
-              glowBlur: 8,
-              glowSpread: 1,
-              borderRadius: BorderRadius.circular(6),
-              child: Image.network(
-                logo,
-                width: 22,
-                height: 22,
-              errorBuilder: (_, _, _) =>
-                    const Icon(Icons.sports, size: 18),
+          Row(
+            children: [
+              if (logo != null)
+                GlowWrapper(
+                  glowColor: AppColors.brandBlue,
+                  glowBlur: 8,
+                  glowSpread: 1,
+                  borderRadius: BorderRadius.circular(6),
+                  child: Image.network(
+                    logo,
+                    width: 22,
+                    height: 22,
+                  errorBuilder: (_, _, _) =>
+                        const Icon(Icons.sports, size: 18),
+                  ),
+                )
+              else
+                const Icon(Icons.sports, size: 18),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  name,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13,
+                  ),
+                ),
               ),
-            )
-          else
-            const Icon(Icons.sports, size: 18),
-          const SizedBox(width: 6),
-          Expanded(
-            child: Text(
-              name,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 13,
-              ),
-            ),
+              if (score != null) ...[
+                const SizedBox(width: 4),
+                Text(
+                  score,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 14,
+                  ),
+                ),
+              ],
+            ],
           ),
-          if (score != null) ...[
-            const SizedBox(width: 4),
-            Text(
-              score,
-              style: const TextStyle(
-                fontWeight: FontWeight.w800,
-                fontSize: 14,
-              ),
+          if (over != null)
+            Padding(
+              padding: const EdgeInsets.only(left: 28, top: 2),
+              child: Text('${over} overs',
+                  style: TextStyle(fontSize: 10,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.grey.shade400 : Colors.grey.shade600)),
             ),
-          ],
         ],
       ),
     );
@@ -140,9 +154,9 @@ class LiveScoreCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 10),
-          _team(match.teamA, match.logoA, match.scoreA),
+          _team(context, match.teamA, match.logoA, match.scoreA, match.overA),
           const SizedBox(height: 8),
-          _team(match.teamB, match.logoB, match.scoreB),
+          _team(context, match.teamB, match.logoB, match.scoreB, match.overB),
           const SizedBox(height: 8),
           Text(
             match.time,
