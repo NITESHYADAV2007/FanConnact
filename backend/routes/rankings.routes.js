@@ -162,4 +162,106 @@ router.get("/teams", async (req, res) => {
 
 });
 
+router.get("/cricket/:key", async (req, res) => {
+  try {
+    const key = req.params.key;
+
+    const [format, role, gender] = key.split("_");
+
+    const women = gender === "women" ? 1 : 0;
+
+    const cacheKey = `CRICKET_${format}_${role}_${women}`;
+
+    const players = await cacheManager.getOrCreate(
+
+      cacheKey,
+
+      3600, // 1 Hour Cache
+
+      async () => {
+
+    let rankingsData = [];
+
+    switch (role) {
+
+        case "bat":
+
+            rankingsData =
+                await rankings.getBatsmen(
+                    format,
+                    women
+                );
+
+            break;
+
+        case "bowl":
+
+            rankingsData =
+                await rankings.getBowlers(
+                    format,
+                    women
+                );
+
+            break;
+
+        case "ar":
+
+            rankingsData =
+                await rankings.getAllRounders(
+                    format,
+                    women
+                );
+
+            break;
+
+        default:
+
+            rankingsData = [];
+
+    }
+
+    return rankingsData;
+
+}
+
+    );
+res.json({
+
+    success: true,
+
+    source: "icc",
+
+    total:
+
+        Array.isArray(players)
+
+            ? players.length
+
+            : 0,
+
+    players:
+
+        Array.isArray(players)
+
+            ? players
+
+            : [],
+
+    cached: true,
+
+    _lastSync: new Date().toISOString()
+
+});
+
+  } catch (err) {
+
+    console.error(err);
+
+    res.status(500).json({
+      success: false,
+      message: "Unable to fetch rankings"
+    });
+
+  }
+});
 module.exports = router;

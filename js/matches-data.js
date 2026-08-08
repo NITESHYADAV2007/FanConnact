@@ -11,72 +11,200 @@
   // cc = country code for flagcdn, color = brand colour, logo = image url (optional)
   const TEAMS = {
     // ---- Cricket (international + domestic) ----
-    zim:  { name: "Zimbabwe",        cc: "zw", color: "#D7263D", flag: "🇿🇼" },
-    ban:  { name: "Bangladesh",      cc: "bd", color: "#C026D3", flag: "🇧🇩" },
-    "wi-w": { name: "WI Women",      cc: "ag", color: "#DC2626", flag: "🏝️" },
-    "ire-w":{ name: "IRE Women",     cc: "ie", color: "#169B62", flag: "🇮🇪" },
-    ham:  { name: "Hampshire",       cc: null, color: "#CF152D", flag: "🦁" },
-    ess:  { name: "Essex",           cc: null, color: "#009BD9", flag: "🦁" },
-    nor:  { name: "Northants",       cc: null, color: "#E32219", flag: "🦁" },
-    glo:  { name: "Gloucs",         cc: null, color: "#FBAB1E", flag: "🦁" },
-    not:  { name: "Notts",          cc: null, color: "#003C82", flag: "🦁" },
-    sur:  { name: "Surrey",         cc: null, color: "#E03A3C", flag: "🦁" },
-    yor:  { name: "Yorkshire",      cc: null, color: "#1D3E6E", flag: "🦁" },
-    som:  { name: "Somerset",       cc: null, color: "#1B8A4B", flag: "🦁" },
-    lak:  { name: "LA Knight Riders", cc: null, color: "#552583", flag: "🦁" },
-    sf:   { name: "SF Unicorns",    cc: null, color: "#1D428A", flag: "🦁" },
-    ny:   { name: "MI New York",     cc: null, color: "#FDB827", flag: "🦁" },
-    wf:   { name: "Washington Freedom", cc: null, color: "#C8102E", flag: "🦁" },
-    eng:  { name: "England",         cc: "gb-eng", color: "#D32F2F", flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿" },
-    ind:  { name: "India",           cc: "in", color: "#2196F3", flag: "🇮🇳" },
+    zim: { name: "Zimbabwe", cc: "zw", color: "#D7263D", flag: "🇿🇼" },
+    ban: { name: "Bangladesh", cc: "bd", color: "#C026D3", flag: "🇧🇩" },
+    "wi-w": { name: "WI Women", cc: "ag", color: "#DC2626", flag: "🏝️" },
+    "ire-w": { name: "IRE Women", cc: "ie", color: "#169B62", flag: "🇮🇪" },
+    ham: { name: "Hampshire", cc: null, color: "#CF152D", flag: "🦁" },
+    ess: { name: "Essex", cc: null, color: "#009BD9", flag: "🦁" },
+    nor: { name: "Northants", cc: null, color: "#E32219", flag: "🦁" },
+    glo: { name: "Gloucs", cc: null, color: "#FBAB1E", flag: "🦁" },
+    not: { name: "Notts", cc: null, color: "#003C82", flag: "🦁" },
+    sur: { name: "Surrey", cc: null, color: "#E03A3C", flag: "🦁" },
+    yor: { name: "Yorkshire", cc: null, color: "#1D3E6E", flag: "🦁" },
+    som: { name: "Somerset", cc: null, color: "#1B8A4B", flag: "🦁" },
+    lak: { name: "LA Knight Riders", cc: null, color: "#552583", flag: "🦁" },
+    sf: { name: "SF Unicorns", cc: null, color: "#1D428A", flag: "🦁" },
+    ny: { name: "MI New York", cc: null, color: "#FDB827", flag: "🦁" },
+    wf: { name: "Washington Freedom", cc: null, color: "#C8102E", flag: "🦁" },
+    eng: { name: "England", cc: "gb-eng", color: "#D32F2F", flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿" },
+    ind: { name: "India", cc: "in", color: "#2196F3", flag: "🇮🇳" },
 
+    // ===== Additional International Teams (Backend Compatible) =====
+
+    pak: {
+      name: "Pakistan",
+      cc: "pk",
+      color: "#006600",
+      flag: "🇵🇰"
+    },
+
+    nz: {
+      name: "New Zealand",
+      cc: "nz",
+      color: "#000000",
+      flag: "🇳🇿"
+    },
+
+    wi: {
+      name: "West Indies",
+      cc: "ag",
+      color: "#7B1E3A",
+      flag: "🏝️"
+    },
+
+    sa: {
+      name: "South Africa",
+      cc: "za",
+      color: "#007A4D",
+      flag: "🇿🇦"
+    },
+
+    aus: {
+      name: "Australia",
+      cc: "au",
+      color: "#FFD700",
+      flag: "🇦🇺"
+    },
+
+    sl: {
+      name: "Sri Lanka",
+      cc: "lk",
+      color: "#0038A8",
+      flag: "🇱🇰"
+    },
+
+    afg: {
+      name: "Afghanistan",
+      cc: "af",
+      color: "#D32011",
+      flag: "🇦🇫"
+    },
+
+    ire: {
+      name: "Ireland",
+      cc: "ie",
+      color: "#169B62",
+      flag: "🇮🇪"
+    },
+
+    ned: {
+      name: "Netherlands",
+      cc: "nl",
+      color: "#FF6600",
+      flag: "🇳🇱"
+    },
+
+    usa: {
+      name: "United States",
+      cc: "us",
+      color: "#3C3B6E",
+      flag: "🇺🇸"
+    },
+
+    can: {
+      name: "Canada",
+      cc: "ca",
+      color: "#D52B1E",
+      flag: "🇨🇦"
+    },
+
+    sco: {
+      name: "Scotland",
+      cc: "gb-sct",
+      color: "#0065BD",
+      flag: "🏴"
+    },
+
+    nam: {
+      name: "Namibia",
+      cc: "na",
+      color: "#003580",
+      flag: "🇳🇦"
+    },
+
+    uae: {
+      name: "United Arab Emirates",
+      cc: "ae",
+      color: "#00732F",
+      flag: "🇦🇪"
+    },
+
+    nep: {
+      name: "Nepal",
+      cc: "np",
+      color: "#DC143C",
+      flag: "🇳🇵"
+    },
+
+    omn: {
+      name: "Oman",
+      cc: "om",
+      color: "#C8102E",
+      flag: "🇴🇲"
+    },
+
+    hk: {
+      name: "Hong Kong",
+      cc: "hk",
+      color: "#DE2910",
+      flag: "🇭🇰"
+    },
+
+    png: {
+      name: "Papua New Guinea",
+      cc: "pg",
+      color: "#000000",
+      flag: "🇵🇬"
+    }
+    ,
     // ---- Football ----
-    eng_f: { name: "England",       cc: "gb-eng", color: "#D32F2F", flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿" },
-    arg:  { name: "Argentina",      cc: "ar", color: "#75AADB", flag: "🇦🇷" },
+    eng_f: { name: "England", cc: "gb-eng", color: "#D32F2F", flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿" },
+    arg: { name: "Argentina", cc: "ar", color: "#75AADB", flag: "🇦🇷" },
 
     // ---- Basketball (NBA Summer League) ----
-    lal:  { name: "LA Lakers",      cc: null, color: "#552583", flag: "🟣" },
-    bos:  { name: "Boston Celtics",  cc: null, color: "#007A33", flag: "🍀" },
+    lal: { name: "LA Lakers", cc: null, color: "#552583", flag: "🟣" },
+    bos: { name: "Boston Celtics", cc: null, color: "#007A33", flag: "🍀" },
 
     // ---- Baseball (MLB) ----
-    nyy:  { name: "NY Yankees",     cc: null, color: "#0C2340", flag: "🇺🇸" },
+    nyy: { name: "NY Yankees", cc: null, color: "#0C2340", flag: "🇺🇸" },
     bos_b: { name: "Boston Red Sox", cc: null, color: "#BD3039", flag: "🇺🇸" },
-    lad:  { name: "LA Dodgers",     cc: null, color: "#005A9C", flag: "🇺🇸" },
-    sf_b: { name: "SF Giants",      cc: null, color: "#FD5A1E", flag: "🇺🇸" },
+    lad: { name: "LA Dodgers", cc: null, color: "#005A9C", flag: "🇺🇸" },
+    sf_b: { name: "SF Giants", cc: null, color: "#FD5A1E", flag: "🇺🇸" },
 
     // ---- Hockey (NHL) ----
-    tbl:  { name: "Tampa Bay",      cc: null, color: "#00205B", flag: "⚡" },
-    col:  { name: "Colorado",       cc: null, color: "#6F263D", flag: "❄️" },
-    tor:  { name: "Toronto",        cc: null, color: "#00205B", flag: "🍁" },
-    edm:  { name: "Edmonton",       cc: null, color: "#041E42", flag: "🔥" },
+    tbl: { name: "Tampa Bay", cc: null, color: "#00205B", flag: "⚡" },
+    col: { name: "Colorado", cc: null, color: "#6F263D", flag: "❄️" },
+    tor: { name: "Toronto", cc: null, color: "#00205B", flag: "🍁" },
+    edm: { name: "Edmonton", cc: null, color: "#041E42", flag: "🔥" },
 
     // ---- E-Sports ----
-    sr:   { name: "Sentinels",      cc: null, color: "#E5322D", flag: "🎮" },
-    fnc:  { name: "Fnatic",         cc: null, color: "#FF5700", flag: "🎮" },
-    t1:   { name: "T1",             cc: null, color: "#E2012D", flag: "🎮" },
-    g2:   { name: "G2 Esports",     cc: null, color: "#EE3A35", flag: "🎮" },
+    sr: { name: "Sentinels", cc: null, color: "#E5322D", flag: "🎮" },
+    fnc: { name: "Fnatic", cc: null, color: "#FF5700", flag: "🎮" },
+    t1: { name: "T1", cc: null, color: "#E2012D", flag: "🎮" },
+    g2: { name: "G2 Esports", cc: null, color: "#EE3A35", flag: "🎮" },
 
     // ---- Kabaddi (PKL) ----
-    pun:  { name: "Puneri Paltan",  cc: null, color: "#D81B60", flag: "🤼" },
-    hyd:  { name: "Telugu Titans",  cc: null, color: "#1E88E5", flag: "🤼" },
-    ben:  { name: "Bengal Warriors", cc: null, color: "#00897B", flag: "🤼" },
-    pat:  { name: "Patna Pirates",  cc: null, color: "#FBC02D", flag: "🤼" },
+    pun: { name: "Puneri Paltan", cc: null, color: "#D81B60", flag: "🤼" },
+    hyd: { name: "Telugu Titans", cc: null, color: "#1E88E5", flag: "🤼" },
+    ben: { name: "Bengal Warriors", cc: null, color: "#00897B", flag: "🤼" },
+    pat: { name: "Patna Pirates", cc: null, color: "#FBC02D", flag: "🤼" },
 
     // ---- Table Tennis ----
-    wang: { name: "Wang Chuqin",    cc: "cn", color: "#DE2910", flag: "🏓" },
-    har:  { name: "Truls Moregard", cc: "se", color: "#006AA7", flag: "🏓" },
-    sun:  { name: "Sun Yingsha",    cc: "cn", color: "#DE2910", flag: "🏓" },
-    hay:  { name: "Hina Hayata",    cc: "jp", color: "#BC002D", flag: "🏓" },
+    wang: { name: "Wang Chuqin", cc: "cn", color: "#DE2910", flag: "🏓" },
+    har: { name: "Truls Moregard", cc: "se", color: "#006AA7", flag: "🏓" },
+    sun: { name: "Sun Yingsha", cc: "cn", color: "#DE2910", flag: "🏓" },
+    hay: { name: "Hina Hayata", cc: "jp", color: "#BC002D", flag: "🏓" },
 
     // ---- Volleyball ----
-    bra:  { name: "Brazil",         cc: "br", color: "#009C3B", flag: "🇧🇷" },
-    pol:  { name: "Poland",         cc: "pl", color: "#DC143C", flag: "🇵🇱" },
-    usa_v: { name: "USA",           cc: "us", color: "#3C3B6E", flag: "🇺🇸" },
-    ita_v: { name: "Italy",         cc: "it", color: "#009246", flag: "🇮🇹" },
+    bra: { name: "Brazil", cc: "br", color: "#009C3B", flag: "🇧🇷" },
+    pol: { name: "Poland", cc: "pl", color: "#DC143C", flag: "🇵🇱" },
+    usa_v: { name: "USA", cc: "us", color: "#3C3B6E", flag: "🇺🇸" },
+    ita_v: { name: "Italy", cc: "it", color: "#009246", flag: "🇮🇹" },
 
     // ---- Tennis (example real tour) ----
-    alc:  { name: "Carlos Alcaraz", cc: "es", color: "#C60B1E", flag: "🇪🇸" },
-    djo:  { name: "Novak Djokovic", cc: "rs", color: "#C09A2E", flag: "🇷🇸" }
+    alc: { name: "Carlos Alcaraz", cc: "es", color: "#C60B1E", flag: "🇪🇸" },
+    djo: { name: "Novak Djokovic", cc: "rs", color: "#C09A2E", flag: "🇷🇸" }
   };
 
   // Real matches for 2026-07-15 (status: live | upcoming | finished)
@@ -509,5 +637,254 @@
     }
   ];
 
-  window.FANCONNECT_MATCHES = { TEAMS, MATCHES, capturedOn: "2026-07-15" };
+  async function loadBackendMatches() {
+
+    const [liveRes, upcomingRes, recentRes] = await Promise.all([
+
+      fetch("http://localhost:5000/api/matches/live"),
+
+      fetch("http://localhost:5000/api/matches/upcoming"),
+
+      fetch("http://localhost:5000/api/matches/recent")
+
+    ]);
+
+    const live = await liveRes.json();
+    const upcoming = await upcomingRes.json();
+    const recent = await recentRes.json();
+
+    const api = [
+    ...live,
+    ...upcoming.filter(
+        x =>
+            !live.some(y => y.id === x.id)
+    ),
+    ...recent.filter(
+        x =>
+            !live.some(y => y.id === x.id)
+    )
+];
+
+    const seen = new Set();
+
+    const uniqueMatches = api.filter(match => {
+
+      if (seen.has(match.id)) return false;
+
+      seen.add(match.id);
+
+      return true;
+
+    });
+
+    try {
+
+
+      // Existing dummy matches remove
+      MATCHES.length = 0;
+
+      uniqueMatches.forEach(match => {
+
+      const homeKey = (match.homeTeam?.short || "").toLowerCase();
+const awayKey = (match.awayTeam?.short || "").toLowerCase();
+
+const MAP = {
+    wisxi: "wi",
+    slu19: "sl",
+    indu19: "ind",
+    paku19: "pak",
+    namw: "nam",
+    ugaw: "uga",
+    hkcw: "hk",
+    tanw: "tan"
+};
+
+const hk = MAP[homeKey] || homeKey;
+const ak = MAP[awayKey] || awayKey;
+
+       if (!TEAMS[hk]) {
+          TEAMS[hk] = {
+           name: match.homeTeam?.name || hk.toUpperCase(),
+            cc: null,
+            color: "#2563eb",
+            flag: "🏏"
+          };
+        }
+
+        if (!TEAMS[ak]) {
+          TEAMS[ak] = {
+            name: match.awayTeam?.name || ak.toUpperCase(),
+            cc: null,
+            color: "#ef4444",
+            flag: "🏏"
+          };
+        }
+
+        const innings = match.score || {};
+const inn1 =
+    innings?.innings1?.inngs1 ||
+    innings?.innings1?.inngs2 ||
+    innings?.innings1 ||
+    null;
+
+const inn2 =
+    innings?.innings2?.inngs2 ||
+    innings?.innings2?.inngs1 ||
+    innings?.innings2 ||
+    null;
+
+const homeScore =
+    inn1 && inn1.runs != null
+        ? `${inn1.runs}/${inn1.wickets ?? 0}`
+        : (
+            match.score?.team1Score ||
+            match.score?.home ||
+            ""
+        );
+const awayScore =
+    inn2?.runs != null
+        ? `${inn2.runs}/${inn2.wickets ?? 0}`
+        : (
+            innings?.team2Score ||
+            match.score?.team2Score ||
+            match.score?.away ||
+            ""
+        );
+
+const detail =
+    inn2?.overs != null
+        ? `${inn2.overs} ov`
+        : inn1?.overs != null
+            ? `${inn1.overs} ov`
+            : "";
+       
+        const s = (match.status || "").toLowerCase();
+
+        let status = "upcoming";
+
+        if (
+          s.includes("in progress") ||
+          s.includes("stumps") ||
+          s.includes("day") ||
+          s.includes("lunch") ||
+          s.includes("tea") ||
+          s.includes("innings") ||
+          s.includes("drinks")
+        ) {
+
+          status = "live";
+
+        }
+        else if (
+          s.includes("complete") ||
+          s.includes("won") ||
+          s.includes("result")
+        ) {
+
+          status = "finished";
+
+        }
+
+MATCHES.push({
+
+    id: match.id,
+
+    sport: "cricket",
+
+    status,
+
+    tournament: match.series,
+
+    format: match.matchType,
+
+    stage: "",
+
+    venue: match.venue,
+
+    date: match.startTime
+    ? new Date(Number(match.startTime)).toLocaleDateString("en-CA")
+    : "",
+
+time: match.startTime
+    ? new Date(Number(match.startTime)).toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit"
+      })
+    : "",
+
+    rules: match.matchType,
+home: hk,
+
+away: ak,
+
+    homeName: match.homeTeam.name,
+
+    awayName: match.awayTeam.name,
+
+   score: {
+
+    home: homeScore,
+
+    away: awayScore,
+
+    detail: detail,
+
+    innings1: inn1,
+
+    innings2: inn2
+
+},
+
+    statusLine: match.status,
+
+result:
+status === "finished"
+    ? (
+        match.result ||
+        match.status ||
+        ""
+      )
+    : "",
+
+    link: "match-center.html?id=" + match.id
+
+});
+
+      });
+      window.FANCONNECT_MATCHES = {
+
+        TEAMS,
+
+        MATCHES,
+
+        capturedOn: new Date().toISOString()
+
+      };
+
+      console.log("✅ Backend Loaded :", MATCHES);
+
+      // Next step me mapping karenge.
+
+
+    }
+
+    catch (e) {
+
+      console.error("Backend Error :", e);
+
+    }
+
+  }
+
+  loadBackendMatches();
+
+  window.addEventListener("load", () => {
+
+    if (window.init)
+
+        window.init();
+
+});
+
+
 })();
