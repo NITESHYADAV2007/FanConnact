@@ -38,3 +38,49 @@ service cloud.firestore {
 }
   }
 }
+
+    match /users/{userId} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.uid == userId;
+
+      allow update: if request.auth != null
+                    && request.resource.data.followRequests.hasAll(resource.data.followRequests)
+                    && request.resource.data.followRequests.removeAll(resource.data.followRequests).size() == 1
+                    && request.resource.data.followRequests.removeAll(resource.data.followRequests)[0] == request.auth.uid
+                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['followRequests']);
+    }
+
+    match /communities/{communityId} {
+      // Public communities are discoverable by everyone. Members may also
+      // read their community if visibility is changed later.
+      allow read: if resource.data.visibility == 'public'
+                  || (request.auth != null && request.auth.uid in resource.data.members);
+
+      // Any authenticated user can create a public community. The creator
+      // starts as the first member.
+      allow create: if request.auth != null
+                    && request.resource.data.createdBy == request.auth.uid
+                    && request.resource.data.visibility == 'public'
+                    && request.resource.data.memberCount == 1
+                    && request.resource.data.members.size() == 1
+                    && request.resource.data.members[0] == request.auth.uid
+                    && request.resource.data.name is string
+                    && request.resource.data.name.size() > 0
+                    && request.resource.data.name.size() <= 80;
+
+      // A public community can be joined by adding only the caller's UID.
+      // The member count must increase exactly once and no other field can
+      // be changed by the joining client.
+      allow update: if request.auth != null
+                    && resource.data.visibility == 'public'
+                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['members', 'memberCount'])
+                    && request.resource.data.members.hasAll(resource.data.members)
+                    && request.resource.data.members.removeAll(resource.data.members).size() == 1
+                    && request.resource.data.members.removeAll(resource.data.members)[0] == request.auth.uid
+                    && request.resource.data.memberCount == resource.data.memberCount + 1;
+
+      allow delete: if request.auth != null
+                    && resource.data.createdBy == request.auth.uid;
+    }
+  }
+}

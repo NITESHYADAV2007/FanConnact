@@ -90,8 +90,13 @@ class _CommunitiesScreenState extends State<CommunitiesScreen> {
           FilledButton(
             onPressed: () async {
               if (nameCtrl.text.trim().isEmpty) return;
+<<<<<<< HEAD
               await _createCommunity(nameCtrl.text.trim(), descCtrl.text.trim());
               if (ctx.mounted) Navigator.pop(ctx);
+=======
+              final created = await _createCommunity(nameCtrl.text.trim(), descCtrl.text.trim());
+              if (created && ctx.mounted) Navigator.pop(ctx);
+>>>>>>> 939fcc1 (Add public communities feature)
             },
             child: const Text('Create (50 🪙)'),
           ),
@@ -118,6 +123,62 @@ class _CommunitiesScreenState extends State<CommunitiesScreen> {
       'communities': FieldValue.arrayUnion([name]),
     }, SetOptions(merge: true));
   }
+  Future<bool> _createCommunity(String name, String desc) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return false;
+
+    final db = FirebaseFirestore.instance;
+    final userRef = db.collection('users').doc(user.uid);
+    final communityRef = db.collection('communities').doc();
+
+    try {
+      await db.runTransaction((tx) async {
+        final userSnap = await tx.get(userRef);
+        final data = userSnap.data() ?? <String, dynamic>{};
+        final coins = (data['coins'] is num) ? (data['coins'] as num).toInt() : 100;
+
+        if (coins < 50) {
+          throw StateError('INSUFFICIENT_COINS');
+        }
+
+        tx.set(communityRef, {
+          'name': name,
+          'description': desc,
+          'createdBy': user.uid,
+          'createdByName': user.displayName ?? user.email ?? 'Unknown',
+          'createdAt': FieldValue.serverTimestamp(),
+          'visibility': 'public',
+          'memberCount': 1,
+          'members': [user.uid],
+        });
+
+        tx.set(userRef, {
+          'coins': coins - 50,
+          'communities': FieldValue.arrayUnion([communityRef.id]),
+        }, SetOptions(merge: true));
+      });
+
+      if (!mounted) return false;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Community created and published!')),
+      );
+      return true;
+    } on StateError catch (e) {
+      if (!mounted) return false;
+      final message = e.message == 'INSUFFICIENT_COINS'
+          ? 'You need at least 50 FanCoins to create a community.'
+          : 'Could not create the community.';
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+      return false;
+    } catch (e) {
+      if (!mounted) return false;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not create the community. Please try again.')),
+      );
+      return false;
+    }
+  }
+
 }
 
 class _TabBtn extends StatelessWidget {
@@ -159,7 +220,10 @@ class _CommunitiesList extends StatelessWidget {
       stream: FirebaseFirestore.instance
           .collection('communities')
           .where('members', arrayContains: user.uid)
+<<<<<<< HEAD
           .orderBy('createdAt', descending: true)
+=======
+>>>>>>> 939fcc1 (Add public communities feature)
           .snapshots(),
       builder: (ctx, snap) {
         if (snap.connectionState == ConnectionState.waiting) {
@@ -212,7 +276,11 @@ class _DiscoverList extends StatelessWidget {
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
           .collection('communities')
+<<<<<<< HEAD
           .orderBy('memberCount', descending: true)
+=======
+          .where('visibility', isEqualTo: 'public')
+>>>>>>> 939fcc1 (Add public communities feature)
           .limit(50)
           .snapshots(),
       builder: (ctx, snap) {
@@ -287,6 +355,7 @@ class _CommunityCardState extends State<_CommunityCard> {
 
   Future<void> _join() async {
     final user = FirebaseAuth.instance.currentUser;
+<<<<<<< HEAD
     if (user == null || _joining) return;
     setState(() => _joining = true);
     try {
@@ -296,6 +365,47 @@ class _CommunityCardState extends State<_CommunityCard> {
       });
     } catch (_) {}
     if (mounted) setState(() => _joining = false);
+=======
+    if (user == null || _joining || widget.isMember) return;
+    setState(() => _joining = true);
+
+    try {
+      final db = FirebaseFirestore.instance;
+      final communityRef = db.collection('communities').doc(widget.docId);
+      final userRef = db.collection('users').doc(user.uid);
+
+      await db.runTransaction((tx) async {
+        final communitySnap = await tx.get(communityRef);
+        if (!communitySnap.exists) {
+          throw StateError('COMMUNITY_NOT_FOUND');
+        }
+
+        final data = communitySnap.data() as Map<String, dynamic>;
+        if (data['visibility'] != 'public') {
+          throw StateError('NOT_PUBLIC');
+        }
+
+        final members = List<String>.from((data['members'] as List?) ?? const []);
+        if (members.contains(user.uid)) return;
+
+        tx.update(communityRef, {
+          'members': FieldValue.arrayUnion([user.uid]),
+          'memberCount': (data['memberCount'] as num? ?? members.length) + 1,
+        });
+        tx.set(userRef, {
+          'communities': FieldValue.arrayUnion([widget.docId]),
+        }, SetOptions(merge: true));
+      });
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not join this community. Please try again.')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _joining = false);
+    }
+>>>>>>> 939fcc1 (Add public communities feature)
   }
 
   @override
