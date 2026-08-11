@@ -90,13 +90,8 @@ class _CommunitiesScreenState extends State<CommunitiesScreen> {
           FilledButton(
             onPressed: () async {
               if (nameCtrl.text.trim().isEmpty) return;
-<<<<<<< HEAD
-              await _createCommunity(nameCtrl.text.trim(), descCtrl.text.trim());
-              if (ctx.mounted) Navigator.pop(ctx);
-=======
               final created = await _createCommunity(nameCtrl.text.trim(), descCtrl.text.trim());
               if (created && ctx.mounted) Navigator.pop(ctx);
->>>>>>> 939fcc1 (Add public communities feature)
             },
             child: const Text('Create (50 🪙)'),
           ),
@@ -105,24 +100,6 @@ class _CommunitiesScreenState extends State<CommunitiesScreen> {
     );
   }
 
-  Future<void> _createCommunity(String name, String desc) async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return;
-    await FirebaseFirestore.instance.collection('communities').add({
-      'name': name,
-      'description': desc,
-      'createdBy': user.uid,
-      'createdByName': user.displayName ?? user.email ?? 'Unknown',
-      'createdAt': FieldValue.serverTimestamp(),
-      'memberCount': 1,
-      'members': [user.uid],
-    });
-    final userRef = FirebaseFirestore.instance.collection('users').doc(user.uid);
-    await userRef.set({
-      'coins': FieldValue.increment(-50),
-      'communities': FieldValue.arrayUnion([name]),
-    }, SetOptions(merge: true));
-  }
   Future<bool> _createCommunity(String name, String desc) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return false;
@@ -220,10 +197,7 @@ class _CommunitiesList extends StatelessWidget {
       stream: FirebaseFirestore.instance
           .collection('communities')
           .where('members', arrayContains: user.uid)
-<<<<<<< HEAD
           .orderBy('createdAt', descending: true)
-=======
->>>>>>> 939fcc1 (Add public communities feature)
           .snapshots(),
       builder: (ctx, snap) {
         if (snap.connectionState == ConnectionState.waiting) {
@@ -276,11 +250,8 @@ class _DiscoverList extends StatelessWidget {
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
           .collection('communities')
-<<<<<<< HEAD
-          .orderBy('memberCount', descending: true)
-=======
           .where('visibility', isEqualTo: 'public')
->>>>>>> 939fcc1 (Add public communities feature)
+          .orderBy('memberCount', descending: true)
           .limit(50)
           .snapshots(),
       builder: (ctx, snap) {
@@ -355,17 +326,6 @@ class _CommunityCardState extends State<_CommunityCard> {
 
   Future<void> _join() async {
     final user = FirebaseAuth.instance.currentUser;
-<<<<<<< HEAD
-    if (user == null || _joining) return;
-    setState(() => _joining = true);
-    try {
-      await FirebaseFirestore.instance.collection('communities').doc(widget.docId).update({
-        'members': FieldValue.arrayUnion([user.uid]),
-        'memberCount': FieldValue.increment(1),
-      });
-    } catch (_) {}
-    if (mounted) setState(() => _joining = false);
-=======
     if (user == null || _joining || widget.isMember) return;
     setState(() => _joining = true);
 
@@ -405,7 +365,6 @@ class _CommunityCardState extends State<_CommunityCard> {
     } finally {
       if (mounted) setState(() => _joining = false);
     }
->>>>>>> 939fcc1 (Add public communities feature)
   }
 
   @override
