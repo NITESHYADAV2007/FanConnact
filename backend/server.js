@@ -92,6 +92,165 @@ app.use("/api/players",playerRoutes);
 
 app.use("/api/venues", venueRoutes);
 
+// DB-backed rankings for every sport (player-rankings.json + procedural
+// fallbacks). Registered BEFORE the cricbuzz rankings router so requests like
+// /api/rankings/cricket/odi_bat_men serve the synced database instead of the
+// cricbuzz provider; unknown sports fall through via next() to that router.
+app.get("/api/rankings/:sport/:category?", async (req, res, next) => {
+  const { sport: sportId } = req.params;
+  const category = req.params.category || req.query.category || null;
+  const resolvedId = resolveSportKey(sportId);
+  const config = SPORTS[resolvedId];
+  if (!config) return next();
+
+  const cat = category || config.defaultCategory;
+
+  let players = [];
+
+  // Load from player-rankings.json if available
+  if (PLAYER_RANKINGS[resolvedId] && PLAYER_RANKINGS[resolvedId][cat]) {
+    players = PLAYER_RANKINGS[resolvedId][cat];
+    // Re-rank to ensure correct order
+    players.forEach((p, i) => (p.rank = i + 1));
+  } else {
+    // Fallback: generate procedurally
+    switch (resolvedId) {
+      case "cricket": {
+        const parts = cat.split("_");
+        const format = parts[0];
+        const role = parts[1];
+        const gender = parts[2] || "men";
+        const stat = parts[3] || "runs";
+        players = getCricketData(format, role, gender, stat);
+        break;
+      }
+      case "football": {
+        const fParts = cat.split("_");
+        const fStat = fParts[0];
+        const fGender = fParts[1] || "men";
+        if ((fStat === "scorers" || fStat === "assists") && fGender === "men") {
+          const apiPlayers = await fetchFootballScorers(fStat);
+          if (apiPlayers) {
+            players = apiPlayers;
+            break;
+          }
+        }
+        players = makeFootballPlayers(fStat, fGender);
+        break;
+      }
+      case "basketball": {
+        const apiBasketball = await fetchBasketballFromESPN(cat);
+        if (apiBasketball) {
+          players = apiBasketball;
+          break;
+        }
+        players = getBasketballData(cat);
+        break;
+      }
+      case "tennis": {
+        const tParts = cat.split("_");
+        const tType = tParts[0];
+        const tCat = tParts[1] || "singles";
+        if (tCat === "singles") {
+          const apiTennis = await fetchTennisFromESPN(tType);
+          if (apiTennis) {
+            players = apiTennis;
+            break;
+          }
+        }
+        players = makeTennisPlayers(tType, tCat);
+        break;
+      }
+      case "baseball": {
+        const apiBaseball = await fetchBaseballFromESPN(cat);
+        if (apiBaseball) {
+          players = apiBaseball;
+          break;
+        }
+        players = makeBaseballPlayers(cat);
+        break;
+      }
+      case "hockey": {
+        const hParts = cat.split("_");
+        const hStat = hParts[0];
+        const hGender = hParts[1] || "men";
+        players = makeHockeyPlayers(hStat, hGender);
+        break;
+      }
+      case "volleyball": {
+        const vParts = cat.split("_");
+        const vStat = vParts[0];
+        const vGender = vParts[1] || "men";
+        players = makeVolleyballPlayers(vStat, vGender);
+        break;
+      }
+      case "kabbaddi": {
+        players = makeKabaddiPlayers(cat);
+        break;
+      }
+      case "e-sports": {
+        players = makeEsportsPlayers(cat);
+        break;
+      }
+      case "table-tennis": {
+        const ttParts = cat.split("_");
+        const ttCat = ttParts[0];
+        const ttGender = ttParts[1] || "men";
+        players = makeTableTennisPlayers(ttCat, ttGender);
+        break;
+      }
+      case "rugby": {
+        const rParts = cat.split("_");
+        const rStat = rParts[0];
+        const rGender = rParts[1] || "men";
+        players = makeRugbyPlayers(rStat, rGender);
+        break;
+      }
+      case "golf": {
+        players = makeGolfPlayers(cat);
+        break;
+      }
+      case "mma": {
+        players = makeMmaPlayers(cat);
+        break;
+      }
+      default:
+        return next();
+    }
+  }
+
+  var dataSource = "generated";
+  if (PLAYER_RANKINGS[resolvedId] && PLAYER_RANKINGS[resolvedId][cat]) {
+    dataSource = "database";
+  } else if (players.length > 0 && players[0]._source) {
+    dataSource = players[0]._source;
+  }
+  const cleaned = players.slice(0, 100).map(function (p) {
+    if (p._source) {
+      var o = {};
+      Object.keys(p).forEach(function (k) {
+        if (k !== "_source") o[k] = p[k];
+      });
+      return o;
+    }
+    return p;
+  });
+  var pd = loadPlayerRankings();
+  res.json({
+    sport: sportId,
+    label: config.label,
+    title: config.title,
+    subtitle: config.subtitle,
+    category: cat,
+    defaultCategory: config.defaultCategory,
+    filters: config.filters,
+    columns: config.columns,
+    source: dataSource,
+    players: cleaned,
+    _lastSync: (pd._meta && pd._meta.lastSync) || null,
+  });
+});
+
 app.use("/api/rankings", rankingRoutes);
 
 // app.use("/api/news",newsRoutes); // doesn't work
@@ -3860,160 +4019,6 @@ app.get("/api/sports/:sport", (req, res) => {
 });
 
 // Get rankings for a sport with optional category
-app.get("/api/rankings/:sport/:category?", async (req, res) => {
-  const { sport: sportId, category } = req.params;
-  const resolvedId = resolveSportKey(sportId);
-  const config = SPORTS[resolvedId];
-  if (!config) return res.status(404).json({ error: "Sport not found" });
-
-  const cat = category || config.defaultCategory;
-
-  let players = [];
-
-  // Load from player-rankings.json if available
-  if (PLAYER_RANKINGS[resolvedId] && PLAYER_RANKINGS[resolvedId][cat]) {
-    players = PLAYER_RANKINGS[resolvedId][cat];
-    // Re-rank to ensure correct order
-    players.forEach((p, i) => (p.rank = i + 1));
-  } else {
-    // Fallback: generate procedurally
-    switch (resolvedId) {
-      case "cricket": {
-        const parts = cat.split("_");
-        const format = parts[0];
-        const role = parts[1];
-        const gender = parts[2] || "men";
-        const stat = parts[3] || "runs";
-        players = getCricketData(format, role, gender, stat);
-        break;
-      }
-      case "football": {
-        const fParts = cat.split("_");
-        const fStat = fParts[0];
-        const fGender = fParts[1] || "men";
-        if ((fStat === "scorers" || fStat === "assists") && fGender === "men") {
-          const apiPlayers = await fetchFootballScorers(fStat);
-          if (apiPlayers) {
-            players = apiPlayers;
-            break;
-          }
-        }
-        players = makeFootballPlayers(fStat, fGender);
-        break;
-      }
-      case "basketball": {
-        const apiBasketball = await fetchBasketballFromESPN(cat);
-        if (apiBasketball) {
-          players = apiBasketball;
-          break;
-        }
-        players = getBasketballData(cat);
-        break;
-      }
-      case "tennis": {
-        const tParts = cat.split("_");
-        const tType = tParts[0];
-        const tCat = tParts[1] || "singles";
-        if (tCat === "singles") {
-          const apiTennis = await fetchTennisFromESPN(tType);
-          if (apiTennis) {
-            players = apiTennis;
-            break;
-          }
-        }
-        players = makeTennisPlayers(tType, tCat);
-        break;
-      }
-      case "baseball": {
-        const apiBaseball = await fetchBaseballFromESPN(cat);
-        if (apiBaseball) {
-          players = apiBaseball;
-          break;
-        }
-        players = makeBaseballPlayers(cat);
-        break;
-      }
-      case "hockey": {
-        const hParts = cat.split("_");
-        const hStat = hParts[0];
-        const hGender = hParts[1] || "men";
-        players = makeHockeyPlayers(hStat, hGender);
-        break;
-      }
-      case "volleyball": {
-        const vParts = cat.split("_");
-        const vStat = vParts[0];
-        const vGender = vParts[1] || "men";
-        players = makeVolleyballPlayers(vStat, vGender);
-        break;
-      }
-      case "kabbaddi": {
-        players = makeKabaddiPlayers(cat);
-        break;
-      }
-      case "e-sports": {
-        players = makeEsportsPlayers(cat);
-        break;
-      }
-      case "table-tennis": {
-        const ttParts = cat.split("_");
-        const ttCat = ttParts[0];
-        const ttGender = ttParts[1] || "men";
-        players = makeTableTennisPlayers(ttCat, ttGender);
-        break;
-      }
-      case "rugby": {
-        const rParts = cat.split("_");
-        const rStat = rParts[0];
-        const rGender = rParts[1] || "men";
-        players = makeRugbyPlayers(rStat, rGender);
-        break;
-      }
-      case "golf": {
-        players = makeGolfPlayers(cat);
-        break;
-      }
-      case "mma": {
-        players = makeMmaPlayers(cat);
-        break;
-      }
-      default:
-        return res.status(404).json({ error: "Sport not found" });
-    }
-  }
-
-  var dataSource = "generated";
-  if (PLAYER_RANKINGS[resolvedId] && PLAYER_RANKINGS[resolvedId][cat]) {
-    dataSource = "database";
-  } else if (players.length > 0 && players[0]._source) {
-    dataSource = players[0]._source;
-  }
-  const cleaned = players.slice(0, 100).map(function (p) {
-    if (p._source) {
-      var o = {};
-      Object.keys(p).forEach(function (k) {
-        if (k !== "_source") o[k] = p[k];
-      });
-      return o;
-    }
-    return p;
-  });
-  var pd = loadPlayerRankings();
-  res.json({
-    sport: sportId,
-    label: config.label,
-    title: config.title,
-    subtitle: config.subtitle,
-    category: cat,
-    defaultCategory: config.defaultCategory,
-    filters: config.filters,
-    columns: config.columns,
-    source: dataSource,
-    players: cleaned,
-    _lastSync: (pd._meta && pd._meta.lastSync) || null,
-  });
-});
-
 // ─── CRICKET PLAYER RANKINGS (cricket-live-line1, real images) ───────────────
 // category: 1=batting, 2=bowling, 3=all-rounders (men). Returns top players.
 app.get("/api/cricket-rankings/:category?", async (req, res) => {
