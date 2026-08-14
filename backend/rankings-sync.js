@@ -18,7 +18,7 @@ function loadEnv() {
 }
 loadEnv();
 const API_SPORTS_KEY = process.env.API_SPORTS_KEY || '';
-const RAPID_API_KEY = process.env.CRICKET_KEY || "31ee070a54mshd6171aacb85b007p1443ccjsnf7c39463a592";
+const RAPID_API_KEY = process.env.CRICKET_KEY || "";
 
 const DATA_DIR = path.join(__dirname, '..', 'data');
 const PLAYER_RANKINGS_PATH = path.join(DATA_DIR, 'player-rankings.json');

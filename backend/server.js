@@ -4584,7 +4584,7 @@ app.get('/api/matches', async (req, res) => {
 // ─── SPORTS NEWS (newsdata.io, sports-only, sport + language filter) ─────────
 // Keys are overridable via env vars (set these on Render) but fall back to the
 // bundled defaults so the server runs out-of-the-box locally and on deploy.
-const NEWSDATA_KEY = process.env.NEWSDATA_KEY || "pub_184098b793e746988f90ccfb09fd9972";
+const NEWSDATA_KEY = process.env.NEWSDATA_KEY || "";
 // Map app sport keys -> newsdata category / query keyword.
 const NEWS_SPORT_QUERY = {
   all: "sports",
@@ -4678,7 +4678,7 @@ async function fetchSportsNews({ sport = "all", language = "en", country = "" })
 }
 
 // Currents API (free tier, no daily-quota cost for individual users).
-const CURRENTS_KEY = process.env.CURRENTS_KEY || "BrnWuEr94XsAc5qamVCNN-RJGYqobJvE6u43RUqrGC08prWS";
+const CURRENTS_KEY = process.env.CURRENTS_KEY || "";
 async function fetchCurrentsNews({ sport = "all", language = "en", region = "" }) {
   try {
     const cat = sport === "all" ? "sports" : sport;
@@ -4933,7 +4933,7 @@ app.get("/api/news", async (req, res) => {
 });
 
 // ─── SPORTS REELS (Instagram proxy, sport-filtered) ─────────────────────────
-const IG_KEY = process.env.IG_KEY || "d7a1cb1419msh72f3fc2b2903617p18a3abjsn3b24b2735a2d";
+const IG_KEY = process.env.IG_KEY || "";
 // Map app sport keys -> Instagram accounts that post sports reels.
 const REEL_SPORT_ACCOUNTS = {
   all: ["espn", "nba"],
@@ -5069,9 +5069,9 @@ app.get("/api/reels", async (req, res) => {
 });
 
 // ─── REAL MATCHES (allsportsapi2 for most sports, cricbuzz for cricket) ─────
-const ALLSPORTS_KEY = process.env.ALLSPORTS_KEY || "d7a1cb1419msh72f3fc2b2903617p18a3abjsn3b24b2735a2d";
+const ALLSPORTS_KEY = process.env.ALLSPORTS_KEY || "";
 // New cricket API (cricket-live-line1) — live scores, news, rankings, team logos.
-const CRICKET_KEY = process.env.CRICKET_KEY || "31ee070a54mshd6171aacb85b007p1443ccjsnf7c39463a592";
+const CRICKET_KEY = process.env.CRICKET_KEY || "";
 const CRICKET_HOST = "cricket-live-line1.p.rapidapi.com";
 async function fetchCricketLine(path, key = CRICKET_KEY) {
   const ctrl = new AbortController();
@@ -5501,7 +5501,7 @@ async function fetchCricbuzzHscard(id) {
 // NOTE: This RapidAPI host only exposes /football-players-search (player
 // search). It has NO live-match endpoint, so we use it for player enrichment
 // and fall back to allsportsapi2 for actual live football matches.
-const FOOTBALL_KEY = process.env.FOOTBALL_KEY || "31ee070a54mshd6171aacb85b007p1443ccjsnf7c39463a592";
+const FOOTBALL_KEY = process.env.FOOTBALL_KEY || "";
 const FOOTBALL_HOST = "free-api-live-football-data.p.rapidapi.com";
 async function fetchFootballPlayers(search) {
   const ctrl = new AbortController();
@@ -5526,7 +5526,7 @@ async function fetchFootballPlayers(search) {
 // NOTE: This RapidAPI host only exposes /sports (a list of available sports).
 // It has NO live-match/odds endpoint, so we use it to enumerate sports and
 // fall back to allsportsapi2 for actual live matches of other sports.
-const ODDS_KEY = process.env.ODDS_KEY || "31ee070a54mshd6171aacb85b007p1443ccjsnf7c39463a592";
+const ODDS_KEY = process.env.ODDS_KEY || "";
 const ODDS_HOST = "odds-api1.p.rapidapi.com";
 async function fetchOddsSports() {
   const ctrl = new AbortController();

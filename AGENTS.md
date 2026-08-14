@@ -1,5 +1,13 @@
 # Session Summary
 
+## CURRENT: Full Crex-style Match Center (DONE — deployed 2026-08-14)
+- **Backend** (deployed to Render, commit `7905def`): `GET /api/real/cricket/proxy/matches/:id/wagons` (derived from ballsGraph, normalized 0..1, dot/single/multi/four/six, graceful `{wagons:[],derived:false,error}`) + `GET /matches/:id/oddshistory` (empty list) in `routes/real.cricket.proxy.routes.js`; `getWagons(matchId, iid=1)` in `providers/cricbuzz/matches.provider.js`; presence endpoints `GET /api/presence/total` + `GET /api/presence/online?matchId=` (presenceManager `getWatchingCount`, activeUsers `getTotalCount`). All verified live on Render.
+- **Firestore rules**: `firestore.rules` was structurally broken (matches outside `match /databases/` block) — REWRITTEN + DEPLOYED via `firebase deploy --only firestore:rules` (project `fanconnact`). Covers users, communities (join AND leave), `communities/{communityId}/posts`, `match_discussions/{matchId}/posts`.
+- **App**: `lib/services/match_discussion_service.dart` (NEW — Firestore posts/replies/likes; replies must use `Timestamp.now()` NOT `serverTimestamp` — illegal in arrayUnion). `match_detail_screen.dart`: commentary tab rewritten (inning chips synced w/ scorecard, over-grouped cards, color-coded badges, auto-scroll, animation only on new events via `_lastEventKey`); `_LiveBallFeed` (15 balls, 5s poll); wagon wheel card + `_WagonWheelDataPainter` in Graphs; `Discuss` tab when logged in. `communities_screen.dart` fully rewritten (hero banner w/ online count, category chips, search, Discover/My tabs, `_PresenceBadge` 25s poll, `_CommunityDetailScreen` w/ posts+likes+replies, 50-coin create). `series_screen.dart` cleaned.
+- **QA**: `flutter analyze` → 0 errors 0 warnings (224 pre-existing info-level deprecations remain); debug APK built.
+- **KEY SECURITY**: all hardcoded RapidAPI keys REMOVED from `server.js`/`rankings-sync.js` → env-only (`process.env.X || ""`). Set keys in `backend/.env` (gitignored, `CHANGE_ME` placeholders) locally + same vars in Render Environment. Old keys remain in git history → rotate in RapidAPI (new app = new keys).
+- **TODO**: install APK when device connected (`adb install -r build\app\outputs\flutter-apk\app-debug.apk`).
+
 ## RULE (ALWAYS): APP ONLY — NEVER TOUCH WEBSITE
 - ALWAYS make changes ONLY in the Flutter app (`lib/`, `pubspec.yaml`, etc.).
 - NEVER modify, edit, or create anything for the website: no `index.html`, `*.html`, `css/`, `js/` (except if it's backend serving the app). The website must NEVER be harmed.

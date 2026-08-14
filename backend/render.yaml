@@ -17,11 +17,19 @@ services:
         value: 3001
       - key: DAILY_API_LIMIT
         value: 100
-      # API keys (optional — server falls back to bundled defaults if omitted).
-      # For best security, set these as "secret" env vars in the Render dashboard.
+      # API keys (optional — server degrades gracefully if omitted).
+      # Set these as "secret" env vars in the Render dashboard.
+      - key: CRICBUZZ_API_KEY
+        sync: false
+      - key: CRICBUZZ_API_HOST
+        value: cricbuzz-cricket.p.rapidapi.com
+      - key: CRICBUZZ_BASE_URL
+        value: https://cricbuzz-cricket.p.rapidapi.com
       - key: NEWSDATA_KEY
         sync: false
       - key: ALLSPORTS_KEY
+        sync: false
+      - key: CURRENTS_KEY
         sync: false
       - key: IG_KEY
         sync: false
