@@ -13,54 +13,40 @@ service cloud.firestore {
       allow read: if true;
       allow create: if request.auth != null;
     }
-   match /users/{userId} {
-
-    // PUBLIC leaderboard + user profiles: every registered fan must be
-    // listable by XP and viewable by anyone (logged in or not). Reads are
-    // public; writes stay restricted to the document owner (so a user can
-    // only edit their own followers/following arrays).
-    allow read: if true;
-
-    // User can edit only his own profile
-    allow write: if request.auth != null
-                 && request.auth.uid == userId;
-
-    // Allow any logged-in user to ADD themselves to another user's
-    // followRequests array (used by the "Follow" button to send a request).
-    // They can only ever add their OWN uid to followRequests — never remove
-    // or modify other fields.
-    allow update: if request.auth != null
-                 && request.resource.data.followRequests.hasAll(resource.data.followRequests)
-                 && request.resource.data.followRequests.removeAll(resource.data.followRequests).size() == 1
-                 && request.resource.data.followRequests.removeAll(resource.data.followRequests)[0] == request.auth.uid
-                 && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['followRequests']);
-
-}
-  }
-}
-
     match /users/{userId} {
-      allow read: if true;
-      allow write: if request.auth != null && request.auth.uid == userId;
 
+      // PUBLIC leaderboard + user profiles: every registered fan must be
+      // listable by XP and viewable by anyone (logged in or not). Reads are
+      // public; writes stay restricted to the document owner (so a user can
+      // only edit their own followers/following arrays).
+      allow read: if true;
+
+      // User can edit only his own profile
+      allow write: if request.auth != null
+                   && request.auth.uid == userId;
+
+      // Allow any logged-in user to ADD themselves to another user's
+      // followRequests array (used by the "Follow" button to send a request).
+      // They can only ever add their OWN uid to followRequests — never remove
+      // or modify other fields.
       allow update: if request.auth != null
-                    && request.resource.data.followRequests.hasAll(resource.data.followRequests)
-                    && request.resource.data.followRequests.removeAll(resource.data.followRequests).size() == 1
-                    && request.resource.data.followRequests.removeAll(resource.data.followRequests)[0] == request.auth.uid
-                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['followRequests']);
+                   && request.resource.data.followRequests.hasAll(resource.data.followRequests)
+                   && request.resource.data.followRequests.removeAll(resource.data.followRequests).size() == 1
+                   && request.resource.data.followRequests.removeAll(resource.data.followRequests)[0] == request.auth.uid
+                   && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['followRequests']);
     }
 
     match /communities/{communityId} {
       // Public communities are discoverable by everyone. Members may also
-      // read their community if visibility is changed later.
+      // read their community if visibility is private or changed later.
       allow read: if resource.data.visibility == 'public'
                   || (request.auth != null && request.auth.uid in resource.data.members);
 
-      // Any authenticated user can create a public community. The creator
-      // starts as the first member.
+      // Any authenticated user can create a public or private community.
+      // The creator starts as the first member.
       allow create: if request.auth != null
                     && request.resource.data.createdBy == request.auth.uid
-                    && request.resource.data.visibility == 'public'
+                    && request.resource.data.visibility in ['public', 'private']
                     && request.resource.data.memberCount == 1
                     && request.resource.data.members.size() == 1
                     && request.resource.data.members[0] == request.auth.uid
@@ -74,13 +60,46 @@ service cloud.firestore {
       allow update: if request.auth != null
                     && resource.data.visibility == 'public'
                     && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['members', 'memberCount'])
-                    && request.resource.data.members.hasAll(resource.data.members)
-                    && request.resource.data.members.removeAll(resource.data.members).size() == 1
-                    && request.resource.data.members.removeAll(resource.data.members)[0] == request.auth.uid
-                    && request.resource.data.memberCount == resource.data.memberCount + 1;
+                    && ((request.resource.data.members.hasAll(resource.data.members)
+                         && request.resource.data.members.removeAll(resource.data.members).size() == 1
+                         && request.resource.data.members.removeAll(resource.data.members)[0] == request.auth.uid
+                         && request.resource.data.memberCount == resource.data.memberCount + 1)
+                        ||
+                        (resource.data.members.hasAll(request.resource.data.members)
+                         && resource.data.members.removeAll(request.resource.data.members).size() == 1
+                         && resource.data.members.removeAll(request.resource.data.members)[0] == request.auth.uid
+                         && request.resource.data.memberCount == resource.data.memberCount - 1));
 
       allow delete: if request.auth != null
                     && resource.data.createdBy == request.auth.uid;
+
+      // Community posts feed (vertical feed + likes). Writers must be
+      // members; the post must be authored by the caller.
+      match /posts/{postId} {
+        allow read: if request.auth != null
+                    || get(/databases/$(database)/documents/communities/$(communityId)).data.visibility == 'public';
+        allow create: if request.auth != null
+                      && request.auth.uid in get(/databases/$(database)/documents/communities/$(communityId)).data.members
+                      && request.resource.data.uid == request.auth.uid
+                      && request.resource.data.text is string;
+        allow update: if request.auth != null
+                      && (request.auth.uid in get(/databases/$(database)/documents/communities/$(communityId)).data.members
+                          || resource.data.uid == request.auth.uid);
+        allow delete: if request.auth != null && resource.data.uid == request.auth.uid;
+      }
+    }
+
+    match /match_discussions/{matchId}/posts/{postId} {
+      // Persistent per-match discussion board (Match Center "Discuss" tab).
+      // Anyone can read; authenticated users create/update (like/reply);
+      // only the author deletes.
+      allow read: if true;
+      allow create: if request.auth != null
+                    && request.resource.data.uid == request.auth.uid
+                    && request.resource.data.text is string;
+      allow update: if request.auth != null;
+      allow delete: if request.auth != null
+                    && resource.data.uid == request.auth.uid;
     }
   }
 }

@@ -4,7 +4,9 @@
 
 import 'package:flutter/material.dart';
 import '../theme.dart';
+import '../data.dart';
 import '../services/rapid_api_service.dart';
+import '../services/news_service.dart';
 
 class PlayerDetailScreen extends StatefulWidget {
   final String sportKey;
@@ -26,6 +28,7 @@ class PlayerDetailScreen extends StatefulWidget {
 
 class _PlayerDetailScreenState extends State<PlayerDetailScreen> {
   Map<String, dynamic>? _player;
+  List<NewsItem> _news = [];
   bool _loading = true;
 
   // Keys we never want to show as a "stat" tile.
@@ -54,9 +57,20 @@ class _PlayerDetailScreenState extends State<PlayerDetailScreen> {
   }
 
   Future<void> _load() async {
+    int? pid;
     if (widget.sportKey == 'cricket') {
-      final pid = int.tryParse(widget.extra?['pid']?.toString() ??
-          widget.extra?['playerId']?.toString() ?? '');
+      pid = int.tryParse(widget.extra?['pid']?.toString() ??
+          widget.extra?['playerId']?.toString() ??
+          widget.extra?['player_id']?.toString() ?? '');
+      // No pid was passed (e.g. tapped from a scorecard/squad row). Resolve
+      // it by name so we can still show the full Crex-style profile.
+      if (pid == null && widget.name.isNotEmpty) {
+        try {
+          pid = await RapidApiService.fetchCricketPlayerIdByName(widget.name);
+        } catch (_) {
+          pid = null;
+        }
+      }
       if (pid != null) {
         // Rich Crex-style profile from cricket-live-line-advance
         // /players/{pid}/stats (real API, no backend). Falls back to
@@ -75,6 +89,22 @@ class _PlayerDetailScreenState extends State<PlayerDetailScreen> {
         }
       }
     }
+    // Real news about this player from the backend news feed.
+    try {
+      final sport = widget.sportKey == 'cricket' ? 'cricket' : widget.sportKey;
+      final items = await NewsService.fetchNews(sport: sport);
+      final tokens = widget.name
+          .toLowerCase()
+          .split(RegExp(r'\s+'))
+          .where((w) => w.length > 2)
+          .toList();
+      _news = items.where((n) {
+        final hay = '${n.title} ${n.source}'.toLowerCase();
+        return tokens.any((t) => hay.contains(t));
+      }).take(6).toList();
+    } catch (_) {
+      _news = [];
+    }
     if (mounted) {
       setState(() => _loading = false);
     }
@@ -84,7 +114,7 @@ class _PlayerDetailScreenState extends State<PlayerDetailScreen> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     // The new /players/{pid}/stats endpoint returns the full response directly
-    final p = _player as Map<String, dynamic>?;
+    final p = _player;
     // The API returns {player:{...}, batting:{...}, bowling:{...}, bio, ...}
     final playerData = p?['player'] as Map<String, dynamic>?;
     final name = widget.name.isNotEmpty
@@ -230,32 +260,38 @@ class _PlayerDetailScreenState extends State<PlayerDetailScreen> {
 
                 // ── Cricket-specific info + career ──
                 if (widget.sportKey == 'cricket') ...[
-                  _InfoTile('Batting Style',
-                      p?['batting_style']?.toString() ?? '—'),
-                  _InfoTile('Bowling Style',
-                      p?['bowling_style']?.toString() ?? '—'),
-                  _InfoTile('Born', p?['birthdate']?.toString() ?? '—'),
-                  _InfoTile('Birth Place',
-                      p?['birthplace']?.toString() ?? '—'),
-                  if (p?['bio'] != null && p!['bio'].toString().isNotEmpty)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 12),
-                      child: Text(
-                        _stripHtml(p['bio'].toString()),
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: isDark ? Colors.white70 : Colors.black54,
-                          height: 1.5,
+                  if (_player != null) ...[
+                    _InfoTile('Batting Style',
+                        p?['batting_style']?.toString() ?? '—'),
+                    _InfoTile('Bowling Style',
+                        p?['bowling_style']?.toString() ?? '—'),
+                    _InfoTile('Born', p?['birthdate']?.toString() ?? '—'),
+                    _InfoTile('Birth Place',
+                        p?['birthplace']?.toString() ?? '—'),
+                    if (p?['bio'] != null && p!['bio'].toString().isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 12),
+                        child: Text(
+                          _stripHtml(p['bio'].toString()),
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: isDark ? Colors.white70 : Colors.black54,
+                            height: 1.5,
+                          ),
                         ),
                       ),
-                    ),
-                  // Career stats from /players/{pid}/stats (batting + bowling)
-                  if (_player?['batting'] is Map)
-                    _buildFormatStats('Batting Career',
-                        _player!['batting'] as Map, isDark),
-                  if (_player?['bowling'] is Map)
-                    _buildFormatStats('Bowling Career',
-                        _player!['bowling'] as Map, isDark),
+                    // Career stats from /players/{pid}/stats (batting + bowling)
+                    if (_player?['batting'] is Map)
+                      _buildFormatStats('Batting Career',
+                          _player!['batting'] as Map, isDark),
+                    if (_player?['bowling'] is Map)
+                      _buildFormatStats('Bowling Career',
+                          _player!['bowling'] as Map, isDark),
+                  ] else ...[
+                    // No linked profile yet — show the real ICC ranking data
+                    // we already have (rating / points / format / rank).
+                    _buildRankingSnapshot(isDark),
+                  ],
                 ] else ...[
                   // ── Generic Crex-style stat grid for all other sports ──
                   if (statEntries.isNotEmpty) ...[
@@ -317,6 +353,20 @@ class _PlayerDetailScreenState extends State<PlayerDetailScreen> {
                         style: TextStyle(color: Colors.grey),
                       ),
                     ),
+                  // ── Latest news about this player (real backend news) ──
+                  if (_news.isNotEmpty) ...[
+                    const SizedBox(height: 18),
+                    const Text(
+                      'LATEST NEWS',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.brandBlue,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    ..._news.map((n) => _NewsCard(item: n, isDark: isDark)),
+                  ],
                 ],
               ],
             ),
@@ -413,6 +463,166 @@ class _PlayerDetailScreenState extends State<PlayerDetailScreen> {
         .replaceAll(RegExp(r'\s+'), ' ')
         .trim();
   }
+
+  // Real ICC ranking snapshot shown when no linked full-career profile
+  // (pid) is available. Uses the genuine ranking data we already have.
+  Widget _buildRankingSnapshot(bool isDark) {
+    final extra = widget.extra ?? <String, dynamic>{};
+    final stats = <MapEntry<String, String>>[];
+    String? val(String k) {
+      final v = extra[k];
+      if (v == null) return null;
+      final s = v.toString().trim();
+      if (s.isEmpty || s == '0') return null;
+      return s;
+    }
+
+    final rank = extra['rank']?.toString();
+    if (rank != null && rank.isNotEmpty && rank != '0') {
+      stats.add(MapEntry('ICC Rank', '#$rank'));
+    }
+    final rating = val('rating');
+    if (rating != null) stats.add(MapEntry('Rating', rating));
+    final points = val('points');
+    if (points != null) stats.add(MapEntry('Points', points));
+    final matches = val('matches');
+    if (matches != null) stats.add(MapEntry('Matches', matches));
+    final runs = val('runs');
+    if (runs != null) stats.add(MapEntry('Runs', runs));
+    final wkts = val('wkts');
+    if (wkts != null) stats.add(MapEntry('Wickets', wkts));
+    final avg = val('avg');
+    if (avg != null) stats.add(MapEntry('Average', avg));
+    final econ = val('econ');
+    if (econ != null) stats.add(MapEntry('Economy', econ));
+    final format = extra['format']?.toString();
+    if (format != null && format.isNotEmpty) {
+      stats.add(MapEntry('Format', format));
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('ICC RANKING',
+            style: TextStyle(
+                fontSize: 14, fontWeight: FontWeight.w800, color: AppColors.brandBlue)),
+        const SizedBox(height: 8),
+        if (stats.isEmpty)
+          const Text('No ranking stats available for this player.',
+              style: TextStyle(color: Colors.grey))
+        else
+          GridView.count(
+            crossAxisCount: 2,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            mainAxisSpacing: 8,
+            crossAxisSpacing: 8,
+            childAspectRatio: 2.6,
+            children: stats
+                .map((e) => Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        color: isDark ? AppColors.darkCard : Colors.white,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(e.key,
+                              style: const TextStyle(fontSize: 10, color: Colors.grey)),
+                          const SizedBox(height: 2),
+                          Text(e.value,
+                              style: const TextStyle(
+                                  fontSize: 15, fontWeight: FontWeight.w800)),
+                        ],
+                      ),
+                    ))
+                .toList(),
+          ),
+        const SizedBox(height: 8),
+        Text(
+          'Full career stats, recent matches and bio load automatically when a '
+          'player profile is linked. Tap a player from a live match scorecard '
+          'to open the complete Crex-style breakdown.',
+          style: TextStyle(
+              fontSize: 11, color: isDark ? Colors.white54 : Colors.black45),
+        ),
+      ],
+    );
+  }
+
+  Widget _NewsCard({required NewsItem item, required bool isDark}) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        color: isDark ? AppColors.darkCard : Colors.white,
+        border: Border.all(color: Colors.grey.withValues(alpha: 0.12)),
+      ),
+      child: Row(
+        children: [
+          if (item.image != null && item.image!.isNotEmpty)
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Image.network(item.image!,
+                  width: 64, height: 64, fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => _newsThumb(item)),
+            )
+          else
+            _newsThumb(item),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: AppColors.brandBlue.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(item.tag,
+                      style: const TextStyle(
+                          fontSize: 9,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.brandBlue,
+                          letterSpacing: 0.4)),
+                ),
+                const SizedBox(height: 6),
+                Text(item.title,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.w700, fontSize: 13),
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis),
+                const SizedBox(height: 4),
+                Text(item.source,
+                    style: TextStyle(
+                        fontSize: 11,
+                        color: isDark ? Colors.white60 : Colors.black45)),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _newsThumb(NewsItem item) {
+    return Container(
+      width: 64,
+      height: 64,
+      decoration: BoxDecoration(
+        color: AppColors.brandBlue.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Center(
+        child: Text(item.sportEmoji, style: const TextStyle(fontSize: 26)),
+      ),
+    );
+  }
+
 
   Widget _InfoTile(String label, String value) {
     final isDark = Theme.of(context).brightness == Brightness.dark;

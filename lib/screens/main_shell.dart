@@ -76,6 +76,8 @@ class _MainShellState extends State<MainShell> {
           builder: (_) => LoginScreen(
             isDark: widget.isDark,
             onToggleTheme: _toggleTheme,
+            themeType: widget.themeType,
+            onThemeChanged: widget.onThemeChanged,
             locale: widget.locale,
             onLocaleChanged: widget.onLocaleChanged,
             accentColor: widget.accentColor,

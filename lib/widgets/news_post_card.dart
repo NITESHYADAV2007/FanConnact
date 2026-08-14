@@ -16,8 +16,6 @@ class NewsPostCard extends StatefulWidget {
 
 class _NewsPostCardState extends State<NewsPostCard> {
   bool _liked = false;
-  final int _likeCount = 0;
-  final int _commentCount = 0;
   final TextEditingController _commentCtl = TextEditingController();
   final List<String> _comments = [];
 

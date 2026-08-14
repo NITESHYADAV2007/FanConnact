@@ -104,6 +104,30 @@ class RapidApiService {
     return null;
   }
 
+  // Resolve a cricket player's pid by name (case-insensitive match against
+  // title / short_name / name / fullname). Uses the cached /players list, so
+  // the first call costs one quota unit and later calls are free for 10 min.
+  // Returns null when no match is found.
+  static Future<int?> fetchCricketPlayerIdByName(String name) async {
+    final target = name.trim().toLowerCase();
+    if (target.isEmpty) return null;
+    final players = await fetchCricketPlayers();
+    for (final p in players) {
+      final candidates = <String?>[
+        p['title']?.toString(),
+        p['short_name']?.toString(),
+        p['name']?.toString(),
+        p['fullname']?.toString(),
+      ].whereType<String>().map((s) => s.toLowerCase()).toList();
+      if (candidates.any((c) =>
+          c == target || c.contains(target) || target.contains(c))) {
+        final pid = int.tryParse(p['pid']?.toString() ?? '');
+        if (pid != null) return pid;
+      }
+    }
+    return null;
+  }
+
   // ── Cricket player STATS (cricket-live-line-advance, DIRECT) ──
   // GET /players/{pid}/stats → {player:{...}, batting:{test,odi,t20i,t20,lista},
   // bowling:{...}, series_stats:[...], bio, debut_data:[...]}.

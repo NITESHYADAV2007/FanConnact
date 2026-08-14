@@ -249,7 +249,6 @@ class _HomeScreenState extends State<HomeScreen> {
   void _openNotifications(BuildContext context) {
     final lang = widget.locale.languageCode;
     final t = (String k) => AppStrings.get(lang, k);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final entries = [
       (Icons.sensors, 'Live Match Alerts', 'liveMatchAlerts'),
       (Icons.article_outlined, 'Breaking News', 'breakingNews'),
@@ -750,6 +749,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       builder: (_) => LoginScreen(
                         isDark: widget.isDark,
                         onToggleTheme: widget.onToggleTheme,
+                        themeType: widget.themeType,
+                        onThemeChanged: widget.onThemeChanged,
                         locale: widget.locale,
                         onLocaleChanged: widget.onLocaleChanged,
                         accentColor: widget.accentColor,

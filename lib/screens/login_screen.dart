@@ -12,6 +12,8 @@ import 'signup_screen.dart';
 class LoginScreen extends StatefulWidget {
   final bool isDark;
   final VoidCallback onToggleTheme;
+  final ThemeType themeType;
+  final ValueChanged<ThemeType> onThemeChanged;
   final Locale locale;
   final ValueChanged<Locale> onLocaleChanged;
   final Color accentColor;
@@ -21,6 +23,8 @@ class LoginScreen extends StatefulWidget {
     super.key,
     required this.isDark,
     required this.onToggleTheme,
+    required this.themeType,
+    required this.onThemeChanged,
     required this.locale,
     required this.onLocaleChanged,
     required this.accentColor,
@@ -79,6 +83,8 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
         builder: (_) => SignupScreen(
           isDark: widget.isDark,
           onToggleTheme: widget.onToggleTheme,
+          themeType: widget.themeType,
+          onThemeChanged: widget.onThemeChanged,
           locale: widget.locale,
           onLocaleChanged: widget.onLocaleChanged,
           accentColor: widget.accentColor,
@@ -311,7 +317,14 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                                 color: accent.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(16),
                               ),
-                              child: Icon(Icons.sports, size: 32, color: accent),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(14),
+                                child: Image.asset(
+                                  'assets/fancoin/fanconnactlogo.png',
+                                  width: 56, height: 56, fit: BoxFit.cover,
+                                  errorBuilder: (_, _, _) => Icon(Icons.sports, size: 32, color: accent),
+                                ),
+                              ),
                             ),
                             const SizedBox(height: 20),
                             Text(

@@ -83,4 +83,30 @@ router.post("/leave", (req, res) => {
 
 });
 
+// How many users are currently watching a match/community (live badge).
+router.get("/online", (req, res) => {
+
+    const matchId = (req.query.matchId || "").toString();
+
+    res.json({
+
+        matchId,
+
+        count: matchId ? presence.getWatchingCount(matchId) : 0
+
+    });
+
+});
+
+// Total active fans across every watched match/community (hero stat).
+router.get("/total", (req, res) => {
+
+    res.json({
+
+        count: presence.getTotalCount()
+
+    });
+
+});
+
 module.exports = router;

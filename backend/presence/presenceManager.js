@@ -39,6 +39,18 @@ class PresenceManager {
 
     }
 
+    getWatchingCount(matchId) {
+
+        return activeUsers.getWatchingCount(matchId);
+
+    }
+
+    getTotalCount() {
+
+        return activeUsers.getTotalCount();
+
+    }
+
 }
 
 module.exports =

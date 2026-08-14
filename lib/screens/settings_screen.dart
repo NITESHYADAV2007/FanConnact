@@ -376,6 +376,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
           builder: (_) => LoginScreen(
             isDark: widget.isDark,
             onToggleTheme: widget.onToggleTheme,
+            themeType: widget.themeType,
+            onThemeChanged: widget.onThemeChanged,
             locale: _locale,
             onLocaleChanged: widget.onLocaleChanged,
             accentColor: widget.accentColor,

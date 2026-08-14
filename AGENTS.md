@@ -1,5 +1,25 @@
 # Session Summary
 
+## RULE (ALWAYS): APP ONLY — NEVER TOUCH WEBSITE
+- ALWAYS make changes ONLY in the Flutter app (`lib/`, `pubspec.yaml`, etc.).
+- NEVER modify, edit, or create anything for the website: no `index.html`, `*.html`, `css/`, `js/` (except if it's backend serving the app). The website must NEVER be harmed.
+- All feature changes go in the app ONLY.
+
+## NON-CRICKET ENRICHMENT — allsportsapi2 + FlashLive (REMEMBER)
+- **Goal**: enrich every non-cricket Match Center (football/NFL, basketball, baseball, hockey, kabaddi, esports, volleyball, tabletennis, tennis) with lineups, play-by-play commentary, shot map (basketball) and squad/player rosters.
+- **Shared RapidAPI key**: allsportsapi2, FlashLive AND cricbuzz ALL use the SAME key (`CRICKET_KEY`/`ALLSPORTS_KEY`). It is rate-limited (HTTP 429 seen). So the app NEVER calls these APIs directly — it calls the backend proxy.
+- **Backend proxy** (`backend/server.js`, serves the app → allowed):
+  - `GET /api/sport-detail/:sport/match/:id/incidents`
+  - `GET /api/sport-detail/:sport/match/:id/lineups`
+  - `GET /api/sport-detail/:sport/match/:id/shotmap?team=:teamId` (basketball only)
+  - `GET /api/sport-detail/:sport/team/:id/players`
+  - Routing: if `APP_TO_ALLSPORTS[sport]` exists → allsportsapi2 (basketball, baseball, american-football, volleyball); else → FlashLive (hockey, kabaddi, esports, tabletennis, tennis). All responses normalized to `{home:[{name,number,position,starter}],away:[...]}` / `{incidents:[...]}` / `{shotmap:[{x,y,made,missed,saved}]}` / `{players:[{name,position,number,height}]}`. Cached 10 min in-memory (`SPORT_DETAIL_CACHE`).
+  - `mapAllsportsEvent` already returns `matchId`/`teamIdA`/`teamIdB`; FlashLive mapping now also returns `teamIdA`/`teamIdB` (best-effort `HOME_TEAM_ID`/`AWAY_TEAM_ID`).
+- **allsportsapi2 coverage (verified)**: incidents ✅ all sports; lineups/players ✅ basketball/baseball/american-football (NOT volleyball — 404); shotmap ✅ basketball only.
+- **FlashLive coverage**: live `events/list` works for hockey/kabaddi/esports/tabletennis/tennis (gives `EVENT_ID`). Detail endpoints (incidents/lineups/players) attempted with fallback path probes; some may still 429/404 until verified — app hides empty tabs gracefully.
+- **App**: `lib/services/allsports_api_service.dart` calls the backend proxy (10-min client cache). `lib/widgets/sport_match_center.dart` has `SportCommentaryTab` (real incidents + mock fallback), `SportLineupsTab` (real lineups + mock), `SportSquadsTab` (real roster via players + mock), `SportShotmapTab` (basketball half-court chart). `lib/screens/match_detail_screen.dart` _tabs now: Scorecard, Lineups, Commentary, Live, Info, Squads, [Shotmap if basketball], Graphs, Series, News, (Live Chat, Games if logged in).
+- **NOTE**: "football" in the app maps to American Football (NFL) via allsportsapi2. Soccer has full allsportsapi2 data but the app has NO soccer live feed yet (separate sport entry needed).
+
 ## Full Crex-style Cricket Match Center (CURRENT)
 - **`lib/screens/match_detail_screen.dart`** fully redesigned for cricket:
   - **Dynamic tabs**: Cricket shows Scorecard > Commentary > Info > Squads > Series > Live Chat > Games; non-cricket keeps Info > Live Chat > Summary > Series > News > Games

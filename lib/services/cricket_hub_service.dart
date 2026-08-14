@@ -62,6 +62,13 @@ class CricketHubService {
   static Future<List<dynamic>> matchCommentary(String id, String inningId) =>
       _items('/matches/$id/innings/$inningId/commentary');
   static Future<List<dynamic>> matchOddsHistory(String id) => _items('/matches/$id/oddshistory');
+  static Future<Map<String, dynamic>> matchOversGraph(String id) => _get('/matches/$id/oversgraph');
+  static Future<Map<String, dynamic>> matchBallsGraph(String id, String inningId) =>
+      _get('/matches/$id/ballsgraph?iid=$inningId');
+  static Future<Map<String, dynamic>> matchPartnershipGraph(String id) =>
+      _get('/matches/$id/partnershipgraph');
+  static Future<Map<String, dynamic>> matchOvers(String id, String inningId) =>
+      _get('/matches/$id/overs?iid=$inningId');
 
   static Future<Map<String, dynamic>> teamInfo(String id) => _get('/teams/$id');
   static Future<List<dynamic>> teamPlayers(String id) => _items('/teams/$id/player');

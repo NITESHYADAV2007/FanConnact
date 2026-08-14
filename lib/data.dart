@@ -53,6 +53,8 @@ class MatchItem {
   final String? matchType;
   final String? venue;
   final String? seriesId;
+  final String? teamIdA;
+  final String? teamIdB;
 
   const MatchItem({
     required this.sport,
@@ -76,6 +78,8 @@ class MatchItem {
     this.matchType,
     this.venue,
     this.seriesId,
+    this.teamIdA,
+    this.teamIdB,
   });
 
   // Build from cricket-live-line-advance /matches endpoint.
@@ -168,8 +172,14 @@ class MatchItem {
               : null,
       status: (m['status'] ?? 'UPCOMING').toString(),
       time: (m['time'] ?? '').toString(),
-      matchId: (m['matchId'] ?? '').toString().isNotEmpty
-          ? m['matchId'].toString()
+      matchId: ((m['matchId'] ?? m['match_id'] ?? '').toString()).isNotEmpty
+          ? (m['matchId'] ?? m['match_id']).toString()
+          : null,
+      teamIdA: ((m['teamIdA'] ?? m['homeId'] ?? '').toString()).isNotEmpty
+          ? (m['teamIdA'] ?? m['homeId']).toString()
+          : null,
+      teamIdB: ((m['teamIdB'] ?? m['awayId'] ?? '').toString()).isNotEmpty
+          ? (m['teamIdB'] ?? m['awayId']).toString()
           : null,
       result: (m['result'] ?? '').toString().isNotEmpty
           ? m['result'].toString()

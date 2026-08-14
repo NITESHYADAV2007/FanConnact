@@ -60,6 +60,9 @@ require("./routes/browse.routes");
 const statsRoutes =
 require("./routes/stats.routes");
 
+const cricketProxyRoutes =
+require("./routes/real.cricket.proxy.routes");
+
 
 
 dotenv.config();
@@ -268,6 +271,24 @@ app.use("/api/archive", archiveRoutes);
 app.use("/api/browse", browseRoutes);
 
 app.use("/api/stats", statsRoutes);
+
+app.use("/api/real/cricket/proxy", cricketProxyRoutes);
+
+app.get("/api/quota", (req, res) => {
+  const u = apiUsage();
+  const used = u.count;
+  const limit = DAILY_API_LIMIT;
+  const remaining = Math.max(0, limit - used);
+  const msSinceMidnight = Date.now() % 86400000;
+  res.json({
+    used,
+    limit,
+    remaining,
+    exhausted: used >= limit,
+    resetsInHours: Math.round(((86400000 - msSinceMidnight) / 3600000) * 10) / 10,
+    date: u.date,
+  });
+});
 
 app.use(
 
@@ -5288,6 +5309,8 @@ async function fetchFlashLiveForSport(sportKey) {
           homeScore,
           awayScore,
           venue: "",
+          teamIdA: (ev.HOME_TEAM_ID ?? ev.HOME_ID ?? "").toString(),
+          teamIdB: (ev.AWAY_TEAM_ID ?? ev.AWAY_ID ?? "").toString(),
         });
       }
     }
@@ -5804,6 +5827,169 @@ app.get("/api/tournament-stats", async (req, res) => {
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
+});
+
+// ─── Unified non-cricket match detail proxy (allsportsapi2 + FlashLive) ──────
+// The app already holds the upstream match/team id for each sport (from
+// /api/live-matches). We just route to the correct upstream and normalize.
+// Cached 10 min to protect the shared RapidAPI key (allsportsapi2, FlashLive
+// and cricbuzz all share CRICKET_KEY / ALLSPORTS_KEY).
+const SPORT_DETAIL_CACHE = new Map();
+async function sportDetailCache(key, fetcher, ttlMs = 10 * 60 * 1000) {
+  const hit = SPORT_DETAIL_CACHE.get(key);
+  if (hit && Date.now() - hit.t < ttlMs) return hit.v;
+  let v = null;
+  try { v = await fetcher(); } catch (e) { v = null; }
+  SPORT_DETAIL_CACHE.set(key, { t: Date.now(), v });
+  return v;
+}
+function sportUsesAllsports(sport) { return !!APP_TO_ALLSPORTS[sport]; }
+async function allsportsGet(sport, sub) {
+  const slug = APP_TO_ALLSPORTS[sport] || sport;
+  const url = `https://allsportsapi2.p.rapidapi.com/api/${slug}${sub}`;
+  const r = await fetch(url, {
+    headers: { "x-rapidapi-key": ALLSPORTS_KEY, "x-rapidapi-host": "allsportsapi2.p.rapidapi.com" },
+    signal: AbortSignal.timeout(12000),
+  });
+  if (!r.ok) return null;
+  return await r.json().catch(() => null);
+}
+async function flashGet(sub) {
+  const url = `https://${FLASH_HOST}${sub}`;
+  const r = await fetch(url, {
+    headers: { "X-Rapidapi-Key": FLASH_KEY, "X-Rapidapi-Host": FLASH_HOST },
+    signal: AbortSignal.timeout(12000),
+  });
+  if (!r.ok) return null;
+  return await r.json().catch(() => null);
+}
+function _flashArr(j, keys) {
+  for (const k of keys) {
+    const v = j && j[k];
+    if (Array.isArray(v)) return v;
+  }
+  return null;
+}
+// Normalize either upstream's lineups response into {home:[...], away:[...]}.
+function _normLineups(j) {
+  const norm = (side) => {
+    const players = side && (side.players || side.lineup || side.startingXI || []);
+    return (Array.isArray(players) ? players : []).map((p) => ({
+      name: p.name || p.playerName || p.shortName || "",
+      number: p.jerseyNumber != null ? p.jerseyNumber : (p.number != null ? p.number : ""),
+      position: p.position || p.pos || "",
+      starter: p.substitute === true ? false : (p.substitute === false ? true : true),
+    }));
+  };
+  if (j && j.lineups) return { home: norm(j.lineups.home), away: norm(j.lineups.away) };
+  if (j && j.homeTeam && j.awayTeam) {
+    return { home: norm(j.homeTeam.lineups || j.homeTeam), away: norm(j.awayTeam.lineups || j.awayTeam) };
+  }
+  if (Array.isArray(j && j.home)) return { home: norm({ players: j.home }), away: norm({ players: j.away }) };
+  return { home: [], away: [] };
+}
+function _normPlayers(arr) {
+  return (Array.isArray(arr) ? arr : []).map((p) => ({
+    name: p.name || p.playerName || p.shortName || "",
+    position: p.position || p.pos || "",
+    number: p.jerseyNumber != null ? p.jerseyNumber : (p.number != null ? p.number : ""),
+    height: p.height || p.heightMeters || "",
+  }));
+}
+
+// Play-by-play commentary / incidents
+app.get("/api/sport-detail/:sport/match/:id/incidents", async (req, res) => {
+  const { sport, id } = req.params;
+  const data = await sportDetailCache(`inc_${sport}_${id}`, async () => {
+    if (sportUsesAllsports(sport)) {
+      const j = await allsportsGet(sport, `/match/${id}/incidents`);
+      return (j && Array.isArray(j.incidents)) ? j.incidents : [];
+    }
+    for (const p of [
+      `/v1/events/incidents?event_id=${id}&locale=en_GB`,
+      `/v1/events/commentary?event_id=${id}&locale=en_GB`,
+      `/v1/events/play_by_play?event_id=${id}&locale=en_GB`,
+    ]) {
+      const j = await flashGet(p);
+      const arr = _flashArr(j, ["DATA", "INCIDENTS", "results", "data"]);
+      if (arr && arr.length) {
+        return arr.map((x) => ({
+          text: x.TEXT || x.text || "",
+          time: x.TIME != null ? x.TIME : (x.time != null ? x.time : ""),
+          period: x.PERIOD || x.period || "",
+          type: x.TYPE || x.type || "",
+          homeScore: x.HOME_SCORE != null ? x.HOME_SCORE : (x.homeScore != null ? x.homeScore : ""),
+          awayScore: x.AWAY_SCORE != null ? x.AWAY_SCORE : (x.awayScore != null ? x.awayScore : ""),
+        }));
+      }
+    }
+    return [];
+  });
+  res.json({ incidents: data || [] });
+});
+
+// Lineups (home/away player lists)
+app.get("/api/sport-detail/:sport/match/:id/lineups", async (req, res) => {
+  const { sport, id } = req.params;
+  const data = await sportDetailCache(`line_${sport}_${id}`, async () => {
+    if (sportUsesAllsports(sport)) {
+      const j = await allsportsGet(sport, `/match/${id}/lineups`);
+      return _normLineups(j);
+    }
+    const j = await flashGet(`/v1/events/lineups?event_id=${id}&locale=en_GB`);
+    if (j && j.DATA) {
+      const norm = (side) => (_flashArr({ DATA: j.DATA[side] }, ["DATA"]) || []).map((p) => ({
+        name: p.NAME || p.name || "",
+        number: p.NUMBER != null ? p.NUMBER : (p.number != null ? p.number : ""),
+        position: p.POSITION || p.position || "",
+        starter: p.STARTER != null ? p.STARTER : (p.starter != null ? p.starter : true),
+      }));
+      return { home: norm("HOME"), away: norm("AWAY") };
+    }
+    return null;
+  });
+  res.json(data || { home: [], away: [] });
+});
+
+// Shot map (allsports basketball only)
+app.get("/api/sport-detail/:sport/match/:id/shotmap", async (req, res) => {
+  const { sport, id } = req.params;
+  const teamId = (req.query.team || "").toString();
+  if (!sportUsesAllsports(sport) || !teamId) return res.json({ shotmap: [] });
+  const data = await sportDetailCache(`shot_${sport}_${id}_${teamId}`, async () => {
+    const j = await allsportsGet(sport, `/match/${id}/team/${teamId}/shotmap`);
+    return (j && Array.isArray(j.shotmap)) ? j.shotmap : [];
+  });
+  res.json({ shotmap: data || [] });
+});
+
+// Team roster (players)
+app.get("/api/sport-detail/:sport/team/:id/players", async (req, res) => {
+  const { sport, id } = req.params;
+  const data = await sportDetailCache(`players_${sport}_${id}`, async () => {
+    if (sportUsesAllsports(sport)) {
+      const j = await allsportsGet(sport, `/team/${id}/players`);
+      const arr = (j && Array.isArray(j.players)) ? j.players : [];
+      return _normPlayers(arr);
+    }
+    for (const p of [
+      `/v1/teams/players?team_id=${id}&locale=en_GB`,
+      `/v1/players/list?team_id=${id}&locale=en_GB`,
+    ]) {
+      const j = await flashGet(p);
+      const arr = _flashArr(j, ["DATA", "players", "data"]);
+      if (arr && arr.length) {
+        return arr.map((x) => ({
+          name: x.NAME || x.name || "",
+          position: x.POSITION || x.position || "",
+          number: x.NUMBER != null ? x.NUMBER : (x.number != null ? x.number : ""),
+          height: x.HEIGHT || x.height || "",
+        }));
+      }
+    }
+    return [];
+  });
+  res.json({ players: data || [] });
 });
 
 // ─── START SERVER ────────────────────────────────────────────────────────────

@@ -1,16 +1,12 @@
-﻿// Series screen â€” top game selector, then tournaments for the selected game
+// Series screen — top game selector, then tournaments for the selected game
 // (with the live tournament highlighted). Each tournament expands to show its
 // matches, quick stats, and news of that specific tournament. Crex-style.
 
 import 'package:flutter/material.dart';
-import '../data.dart';
 import '../theme.dart';
 import '../l10n.dart';
-import '../services/live_match_service.dart';
-import '../services/news_service.dart';
 import '../services/rapid_api_service.dart';
 import '../widgets/sport_selector.dart';
-import '../widgets/match_card.dart';
 
 
 class SeriesScreen extends StatefulWidget {
@@ -25,8 +21,6 @@ class SeriesScreen extends StatefulWidget {
 
 class _SeriesScreenState extends State<SeriesScreen> {
   String _selectedSport = 'cricket';
-  List<MatchItem> _matches = [];
-  List<NewsItem> _news = [];
   List<Map<String, dynamic>> _apiTournaments = [];
   bool _loading = true;
   String? _error;
@@ -40,12 +34,6 @@ class _SeriesScreenState extends State<SeriesScreen> {
   Future<void> _load() async {
     setState(() => _loading = true);
     try {
-      final fetched =
-          await LiveMatchService.fetchLiveMatches(sport: _selectedSport);
-      final news = await NewsService.fetchNews(
-        sport: _selectedSport,
-        reset: true,
-      );
       // Cricket: real tournaments (with logos) from the API. Show ALL
       // tournaments, not just the ones with a live match right now.
       List<Map<String, dynamic>> apiTournaments = [];
@@ -58,8 +46,6 @@ class _SeriesScreenState extends State<SeriesScreen> {
       }
       if (mounted) {
         setState(() {
-          _matches = fetched;
-          _news = news;
           _apiTournaments = apiTournaments;
           _loading = false;
           _error = null;
@@ -118,7 +104,7 @@ class _SeriesScreenState extends State<SeriesScreen> {
               child: ListView(
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 children: [
-                  // â”€â”€ Tournaments slider (Crex-style, live only, logos) â”€â”€
+                  // ── Tournaments slider (Crex-style, live only, logos) ──
                   if (_selectedSport == 'cricket' &&
                       _apiTournaments.isNotEmpty)
                     _TournamentsSlider(
@@ -152,221 +138,7 @@ class _SeriesScreenState extends State<SeriesScreen> {
   }
 }
 
-class _TournamentCard extends StatefulWidget {
-  final String tournament;
-  final List<MatchItem> matches;
-  final List<NewsItem> news;
-  final bool live;
-  final bool isDark;
-  final void Function(MatchItem) onOpenMatch;
-
-  const _TournamentCard({
-    required this.tournament,
-    required this.matches,
-    required this.news,
-    required this.live,
-    required this.isDark,
-    required this.onOpenMatch,
-  });
-
-  @override
-  State<_TournamentCard> createState() => _TournamentCardState();
-}
-
-class _TournamentCardState extends State<_TournamentCard> {
-  bool _expanded = false;
-
-  int get _liveCount => widget.matches.where((m) => m.status == 'LIVE').length;
-  int get _upcomingCount =>
-      widget.matches.where((m) => m.status == 'UPCOMING').length;
-  int get _completedCount =>
-      widget.matches.where((m) => m.status == 'COMPLETED').length;
-
-  @override
-  Widget build(BuildContext context) {
-    final isDark = widget.isDark;
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 12),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        color: isDark ? AppColors.darkCard : Colors.white,
-        border: widget.live
-            ? Border.all(color: AppColors.liveRed, width: 1.5)
-            : null,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
-            blurRadius: 10,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        children: [
-          // Header
-          InkWell(
-            onTap: () => setState(() => _expanded = !_expanded),
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(14, 12, 12, 12),
-              child: Row(
-                children: [
-                  if (widget.live)
-                    Container(
-                      width: 9,
-                      height: 9,
-                      margin: const EdgeInsets.only(right: 8),
-                      decoration: const BoxDecoration(
-                        color: AppColors.liveRed,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          widget.tournament,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w800,
-                            fontSize: 15,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 4),
-                        // Quick stats
-                        Wrap(
-                          spacing: 8,
-                          children: [
-                            _chip('${widget.matches.length} matches',
-                                AppColors.brandBlue),
-                            if (_liveCount > 0)
-                              _chip('$_liveCount live', AppColors.liveRed),
-                            if (_upcomingCount > 0)
-                              _chip('$_upcomingCount upcoming',
-                                  AppColors.upcomingAmber),
-                            if (_completedCount > 0)
-                              _chip('$_completedCount done',
-                                  AppColors.completedGrey),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  Icon(
-                    _expanded
-                        ? Icons.expand_less
-                        : Icons.expand_more,
-                    color: Colors.grey,
-                  ),
-                ],
-              ),
-            ),
-          ),
-          if (_expanded) ...[
-            const Divider(height: 1),
-            // Matches
-            if (widget.matches.isEmpty)
-              const Padding(
-                padding: EdgeInsets.all(14),
-                child: Text('No matches in this tournament yet.',
-                    style: TextStyle(color: Colors.grey)),
-              )
-            else
-              ListView.separated(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                itemCount: widget.matches.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 6),
-                itemBuilder: (context, i) => MatchCard(
-                  match: widget.matches[i],
-                  onTap: () => widget.onOpenMatch(widget.matches[i]),
-                ),
-              ),
-            // News of this specific tournament
-            if (widget.news.isNotEmpty) ...[
-              const Padding(
-                padding: EdgeInsets.fromLTRB(14, 10, 14, 4),
-                child: Text(
-                  'News',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w800,
-                    fontSize: 13,
-                    color: AppColors.brandBlue,
-                  ),
-                ),
-              ),
-              ListView.separated(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                itemCount: widget.news.length > 4 ? 4 : widget.news.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 4),
-                itemBuilder: (context, i) {
-                  final n = widget.news[i];
-                  return ListTile(
-                    contentPadding:
-                        const EdgeInsets.symmetric(horizontal: 6, vertical: 0),
-                    leading: n.image != null && n.image!.isNotEmpty
-                        ? ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: Image.network(
-                              n.image!,
-                              width: 48,
-                              height: 48,
-                              fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) =>
-                                  const Icon(Icons.article),
-                            ),
-                          )
-                        : const Icon(Icons.article),
-                    title: Text(
-                      n.title,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                          fontWeight: FontWeight.w600, fontSize: 13),
-                    ),
-                    subtitle: Text(
-                      '${n.source} Â· ${n.timeAgo}',
-                      style: const TextStyle(fontSize: 11),
-                    ),
-                    dense: true,
-                  );
-                },
-              ),
-            ],
-            const SizedBox(height: 8),
-          ],
-        ],
-      ),
-    );
-  }
-
-  Widget _chip(String label, Color color) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Text(
-        label,
-        style: TextStyle(
-          color: color,
-          fontSize: 11,
-          fontWeight: FontWeight.w700,
-        ),
-      ),
-    );
-  }
-}
-
-// â”€â”€ Crex-style horizontal tournaments slider (active, with logos) â”€â”€
+// ── Crex-style horizontal tournaments slider (active, with logos) ──
 class _TournamentsSlider extends StatelessWidget {
   final List<Map<String, dynamic>> tournaments;
   final bool isDark;
@@ -469,7 +241,7 @@ class _TournamentsSlider extends StatelessWidget {
   }
 }
 
-// â”€â”€ Tournament detail: matches + stats of the selected tournament â”€â”€
+// ── Tournament detail: matches + stats of the selected tournament ──
 class TournamentDetailScreen extends StatefulWidget {
   final Map<String, dynamic> tournament;
   final bool isDark;
@@ -634,7 +406,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
                                     ),
                                     const SizedBox(height: 8),
                                     Text(
-                                      '${m['format_str'] ?? ''} Â· ${m['status_str'] ?? ''}',
+                                      '${m['format_str'] ?? ''} • ${m['status_str'] ?? ''}',
                                       style: const TextStyle(
                                           fontSize: 12, color: Colors.grey),
                                     ),

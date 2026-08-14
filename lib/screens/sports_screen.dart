@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import '../data.dart';
 import '../theme.dart';
 import '../l10n.dart';
@@ -444,7 +444,7 @@ class _SportsScreenState extends State<SportsScreen> {
                           gradient: LinearGradient(colors: gradient),
                           shape: BoxShape.circle,
                         ),
-                        child: Text('${(item['rank'] ?? item['position'] ?? 'â€”')}',
+                        child: Text('${(item['rank'] ?? item['position'] ?? '—')}',
                             style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w800, color: Colors.white)),
                       ),
                     if (hasImage)
@@ -471,7 +471,7 @@ class _SportsScreenState extends State<SportsScreen> {
                       ),
                     const SizedBox(height: 6),
                     Text(
-                      title.length > 14 ? '${title.substring(0, 12)}â€¦' : title,
+                      title.length > 14 ? '${title.substring(0, 12)}…' : title,
                       textAlign: TextAlign.center, maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
@@ -605,7 +605,7 @@ class _SportsScreenState extends State<SportsScreen> {
   MatchItem _buildMatchItem(Map item) {
     return MatchItem(
       sport: 'cricket',
-      sportEmoji: 'ðŸ',
+      sportEmoji: '🏏',
       series: item['competition'] is Map
           ? (item['competition']['name'] ?? '').toString()
           : (item['competition']?.toString() ?? ''),
@@ -851,7 +851,7 @@ class _SectionHeaderState extends State<_SectionHeader> {
                               if (widget.matchCount > 0) ...[
                                 const SizedBox(height: 2),
                                 Text(
-                                  widget.liveCount > 0 ? '${widget.matchCount} matches â€¢ ${widget.liveCount} live' : '${widget.matchCount} matches',
+                                  widget.liveCount > 0 ? '${widget.matchCount} matches • ${widget.liveCount} live' : '${widget.matchCount} matches',
                                   style: TextStyle(
                                     fontSize: 10,
                                     fontWeight: FontWeight.w600,

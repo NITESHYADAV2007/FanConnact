@@ -90,6 +90,20 @@ class ActiveUsers {
 
     }
 
+    getTotalCount() {
+
+        let total = 0;
+
+        for (const users of this.matches.values()) {
+
+            total += users.size;
+
+        }
+
+        return total;
+
+    }
+
     getWatchingMatches() {
 
         return [...this.matches.keys()];
