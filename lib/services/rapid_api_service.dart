@@ -13,8 +13,12 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class RapidApiService {
-  static const String _key =
-      '31ee070a54mshd6171aacb85b007p1443ccjsnf7c39463a592';
+  // No API key lives in the repo. This legacy client is a fallback only;
+  // the app routes all real data through the backend proxy
+  // (https://fanconnact-api.onrender.com) which holds the keys in its
+  // environment. Calls here return empty/error results and screens degrade
+  // gracefully to proxy data.
+  static const String _key = '';
 
   // 10-minute client cache to protect the daily quota.
   static const Duration _ttl = Duration(minutes: 10);
