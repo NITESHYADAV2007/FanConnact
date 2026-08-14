@@ -1,7 +1,7 @@
 /* ============================================================================
  * matches-data.js  —  REAL match data (sourced from ESPNcricinfo / ESPN scoreboards)
  * Date captured: 2026-07-15 (Wednesday).  These are real fixtures/results for
- * the day.  Live scores tick client-side to simulate the ball-by-ball feed.
+ * the day.  Live scores are supplied by the backend/API; no client-side score simulation.
  * Tournament / format / rules are kept exactly as per the real competition.
  * ==========================================================================*/
 (function () {
@@ -637,16 +637,116 @@
     }
   ];
 
+  // ---------------------------------------------------------------------------
+  // Dynamic Cricbuzz team registry
+  // Loads ALL International / League / Domestic / Women teams from the same
+  // backend provider already used by FanConnact.  This prevents unknown-team
+  // fallbacks such as the generic 🏏 icon for small/associate teams.
+  // ---------------------------------------------------------------------------
+  const TEAM_ID_META = Object.create(null);
+
+  const COUNTRY_CODES = {
+    india:'in', pakistan:'pk', australia:'au', england:'gb-eng', 'south africa':'za',
+    'new zealand':'nz', 'sri lanka':'lk', bangladesh:'bd', afghanistan:'af',
+    ireland:'ie', zimbabwe:'zw', 'west indies':'ag', nepal:'np', scotland:'gb-sct',
+    namibia:'na', oman:'om', 'united arab emirates':'ae', 'hong kong':'hk',
+    'papua new guinea':'pg', canada:'ca', 'united states':'us', usa:'us',
+    malaysia:'my', germany:'de', denmark:'dk', singapore:'sg', kuwait:'kw',
+    vanuatu:'vu', jersey:'je', fiji:'fj', italy:'it', belgium:'be', uganda:'ug',
+    kenya:'ke', tanzania:'tz', rwanda:'rw', nigeria:'ng', botswana:'bw',
+    malawi:'mw', zambia:'zm', ghana:'gh', sierra:'sl', 'sierra leone':'sl',
+    thailand:'th', bhutan:'bt', indonesia:'id', cambodia:'kh', japan:'jp',
+    'south korea':'kr', philippines:'ph', qatar:'qa', bahrain:'bh', saudi:'sa',
+    france:'fr', spain:'es', portugal:'pt', netherlands:'nl', austria:'at',
+    switzerland:'ch', romania:'ro', croatia:'hr', serbia:'rs', greece:'gr',
+    cyprus:'cy', estonia:'ee', latvia:'lv', lithuania:'lt', luxembourg:'lu',
+    sweden:'se', norway:'no', finland:'fi', iceland:'is', isleofman:'im',
+    bermuda:'bm', cayman:'ky', argentina:'ar', brazil:'br', chile:'cl',
+    peru:'pe', mexico:'mx', costa:'cr', 'costa rica':'cr', panama:'pa',
+    colombia:'co', bahamas:'bs', jamaica:'jm', guyana:'gy', suriname:'sr',
+    'trinidad and tobago':'tt', barbados:'bb', 'british virgin islands':'vg'
+  };
+
+  function normTeam(s) {
+    return String(s == null ? '' : s).toLowerCase().replace(/[^a-z0-9]/g, '');
+  }
+
+  function countryCodeFor(name) {
+    const n = normTeam(name);
+    if (!n) return '';
+    if (COUNTRY_CODES[n]) return COUNTRY_CODES[n];
+    const hit = Object.keys(COUNTRY_CODES).find(k => n === normTeam(k));
+    return hit ? COUNTRY_CODES[hit] : '';
+  }
+
+  function extractTeamList(payload) {
+    if (Array.isArray(payload)) return payload;
+    if (Array.isArray(payload?.list)) return payload.list;
+    if (Array.isArray(payload?.data)) return payload.data;
+    if (Array.isArray(payload?.data?.list)) return payload.data.list;
+    if (Array.isArray(payload?.teams)) return payload.teams;
+    if (Array.isArray(payload?.data?.teams)) return payload.data.teams;
+    return [];
+  }
+
+  function teamLogoUrl(imageId) {
+    if (!imageId) return '';
+    return 'https://static.cricbuzz.com/a/img/v1/i1/c' + encodeURIComponent(imageId) + '/i.jpg';
+  }
+
+  function registerDynamicTeam(raw, category) {
+    if (!raw || typeof raw !== 'object') return;
+    const name = raw.teamName || raw.name || raw.team || '';
+    const short = raw.teamSName || raw.shortName || raw.teamShortName || raw.code || '';
+    const id = raw.teamId ?? raw.id ?? '';
+    if (!name && !short) return;
+
+    const countryName = raw.countryName || raw.country || raw.nation || '';
+    const cc = countryCodeFor(countryName || name);
+    const imageId = raw.imageId || raw.imageID || raw.logoId || '';
+    const isNational = category === 'international' || !!countryName;
+    const logo = !isNational ? teamLogoUrl(imageId) : '';
+    const key = String(short || name).toLowerCase();
+    const meta = {
+      name: name || short,
+      cc: isNational ? (cc || null) : null,
+      color: '#2563eb',
+      flag: cc ? '🇺🇳' : '🏏',
+      logo: logo || null,
+      imageId: imageId || null,
+      teamId: id || null,
+      category: category || 'unknown',
+      countryName: countryName || null
+    };
+
+    if (cc) meta.flag = cc === 'in' ? '🇮🇳' : (cc === 'pk' ? '🇵🇰' : '🌐');
+    TEAMS[key] = { ...(TEAMS[key] || {}), ...meta };
+    TEAMS[normTeam(name)] = { ...(TEAMS[normTeam(name)] || {}), ...meta };
+    if (id !== '') TEAM_ID_META[String(id)] = meta;
+  }
+
+  async function loadDynamicTeamRegistry() {
+    const categories = ['international', 'league', 'domestic', 'women'];
+    const results = await Promise.allSettled(categories.map(async category => {
+      const res = await fetch('http://localhost:5000/api/teams/' + category);
+      if (!res.ok) throw new Error(category + ' teams: HTTP ' + res.status);
+      return { category, payload: await res.json() };
+    }));
+    results.forEach(r => {
+      if (r.status !== 'fulfilled') return;
+      extractTeamList(r.value.payload).forEach(team => registerDynamicTeam(team, r.value.category));
+    });
+    console.log('[matches] Dynamic Cricbuzz teams loaded:', Object.keys(TEAM_ID_META).length);
+  }
+
   async function loadBackendMatches() {
 
+    await Promise.allSettled([loadDynamicTeamRegistry()]);
+
     const [liveRes, upcomingRes, recentRes] = await Promise.all([
-
       fetch("http://localhost:5000/api/matches/live"),
-
       fetch("http://localhost:5000/api/matches/upcoming"),
-
       fetch("http://localhost:5000/api/matches/recent")
-
     ]);
 
     const live = await liveRes.json();
@@ -703,20 +803,24 @@ const hk = MAP[homeKey] || homeKey;
 const ak = MAP[awayKey] || awayKey;
 
        if (!TEAMS[hk]) {
-          TEAMS[hk] = {
-           name: match.homeTeam?.name || hk.toUpperCase(),
-            cc: null,
+          const byId = TEAM_ID_META[String(match.homeTeam?.id || match.homeTeam?.teamId || '')];
+          TEAMS[hk] = byId ? { ...byId } : {
+            name: match.homeTeam?.name || hk.toUpperCase(),
+            cc: countryCodeFor(match.homeTeam?.countryName || match.homeTeam?.country || ''),
             color: "#2563eb",
-            flag: "🏏"
+            flag: "🏏",
+            logo: teamLogoUrl(match.homeTeam?.imageId) || null
           };
         }
 
         if (!TEAMS[ak]) {
-          TEAMS[ak] = {
+          const byId = TEAM_ID_META[String(match.awayTeam?.id || match.awayTeam?.teamId || '')];
+          TEAMS[ak] = byId ? { ...byId } : {
             name: match.awayTeam?.name || ak.toUpperCase(),
-            cc: null,
+            cc: countryCodeFor(match.awayTeam?.countryName || match.awayTeam?.country || ''),
             color: "#ef4444",
-            flag: "🏏"
+            flag: "🏏",
+            logo: teamLogoUrl(match.awayTeam?.imageId) || null
           };
         }
 
@@ -863,6 +967,10 @@ status === "finished"
 
       console.log("✅ Backend Loaded :", MATCHES);
 
+      // Backend data arrived after the static fallback may have been rendered.
+      // Let the renderer perform the single authoritative re-render.
+      window.dispatchEvent(new CustomEvent("fanconnact:matches-data-updated"));
+
       // Next step me mapping karenge.
 
 
@@ -877,14 +985,6 @@ status === "finished"
   }
 
   loadBackendMatches();
-
-  window.addEventListener("load", () => {
-
-    if (window.init)
-
-        window.init();
-
-});
 
 
 })();

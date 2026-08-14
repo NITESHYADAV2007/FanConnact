@@ -3,636 +3,400 @@
 ========================================================== */
 
 import * as predictionService from "../services/predictionService.js";
+import { processRewards } from "./rewardEngine.js";
 
-import {
-
-    processRewards
-
-}
-
-    from "./rewardEngine.js";
 /* ==========================================================
         Process Match Results
 ========================================================== */
 
-export async function processMatchResults(match) {
+export async function processMatchResults(match, uid = null){
 
-    try {
+    if(!match) return;
 
-        if (!match) {
+    try{
+        const predictions = await predictionService.getPredictionsByMatch(match.id);
 
-            return;
-
+        for(const prediction of predictions){
+            await processPredictionResult(prediction, match, uid);
         }
-
-        const predictions =
-
-            await predictionService.getPredictionsByMatch(
-
-                match.id
-
-            );
-
-        for (
-
-            const prediction
-
-            of predictions
-
-        ) {
-
-            await processPredictionResult(
-
-                prediction,
-
-                match
-
-            );
-
-        }
-
     }
-
-    catch (error) {
-
-        console.error(
-
-            "Result Engine Error",
-
-            error
-
-        );
-
+    catch(error){
+        console.error("Result Engine Error:", error);
     }
-
 }
 
 /* ==========================================================
         Process Single Prediction
+        Exported so lifecycle can resolve expired live questions
+        from the latest match snapshot instead of blindly locking them.
 ========================================================== */
 
-async function processPredictionResult(
+export async function processPredictionResult(prediction, match, uid = null){
 
-    prediction,
+    if(!prediction || !match) return false;
 
-    match
+    if(prediction.status === "CANCELLED") return false;
 
-) {
+    const correctOption = getCorrectOption(prediction, match);
 
-    const correctOption =
-
-        getCorrectOption(
-
-            prediction,
-
-            match
-
-        );
-
-    if (
-
-        correctOption == null
-
-    ) {
-
-        return;
-
+    if(correctOption == null){
+        return false;
     }
 
-    await predictionService.publishResult(
-
+    const published = await predictionService.publishResult(
         prediction.id,
-
         correctOption
-
     );
 
-    prediction.correctOption =
+    if(!published){
+        return false;
+    }
 
-        correctOption;
+    prediction.correctOption = correctOption;
+    prediction.status = "COMPLETED";
 
-    await processRewards(
+    await processRewards(prediction, uid);
+    return true;
+}
 
-        prediction
+/* ==========================================================
+        Normalizers / Resolvers
+========================================================== */
 
+function normalizeText(value){
+    return String(value ?? "").trim().toLowerCase();
+}
+
+function objectIdOrName(value){
+    if(value == null) return null;
+    if(typeof value === "object"){
+        return value.id ?? value.playerId ?? value.teamId ?? value.name ?? value.displayName ?? null;
+    }
+    return value;
+}
+
+function matchesOption(value, option){
+    if(value == null || !option) return false;
+
+    const actual = objectIdOrName(value);
+    const actualText = normalizeText(actual);
+    const optionId = normalizeText(option.id);
+    const optionText = normalizeText(option.text ?? option.label ?? option.name);
+
+    return (
+        actualText === optionId ||
+        actualText === optionText
     );
+}
+
+function resolveOptionByValue(prediction, value){
+    if(value == null || !Array.isArray(prediction.options)) return null;
+
+    const option = prediction.options.find(o => matchesOption(value, o));
+    return option ? option.id : null;
+}
+
+function booleanOption(prediction, value){
+    if(value == null) return null;
+
+    const yes = value === true ||
+        normalizeText(value) === "yes" ||
+        normalizeText(value) === "true" ||
+        normalizeText(value) === "1";
+
+    const no = value === false ||
+        normalizeText(value) === "no" ||
+        normalizeText(value) === "false" ||
+        normalizeText(value) === "0";
+
+    if(yes){
+        return resolveOptionByValue(prediction, "yes") ?? "yes";
+    }
+
+    if(no){
+        return resolveOptionByValue(prediction, "no") ?? "no";
+    }
+
+    return null;
+}
+
+function numericValue(value){
+    if(typeof value === "number" && Number.isFinite(value)) return value;
+    const n = Number(String(value ?? "").replace(/,/g, "").match(/-?\d+(?:\.\d+)?/)?.[0]);
+    return Number.isFinite(n) ? n : null;
+}
+
+function rangeContains(label, value){
+    const text = normalizeText(label).replace(/,/g, "");
+    const n = numericValue(value);
+    if(n == null) return false;
+
+    const plus = text.match(/^(\d+(?:\.\d+)?)\s*\+$/);
+    if(plus) return n >= Number(plus[1]);
+
+    const range = text.match(/^(\d+(?:\.\d+)?)\s*[-–]\s*(\d+(?:\.\d+)?)$/);
+    if(range){
+        const min = Number(range[1]);
+        const max = Number(range[2]);
+        return n >= min && n <= max;
+    }
+
+    return false;
+}
+
+function resolveRangeOption(prediction, actualValue){
+    if(actualValue == null || !Array.isArray(prediction.options)) return null;
+
+    const direct = resolveOptionByValue(prediction, actualValue);
+    if(direct) return direct;
+
+    const option = prediction.options.find(o =>
+        rangeContains(o.text ?? o.label ?? o.name, actualValue)
+    );
+
+    return option?.id ?? null;
+}
+
+function resolveTeamOrPlayerOption(prediction, value){
+    return resolveOptionByValue(prediction, value);
 }
 
 /* ==========================================================
         Correct Option Resolver
 ========================================================== */
 
-function getCorrectOption(
+function getCorrectOption(prediction, match){
 
-    prediction,
-
-    match
-
-){
-
-    switch(
-
-        prediction.type
-
-    ){
-
-        /* ==========================
-                PRE MATCH
-        ========================== */
-
-        case "MATCH_WINNER":
-
-            return match.winner;
-
-        case "TOSS_WINNER":
-
-            return match.tossWinner;
-
-        case "HIGHEST_SCORER":
-
-            return match.highestScorerId;
-
-        case "TOTAL_RUNS":
-
-            return match.totalRunsRange;
-
-        /* ==========================
-                LIVE MATCH
-        ========================== */
-
-        case "POWERPLAY_SCORE":
-
-            return match.powerplayRange;
-
-        case "NEXT_WICKET":
-
-            return match.nextWicketBowlerId;
-
-        case "NEXT_BOUNDARY":
-
-            return match.nextBoundaryResult;
-
-        case "PLAYER_FIFTY":
-
-            return(
-
-                match.playerReached50
-
-                ? "yes"
-
-                : "no"
-
-            );
-
-        case "PLAYER_CENTURY":
-
-            return(
-
-                match.playerReached100
-
-                ? "yes"
-
-                : "no"
-
-            );
-
-        case "DEATH_OVER":
-
-            return match.deathOverRange;
-
-        case "CHASE":
-
-            return(
-
-                match.chaseSuccessful
-
-                ? "yes"
-
-                : "no"
-
-            );
-                    /* ==========================
-                FOOTBALL
-        ========================== */
-
-        case "FIRST_GOAL":
-
-            return match.firstGoalTeam;
-
-        case "NEXT_GOAL":
-
-            return match.nextGoalTeam;
-
-        case "TOTAL_GOALS":
-
-            return match.totalGoalsRange;
-
-        case "HALF_TIME":
-
-            return match.halfTimeWinner;
-
-        case "FULL_TIME":
-
-            return match.winner;
-
-        case "BOTH_TEAMS_SCORE":
-
-            return (
-
-                match.homeScore > 0 &&
-
-                match.awayScore > 0
-
-            )
-
-            ? "yes"
-
-            : "no";
-
-        case "CLEAN_SHEET":
-
-            return (
-
-                match.homeScore === 0 ||
-
-                match.awayScore === 0
-
-            )
-
-            ? "yes"
-
-            : "no";
-
-        case "YELLOW_CARD":
-
-            return (
-
-                match.nextYellowCard
-
-            )
-
-            ? "yes"
-
-            : "no";
-
-        case "RED_CARD":
-
-            return (
-
-                match.nextRedCard
-
-            )
-
-            ? "yes"
-
-            : "no";
-
-        case "PENALTY":
-
-            return (
-
-                match.penaltyAwarded
-
-            )
-
-            ? "yes"
-
-            : "no";
-
-                    /* ==========================
-                BASKETBALL
-        ========================== */
-
-        case "FIRST_TO_50":
-
-            return match.firstTo50;
-
-        case "FIRST_TO_100":
-
-            return match.firstTo100;
-
-        case "TOTAL_POINTS":
-
-            return match.totalPointsRange;
-
-        case "NEXT_THREE_POINTER":
-
-            return match.nextThreePointer;
-
-        case "NEXT_FREE_THROW":
-
-            return match.nextFreeThrow;
-
-        case "NEXT_QUARTER_WINNER":
-
-            return match.quarterWinner;
-
-        case "OVERTIME":
-
-            return (
-
-                match.overtime
-
-            )
-
-            ? "yes"
-
-            : "no";
-
-            /* ==========================
-        HOCKEY
-========================== */
-
-case "FIRST_GOAL":
-
-    return match.firstGoalTeam;
-
-case "NEXT_GOAL":
-
-    return match.nextGoalTeam;
-
-case "TOTAL_GOALS":
-
-    return match.totalGoalsRange;
-
-case "HALF_TIME":
-
-    return match.halfTimeWinner;
-
-case "FULL_TIME":
-
-    return match.winner;
-
-case "PENALTY_CORNER":
-
-    return match.penaltyCorner
-
-    ? "yes"
-
-    : "no";
-
-case "PENALTY_STROKE":
-
-    return match.penaltyStroke
-
-    ? "yes"
-
-    : "no";
-
-case "CLEAN_SHEET":
-
-    return(
-
-        match.homeScore===0 ||
-
-        match.awayScore===0
-
-    )
-
-    ? "yes"
-
-    : "no";
+    const type = prediction.type;
 
     /* ==========================
-        TENNIS
-========================== */
-
-case "FIRST_SET":
-
-    return match.firstSetWinner;
-
-case "SECOND_SET":
-
-    return match.secondSetWinner;
-
-case "MATCH_SETS":
-
-    return match.totalSets;
-
-case "NEXT_GAME":
-
-    return match.nextGameWinner;
-
-case "NEXT_BREAK":
-
-    return match.nextBreak
-
-    ? "yes"
-
-    : "no";
-
-case "NEXT_ACE":
-
-    return match.nextAce
-
-    ? "yes"
-
-    : "no";
-
-case "NEXT_DOUBLE_FAULT":
-
-    return match.nextDoubleFault
-
-    ? "yes"
-
-    : "no";
-
-case "TIE_BREAK":
-
-    return match.tieBreak
-
-    ? "yes"
-
-    : "no";
-
-case "MATCH_POINT":
-
-    return match.matchPointWinner;
-
-case "COMEBACK":
-
-    return match.comeback
-
-    ? "yes"
-
-    : "no";
-
-    /* ==========================
-        VOLLEYBALL
-========================== */
-
-case "FIRST_SET":
-
-    return match.firstSetWinner;
-
-case "SECOND_SET":
-
-    return match.secondSetWinner;
-
-case "MATCH_SETS":
-
-    return match.totalSets;
-
-case "NEXT_POINT":
-
-    return match.nextPointWinner;
-
-case "NEXT_SET_WINNER":
-
-    return match.currentSetWinner;
-
-case "MATCH_POINT":
-
-    return match.matchPointWinner;
-
-case "FIVE_SET_MATCH":
-
-    return match.fiveSetMatch
-
-    ? "yes"
-
-    : "no";
-
-case "COMEBACK":
-
-    return match.comeback
-
-    ? "yes"
-
-    : "no";
-
-    /* ==========================
-        KABADDI
-========================== */
-
-case "FIRST_RAID":
-
-    return match.firstRaidWinner;
-
-case "FIRST_TO_20":
-
-    return match.firstTo20;
-
-case "FIRST_HALF":
-
-    return match.firstHalfWinner;
-
-case "NEXT_POINT":
-
-    return match.nextPointWinner;
-
-case "SUPER_RAID":
-
-    return match.superRaid
-
-    ? "yes"
-
-    : "no";
-
-case "SUPER_TACKLE":
-
-    return match.superTackle
-
-    ? "yes"
-
-    : "no";
-
-case "ALL_OUT":
-
-    return match.allOut
-
-    ? "yes"
-
-    : "no";
-
-case "DO_OR_DIE_RAID":
-
-    return match.doOrDieRaid
-
-    ? "yes"
-
-    : "no";
-
-case "BONUS_POINT":
-
-    return match.bonusPoint
-
-    ? "yes"
-
-    : "no";
-
-case "FULL_TIME":
-
-    return match.winner;
-
-    /* ==========================
-        BASEBALL
-========================== */
-
-case "FIRST_INNING":
-
-    return match.firstInningWinner;
-
-case "HOME_RUN":
-
-    return match.homeRun
-
-    ? "yes"
-
-    : "no";
-
-case "NEXT_RUN":
-
-    return match.nextRunTeam;
-
-case "NEXT_STRIKEOUT":
-
-    return match.nextStrikeout
-
-    ? "yes"
-
-    : "no";
-
-case "TOTAL_RUNS":
-
-    return match.totalRunsRange;
-
-case "FIRST_TO_5":
-
-    return match.firstTo5;
-
-case "EXTRA_INNINGS":
-
-    return match.extraInnings
-
-    ? "yes"
-
-    : "no";
-
-case "FULL_TIME":
-
-    return match.winner;
-
-case "STOLEN_BASE":
-
-    return match.stolenBase
-
-    ? "yes"
-
-    : "no";
-
-case "GRAND_SLAM":
-
-    return match.grandSlam
-
-    ? "yes"
-
-    : "no";
-
-        default:
+            CRICKET
+    ========================== */
+
+    switch(type){
+
+        case "MATCH_WINNER": {
+            const value = match.winner ?? match.winnerId ?? match.result?.winner;
+            return resolveTeamOrPlayerOption(prediction, value) ??
+                (value != null ? String(value) : null);
+        }
+
+        case "TOSS_WINNER": {
+            const value = match.tossWinner ?? match.tossWinnerId ?? match.toss?.winner;
+            return resolveTeamOrPlayerOption(prediction, value) ??
+                (value != null ? String(value) : null);
+        }
+
+        case "HIGHEST_SCORER": {
+            const value = match.highestScorerId ?? match.highestScorer?.id ??
+                match.highestScorer?.playerId ?? match.highestScorer?.name;
+            return resolveTeamOrPlayerOption(prediction, value) ??
+                (value != null ? String(value) : null);
+        }
+
+        case "TOTAL_RUNS": {
+            const actual = match.totalRuns ?? match.totalScore ??
+                match.firstInningsRuns ?? match.innings?.[0]?.runs;
+            return resolveRangeOption(prediction, actual) ??
+                resolveOptionByValue(prediction, match.totalRunsRange);
+        }
+
+        case "POWERPLAY_SCORE": {
+            const actual = match.powerplayScore ?? match.powerplayRuns ??
+                match.currentPowerplayRuns ?? match.powerplay?.runs;
+            return resolveRangeOption(prediction, actual) ??
+                resolveOptionByValue(prediction, match.powerplayRange);
+        }
+
+        case "NEXT_OVER_RUNS": {
+            const actual =
+                match.nextOverRuns ??
+                match.lastOverRuns ??
+                match.previousOverRuns ??
+                match.completedOverRuns ??
+                match.overRuns ??
+                match.currentOverRuns ??
+                match.overHistory?.find?.(row =>
+                    Number(row?.over ?? row?.overNumber) ===
+                    Number(prediction?.checkpointOver)
+                )?.runs ??
+                null;
+
+            return resolveRangeOption(prediction, actual) ??
+                resolveOptionByValue(prediction, match.nextOverRunsRange);
+        }
+
+        case "WICKET": {
+            const explicit =
+                match.wicketInNextOver ??
+                match.nextWicket ??
+                match.lastOverHadWicket ??
+                match.wicketInOver ??
+                null;
+
+            if(explicit != null){
+                if(typeof explicit === "object"){
+                    return booleanOption(
+                        prediction,
+                        explicit.yes ??
+                        explicit.occurred ??
+                        explicit.happened ??
+                        explicit.value
+                    );
+                }
+
+                return booleanOption(prediction, explicit);
+            }
+
+            const eventType = normalizeText(match.lastEvent?.type);
+            if(eventType === "wicket"){
+                return booleanOption(prediction, true);
+            }
 
             return null;
+        }
 
+        case "NEXT_SIX": {
+            const explicit =
+                match.nextSix ??
+                match.sixInNextOver ??
+                match.lastOverHadSix ??
+                match.sixInOver ??
+                null;
+
+            if(explicit != null){
+                return booleanOption(prediction, explicit);
+            }
+
+            const eventType = normalizeText(match.lastEvent?.type);
+            if(eventType === "six"){
+                return booleanOption(prediction, true);
+            }
+
+            return null;
+        }
+
+        case "NEXT_WICKET": {
+            const value = match.nextWicketBowlerId ??
+                match.nextWicket?.bowlerId ??
+                match.nextWicket?.bowler?.id ??
+                match.nextWicket?.bowler?.name;
+            return resolveTeamOrPlayerOption(prediction, value) ??
+                (value != null ? String(value) : null);
+        }
+
+        case "NEXT_BOUNDARY": {
+            const explicit = match.nextBoundaryResult ?? match.nextBoundary ?? match.lastEvent?.isBoundary;
+            if(explicit != null) return booleanOption(prediction, explicit);
+
+            const eventType = normalizeText(match.lastEvent?.type);
+            if(["four", "six", "boundary"].includes(eventType)){
+                return booleanOption(prediction, true);
+            }
+            if(eventType && ["single", "double", "triple", "run", "dot", "wicket", "wide", "no_ball"].includes(eventType)){
+                return booleanOption(prediction, false);
+            }
+            return null;
+        }
+
+        case "PLAYER_FIFTY": {
+            const explicit = match.playerReached50 ?? match.currentBatter?.reached50;
+            if(explicit != null) return booleanOption(prediction, explicit);
+            const runs = numericValue(match.currentBatter?.runs);
+            return runs != null ? booleanOption(prediction, runs >= 50) : null;
+        }
+
+        case "PLAYER_CENTURY": {
+            const explicit = match.playerReached100 ?? match.currentBatter?.reached100;
+            if(explicit != null) return booleanOption(prediction, explicit);
+            const runs = numericValue(match.currentBatter?.runs);
+            return runs != null ? booleanOption(prediction, runs >= 100) : null;
+        }
+
+        case "DEATH_OVER": {
+            const actual = match.deathOverRuns ?? match.deathOverRange ?? match.currentOverRuns;
+            return resolveRangeOption(prediction, actual) ??
+                resolveOptionByValue(prediction, match.deathOverRange);
+        }
+
+        case "CHASE":
+            return booleanOption(
+                prediction,
+                match.chaseSuccessful ?? match.chaseResult
+            );
     }
 
+    /* ==========================
+            OTHER SPORTS
+            Existing generic fields retained.
+    ========================== */
+
+    switch(type){
+        case "FIRST_GOAL":
+        case "FIRST_GOAL_HOCKEY":
+            return resolveOptionByValue(prediction, match.firstGoalTeam);
+        case "NEXT_GOAL":
+        case "NEXT_GOAL_HOCKEY":
+            return resolveOptionByValue(prediction, match.nextGoalTeam);
+        case "TOTAL_GOALS":
+        case "TOTAL_GOALS_HOCKEY":
+            return resolveRangeOption(prediction, match.totalGoals) ??
+                resolveOptionByValue(prediction, match.totalGoalsRange);
+        case "HALF_TIME":
+        case "HALF_TIME_HOCKEY":
+            return resolveOptionByValue(prediction, match.halfTimeWinner);
+        case "FULL_TIME":
+        case "FULL_TIME_HOCKEY":
+        case "FULL_TIME_KABADDI":
+        case "FULL_TIME_BASEBALL":
+            return resolveOptionByValue(prediction, match.winner);
+        case "BOTH_TEAMS_SCORE":
+            return booleanOption(prediction, Number(match.homeScore) > 0 && Number(match.awayScore) > 0);
+        case "CLEAN_SHEET":
+        case "CLEAN_SHEET_HOCKEY":
+            return booleanOption(prediction, Number(match.homeScore) === 0 || Number(match.awayScore) === 0);
+        case "YELLOW_CARD":
+            return booleanOption(prediction, match.nextYellowCard);
+        case "RED_CARD":
+            return booleanOption(prediction, match.nextRedCard);
+        case "PENALTY":
+            return booleanOption(prediction, match.penaltyAwarded);
+        case "FIRST_TO_50": return resolveOptionByValue(prediction, match.firstTo50);
+        case "FIRST_TO_100": return resolveOptionByValue(prediction, match.firstTo100);
+        case "TOTAL_POINTS": return resolveRangeOption(prediction, match.totalPoints) ?? resolveOptionByValue(prediction, match.totalPointsRange);
+        case "NEXT_THREE_POINTER": return booleanOption(prediction, match.nextThreePointer);
+        case "NEXT_FREE_THROW": return booleanOption(prediction, match.nextFreeThrow);
+        case "NEXT_QUARTER_WINNER": return resolveOptionByValue(prediction, match.quarterWinner);
+        case "OVERTIME": return booleanOption(prediction, match.overtime);
+        case "FIRST_SET": return resolveOptionByValue(prediction, match.firstSetWinner);
+        case "SECOND_SET": return resolveOptionByValue(prediction, match.secondSetWinner);
+        case "MATCH_SETS": return resolveOptionByValue(prediction, match.totalSets);
+        case "NEXT_GAME": return resolveOptionByValue(prediction, match.nextGameWinner);
+        case "NEXT_BREAK": return booleanOption(prediction, match.nextBreak);
+        case "NEXT_ACE": return booleanOption(prediction, match.nextAce);
+        case "NEXT_DOUBLE_FAULT": return booleanOption(prediction, match.nextDoubleFault);
+        case "TIE_BREAK": return booleanOption(prediction, match.tieBreak);
+        case "MATCH_POINT": return resolveOptionByValue(prediction, match.matchPointWinner);
+        case "COMEBACK": return booleanOption(prediction, match.comeback);
+        case "FIRST_RAID": return resolveOptionByValue(prediction, match.firstRaidWinner);
+        case "FIRST_TO_20": return resolveOptionByValue(prediction, match.firstTo20);
+        case "FIRST_HALF": return resolveOptionByValue(prediction, match.firstHalfWinner);
+        case "NEXT_POINT": return resolveOptionByValue(prediction, match.nextPointWinner);
+        case "NEXT_SET_WINNER": return resolveOptionByValue(prediction, match.currentSetWinner);
+        case "SUPER_RAID": return booleanOption(prediction, match.superRaid);
+        case "SUPER_TACKLE": return booleanOption(prediction, match.superTackle);
+        case "ALL_OUT": return booleanOption(prediction, match.allOut);
+        case "DO_OR_DIE_RAID": return booleanOption(prediction, match.doOrDieRaid);
+        case "BONUS_POINT": return booleanOption(prediction, match.bonusPoint);
+        case "FIRST_INNING": return resolveOptionByValue(prediction, match.firstInningWinner);
+        case "HOME_RUN": return booleanOption(prediction, match.homeRun);
+        case "NEXT_RUN": return resolveOptionByValue(prediction, match.nextRunTeam);
+        case "NEXT_STRIKEOUT": return booleanOption(prediction, match.nextStrikeout);
+        case "FIRST_TO_5": return resolveOptionByValue(prediction, match.firstTo5);
+        case "EXTRA_INNINGS": return booleanOption(prediction, match.extraInnings);
+        case "STOLEN_BASE": return booleanOption(prediction, match.stolenBase);
+        case "GRAND_SLAM": return booleanOption(prediction, match.grandSlam);
+        default:
+            return null;
+    }
 }

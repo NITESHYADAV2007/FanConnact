@@ -6,7 +6,7 @@ import {
 
     db
 
-} from "../firebase/firebaseConfig.js";
+} from "../firebase-config.js";
 
 import {
 
@@ -27,6 +27,8 @@ import {
     serverTimestamp
 
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+import { calculateLevel } from "../services/userService.js";
 
 /* ==========================================================
         Collections
@@ -88,11 +90,11 @@ export async function updateGlobalLeaderboard(){
 
                 avatar:data.avatar,
 
-                xp:data.xp,
+                xp:Number(data.xp) || 0,
 
-                level:data.level,
+                level:calculateLevel(Number(data.xp) || 0),
 
-                coins:data.coins,
+                coins:Number(data.coins) || 0,
 
                 accuracy:data.accuracy || 0
 

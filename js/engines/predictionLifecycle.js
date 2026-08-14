@@ -1,91 +1,50 @@
 /* ==========================================================
         FanConnact Prediction Lifecycle
+        No optional rule-engine dependency on the prediction page.
 ========================================================== */
 
 import * as predictionService from "../services/predictionService.js";
-
+import { auth } from "../firebase-config.js";
 import {
+    processMatchResults,
+    processPredictionResult
+} from "./resultEngine.js";
 
-processMatchResults
-
+function toMillis(value){
+    if(value == null) return null;
+    if(typeof value === "number") return value;
+    if(value instanceof Date) return value.getTime();
+    if(typeof value.toMillis === "function") return value.toMillis();
+    if(typeof value.seconds === "number") return value.seconds * 1000;
+    const parsed = new Date(value).getTime();
+    return Number.isFinite(parsed) ? parsed : null;
 }
-
-from "./resultEngine.js";
-
-/* ==========================================================
-        Close Expired Predictions
-========================================================== */
 
 export async function closeExpiredPredictions(){
-
     try{
+        const predictions = await predictionService.getAllLivePredictions(100);
+        const now = Date.now();
 
-        const predictions=
+        for(const prediction of predictions){
+            const expiresAt = toMillis(prediction.expiresAt);
+            if(expiresAt == null || expiresAt > now) continue;
 
-        await predictionService.getLivePredictions(100);
-
-        const now=Date.now();
-
-        for(
-
-            const prediction
-
-            of predictions
-
-        ){
-
-            if(
-
-                prediction.expiresAt.toMillis()
-
-                <=
-
-                now
-
-            ){
-
-                await predictionService.closePrediction(
-
-                    prediction.id
-
-                );
-
+            let resolved = false;
+            if(prediction.matchId){
+                const match = await predictionService.getMatch(prediction.matchId);
+                if(match) resolved = await processPredictionResult(prediction, match, auth.currentUser?.uid || null);
             }
 
+            if(!resolved){
+                await predictionService.closePrediction(prediction.id);
+            }
         }
-
+    }catch(error){
+        console.error("Lifecycle Error", error);
     }
-
-    catch(error){
-
-        console.error(
-
-            "Lifecycle Error",
-
-            error
-
-        );
-
-    }
-
 }
 
-/* ==========================================================
-        Match Finished
-========================================================== */
-
 export async function handleMatchFinished(match){
-
-    await processMatchResults(match);
-
-}
-
-/* ==========================================================
-        Match Finished
-========================================================== */
-
-export async function handleMatchFinished(match){
-
-    await processMatchResults(match);
-
+    if(!match) return;
+    await processMatchResults(match, auth.currentUser?.uid || null);
 }

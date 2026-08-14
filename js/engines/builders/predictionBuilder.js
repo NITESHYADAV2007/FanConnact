@@ -2,13 +2,24 @@
         FanConnact Prediction Builder
 ========================================================== */
 
-import {
-
-PredictionTrigger
-
-}
-
-from "../predictionEngine.js";
+// Keep the builder independent from predictionEngine.js.
+// This avoids the circular import: engine -> cricketRules -> builder -> engine.
+const PredictionTrigger = Object.freeze({
+    MATCH_WINNER: "MATCH_WINNER",
+    TOSS: "TOSS",
+    HIGHEST_SCORER: "HIGHEST_SCORER",
+    TOTAL_SCORE: "TOTAL_SCORE",
+    POWERPLAY_END: "POWERPLAY_END",
+    NEXT_OVER_RUNS: "NEXT_OVER_RUNS",
+    WICKET: "WICKET",
+    NEXT_SIX: "NEXT_SIX",
+    NEXT_WICKET: "NEXT_WICKET",
+    NEXT_BOUNDARY: "NEXT_BOUNDARY",
+    BATSMAN_50: "BATSMAN_50",
+    BATSMAN_100: "BATSMAN_100",
+    DEATH_OVER: "DEATH_OVER",
+    CHASE: "CHASE"
+});
 
 /* ==========================================================
         Helper
@@ -177,7 +188,7 @@ export function playerFifty(
 
         type:"PLAYER_FIFTY",
 
-        difficulty:"expert",
+        difficulty:"hard",
 
         question:
 
@@ -339,6 +350,80 @@ export function totalRuns(
 
 }
 
+
+/* ==========================================================
+        Next Over Runs
+========================================================== */
+
+export function nextOverRuns(
+    match,
+    options,
+    expiresAt,
+    difficulty = "medium",
+    checkpoint = null
+){
+    return {
+        ...build({
+            trigger: PredictionTrigger.NEXT_OVER_RUNS,
+            match,
+            type: "NEXT_OVER_RUNS",
+            difficulty,
+            question: checkpoint
+                ? `How many runs will be scored in over ${checkpoint}?`
+                : "How many runs will be scored in the next over?",
+            options,
+            expiresAt
+        }),
+        checkpointOver: checkpoint
+    };
+}
+
+/* ==========================================================
+        Wicket Yes / No
+========================================================== */
+
+export function wicketYesNo(
+    match,
+    expiresAt,
+    difficulty = "medium"
+){
+    return build({
+        trigger: PredictionTrigger.WICKET,
+        match,
+        type: "WICKET",
+        difficulty,
+        question: "Will a wicket fall in the next over?",
+        options: [
+            { id: "yes", text: "Yes" },
+            { id: "no", text: "No" }
+        ],
+        expiresAt
+    });
+}
+
+/* ==========================================================
+        Six Yes / No
+========================================================== */
+
+export function nextSix(
+    match,
+    expiresAt,
+    difficulty = "easy"
+){
+    return build({
+        trigger: PredictionTrigger.NEXT_SIX,
+        match,
+        type: "NEXT_SIX",
+        difficulty,
+        question: "Will a six be hit in the next over?",
+        options: [
+            { id: "yes", text: "Yes" },
+            { id: "no", text: "No" }
+        ],
+        expiresAt
+    });
+}
+
 /* ==========================================================
         Next Wicket
 ========================================================== */
@@ -455,7 +540,7 @@ export function playerCentury(
 
         type:"PLAYER_CENTURY",
 
-        difficulty:"expert",
+        difficulty:"hard",
 
         question:
 

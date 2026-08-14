@@ -63,11 +63,11 @@ class MatchesProvider {
 return normalizeMatchDetails(data);
     }
 
-    async getCommentary(matchId){
+    async getCommentary(matchId, iid = 1){
 
     const { data } = await api.get(
 
-        endpoints.COMMENTARY(matchId)
+        endpoints.COMMENTARY(matchId, iid)
 
     );
 
@@ -75,11 +75,11 @@ return normalizeMatchDetails(data);
 
 }
 
-async getHCommentary(matchId){
+async getHCommentary(matchId, iid = 1){
 
     const { data } = await api.get(
 
-        endpoints.HCOMMENTARY(matchId)
+        endpoints.HCOMMENTARY(matchId, iid)
 
     );
 
@@ -111,11 +111,11 @@ async getSquads(matchId){
 
 }
 
-async getOvers(matchId){
+async getOvers(matchId, iid = 1){
 
     const { data } = await api.get(
 
-        endpoints.OVERS(matchId)
+        endpoints.OVERS(matchId, iid)
 
     );
 
@@ -123,11 +123,11 @@ async getOvers(matchId){
 
 }
 
-async getOversDetails(matchId){
+async getOversDetails(matchId, iid = 1){
 
     const { data } = await api.get(
 
-        endpoints.OVER_DETAILS(matchId)
+        endpoints.OVER_DETAILS(matchId, iid)
 
     );
 
@@ -183,11 +183,11 @@ async getOversGraph(matchId){
 
 }
 
-async getBallsGraph(matchId){
+async getBallsGraph(matchId, iid = 1){
 
     const { data } = await api.get(
 
-        endpoints.BALL_GRAPH(matchId)
+        endpoints.BALL_GRAPH(matchId, iid)
 
     );
 

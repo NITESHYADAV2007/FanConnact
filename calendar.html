@@ -199,37 +199,198 @@
         'table-tennis':'sports_tennis'
       };
 
-      // Real matches sourced from js/matches-data.js (FANCONNECT_MATCHES)
-      function buildAllMatches() {
-        if (window.FANCONNECT_MATCHES && window.FANCONNECT_MATCHES.MATCHES) {
-          return window.FANCONNECT_MATCHES.MATCHES.map(function (m) {
-            var h = (window.FANCONNECT_MATCHES.TEAMS[m.home] || { name: m.home });
-            var a = (window.FANCONNECT_MATCHES.TEAMS[m.away] || { name: m.away });
-            return {
-              date: m.date || '2026-07-15',
-              sport: m.sport,
-              team1: h.name,
-              team2: a.name,
-              tournament: m.tournament || m.format || '',
-              time: m.time || (m.status === 'live' ? 'LIVE' : 'TBD'),
-              venue: m.venue || '',
-              type: m.format || m.status || ''
-            };
-          });
+      // ================================================================
+      // REAL CRICKET SCHEDULE
+      // Source: FanConnact backend -> /api/matches/upcoming
+      // The browser never calls the third-party cricket provider directly.
+      // ================================================================
+      const API_BASE = (() => {
+        if (location.protocol === 'file:') return 'http://192.168.1.11:5000/api';
+        if (location.hostname === 'localhost' || location.hostname === '127.0.0.1' || location.hostname === '192.168.1.11') {
+          return location.protocol + '//' + location.hostname + ':5000/api';
         }
-        return [];
-      }
-      const ALL_MATCHES = buildAllMatches();
+        return location.origin + '/api';
+      })();
 
+      let ALL_MATCHES = [];
       let currentDate = new Date();
       let currentMonth = currentDate.getMonth();
       let currentYear = currentDate.getFullYear();
       let selectedDate = null;
-      let selectedSport = 'all';
+      let selectedSport = 'cricket';
+      let scheduleLoaded = false;
+      let scheduleLoading = false;
+      let lastScheduleFetch = 0;
+      const SCHEDULE_CACHE_MS = 5 * 60 * 1000;
+
+      function pad2(value) {
+        return String(value).padStart(2, '0');
+      }
+
+      function dateKeyFromValue(value) {
+        if (value === null || value === undefined || value === '') return null;
+
+        let d;
+        const numeric = Number(value);
+        if (Number.isFinite(numeric) && numeric > 0) {
+          // Cricbuzz startDate is normally epoch milliseconds.
+          d = new Date(numeric < 100000000000 ? numeric * 1000 : numeric);
+        } else {
+          d = new Date(value);
+        }
+
+        if (Number.isNaN(d.getTime())) return null;
+
+        // Use the user's local date so the selected calendar day matches
+        // the time shown in the browser.
+        return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate());
+      }
+
+      function formatMatchTime(value) {
+        if (value === null || value === undefined || value === '') return 'TBD';
+
+        let d;
+        const numeric = Number(value);
+        if (Number.isFinite(numeric) && numeric > 0) {
+          d = new Date(numeric < 100000000000 ? numeric * 1000 : numeric);
+        } else {
+          d = new Date(value);
+        }
+
+        if (Number.isNaN(d.getTime())) return String(value);
+
+        return d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+      }
+
+      function normalizeBackendMatch(m) {
+        const date = dateKeyFromValue(m.startTime || m.startDate || m.date);
+        if (!date) return null;
+
+        return {
+          id: String(m.id || m.matchId || ''),
+          date,
+          sport: 'cricket',
+          team1: m.homeTeam?.name || m.team1 || 'TBD',
+          team2: m.awayTeam?.name || m.team2 || 'TBD',
+          tournament: m.series || m.tournament || '',
+          time: formatMatchTime(m.startTime || m.startDate || m.time),
+          venue: [m.venue, m.city].filter(Boolean).join(', '),
+          type: m.matchType || m.format || 'Cricket',
+          status: m.status || 'upcoming',
+          link: m.link || (m.id ? 'match-center.html?id=' + encodeURIComponent(m.id) : '')
+        };
+      }
+
+      function getStaticFallbackMatches() {
+        if (!window.FANCONNECT_MATCHES?.MATCHES) return [];
+
+        return window.FANCONNECT_MATCHES.MATCHES.map(function (m) {
+          const h = window.FANCONNECT_MATCHES.TEAMS?.[m.home] || { name: m.home };
+          const a = window.FANCONNECT_MATCHES.TEAMS?.[m.away] || { name: m.away };
+          return {
+            id: String(m.id || ''),
+            date: m.date,
+            sport: 'cricket',
+            team1: h.name,
+            team2: a.name,
+            tournament: m.tournament || m.format || '',
+            time: m.time || (m.status === 'live' ? 'LIVE' : 'TBD'),
+            venue: m.venue || '',
+            type: m.format || m.status || 'Cricket',
+            status: m.status || 'upcoming',
+            link: m.link || (m.id ? 'match-center.html?id=' + encodeURIComponent(m.id) : '')
+          };
+        });
+      }
+
+      // ================================================================
+      // CALENDAR DATA SOURCE
+      // Use the same backend dataset already loaded by matches-data.js.
+      // Do not make a second /api/matches/upcoming request here.
+      // ================================================================
+      function syncFromSharedMatchData() {
+        const source = window.FANCONNECT_MATCHES;
+        if (!source || !Array.isArray(source.MATCHES)) return false;
+
+        const unique = new Map();
+
+        source.MATCHES.forEach(function (m) {
+          if (!m || m.sport !== 'cricket') return;
+
+          const date = dateKeyFromValue(m.date || m.startTime || m.startDate);
+          if (!date) return;
+
+          const homeMeta = source.TEAMS?.[m.home] || {};
+          const awayMeta = source.TEAMS?.[m.away] || {};
+
+          const normalized = {
+            id: String(m.id || m.matchId || ''),
+            date,
+            sport: 'cricket',
+            team1: m.homeName || homeMeta.name || m.home || 'TBD',
+            team2: m.awayName || awayMeta.name || m.away || 'TBD',
+            tournament: m.tournament || m.series || '',
+            time: m.time || (m.status === 'live' ? 'LIVE' : 'TBD'),
+            venue: m.venue || '',
+            type: m.format || m.matchType || 'Cricket',
+            status: m.status || 'upcoming',
+            link: m.link || (m.id ? 'match-center.html?id=' + encodeURIComponent(m.id) : '')
+          };
+
+          const key = normalized.id || `${normalized.date}-${normalized.team1}-${normalized.team2}`;
+          unique.set(key, normalized);
+        });
+
+        if (!unique.size) return false;
+
+        ALL_MATCHES = Array.from(unique.values());
+        scheduleLoaded = true;
+        lastScheduleFetch = Date.now();
+        console.log('[calendar] Synced', ALL_MATCHES.length, 'real cricket matches from shared backend data');
+        return true;
+      }
+
+      async function loadRealCricketSchedule(force = false) {
+        const now = Date.now();
+        if (!force && scheduleLoaded && (now - lastScheduleFetch) < SCHEDULE_CACHE_MS) return;
+        if (scheduleLoading) return;
+
+        scheduleLoading = true;
+        setScheduleLoading(true);
+
+        const synced = syncFromSharedMatchData();
+        if (!synced && !scheduleLoaded) {
+          ALL_MATCHES = getStaticFallbackMatches();
+        }
+
+        scheduleLoaded = true;
+        lastScheduleFetch = now;
+        scheduleLoading = false;
+        setScheduleLoading(false);
+        renderCalendar();
+        renderMatches();
+      }
+
+      // matches-data.js fires this after its real backend data arrives.
+      window.addEventListener('fanconnact:matches-data-updated', function () {
+        if (syncFromSharedMatchData()) {
+          renderCalendar();
+          renderMatches();
+        }
+      });
+
+      function setScheduleLoading(isLoading) {
+        const container = document.getElementById('matches-container');
+        if (!container) return;
+        if (isLoading && !selectedDate) {
+          container.innerHTML = '<div class="bg-white dark:bg-brand-card border border-gray-200 dark:border-border-subtle rounded-xl p-8 text-center"><span class="material-symbols-outlined text-4xl text-emerald-accent animate-pulse">sync</span><p class="text-gray-500 dark:text-gray-400 mt-2">Loading real cricket schedule...</p></div>';
+        }
+      }
 
       function getSportFromURL() {
-        const params = new URLSearchParams(window.location.search);
-        return params.get('game') || 'all';
+        // Calendar is cricket-only for now. Other sports can be added later
+        // when their respective provider/API is integrated.
+        return 'cricket';
       }
 
       function getDaysInMonth(m, y) { return new Date(y, m + 1, 0).getDate(); }
@@ -249,25 +410,32 @@
           const d = document.createElement('div');
           grid.appendChild(d);
         }
+
         for (let day = 1; day <= days; day++) {
           const d = document.createElement('div');
-          const dateStr = currentYear + '-' + String(currentMonth + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0');
-          const isToday = dateStr === today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
+          const dateStr = currentYear + '-' + pad2(currentMonth + 1) + '-' + pad2(day);
+          const todayStr = today.getFullYear() + '-' + pad2(today.getMonth() + 1) + '-' + pad2(today.getDate());
+          const isToday = dateStr === todayStr;
           const isSelected = dateStr === selectedDate;
-          const hasEvent = ALL_MATCHES.some(m => m.date === dateStr && (selectedSport === 'all' || m.sport === selectedSport));
+          const hasEvent = ALL_MATCHES.some(m => m.date === dateStr);
+
           const classes = ['calendar-day', 'h-8', 'md:h-10', 'flex', 'items-center', 'justify-center', 'rounded-lg', 'cursor-pointer', 'text-xs', 'md:text-sm', 'font-semibold', 'text-gray-800', 'dark:text-gray-100'];
           if (isToday) classes.push('today');
           if (isSelected && !isToday) classes.push('selected');
           if (!isToday && !isSelected) classes.push('hover:bg-gray-100', 'dark:hover:bg-white/10');
           if (hasEvent && !isToday) classes.push('has-event');
+
           d.className = classes.join(' ');
           d.textContent = day;
           d.dataset.date = dateStr;
+          d.title = hasEvent ? 'Matches scheduled' : 'No matches scheduled';
+
           d.addEventListener('click', () => {
             selectedDate = dateStr;
             renderCalendar();
             renderMatches();
           });
+
           grid.appendChild(d);
         }
       }
@@ -277,58 +445,57 @@
         const dateInfo = document.getElementById('selected-date');
         const matchCount = document.getElementById('match-count');
 
-        let matches = selectedSport === 'all' ? ALL_MATCHES : ALL_MATCHES.filter(m => m.sport === selectedSport);
-        if (selectedDate) {
-          matches = matches.filter(m => m.date === selectedDate);
-        }
+        let matches = ALL_MATCHES.slice();
+        if (selectedDate) matches = matches.filter(m => m.date === selectedDate);
 
         if (selectedDate) {
           const d = new Date(selectedDate + 'T00:00:00');
-          dateInfo.textContent = d.toDateString();
+          dateInfo.textContent = d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
         } else {
-          dateInfo.textContent = selectedSport === 'all' ? 'All Upcoming Matches' : 'Upcoming ' + selectedSport.charAt(0).toUpperCase() + selectedSport.slice(1) + ' Matches';
+          dateInfo.textContent = 'Upcoming Cricket Matches';
         }
 
         matchCount.textContent = matches.length + ' match' + (matches.length !== 1 ? 'es' : '');
 
         if (matches.length === 0) {
-          container.innerHTML = '<div class="bg-white dark:bg-brand-card border border-gray-200 dark:border-border-subtle rounded-xl p-8 text-center"><span class="material-symbols-outlined text-4xl text-gray-400">event_busy</span><p class="text-gray-500 dark:text-gray-400 mt-2">No matches scheduled' + (selectedDate ? ' on this date' : '') + '.</p></div>';
+          if (scheduleLoading) return;
+          container.innerHTML = '<div class="bg-white dark:bg-brand-card border border-gray-200 dark:border-border-subtle rounded-xl p-8 text-center"><span class="material-symbols-outlined text-4xl text-gray-400">event_busy</span><p class="text-gray-500 dark:text-gray-400 mt-2">No matches scheduled' + (selectedDate ? ' on this date' : ' in the current schedule') + '.</p></div>';
           return;
         }
 
         matches.sort((a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time));
 
         container.innerHTML = matches.map(m => {
-          const icon = SPORT_ICONS[m.sport] || 'sports';
-          const sportName = m.sport.charAt(0).toUpperCase() + m.sport.slice(1);
-          const d = new Date(m.date + 'T00:00:00');
-          const dateStr = d.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
-          return '<div class="match-card bg-white dark:bg-brand-card border border-gray-200 dark:border-border-subtle rounded-xl p-4 md:p-5 hover:border-emerald-accent/50">' +
+          const date = new Date(m.date + 'T00:00:00');
+          const dateStr = date.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
+          const href = m.link ? ' href="' + m.link.replace(/"/g, '&quot;') + '"' : '';
+
+          return '<a class="match-card block bg-white dark:bg-brand-card border border-gray-200 dark:border-border-subtle rounded-xl p-4 md:p-5 hover:border-emerald-accent/50"' + href + '>' +
             '<div class="flex items-start justify-between mb-3">' +
-              '<div class="flex items-center gap-2">' +
-                '<span class="material-symbols-outlined text-emerald-accent text-lg">' + icon + '</span>' +
-                '<span class="text-[10px] md:text-[11px] font-bold uppercase tracking-wider text-emerald-accent">' + m.tournament + '</span>' +
+              '<div class="flex items-center gap-2 min-w-0">' +
+                '<span class="material-symbols-outlined text-emerald-accent text-lg">sports_cricket</span>' +
+                '<span class="text-[10px] md:text-[11px] font-bold uppercase tracking-wider text-emerald-accent truncate">' + escapeHtml(m.tournament) + '</span>' +
               '</div>' +
-              '<span class="text-[10px] md:text-[11px] text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-white/10 px-2.5 py-1 rounded-md font-semibold">' + m.type + '</span>' +
+              '<span class="text-[10px] md:text-[11px] text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-white/10 px-2.5 py-1 rounded-md font-semibold shrink-0">' + escapeHtml(m.type) + '</span>' +
             '</div>' +
-            '<div class="flex items-center justify-between py-1">' +
-              '<div class="flex flex-col items-start gap-0.5">' +
-                '<p class="text-sm md:text-base font-bold team-name">' + m.team1 + '</p>' +
-              '</div>' +
-              '<div class="flex flex-col items-center px-2 md:px-4">' +
-                '<div class="text-[10px] md:text-xs font-black text-emerald-accent uppercase tracking-widest bg-emerald-accent/10 px-3 py-1 rounded-full">VS</div>' +
-              '</div>' +
-              '<div class="flex flex-col items-end gap-0.5">' +
-                '<p class="text-sm md:text-base font-bold team-name">' + m.team2 + '</p>' +
-              '</div>' +
+            '<div class="flex items-center justify-between py-1 gap-3">' +
+              '<div class="min-w-0"><p class="text-sm md:text-base font-bold team-name truncate">' + escapeHtml(m.team1) + '</p></div>' +
+              '<div class="flex flex-col items-center px-2 md:px-4 shrink-0"><div class="text-[10px] md:text-xs font-black text-emerald-accent uppercase tracking-widest bg-emerald-accent/10 px-3 py-1 rounded-full">VS</div></div>' +
+              '<div class="min-w-0 text-right"><p class="text-sm md:text-base font-bold team-name truncate">' + escapeHtml(m.team2) + '</p></div>' +
             '</div>' +
             '<div class="flex flex-wrap items-center gap-x-4 gap-y-1.5 mt-3 pt-3 border-t border-gray-100 dark:border-gray-800 text-[11px] md:text-xs text-gray-600 dark:text-gray-300">' +
               '<span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-sm text-emerald-accent">calendar_today</span>' + dateStr + '</span>' +
-              '<span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-sm text-emerald-accent">schedule</span>' + m.time + '</span>' +
-              '<span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-sm text-emerald-accent">location_on</span>' + m.venue + '</span>' +
+              '<span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-sm text-emerald-accent">schedule</span>' + escapeHtml(m.time) + '</span>' +
+              '<span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-sm text-emerald-accent">location_on</span>' + escapeHtml(m.venue || 'Venue TBD') + '</span>' +
             '</div>' +
-          '</div>';
+          '</a>';
         }).join('');
+      }
+
+      function escapeHtml(value) {
+        return String(value ?? '').replace(/[&<>'"]/g, ch => ({
+          '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+        }[ch]));
       }
 
       function init() {
@@ -336,12 +503,19 @@
         document.querySelectorAll('.sport-tab').forEach(b => {
           b.classList.toggle('active-sport-tab', b.dataset.sport === selectedSport);
         });
+        // Calendar is cricket-only for now. Other sports will be enabled later
+        // when their real providers are integrated.
+        document.querySelectorAll('.sport-tab').forEach(b => {
+          if (b.dataset.sport !== 'cricket') b.style.display = 'none';
+        });
         renderCalendar();
         renderMatches();
+        loadRealCricketSchedule();
       }
 
       document.querySelectorAll('.sport-tab').forEach(btn => {
         btn.addEventListener('click', () => {
+          if (btn.dataset.sport !== 'cricket') return;
           document.querySelectorAll('.sport-tab').forEach(b => b.classList.remove('active-sport-tab'));
           btn.classList.add('active-sport-tab');
           selectedSport = btn.dataset.sport;

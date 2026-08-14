@@ -324,7 +324,8 @@
                   id="profile-hero-img"
                   alt="User Profile"
                   class="w-full h-full object-cover rounded-full"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuDAdt6gTi9aWhzaWu0AwmUJWpepyI28STYpmAmIvZsPGI47HnY8_gtSarYWPqwucklHgR4EpYzTzVUVBceYaIF8fRK2zVyKc4YkcQpkZ8CvmbKNNXVLaeOjk67dkw7BWenmTMRmgepDKe0-i8yDoykBzMNfmCkuifHV6GliA9VZyv3-BQZhdMzbrLOehMtJ1_WLfCtq9lpWR90qN-dNSGTXKecNse6oUgcP6WHXkvBRbgur10o4TjgVEK0NUIjLvjmDhd79tz4W1RDp"
+                  src="assets/images/default-avatar.png"
+                  style="visibility:hidden"
                 />
                 <input
                   type="file"
@@ -400,6 +401,7 @@
             <div
               id="profile-hero-level"
               class="mt-1 self-start bg-primary-container text-on-primary-container px-4 py-1.5 rounded-full text-xs md:text-label-md font-label-md shadow-xl border-2 border-inverse-surface"
+              style="visibility:hidden"
             >
               LVL 12
             </div>
@@ -408,6 +410,7 @@
             <h1
               id="profile-hero-name"
               class="text-xl sm:text-2xl md:text-3xl lg:text-headline-xl font-headline-xl text-gray-900 dark:text-white text-center md:text-left"
+              style="visibility:hidden"
             >
               User Name
             </h1>
@@ -436,6 +439,7 @@
                 <span
                   id="profile-hero-coins"
                   class="text-primary-fixed font-bold text-sm md:text-base"
+                  style="visibility:hidden"
                   >0 Coins</span
                 >
               </div>
@@ -1163,6 +1167,20 @@
       const PROFILE_MAX_OTP = 3;
       let profileOTPCooldown = null;
 
+      // FanConnact level system — source of truth is services/userService.js.
+      // Level 0 starts at 0 XP; Level 1 starts at 150 XP; Level 2 at 350 XP; etc.
+      function getFanConnactRequiredXP(level) {
+        if (level <= 0) return 0;
+        return Math.floor(150 * level + ((level - 1) * level * 25));
+      }
+
+      function calculateFanConnactLevel(xp) {
+        xp = Math.max(0, Number(xp) || 0);
+        let level = 0;
+        while (xp >= getFanConnactRequiredXP(level + 1)) level++;
+        return level;
+      }
+
       onAuthStateChanged(auth, async (user) => {
         if (!user) {
           window.location.href = "login.html";
@@ -1171,41 +1189,39 @@
 
         CURRENT_UID = user.uid;
 
-        const fallbackHandle = user.displayName || user.email.split("@")[0];
-        document.getElementById("profile-hero-name").textContent =
-          `@${fallbackHandle.toLowerCase().replace(/\s+/g, "")}`;
+        // Do not paint Firebase/Auth or demo fallback values before the real
+        // Firestore profile is resolved. This removes the old name/avatar flash.
+        const heroNameEl = document.getElementById("profile-hero-name");
+        const heroImgEl = document.getElementById("profile-hero-img");
+        const heroLevelEl = document.getElementById("profile-hero-level");
+        const heroCoinsEl = document.getElementById("profile-hero-coins");
+        [heroNameEl, heroImgEl, heroLevelEl, heroCoinsEl].filter(Boolean).forEach(el => { el.style.visibility = "hidden"; });
 
-        document.getElementById("profile-detail-fullname").value =
-          user.displayName || "Fanconnact User";
-        document.getElementById("profile-detail-email").value = user.email;
-        if (user.photoURL) {
-          document.getElementById("profile-hero-img").src = user.photoURL;
-        }
+        document.getElementById("profile-detail-email").value = user.email || "";
 
         const userDoc = await getDoc(doc(db, "users", user.uid));
-        if (userDoc.exists()) {
-          const data = userDoc.data();
+        const data = userDoc.exists() ? (userDoc.data() || {}) : {};
+        {
           if (data.frame) {
             document.getElementById("hero-img-container").className =
               `w-28 sm:w-36 md:w-40 h-28 sm:h-36 md:h-40 rounded-full border-4 p-1 overflow-hidden cursor-pointer frame-${data.frame}`;
             document.getElementById("edit-selected-frame").value = data.frame;
           }
-          var heroLevel = (window.LevelSystem && window.LevelSystem.levelFromXP)
-            ? window.LevelSystem.levelFromXP(data.xp || 0)
-            : (data.level || 1);
+          var heroLevel = calculateFanConnactLevel(data.xp || 0);
           document.getElementById("profile-hero-level").textContent =
             `LVL ${heroLevel}`;
           document.getElementById("profile-hero-coins").textContent =
             `${data.coins || 0} Coins`;
 
-          if (data.photoURL) {
-            document.getElementById("profile-hero-img").src = data.photoURL;
-            window._originalPhotoURL = data.photoURL;
-          }
+          const resolvedPhoto = data.photoURL || data.avatar || user.photoURL || "assets/images/default-avatar.png";
+          document.getElementById("profile-hero-img").src = resolvedPhoto;
+          window._originalPhotoURL = data.photoURL || user.photoURL || "";
 
-          const username = data.username || user.email.split("@")[0];
+          const authName = user.displayName || (user.email ? user.email.split("@")[0] : "Fan");
+          const username = String(data.username || "").trim() || authName;
           document.getElementById("profile-hero-name").textContent =
-            `@${username}`;
+            data.username ? `@${username}` : username;
+          document.getElementById("profile-detail-fullname").value = data.fullName || user.displayName || "";
           document.getElementById("profile-detail-username").value =
             `@${username}`;
           document.getElementById("profile-detail-gender").value =
@@ -1216,6 +1232,17 @@
           document.getElementById("profile-detail-location").value =
             data.location || "Not Specified";
 
+          if (!userDoc.exists()) {
+            document.getElementById("profile-detail-fullname").value = user.displayName || "";
+            if (user.photoURL) {
+              document.getElementById("profile-hero-img").src = user.photoURL;
+              window._originalPhotoURL = user.photoURL;
+            }
+            document.getElementById("profile-hero-name").textContent = user.displayName || (user.email ? user.email.split("@")[0] : "Fan");
+          }
+
+          [heroNameEl, heroImgEl, heroLevelEl, heroCoinsEl].filter(Boolean).forEach(el => { el.style.visibility = "visible"; });
+
           // ── Populate real stats (coins/xp/level/rank/followers) ──
           populateProfileStats(data, user.uid);
           renderFollowRequests();
@@ -1225,22 +1252,20 @@
       // ── Populate real stats from Firestore ──
       async function populateProfileStats(data, uid) {
         const xp = parseInt(data.xp, 10) || 0;
-        const level = (window.LevelSystem && window.LevelSystem.levelFromXP)
-          ? window.LevelSystem.levelFromXP(xp)
-          : (parseInt(data.level, 10) || 1);
+        const level = calculateFanConnactLevel(xp);
         const coins = parseInt(data.coins, 10) || 0;
 
-        // XP progress bar
+        // XP progress bar — uses the same formula as services/userService.js.
         const xpBar = document.getElementById("stat-xp-bar");
         const xpLevel = document.getElementById("stat-xp-level");
         const xpText = document.getElementById("stat-xp");
-        if (window.LevelSystem && window.LevelSystem.xpToNextLevel) {
-          const pct = window.LevelSystem.xpProgress
-            ? window.LevelSystem.xpProgress(xp)
-            : 0;
-          if (xpBar) xpBar.style.width = Math.max(0, Math.min(100, pct)) + "%";
-        } else if (xpBar) {
-          xpBar.style.width = "0%";
+        if (xpBar) {
+          const currentLevelXP = getFanConnactRequiredXP(level);
+          const nextLevelXP = getFanConnactRequiredXP(level + 1);
+          const range = Math.max(1, nextLevelXP - currentLevelXP);
+          const progressXP = Math.max(0, xp - currentLevelXP);
+          const pct = Math.max(0, Math.min(100, (progressXP / range) * 100));
+          xpBar.style.width = pct + "%";
         }
         if (xpLevel) xpLevel.textContent = "LVL " + level;
         if (xpText) xpText.textContent = xp.toLocaleString() + " XP";
@@ -2522,8 +2547,7 @@
       document.getElementById("profile-signout-btn")?.addEventListener("click", logoutHandler);
       document.getElementById("mobile-logout-btn")?.addEventListener("click", logoutHandler);
     </script>
-    <script type="module" src="js/script.js"></script>
-    <script src="js/level-system.js"></script>
+    
     <script src="js/theme.js"></script>
 </body>
 </html>

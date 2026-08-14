@@ -60,7 +60,9 @@
 
       color: "#6B7280",
 
-      flag: "🏏"
+      flag: "🏏",
+
+      logo: null
 
     };
 
@@ -83,6 +85,7 @@
 
   }
   function logo(t) {
+    if (t.logo) return t.logo;
     if (t.cc) return "https://flagcdn.com/w80/" + t.cc + ".png";
     return "https://ui-avatars.com/api/?name=" + encodeURIComponent(t.name.replace(/\s+/g, "+")) +
       "&background=" + (t.color || "#6B7280").replace("#", "") + "&color=ffffff&size=64&bold=true";
@@ -203,7 +206,7 @@ const detail = m.score?.detail
     const sub = esc(m.tournament) + (m.stage ? " • " + esc(m.stage) : "") + (m.venue ? " • " + esc(m.venue) : "");
     return (
       '<div class="bg-card-bg rounded-2xl ' + pad + ' border border-border-subtle hover:border-primary transition-all cursor-pointer group h-full ' + widthCls + ' min-w-0 overflow-hidden flex flex-col" ' +
-      'data-match-id="' + esc(m.id) + '" data-sport="' + esc(m.sport) + '" data-status="' + esc(m.status) + '" data-tournament="' + esc(m.tournament || m.sport) + '">' +
+      'data-match-id="' + esc(m.id) + '" data-sport="' + esc(m.sport) + '" data-status="' + esc(m.status) + '" data-tournament="' + esc(m.tournament || m.sport) + '"' + (m.status === 'live' && m.link ? ' data-match-link="' + esc(linkFor(m)) + '"' : '') + '>' +
       '<div class="flex items-center justify-between ' + headMb + '">' +
       '<div class="flex items-center space-x-3">' + statusBadge +
       '<span class="text-xs font-semibold text-on-surface-variant truncate max-w-[140px] sm:max-w-[240px]">' + sub + '</span>' +
@@ -318,82 +321,24 @@ as =
     car.innerHTML = pick.map(heroSlideHTML).join("");
   }
 
-  // ---- live ticking simulation (cricket overs / football minutes) ----
+  // ---- live updates are backend-only ----
+  // Never mutate a live score on the client. The backend/API is the single
+  // source of truth for runs, wickets, overs, goals, points, etc.
+  // Refresh is intentionally limited to one 30-second loop.
   function startLiveTicker() {
-    const lives = MATCHES.filter(m => m.status === "live");
-    if (!lives.length) return;
-    setInterval(() => {
-      lives.forEach(m => {
-        const el = document.querySelector('[data-match-id="' + m.id + '"]');
-        if (!el) return;
-        if (m.sport === "cricket") {
-          // bump away (chasing) score a little + advance over
-          const sc = m.score;
-          if (sc && sc.away != null && /^\d/.test(String(sc.away))) {
-            let parts = String(sc.away).split("/");
-            let runs = parseInt(parts[0], 10) || 0;
-            let wkts = parts[1] != null ? parseInt(parts[1], 10) : 0;
-            runs += Math.floor(Math.random() * 3); // 0-2 runs
-            if (Math.random() < 0.08) wkts += 1; // occasional wicket
-           sc.away = `${runs}/${wkts}`;
-          if (sc.innings2) {
+    if (window.__FANCONNACT_MATCH_REFRESH_TIMER) return;
 
-    sc.innings2.runs = runs;
+    window.__FANCONNACT_MATCH_REFRESH_TIMER = setInterval(async () => {
+      try {
+        if (typeof window.FANCONNECT_refreshMatches !== "function") return;
 
-    sc.innings2.wickets = wkts;
-
-}
-
-const awayEl = el.querySelector(".score-away");
-
-if (awayEl)
-
-awayEl.textContent = sc.away;}
-          // advance over in detail like "5.5/50 ov"
-          if (sc && sc.detail) {
-            const ov = sc.detail.match(/([\d.]+)\/(\d+)/);
-            if (ov) {
-              let o = parseFloat(ov[1]) + 0.1;
-              const max = parseInt(ov[2], 10);
-              if (o > max) o = max;
-              sc.detail = sc.detail.replace(/[\d.]+\/\d+/, o.toFixed(1) + "/" + max);
-              const d = el.querySelector(".score-detail");
-              if (d) d.textContent = sc.detail;
-            }
-          }
-          // update need-line
-          if (m.target) {
-          const cur = sc.innings2
-    ? sc.innings2.runs
-    : parseInt(sc.away);
-            const need = m.target - cur;
-            const line = el.querySelector(".status-line");
-            detail = esc(detail);
-            if (line && need > 0) line.textContent = "Need " + need + " runs";
-          }
-        } else if (m.sport === "football" || m.sport === "basketball") {
-          const sc = m.score;
-          if (sc && sc.detail) {
-            const min = sc.detail.match(/(\d+)'/);
-            if (min) {
-              let mm = parseInt(min[1], 10) + 1;
-              sc.detail = sc.detail.replace(/\d+'/, mm + "'");
-              const d = el.querySelector(".score-detail");
-              if (d) d.textContent = sc.detail;
-              const line = el.querySelector(".status-line");
-              if (line) line.textContent = "Group stage · " + mm + "' minutes played";
-            }
-          }
-          // occasional goal
-          if (Math.random() < 0.05) {
-            const who = Math.random() < 0.5 ? "home" : "away";
-            const key = who === "home" ? ".score-home" : ".score-away";
-            const el2 = el.querySelector(key);
-            if (el2) { let v = parseInt(el2.textContent, 10) || 0; el2.textContent = (v + 1); }
-          }
-        }
-      });
-    }, 4000);
+        await window.FANCONNECT_refreshMatches();
+        // matches-data.js dispatches fanconnact:matches-data-updated after the
+        // backend response. That event performs the single re-render.
+      } catch (err) {
+        console.warn("[matches] Live refresh failed:", err);
+      }
+    }, 30000);
   }
 
   // ---- render into a container, optionally filtered ----
@@ -439,7 +384,22 @@ awayEl.textContent = sc.away;}
     }
   }
 
+  let initRunning = false;
+  // Live cards open the real match center. No client-side demo modal or simulator.
+  if (!window.__FANCONNACT_LIVE_CARD_NAV__) {
+    window.__FANCONNACT_LIVE_CARD_NAV__ = true;
+    document.addEventListener('click', function (e) {
+      var card = e.target.closest('[data-match-link][data-status="live"]');
+      if (!card) return;
+      if (e.target.closest('a,button,[onclick]')) return;
+      var href = card.getAttribute('data-match-link');
+      if (href) window.location.href = href;
+    });
+  }
+
   async function init() {
+    if (initRunning) return;
+    initRunning = true;
 
     let retry = 0;
 
@@ -486,12 +446,19 @@ awayEl.textContent = sc.away;}
       renderInto(c, "finished", true, true);
     });
 
+    // Tell sport-filters.js that the cards now exist so counts are correct
+    // immediately; users do not need to click another tab.
+    window.dispatchEvent(new CustomEvent("fanconnact:matches-rendered"));
+
     startLiveTicker();
+    initRunning = false;
   }
+
+  // Backend refreshes announce new data; render exactly once from that data.
+  window.addEventListener("fanconnact:matches-data-updated", () => init());
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
   else init();
-
 
   window.init = init;
 

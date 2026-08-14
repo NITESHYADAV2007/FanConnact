@@ -2396,3 +2396,465 @@ THEME CHANGE
     font-size: 18px;
   }
 }
+
+
+/* FINAL LOCKED PREDICTION INTERACTION */
+.prediction-option{position:relative;min-height:58px;cursor:pointer}
+.prediction-option.active{border-color:#3b82f6!important;background:rgba(59,130,246,.12)!important}
+.prediction-selected-check{position:absolute;top:8px;right:8px;width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:#10b981;color:#fff;font-size:12px;font-weight:900}
+.prediction-submit-wrap{display:flex;justify-content:flex-end;margin-top:14px}
+.prediction-submit-btn{border:0;border-radius:10px;padding:9px 15px;min-height:36px;background:#10b981;color:#04130d;font-size:12px;line-height:1;font-weight:800;cursor:pointer;box-shadow:0 7px 18px rgba(16,185,129,.2);transition:.18s}
+.prediction-submit-btn:hover{background:#34d399;transform:translateY(-1px)}
+.prediction-result-line{margin-top:12px;padding:10px 12px;border-radius:10px;background:rgba(16,185,129,.10);border:1px solid rgba(16,185,129,.22);color:#10b981;font-size:13px}
+.prediction-my-pick{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin-top:10px;padding:10px 12px;border-radius:10px;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.18);color:#64748b;font-size:13px}
+.dark .prediction-my-pick{color:#cbd5e1}
+.prediction-result-badge{display:inline-flex;align-items:center;border-radius:999px;padding:3px 8px;font-size:10px;font-weight:900}
+.prediction-result-badge.won{color:#065f46;background:#a7f3d0}.prediction-result-badge.lost{color:#991b1b;background:#fecaca}
+.prediction-reward-earned{color:#059669;font-weight:800}
+.prediction-confirm-modal{position:fixed;inset:0;z-index:99999;display:none;align-items:center;justify-content:center;padding:18px}.prediction-confirm-modal.is-open{display:flex}
+.prediction-confirm-backdrop{position:absolute;inset:0;background:rgba(2,6,23,.62);backdrop-filter:blur(4px)}
+.prediction-confirm-dialog{position:relative;width:min(360px,100%);padding:22px;border-radius:18px;background:#fff;border:1px solid #e2e8f0;box-shadow:0 24px 70px rgba(0,0,0,.28);text-align:center}
+.dark .prediction-confirm-dialog{background:#16191e;border-color:#2a2e35;color:#fff}.prediction-confirm-icon{width:42px;height:42px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:rgba(16,185,129,.12);color:#10b981;font-size:20px;font-weight:900}.prediction-confirm-dialog h3{margin:0;font-size:18px;font-weight:800}.prediction-confirm-dialog p{margin:8px 0 18px;color:#64748b;font-size:13px;line-height:1.5}.dark .prediction-confirm-dialog p{color:#94a3b8}.prediction-confirm-actions{display:flex;gap:9px}.prediction-confirm-actions button{flex:1;min-height:38px;border-radius:10px;font-size:12px;font-weight:800;cursor:pointer}.prediction-confirm-cancel{border:1px solid #cbd5e1;background:transparent;color:#475569}.dark .prediction-confirm-cancel{border-color:#374151;color:#cbd5e1}.prediction-confirm-submit{border:0;background:#10b981;color:#04130d}
+@media(max-width:600px){.prediction-options{grid-template-columns:1fr!important}.prediction-submit-wrap{justify-content:stretch}.prediction-submit-btn{width:100%}.prediction-confirm-dialog{padding:20px 16px}}
+
+/* ==========================================================
+   FANCONNACT UI SAFE RESPONSIVE PATCH
+   UI-only: keeps existing HTML/JS structure and prediction logic intact.
+   Fixes compact desktop + mobile match hero + long team names + cards.
+   ========================================================== */
+
+/* Never let a grid/flex child force the prediction column wider than its viewport. */
+.prediction-page,
+.prediction-layout,
+.prediction-main,
+.prediction-sidebar,
+.match-banner,
+.prediction-card,
+.prediction-card-header {
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Team names are allowed to wrap instead of colliding with VS. */
+.team-block > div:last-child {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.team-block h2 {
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  line-height: 1.15;
+  max-width: 100%;
+}
+
+/* The center VS section must never be squeezed by a long team name. */
+.match-center {
+  min-width: 64px;
+  flex-shrink: 0;
+}
+
+/* Compact desktop/tablet: when the stats column would squeeze the hero,
+   move stats below the main prediction area instead of breaking the hero. */
+@media (max-width: 1180px) {
+  .prediction-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+  }
+
+  .prediction-main {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .prediction-sidebar {
+    width: 100%;
+    order: 2;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .prediction-page {
+    padding: 18px;
+  }
+
+  .match-banner {
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    gap: 18px;
+    padding: 20px;
+  }
+
+  .team-block {
+    min-width: 0;
+  }
+
+  .team-block h2 {
+    font-size: clamp(18px, 2.2vw, 24px);
+  }
+
+  .prediction-card {
+    width: 100%;
+  }
+}
+
+/* Tablet/phone: keep both teams on the same row with VS in the middle.
+   Do NOT use the old one-column hero layout that pushed VS to the top. */
+@media (max-width: 768px) {
+  .prediction-page {
+    padding: 12px;
+  }
+
+  .prediction-sidebar {
+    order: 2;
+    grid-template-columns: 1fr;
+  }
+
+  .match-banner {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) !important;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 10px;
+    width: 100%;
+  }
+
+  .team-block,
+  .team-block:first-child,
+  .team-block:last-child {
+    min-width: 0;
+    width: 100%;
+    flex-direction: column;
+    justify-content: center !important;
+    align-items: center;
+    gap: 7px;
+    text-align: center !important;
+  }
+
+  .team-block > div:last-child {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .team-logo-circle {
+    width: 52px;
+    height: 52px;
+    font-size: 18px;
+  }
+
+  .team-block h2 {
+    width: 100%;
+    font-size: clamp(14px, 4vw, 19px) !important;
+    line-height: 1.18;
+    text-align: center !important;
+  }
+
+  .team-block .team-label {
+    font-size: 10px;
+    margin-top: 3px;
+  }
+
+  .team-score-big {
+    font-size: 17px;
+    margin-top: 2px;
+  }
+
+  .match-center {
+    min-width: 48px;
+    width: auto;
+    gap: 7px;
+  }
+
+  .match-center h2 {
+    font-size: 18px !important;
+    line-height: 1;
+    letter-spacing: 1px;
+  }
+
+  .live-badge {
+    padding: 5px 9px;
+    font-size: 10px;
+  }
+
+  .match-status {
+    padding: 5px 8px;
+    font-size: 9px;
+    white-space: nowrap;
+  }
+
+  .prediction-card {
+    padding: 14px;
+    border-radius: 16px;
+  }
+
+  .prediction-card-header {
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .prediction-live,
+  .prediction-timer {
+    min-width: 0;
+  }
+
+  .prediction-timer {
+    margin-left: auto;
+  }
+
+  .prediction-question {
+    font-size: clamp(18px, 5vw, 23px) !important;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .prediction-options {
+    grid-template-columns: 1fr !important;
+    min-width: 0;
+  }
+
+  .prediction-option {
+    min-width: 0;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 14px 10px;
+  }
+
+  .option-content,
+  .option-title {
+    min-width: 0;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    white-space: normal;
+  }
+
+  .option-title {
+    font-size: 16px;
+    line-height: 1.25;
+  }
+
+  .prediction-footer {
+    min-width: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .prediction-page {
+    padding: 8px;
+  }
+
+  .match-banner {
+    gap: 5px;
+    padding: 12px 7px;
+    border-radius: 18px;
+  }
+
+  .team-logo-circle {
+    width: 46px;
+    height: 46px;
+    font-size: 16px;
+  }
+
+  .team-block h2 {
+    font-size: 13px !important;
+    line-height: 1.15;
+  }
+
+  .team-block .team-label {
+    font-size: 9px;
+  }
+
+  .team-score-big {
+    font-size: 15px;
+  }
+
+  .match-center {
+    min-width: 42px;
+    gap: 6px;
+  }
+
+  .match-center h2 {
+    font-size: 16px !important;
+  }
+
+  .live-badge {
+    padding: 4px 7px;
+    font-size: 9px;
+  }
+
+  .match-status {
+    padding: 4px 6px;
+    font-size: 8px;
+  }
+
+  .prediction-card {
+    padding: 12px;
+  }
+
+  .prediction-card-header {
+    align-items: center;
+  }
+
+  .prediction-timer {
+    margin-left: 0;
+  }
+
+  .time-value {
+    font-size: 18px;
+  }
+}
+
+/* Prevent any horizontal page drift caused by long real team/question names. */
+.prediction-main,
+.prediction-page,
+.prediction-container,
+.prediction-card {
+  overflow-x: hidden;
+}
+
+
+/* ==========================================================
+   FINAL MATCH HERO ALIGNMENT PATCH
+   UI ONLY — no HTML/JS/prediction logic changes.
+   Fixes:
+   1) VS must stay between both teams on mobile/tablet.
+   2) Right-side team name must not be pushed to the far edge.
+   3) Long team names stay inside their own column.
+   ========================================================== */
+
+/* Desktop: keep the two team groups visually closer to the center. */
+.match-banner {
+  grid-template-columns: minmax(0, 1fr) 90px minmax(0, 1fr);
+  column-gap: 12px;
+}
+
+.match-banner > .team-block {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.match-banner > .team-block:first-child {
+  justify-content: flex-end;
+  text-align: right;
+}
+
+.match-banner > .team-block:last-child {
+  justify-content: flex-start !important;
+  text-align: left !important;
+}
+
+/* Never allow a long team name to push the center VS away. */
+.match-banner .team-block > div:last-child {
+  min-width: 0;
+  max-width: min(100%, 360px);
+}
+
+.match-banner .team-block h2 {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* IMPORTANT: an older @media rule set order:-1.
+   Override it so VS remains in the middle. */
+.match-banner .match-center {
+  order: 0 !important;
+  min-width: 64px;
+  width: 100%;
+  flex-shrink: 0;
+}
+
+/* Compact desktop/tablet */
+@media (max-width: 1180px) {
+  .match-banner {
+    grid-template-columns: minmax(0, 1fr) 72px minmax(0, 1fr);
+    column-gap: 8px;
+  }
+
+  .match-banner > .team-block:first-child {
+    justify-content: flex-end !important;
+    text-align: right !important;
+  }
+
+  .match-banner > .team-block:last-child {
+    justify-content: flex-start !important;
+    text-align: left !important;
+  }
+
+  .match-banner .team-block > div:last-child {
+    max-width: 100%;
+  }
+}
+
+/* Phone: three fixed visual zones — TEAM | VS | TEAM */
+@media (max-width: 768px) {
+  .match-banner {
+    grid-template-columns: minmax(0, 1fr) 46px minmax(0, 1fr) !important;
+    column-gap: 4px !important;
+    row-gap: 0 !important;
+    padding: 14px 8px !important;
+  }
+
+  .match-banner > .team-block,
+  .match-banner > .team-block:first-child,
+  .match-banner > .team-block:last-child {
+    width: 100%;
+    min-width: 0;
+    justify-content: center !important;
+    align-items: center !important;
+    text-align: center !important;
+    flex-direction: column;
+  }
+
+  .match-banner .team-block > div:last-child {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .match-banner .team-block h2 {
+    width: 100%;
+    max-width: 100%;
+    white-space: normal !important;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    text-align: center !important;
+  }
+
+  .match-banner .match-center {
+    order: 0 !important;
+    min-width: 46px !important;
+    width: 46px !important;
+    justify-self: center;
+    align-self: center;
+  }
+}
+
+/* Very small phones */
+@media (max-width: 480px) {
+  .match-banner {
+    grid-template-columns: minmax(0, 1fr) 40px minmax(0, 1fr) !important;
+    column-gap: 3px !important;
+    padding-left: 6px !important;
+    padding-right: 6px !important;
+  }
+
+  .match-banner .match-center {
+    min-width: 40px !important;
+    width: 40px !important;
+  }
+
+  .match-banner .match-center h2 {
+    font-size: 16px !important;
+  }
+
+  .match-banner .team-block h2 {
+    font-size: 13px !important;
+    line-height: 1.15;
+  }
+}

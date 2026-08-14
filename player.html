@@ -814,11 +814,23 @@ const ranking = {
 
     rank:
         player.rank ??
-        player.ranking?.rank,
+        player.ranking?.rank ??
+        player.profile?.rank ??
+        player.profile?.worldRank ??
+        player.profile?.position ??
+        player.basic?.rank ??
+        player.basic?.worldRank ??
+        null,
 
     rating:
         player.rating ??
-        player.ranking?.rating
+        player.ranking?.rating ??
+        player.profile?.rating ??
+        player.profile?.points ??
+        player.profile?.value ??
+        player.basic?.rating ??
+        player.basic?.points ??
+        null
 };
 
 const batting = player.batting || {};
@@ -1672,46 +1684,63 @@ if (!newsContainer) return;
         { name:"AS Pontoise-Cergy", league:"Pro A", color:"2563eb", badge:"Pro A" }
       ]
     };
- // Build REAL teams from API
+ // Build REAL teams from API only.
+// The profile endpoint can expose team data inside basic/profile as well,
+// so read those real fields instead of falling back to static team pools.
 var teams = [];
 
-// International Team
-if (player.intlTeam) {
+var intlTeam = player.intlTeam ||
+    player.basic?.country ||
+    player.profile?.intlTeam ||
+    player.profile?.country ||
+    "";
+
+var rawTeams = player.teams ??
+    player.basic?.team ??
+    player.profile?.teams ??
+    player.profile?.team ??
+    "";
+
+var teamList = Array.isArray(rawTeams)
+    ? rawTeams
+    : String(rawTeams || "")
+        .split(",")
+        .map(function(team) { return team.trim(); })
+        .filter(Boolean);
+
+if (intlTeam) {
     teams.push({
-        name: player.intlTeam,
+        name: intlTeam,
         role: "National Team",
         color: "2563eb",
         years: "International",
         img: "https://ui-avatars.com/api/?name=" +
-            encodeURIComponent(player.intlTeam.substring(0,2)) +
+            encodeURIComponent(String(intlTeam).substring(0,2)) +
             "&background=2563eb&color=fff&size=40",
         badge: "National"
     });
 }
 
-// Other Teams
-if (player.teams) {
-    player.teams.split(",").forEach(function(team) {
+teamList.forEach(function(team) {
+    var teamName = typeof team === "string"
+        ? team
+        : (team?.name || team?.teamName || team?.team || "");
 
-        team = team.trim();
+    teamName = String(teamName).trim();
+    if (!teamName) return;
+    if (intlTeam && teamName.toLowerCase() === String(intlTeam).toLowerCase()) return;
 
-        if (!team) return;
-
-        if (player.intlTeam && team === player.intlTeam) return;
-
-        teams.push({
-            name: team,
-            role: "Cricket",
-            color: "10b981",
-            years: "Career",
-            img: "https://ui-avatars.com/api/?name=" +
-                 encodeURIComponent(team.substring(0,2)) +
-                 "&background=10b981&color=fff&size=40",
-            badge: "Team"
-        });
-
+    teams.push({
+        name: teamName,
+        role: "Cricket",
+        color: "10b981",
+        years: "Career",
+        img: "https://ui-avatars.com/api/?name=" +
+             encodeURIComponent(teamName.substring(0,2)) +
+             "&background=10b981&color=fff&size=40",
+        badge: "Team"
     });
-}
+});
     teamsContainer.innerHTML = "";
     teams.forEach(function(t) {
       var div = document.createElement("div");
@@ -2936,6 +2965,161 @@ try {
     console.log("PROFILE =", profile);
 
     Object.assign(player, profile);
+
+    // -----------------------------------------------------------------
+    // REAL RANKING/RATING: fetch the player's current ICC ranking entry.
+    // This is intentionally limited to the existing ranking API and is
+    // only used to fill the two profile fields when the profile endpoint
+    // itself does not contain them.
+    // -----------------------------------------------------------------
+    try {
+      var roleText = String(
+        player.role ||
+        player.basic?.role ||
+        player.profile?.role ||
+        ""
+      ).toLowerCase();
+
+      var rankingRole = roleText.indexOf("bowl") !== -1
+        ? "bowlers"
+        : (roleText.indexOf("all") !== -1 ? "allrounders" : "batsmen");
+
+      var rankingResp = await fetch(
+        `${API_BASE}/api/rankings/${rankingRole}?format=t20&women=0`
+      );
+
+      if (rankingResp.ok) {
+        var rankingData = await rankingResp.json();
+        var rankingList = Array.isArray(rankingData)
+          ? rankingData
+          : (Array.isArray(rankingData?.players) ? rankingData.players : []);
+
+        var pid = String(
+          player.id ||
+          player.playerId ||
+          player.profile?.id ||
+          player.basic?.id ||
+          ""
+        );
+
+        var pname = String(player.name || player.basic?.name || "").trim().toLowerCase();
+
+        var matchedRanking = rankingList.find(function(r) {
+          var rid = String(r?.playerId ?? r?.id ?? r?.player_id ?? "");
+          var rname = String(r?.name ?? r?.player ?? r?.fullName ?? "").trim().toLowerCase();
+          return (pid && rid && pid === rid) || (pname && rname === pname);
+        });
+
+        if (matchedRanking) {
+          player.rank = matchedRanking.rank ?? matchedRanking.position ?? player.rank ?? null;
+          player.rating =
+            matchedRanking.rating ??
+            matchedRanking.points ??
+            matchedRanking.value ??
+            player.rating ??
+            null;
+
+          player.ranking = {
+            ...(player.ranking || {}),
+            rank: player.rank,
+            rating: player.rating
+          };
+
+          var liveRankEl = document.getElementById("player-rank");
+          if (liveRankEl) {
+            liveRankEl.textContent = player.rank ? "#" + player.rank : "—";
+          }
+
+          var liveRatingEl = document.getElementById("player-rating");
+          if (liveRatingEl) {
+            liveRatingEl.textContent =
+              player.rating ?? matchedRanking.points ?? matchedRanking.value ?? "—";
+          }
+        }
+      }
+    } catch (rankingError) {
+      console.warn("PLAYER RANKING LOAD FAILED:", rankingError);
+    }
+
+    // Re-render ONLY the existing Teams panel with the real profile data
+    // that arrived above. No static/mock team list is used.
+    try {
+      var realTeamsContainer = document.querySelector('[data-purpose="current-teams"] .glass-card.rounded-2xl');
+      if (realTeamsContainer) {
+        var realIntlTeam = player.intlTeam ||
+          player.basic?.country ||
+          player.profile?.intlTeam ||
+          player.profile?.country ||
+          "";
+
+        var realRawTeams = player.teams ??
+          player.basic?.team ??
+          player.profile?.teams ??
+          player.profile?.team ??
+          "";
+
+        var realTeamList = Array.isArray(realRawTeams)
+          ? realRawTeams
+          : String(realRawTeams || "")
+              .split(",")
+              .map(function(team) { return team.trim(); })
+              .filter(Boolean);
+
+        var realTeams = [];
+
+        if (realIntlTeam) {
+          realTeams.push({
+            name: realIntlTeam,
+            role: "National Team",
+            color: "2563eb",
+            years: "International",
+            badge: "National"
+          });
+        }
+
+        realTeamList.forEach(function(team) {
+          var teamName = typeof team === "string"
+            ? team
+            : (team?.name || team?.teamName || team?.team || "");
+
+          teamName = String(teamName).trim();
+          if (!teamName) return;
+          if (realIntlTeam && teamName.toLowerCase() === String(realIntlTeam).toLowerCase()) return;
+
+          realTeams.push({
+            name: teamName,
+            role: "Cricket",
+            color: "10b981",
+            years: "Career",
+            badge: "Team"
+          });
+        });
+
+        realTeamsContainer.innerHTML = "";
+
+        realTeams.forEach(function(t) {
+          var div = document.createElement("div");
+          div.className = "flex items-center justify-between p-4 hover:bg-slate-800/20 transition-colors";
+          div.innerHTML =
+            '<div class="flex items-center gap-4">' +
+              '<div class="w-12 h-12 rounded-xl flex items-center justify-center overflow-hidden shrink-0" style="background:#' + t.color + '20">' +
+                '<img alt="' + t.name + ' Logo" class="w-10 h-10 object-cover" src="https://ui-avatars.com/api/?name=' +
+                encodeURIComponent(t.name.substring(0,2)) +
+                '&background=' + t.color + '&color=fff&size=40" />' +
+              '</div>' +
+              '<div><div class="text-sm font-bold">' + t.name + '</div>' +
+              '<div class="text-[10px] text-slate-500 uppercase tracking-widest">' + t.role + '</div>' +
+              '<div class="text-[10px] text-slate-600 mt-0.5">' + t.years + '</div></div>' +
+            '</div>' +
+            '<div class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider" style="background:#' +
+            t.color + '20;color:#' + t.color + '">' + t.badge + '</div>';
+
+          realTeamsContainer.appendChild(div);
+        });
+      }
+    } catch (teamsError) {
+      console.warn("PLAYER TEAMS LOAD FAILED:", teamsError);
+    }
 
     generateRealisticStats(player, sportName);
 

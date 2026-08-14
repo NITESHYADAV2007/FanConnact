@@ -8,68 +8,10 @@ import * as predictionService from "../services/predictionService.js";
 import * as Helpers from "./helpers/predictionHelpers.js";
 
 import {
-
     cricketRules
+} from "./rules/cricketRules.js";
 
-}
 
-    from "./rules/cricketRules.js";
-
-import {
-
-    footballRules
-
-}
-
-    from "./rules/footballRules.js";
-
-import {
-
-    basketballRules
-
-}
-
-    from "./rules/basketballRules.js";
-
-    import {
-
-hockeyRules
-
-}
-
-from "./rules/hockeyRules.js";
-
-import {
-
-tennisRules
-
-}
-
-from "./rules/tennisRules.js";
-
-import {
-
-volleyballRules
-
-}
-
-from "./rules/volleyballRules.js";
-
-import {
-
-kabaddiRules
-
-}
-
-from "./rules/kabaddiRules.js";
-
-import {
-
-baseballRules
-
-}
-
-from "./rules/baseballRules.js";
 /* ==========================================================
         Prediction Triggers
 ========================================================== */
@@ -89,6 +31,7 @@ export const PredictionTrigger = {
     HIGHEST_SCORER: "HIGHEST_SCORER",
 
     TOTAL_SCORE: "TOTAL_SCORE",
+    NEXT_OVER_RUNS: "NEXT_OVER_RUNS",
 
     /* ==========================
             LIVE MATCH
@@ -255,25 +198,25 @@ BONUS_POINT:"BONUS_POINT",
         BASEBALL
 ========================== */
 
-FIRST_INNING,
+FIRST_INNING: "FIRST_INNING",
 
-HOME_RUN,
+HOME_RUN: "HOME_RUN",
 
-NEXT_RUN,
+NEXT_RUN: "NEXT_RUN",
 
-NEXT_STRIKEOUT,
+NEXT_STRIKEOUT: "NEXT_STRIKEOUT",
 
-TOTAL_RUNS_BASEBALL,
+TOTAL_RUNS_BASEBALL: "TOTAL_RUNS_BASEBALL",
 
-FIRST_TO_5,
+FIRST_TO_5: "FIRST_TO_5",
 
-EXTRA_INNINGS,
+EXTRA_INNINGS: "EXTRA_INNINGS",
 
-FULL_TIME_BASEBALL,
+FULL_TIME_BASEBALL: "FULL_TIME_BASEBALL",
 
-STOLEN_BASE,
+STOLEN_BASE: "STOLEN_BASE",
 
-GRAND_SLAM,
+GRAND_SLAM: "GRAND_SLAM",
 
     /* ==========================
             POST MATCH
@@ -290,18 +233,59 @@ GRAND_SLAM,
 ========================================================== */
 
 const ENGINE_CONFIG = {
+    // Safety floor between separate generation cycles for one match.
+    MIN_INTERVAL_SECONDS: 45,
 
-    MIN_INTERVAL_SECONDS: 120,
+    // Never stack many live questions. Pre-match may show two at once.
+    MAX_ACTIVE_LIVE_PREDICTIONS: 1,
+    MAX_ACTIVE_PREMATCH_PREDICTIONS: 2,
 
-    MAX_ACTIVE_PREDICTIONS: 2,
+    // At most two pre-match questions can be created in one engine pass.
+    // Live/event generation is deliberately one at a time.
+    MAX_GENERATIONS_PREMATCH_PER_RUN: 2,
+    MAX_GENERATIONS_LIVE_PER_RUN: 1,
 
-    MAX_PREMATCH: 4,
-
-    MAX_LIVE: 12,
-
+    MAX_PREMATCH: 2,
+    MAX_LIVE: 1,
     MAX_POSTMATCH: 1
-
 };
+
+/* ==========================================================
+        Cricket Format / Match Limits
+========================================================== */
+
+function normalizeCricketFormat(match){
+    const raw = String(
+        match?.matchType ??
+        match?.matchFormat ??
+        match?.format ??
+        match?.matchInfo?.matchType ??
+        ""
+    ).toLowerCase();
+
+    if(/\btest\b/.test(raw)) return "TEST";
+    if(/\bt10(?:i)?\b|ten10|ten-10|10\s*over/.test(raw)) return "T10";
+    if(/\bt20(?:i)?\b|twenty20|twenty-20|20\s*over/.test(raw)) return "T20";
+    if(/\bodi\b|one day|50\s*over/.test(raw)) return "ODI";
+
+    return "T20";
+}
+
+function getMatchPredictionLimit(match){
+    switch(normalizeCricketFormat(match)){
+        case "T10": return 4;
+        case "T20": return 5;
+        case "ODI": return 5;
+        case "TEST": return 5;
+        default: return 5;
+    }
+}
+
+function maxActiveForMatch(match){
+    return String(match?.status || "").toUpperCase() === "UPCOMING"
+        ? ENGINE_CONFIG.MAX_ACTIVE_PREMATCH_PREDICTIONS
+        : ENGINE_CONFIG.MAX_ACTIVE_LIVE_PREDICTIONS;
+}
 
 /* ==========================================================
         Prediction Priority
@@ -464,11 +448,18 @@ GRAND_SLAM:50,
 
 const engineState = {
 
-    activePredictions: 0,
+    // Active prediction count is tracked per match so one match cannot block
+    // another match's prediction generation.
+    activePredictions: new Map(),
 
+    // Trigger keys are match/event scoped, never global.
     generatedTriggers: new Set(),
 
-    cooldowns: new Map()
+    cooldowns: new Map(),
+
+    generatedCounts: new Map(),
+
+    lastGeneratedAt: new Map()
 
 };
 
@@ -476,26 +467,17 @@ const engineState = {
         Match Cooldown
 ========================================================== */
 
-function canGeneratePrediction(matchId) {
+function canGeneratePrediction(matchId, ignoreCooldown = false) {
+    if(ignoreCooldown) return true;
 
-    const last =
+    const last = engineState.cooldowns.get(String(matchId));
 
-        engineState.cooldowns.get(matchId);
-
-    if (!last) {
-
-        return true;
-
-    }
+    if(!last) return true;
 
     return (
-
-        Date.now() - last >
-
+        Date.now() - last >=
         ENGINE_CONFIG.MIN_INTERVAL_SECONDS * 1000
-
     );
-
 }
 
 /* ==========================================================
@@ -517,83 +499,184 @@ function updateCooldown(matchId) {
         Duplicate Protection
 ========================================================== */
 
-function hasTrigger(trigger) {
-
-    return engineState.generatedTriggers.has(trigger);
-
+function getActiveCount(matchId){
+    return engineState.activePredictions.get(String(matchId)) || 0;
 }
 
-function saveTrigger(trigger) {
-
-    engineState.generatedTriggers.add(trigger);
-
+function incrementActive(matchId){
+    const key = String(matchId);
+    engineState.activePredictions.set(key, getActiveCount(key) + 1);
 }
+
+export function predictionClosed(matchId){
+    const key = String(matchId || "");
+    const next = Math.max(0, getActiveCount(key) - 1);
+
+    if(next === 0){
+        engineState.activePredictions.delete(key);
+    }else{
+        engineState.activePredictions.set(key, next);
+    }
+}
+
+function hasTrigger(triggerKey){
+    return engineState.generatedTriggers.has(String(triggerKey));
+}
+
+function saveTrigger(triggerKey){
+    engineState.generatedTriggers.add(String(triggerKey));
+}
+
+function buildTriggerKey(match, ruleId, prediction){
+    const eventId =
+        match?.lastEvent?.id ??
+        match?.lastEvent?.eventId ??
+        match?.lastEvent?.timestamp ??
+        match?.lastEvent?.ballId ??
+        "";
+
+    const over =
+        match?.currentOver ??
+        match?.over ??
+        match?.currentInnings?.over ??
+        "";
+
+    const batter =
+        match?.currentBatter?.id ??
+        match?.currentBatter?.playerId ??
+        "";
+
+    const base = prediction?.trigger || ruleId || "UNKNOWN";
+    const type = String(prediction?.type || "");
+
+    // One meaningful chase/milestone should not repeat every 30 seconds.
+    if(type === "CHASE"){
+        return `${match.id}:${base}`;
+    }
+
+    // Pre-match questions are inherently match-scoped.
+    if([
+        "MATCH_WINNER",
+        "TOSS_WINNER",
+        "TOTAL_RUNS",
+        "HIGHEST_SCORER"
+    ].includes(type)){
+        return `${match.id}:${base}`;
+    }
+
+    return [
+        match.id,
+        base,
+        over,
+        eventId,
+        batter
+    ].join(":");
+}
+
 /* ==========================================================
         Create Prediction
 ========================================================== */
 
-async function generatePrediction(data) {
+async function generatePrediction(data, options = {}){
+    if(!data?.matchId) return false;
 
-    if (
+    const matchId = String(data.matchId);
+    const formatLimit = Number(data.matchPredictionLimit) || 5;
 
-        !canGeneratePrediction(
-
-            data.matchId
-
-        )
-
-    ) {
-
-        return;
-
+    if(!canGeneratePrediction(matchId, options.ignoreCooldown === true)){
+        return false;
     }
 
-    if (hasTrigger(data.trigger)) {
+    const triggerKey = data.triggerKey ||
+        `${matchId}:${data.trigger}`;
 
-        return;
+    if(hasTrigger(triggerKey)) return false;
 
+    /*
+     * DATABASE-AWARE DUPLICATE + MATCH LIMIT PROTECTION
+     * This survives reloads and prevents duplicate generation from two tabs.
+     */
+    let existing = [];
+
+    try{
+        existing = await predictionService.getPredictionsByMatch(matchId);
+    }catch(error){
+        console.warn("Prediction count lookup failed:", error);
+        return false;
     }
 
-    if (
+    const sameTrigger = existing.some(item =>
+        String(item.triggerKey || "") === String(triggerKey)
+    );
 
-        engineState.activePredictions >=
+    if(sameTrigger) return false;
 
-        ENGINE_CONFIG.MAX_ACTIVE_PREDICTIONS
+    const generatedTotal = existing.filter(item =>
+        String(item.sport || "").toLowerCase() === "cricket"
+    ).length;
 
-    ) {
+    if(generatedTotal >= formatLimit) return false;
 
-        return;
+    const activeCount = existing.filter(item => {
+        if(String(item.status || "").toUpperCase() !== "LIVE") return false;
 
-    }
+        const expiresAt = item.expiresAt?.toMillis
+            ? item.expiresAt.toMillis()
+            : (item.expiresAt ? new Date(item.expiresAt).getTime() : null);
 
-    const result =
+        return expiresAt == null || expiresAt > Date.now();
+    }).length;
 
-        await predictionService.createPrediction(data);
+    const maxActive =
+        Number.isFinite(Number(options.maxActive))
+            ? Number(options.maxActive)
+            : maxActiveForMatch(data);
 
-    if (result.success) {
+    if(activeCount >= maxActive) return false;
 
-        updateCooldown(
+    const result = await predictionService.createPrediction({
+        ...data,
+        sport: "cricket",
+        format:
+            data.format ||
+            data.matchFormat ||
+            data.matchType ||
+            "T20",
+        triggerKey,
+        matchPredictionLimit: formatLimit
+    });
 
-            data.matchId
+    if(!result?.success) return false;
 
-        );
+    updateCooldown(matchId);
+    saveTrigger(triggerKey);
+    incrementActive(matchId);
 
-        saveTrigger(data.trigger);
+    engineState.generatedCounts.set(
+        matchId,
+        generatedTotal + 1
+    );
 
-        engineState.activePredictions++;
+    engineState.lastGeneratedAt.set(
+        matchId,
+        Date.now()
+    );
 
-    }
-
+    return true;
 }
 
-export function predictionClosed() {
+export function clearMatchState(matchId){
+    const key = String(matchId || "");
+    engineState.activePredictions.delete(key);
+    engineState.cooldowns.delete(key);
+    engineState.generatedCounts.delete(key);
+    engineState.lastGeneratedAt.delete(key);
 
-    if (engineState.activePredictions > 0) {
-
-        engineState.activePredictions--;
-
+    for(const trigger of engineState.generatedTriggers){
+        if(trigger.startsWith(key + ":")){
+            engineState.generatedTriggers.delete(trigger);
+        }
     }
-
 }
 
 /* ==========================================================
@@ -634,51 +717,58 @@ function queuePrediction(
         Process Queue
 ========================================================== */
 
-async function processPredictionQueue() {
+async function processPredictionQueue(match){
+    if(pendingPredictions.length === 0) return;
 
-    if (
+    pendingPredictions.sort((a,b) => b.priority - a.priority);
 
-        pendingPredictions.length === 0
+    const isPrematch =
+        String(match?.status || "").toUpperCase() === "UPCOMING";
 
-    ) {
+    const maxActive =
+        isPrematch
+            ? ENGINE_CONFIG.MAX_ACTIVE_PREMATCH_PREDICTIONS
+            : ENGINE_CONFIG.MAX_ACTIVE_LIVE_PREDICTIONS;
 
-        return;
+    const maxThisRun =
+        isPrematch
+            ? ENGINE_CONFIG.MAX_GENERATIONS_PREMATCH_PER_RUN
+            : ENGINE_CONFIG.MAX_GENERATIONS_LIVE_PER_RUN;
 
-    }
+    let created = 0;
 
-    pendingPredictions.sort(
+    while(pendingPredictions.length > 0 && created < maxThisRun){
+        const prediction = pendingPredictions.shift();
 
-        (a, b) =>
+        if(!prediction?.data?.matchId) continue;
 
-            b.priority - a.priority
-
-    );
-
-    while (
-
-        pendingPredictions.length > 0 &&
-
-        engineState.activePredictions <
-
-        ENGINE_CONFIG.MAX_ACTIVE_PREDICTIONS
-
-    ) {
-
-        const prediction =
-
-            pendingPredictions.shift();
-
-        await generatePrediction(
-
-            prediction.data
-
+        /*
+         * Active count is checked against Firestore inside generatePrediction().
+         * Do not use the old in-memory counter here; it is not decremented by
+         * the lifecycle worker and would permanently block later questions
+         * after the first prediction expired.
+         */
+        /*
+         * The second pre-match question in the SAME engine pass is allowed
+         * without waiting 45 seconds. Separate lifecycle passes still respect
+         * the 45-second generation floor.
+         */
+        const createdNow = await generatePrediction(
+            prediction.data,
+            {
+                ignoreCooldown: isPrematch && created > 0,
+                maxActive
+            }
         );
 
+        if(createdNow){
+            created++;
+        }
     }
 
     pendingPredictions = [];
-
 }
+
 /* ==========================================================
         Execute Rules
 ========================================================== */
@@ -706,20 +796,20 @@ async function executeRules(
             }
 
             const prediction =
-
                 rule.build(
-
                     match,
-
                     Helpers
-
                 );
 
             if (!prediction) {
-
                 continue;
-
             }
+
+            prediction.triggerKey = buildTriggerKey(
+                match,
+                rule.id,
+                prediction
+            );
 
             queuePrediction(
 
@@ -747,7 +837,7 @@ async function executeRules(
 
     }
 
-    await processPredictionQueue();
+    await processPredictionQueue(match);
 
 }
 
@@ -766,67 +856,14 @@ export async function generatePredictions(match) {
 
         }
 
-        switch (match.sport) {
-
-            case "cricket":
-
-                await generateCricketPredictions(match);
-
-                break;
-
-            case "football":
-
-                await generateFootballPredictions(match);
-
-                break;
-
-            case "tennis":
-
-                await generateTennisPredictions(match);
-
-                break;
-
-            case "basketball":
-
-                await generateBasketballPredictions(match);
-
-                break;
-
-            case "hockey":
-
-                await generateHockeyPredictions(match);
-
-                break;
-
-            case "volleyball":
-
-                await generateVolleyballPredictions(match);
-
-                break;
-
-            case "kabaddi":
-
-                await generateKabaddiPredictions(match);
-
-                break;
-
-                case "baseball":
-
-    await generateBaseballPredictions(match);
-
-    break;
-
-            default:
-
-                console.warn(
-
-                    "Unsupported Sport",
-
-                    match.sport
-
-                );
-
+        // Prediction generation is intentionally cricket-only for now.
+        // Other sports remain UI-ready for future work but their prediction
+        // engines are not loaded or executed.
+        if (String(match.sport || "").toLowerCase() !== "cricket") {
+            return;
         }
+
+        await generateCricketPredictions(match);
 
     }
 
@@ -853,22 +890,54 @@ export async function generatePredictions(match) {
 ========================================================== */
 
 async function generateCricketPredictions(match) {
+    if(!match) return;
 
-    if (!match) {
+    const sport = String(match.sport || "").toLowerCase();
+    if(sport !== "cricket") return;
 
+    const format = normalizeCricketFormat(match);
+    const limit = getMatchPredictionLimit(match);
+
+    let existing = [];
+    try{
+        existing = await predictionService.getPredictionsByMatch(
+            String(match.id)
+        );
+    }catch(error){
+        console.warn("Cricket prediction lookup failed:", error);
         return;
-
     }
 
+    const totalGenerated = existing.filter(item =>
+        String(item.sport || "").toLowerCase() === "cricket"
+    ).length;
+
+    if(totalGenerated >= limit) return;
+
+    const active = existing.filter(item => {
+        if(String(item.status || "").toUpperCase() !== "LIVE") return false;
+
+        const expiresAt = item.expiresAt?.toMillis
+            ? item.expiresAt.toMillis()
+            : (item.expiresAt ? new Date(item.expiresAt).getTime() : null);
+
+        return expiresAt == null || expiresAt > Date.now();
+    }).length;
+
+    if(active >= maxActiveForMatch(match)) return;
+
     await executeRules(
-
         cricketRules,
-
-        match
-
+        {
+            ...match,
+            id: String(match.id),
+            sport: "cricket",
+            matchType: format,
+            matchPredictionLimit: limit
+        }
     );
-
 }
+
 /* ==========================================================
         Football
 ========================================================== */
@@ -892,10 +961,6 @@ async function generateFootballPredictions(match) {
 /* ==========================================================
         Tennis
 ========================================================== */
-
-async function generateTennisPredictions(match) {
-
-}
 
 /* ==========================================================
         Basketball
@@ -990,24 +1055,6 @@ async function generateKabaddiPredictions(match){
     await executeRules(
 
         kabaddiRules,
-
-        match
-
-    );
-
-}
-
-async function generateBaseballPredictions(match){
-
-    if(!match){
-
-        return;
-
-    }
-
-    await executeRules(
-
-        baseballRules,
 
         match
 

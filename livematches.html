@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 
 <html lang="en">
   <head>
@@ -268,21 +268,20 @@
             id="user-profile-img"
             alt="User Profile"
             class="w-9 h-9 md:w-10 md:h-10 rounded-full border-2 border-emerald-accent"
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDOdWz0yXTAfug92jAlZ-XZtnL5urTJNu8npwz7RIfeTacw2m4yeAoKNMAkf3MLOCIk0iI35_ID8tSabIp6I7MF2N_gez6RO01_i0q1DX3bj656URDlnI8A34wDvyRB5WoPOVTN1qvuyGRfskySDI-pCWAnw3raxBsKX2G6sEhrFHiweAO4TxLdxuB-4_oHoAPBbm9bwmrKrqSGKFEtAeXpM76OE_C1cQQSNmRYmIRT01ZVb4lT2k1tR1xDw6ujXtxiain2IWfiKxim"
+            src="assets/images/default-avatar.png"
+            style="visibility:hidden"
           />
           <div class="hidden sm:block">
             <p
               id="user-name-display"
               class="text-sm font-bold text-slate-900 dark:text-white"
-            >
-              NiteshY
-            </p>
+              style="visibility:hidden"
+            ></p>
             <p
               id="user-level-display"
               class="text-[10px] text-emerald-accent font-bold uppercase tracking-wider"
-            >
-              Level 28
-            </p>
+              style="visibility:hidden"
+            ></p>
           </div>
         </div>
       </div>
@@ -947,325 +946,83 @@
         </div>
       </main>
 
-      <!-- BEGIN: Crex-style Live Match View (opens on live card click) -->
-      <div id="live-match-view" class="fixed inset-0 z-[60] overflow-y-auto bg-black/80 backdrop-blur-sm">
-        <div class="min-h-full lg:max-w-5xl lg:mx-auto bg-[#0a0e1a] text-white">
-          <!-- Top bar -->
-          <div class="sticky top-0 z-10 flex items-center justify-between px-4 py-3 bg-[#0b1626] border-b border-white/10">
-            <button id="lmv-close" class="flex items-center gap-2 text-sm text-gray-300 hover:text-white">
-              <span class="material-symbols-outlined text-xl">arrow_back</span> Matches
-            </button>
-            <div class="flex items-center gap-2 text-xs">
-              <span class="w-2 h-2 rounded-full bg-red-500 pulse-live"></span>
-              <span id="lmv-status" class="font-bold text-red-400 uppercase tracking-wide">Live</span>
-            </div>
-            <button id="lmv-chat" class="text-xs px-3 py-1.5 rounded-lg bg-[#f7941d] text-black font-bold">Live Chat</button>
-          </div>
 
-          <div class="p-4 space-y-4">
-            <!-- Scoreboard -->
-            <div class="crex-card rounded-2xl overflow-hidden">
-              <div class="px-4 py-2 text-[11px] uppercase tracking-wide text-gray-400" id="lmv-series">Series</div>
-              <div class="crex-pitch px-4 py-5">
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center gap-3">
-                    <img id="lmv-home-logo" class="w-12 h-12 object-contain" src="" alt="">
-                    <div>
-                      <div id="lmv-home-name" class="font-bold text-lg leading-none">HOME</div>
-                      <div id="lmv-home-score" class="text-3xl font-extrabold mt-1 score-flash">0</div>
-                      <div id="lmv-home-sub" class="text-[11px] text-gray-300"></div>
-                    </div>
-                  </div>
-                  <div class="text-center text-xs text-gray-300">
-                    <div id="lmv-state" class="font-semibold">LIVE</div>
-                    <div id="lmv-over" class="mt-1"></div>
-                  </div>
-                  <div class="flex items-center gap-3 text-right">
-                    <div>
-                      <div id="lmv-away-name" class="font-bold text-lg leading-none">AWAY</div>
-                      <div id="lmv-away-score" class="text-3xl font-extrabold mt-1 score-flash">0</div>
-                      <div id="lmv-away-sub" class="text-[11px] text-gray-300"></div>
-                    </div>
-                    <img id="lmv-away-logo" class="w-12 h-12 object-contain" src="" alt="">
-                  </div>
-                </div>
-              </div>
-              <!-- Current players strip -->
-              <div class="grid grid-cols-2 gap-px bg-white/10">
-                <div class="bg-[#0b1626] px-4 py-3 flex items-center gap-3">
-                  <span class="text-[10px] uppercase font-bold text-[#f7941d]">Batting</span>
-                  <img id="lmv-bat1-img" class="w-8 h-8 rounded-full bg-gray-700 object-cover" src="" alt="">
-                  <div class="text-sm"><span id="lmv-bat1" class="font-semibold">-</span> <span id="lmv-bat1-runs" class="text-gray-400 text-xs"></span></div>
-                  <img id="lmv-bat2-img" class="w-8 h-8 rounded-full bg-gray-700 object-cover ml-2" src="" alt="">
-                  <div class="text-sm"><span id="lmv-bat2" class="font-semibold">-</span> <span id="lmv-bat2-runs" class="text-gray-400 text-xs"></span></div>
-                </div>
-                <div class="bg-[#0b1626] px-4 py-3 flex items-center gap-3">
-                  <span class="text-[10px] uppercase font-bold text-[#2b6cb0]">Bowling</span>
-                  <img id="lmv-bowl-img" class="w-8 h-8 rounded-full bg-gray-700 object-cover" src="" alt="">
-                  <div class="text-sm"><span id="lmv-bowl" class="font-semibold">-</span> <span id="lmv-bowl-fig" class="text-gray-400 text-xs"></span></div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Commentary -->
-            <div class="crex-card rounded-2xl p-4">
-              <div class="flex items-center justify-between mb-3">
-                <h3 class="font-bold text-sm uppercase tracking-wide">Live Commentary</h3>
-                <span class="text-[11px] text-gray-400">Ball-by-ball</span>
-              </div>
-              <div id="lmv-comm" class="space-y-2 max-h-[55vh] overflow-y-auto pr-1"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <!-- END: Crex-style Live Match View -->
-
-    </div>
-    <script type="module" src="js/script.js"></script>
-    <script src="js/theme.js"></script>
-    <script>
-    /* ============================================================
-       Crex-style Live Match View â€” sport-aware, data-driven
-       Opens when a LIVE match card is clicked. Shows avatars,
-       live scoreboard and ball-by-ball commentary with
-       FOUR / SIX / WICKET / MILESTONE animations per sport.
-       ============================================================ */
-    (function () {
-      'use strict';
-      var view = document.getElementById('live-match-view');
-      if (!view) return;
-      var $ = function (id) { return document.getElementById(id); };
-      var timers = [];
-      function clearTimers() { timers.forEach(clearTimeout); timers = []; }
-      function later(fn, ms) { var t = setTimeout(fn, ms); timers.push(t); return t; }
-
-      // ---- Avatar helpers (initials fallback) ----
-      function initials(name) {
-        var parts = String(name).replace(/[^a-zA-Z ]/g, '').trim().split(/\s+/);
-        if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-        return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-      }
-      function avatar(name, bg) {
-        return 'https://ui-avatars.com/api/?name=' + encodeURIComponent(initials(name)) +
-          '&background=' + (bg || '374151') + '&color=fff&size=80&bold=true&format=png';
-      }
-
-      // ---- Per-sport commentary generators ----
-      // Each returns { text, type, runs, badge } where type in four/six/wicket/milestone/normal
-      var GEN = {
-        cricket: function (s) {
-          var r = Math.random();
-          if (r < 0.16) return { type: 'four', runs: 4, badge: '4', text: s.striker + ' times it beautifully through the covers for FOUR! ' + s.home + ' ' + s.homeScore + '/' + s.homeWkts + '.' };
-          if (r < 0.26) return { type: 'six', runs: 6, badge: '6', text: s.striker + ' launches ' + s.bowler + ' over long-on for a massive SIX! ' + s.home + ' ' + s.homeScore + '/' + s.homeWkts + '.' };
-          if (r < 0.34) { s.homeWkts++; return { type: 'wicket', runs: 0, badge: 'W', text: 'WICKET! ' + s.striker + ' b ' + s.bowler + ' ' + s.homeScore + '/' + s.homeWkts + '. Big breakthrough!' }; }
-          if (r < 0.40) return { type: 'milestone', runs: 1, badge: '50', text: 'Milestone! ' + s.striker + ' brings up a well-made half-century. ' + s.home + ' ' + s.homeScore + '/' + s.homeWkts + '.' };
-          var runs = [0, 1, 1, 2, 1, 3, 2, 1][Math.floor(Math.random() * 8)];
-          return { type: 'normal', runs: runs, badge: String(runs), text: runs + ' run' + (runs === 1 ? '' : 's') + ' taken off ' + s.bowler + '. ' + s.striker + ' on strike.' };
-        },
-        football: function (s) {
-          var r = Math.random();
-          if (r < 0.18) { s.homeScore++; return { type: 'wicket', runs: 1, badge: 'âš½', text: 'GOOOAL! ' + s.striker + ' finds the net for ' + s.home + '! ' + s.home + ' ' + s.homeScore + 'â€“' + s.awayScore + '.' }; }
-          if (r < 0.30) return { type: 'milestone', runs: 0, badge: 'ðŸŸ¨', text: 'Yellow card for ' + s.bowler + ' after a late challenge. ' + s.away + ' free-kick in a dangerous area.' };
-          if (r < 0.42) return { type: 'four', runs: 0, badge: 'ðŸŽ¯', text: 'Great chance! ' + s.striker + ' forces a fine save from the ' + s.away + ' keeper.' };
-          if (r < 0.52) return { type: 'six', runs: 0, badge: 'ðŸš€', text: 'Stunning strike from distance by ' + s.striker + ' â€” just wide! ' + s.home + ' ' + s.homeScore + 'â€“' + s.awayScore + '.' };
-          return { type: 'normal', runs: 0, badge: 'â€¢', text: 'Possession with ' + (Math.random() < 0.5 ? s.home : s.away) + '. ' + s.striker + ' looking lively on the wing.' };
-        },
-        basketball: function (s) {
-          var r = Math.random();
-          if (r < 0.22) { s.homeScore += 3; return { type: 'six', runs: 3, badge: '3PT', text: 'Three-pointer from downtown by ' + s.striker + '! ' + s.home + ' ' + s.homeScore + 'â€“' + s.awayScore + '.' }; }
-          if (r < 0.42) { s.homeScore += 2; return { type: 'four', runs: 2, badge: '2PT', text: 'And-1 opportunity! ' + s.striker + ' finishes strong through contact. ' + s.home + ' ' + s.homeScore + 'â€“' + s.awayScore + '.' }; }
-          if (r < 0.54) return { type: 'wicket', runs: 0, badge: 'ðŸ€', text: 'Steal and fast break! ' + s.bowler + ' picks ' + s.away + ' pocket. Transition bucket.' };
-          if (r < 0.64) return { type: 'milestone', runs: 0, badge: 'ðŸ”¥', text: 'Milestone: ' + s.striker + ' reaches 30 points on the night. On fire!' };
-          return { type: 'normal', runs: 0, badge: 'â€¢', text: s.striker + ' brings the ball up. ' + s.home + ' ' + s.homeScore + 'â€“' + s.awayScore + '.' };
-        },
-        tennis: function (s) {
-          var r = Math.random();
-          if (r < 0.20) return { type: 'wicket', runs: 0, badge: 'ðŸŽ¾', text: 'BREAK POINT! ' + s.striker + ' breaks serve against ' + s.away + '. ' + s.state + '.' };
-          if (r < 0.36) return { type: 'four', runs: 0, badge: 'ACE', text: 'Ace! ' + s.striker + ' unleashes a 210km/h serve. ' + s.state + '.' };
-          if (r < 0.50) return { type: 'six', runs: 0, badge: 'âš¡', text: 'Winner cross-court by ' + s.striker + '! Unreturnable. ' + s.state + '.' };
-          if (r < 0.62) return { type: 'milestone', runs: 0, badge: 'ðŸ†', text: 'Set point saved by ' + s.striker + '. Incredible defence. ' + s.state + '.' };
-          return { type: 'normal', runs: 0, badge: 'â€¢', text: s.striker + ' holds serve comfortably. ' + s.state + '.' };
-        },
-        baseball: function (s) {
-          var r = Math.random();
-          if (r < 0.18) { s.homeScore++; return { type: 'six', runs: 1, badge: 'HR', text: 'HOME RUN! ' + s.striker + ' sends it out of the park! ' + s.home + ' ' + s.homeScore + 'â€“' + s.awayScore + '.' }; }
-          if (r < 0.34) { s.homeScore++; return { type: 'four', runs: 1, badge: 'RBI', text: 'Base hit, RBI for ' + s.striker + '. ' + s.home + ' ' + s.homeScore + 'â€“' + s.awayScore + '.' }; }
-          if (r < 0.46) return { type: 'wicket', runs: 0, badge: 'âš¾', text: 'Strikeout! ' + s.bowler + ' paints the corner. ' + s.away + ' batter sits down.' };
-          if (r < 0.58) return { type: 'milestone', runs: 0, badge: 'ðŸ”¥', text: 'Milestone: ' + s.striker + ' extends hit streak to 12 games.' };
-          return { type: 'normal', runs: 0, badge: 'â€¢', text: s.bowler + ' on the mound. ' + s.striker + ' at the plate. ' + s.home + ' ' + s.homeScore + 'â€“' + s.awayScore + '.' };
-        },
-        hockey: function (s) {
-          var r = Math.random();
-          if (r < 0.20) { s.homeScore++; return { type: 'wicket', runs: 1, badge: 'ðŸ’', text: 'GOAL! ' + s.striker + ' roofs it top-shelf for ' + s.home + '! ' + s.home + ' ' + s.homeScore + 'â€“' + s.awayScore + '.' }; }
-          if (r < 0.36) return { type: 'four', runs: 0, badge: 'ðŸ¥…', text: 'Great save by the ' + s.away + ' goaltender off ' + s.striker + "'s slapshot." };
-          if (r < 0.50) return { type: 'six', runs: 0, badge: 'ðŸ’¥', text: 'Huge open-ice hit by ' + s.bowler + '. The crowd erupts!' };
-          if (r < 0.62) return { type: 'milestone', runs: 0, badge: 'ðŸ”¥', text: 'Milestone: ' + s.striker + ' records a Gordie Howe hat-trick (goal, assist, fight).' };
-          return { type: 'normal', runs: 0, badge: 'â€¢', text: s.home + ' controlling the puck in the ' + s.away + ' zone. ' + s.home + ' ' + s.homeScore + 'â€“' + s.awayScore + '.' };
-        }
-      };
-
-      // ---- Sport display config ----
-      var SPORT = {
-        Cricket: { unit: 'Run', state: function (s) { return 'Over ' + s.over.toFixed(1); }, sub: function (s, side) { return side === 'home' ? (s.homeWkts + ' wkts') : (s.awayWkts + ' wkts'); } },
-        Football: { unit: 'Goal', state: function (s) { return s.minute + "'"; }, sub: function () { return ''; } },
-        Basketball: { unit: 'PTS', state: function (s) { return 'Q' + s.quarter + ' â€¢ ' + s.clock; }, sub: function () { return ''; } },
-        Tennis: { unit: 'Set', state: function (s) { return s.state; }, sub: function () { return ''; } },
-        Baseball: { unit: 'Run', state: function (s) { return 'Top ' + s.inning + (s.outs ? ' â€¢ ' + s.outs + ' out' : ''); }, sub: function () { return ''; } },
-        Hockey: { unit: 'Goal', state: function (s) { return s.clock + ' left'; }, sub: function () { return ''; } }
-      };
-
-      var NAMES = {
-        LIV: 'Liverpool', MCI: 'Man City', LAL: 'Lakers', GSW: 'Warriors', MI: 'Mumbai Indians', CSK: 'Chennai Super Kings',
-        Alcaraz: 'C. Alcaraz', Djokovic: 'N. Djokovic', Dodgers: 'Dodgers', Yankees: 'Yankees', Capitals: 'Capitals', GoldenKnights: 'Golden Knights'
-      };
-      function fullName(code) { return NAMES[code] || code; }
-
-      // ---- Open the view from a clicked card ----
-      function openMatch(card) {
-        var sport = card.getAttribute('data-tournament');
-        var home = card.getAttribute('data-home') || 'HOME';
-        var away = card.getAttribute('data-away') || 'AWAY';
-        var cfg = SPORT[sport] || SPORT.Cricket;
-        var gen = GEN[sport] || GEN[sport.toLowerCase()] || GEN.cricket;
-
-        // Read initial scores from the card
-        var scoreEls = card.querySelectorAll('.text-2xl, .sm\\:text-2xl, .text-4xl');
-        var homeScore = 0, awayScore = 0;
-        if (scoreEls.length >= 2) {
-          var hRaw = scoreEls[0].textContent.split('/')[0].replace(/[^\d]/g, '');
-          var aRaw = scoreEls[1].textContent.split('/')[0].replace(/[^\d]/g, '');
-          var h = parseInt(hRaw, 10), a = parseInt(aRaw, 10);
-          if (!isNaN(h)) homeScore = h; if (!isNaN(a)) awayScore = a;
-        }
-        var series = (card.querySelector('.text-xs.font-semibold.text-gray-400') || {}).textContent || (sport + ' Live');
-
-        // Build state object
-        var st = {
-          sport: sport, home: fullName(home), away: fullName(away), homeCode: home, awayCode: away,
-          homeScore: homeScore, awayScore: awayScore, homeWkts: 0, awayWkts: 0,
-          over: 0.1, minute: 1, quarter: 1, clock: '11:00', inning: 1, outs: 0,
-          striker: '', bowler: '', state: ''
-        };
-        st.striker = sport === 'Tennis' ? st.home : (sport === 'Cricket' ? 'B Duckett' : st.home + ' #10');
-        st.bowler = sport === 'Tennis' ? st.away : (sport === 'Cricket' ? 'J Bumrah' : st.away + ' #7');
-        st.state = cfg.state(st);
-
-        // Populate header
-        $('lmv-series').textContent = series;
-        $('lmv-home-name').textContent = st.home;
-        $('lmv-away-name').textContent = st.away;
-        $('lmv-home-logo').src = (card.querySelectorAll('img')[0] || {}).src || avatar(st.home, '2196F3');
-        $('lmv-away-logo').src = (card.querySelectorAll('img')[1] || {}).src || avatar(st.away, 'D32F2F');
-        $('lmv-home-score').textContent = st.homeScore;
-        $('lmv-away-score').textContent = st.awayScore;
-        $('lmv-home-sub').textContent = cfg.sub(st, 'home');
-        $('lmv-away-sub').textContent = cfg.sub(st, 'away');
-        $('lmv-over').textContent = st.state;
-        $('lmv-state').textContent = 'LIVE';
-
-        // Current players strip (avatars)
-        $('lmv-bat1-img').src = avatar(st.striker, 'f7941d');
-        $('lmv-bat1').textContent = st.striker;
-        $('lmv-bat1-runs').textContent = sport === 'Cricket' ? '12 (8)' : '';
-        $('lmv-bat2-img').src = avatar(sport === 'Cricket' ? 'J Smith' : st.home + ' #11', 'f7941d');
-        $('lmv-bat2').textContent = sport === 'Cricket' ? 'J Smith' : (st.home + ' #11');
-        $('lmv-bat2-runs').textContent = sport === 'Cricket' ? '8 (6)' : '';
-        $('lmv-bowl-img').src = avatar(st.bowler, '2b6cb0');
-        $('lmv-bowl').textContent = st.bowler;
-        $('lmv-bowl-fig').textContent = sport === 'Cricket' ? '1/12 (2)' : '';
-
-        // Clear + seed commentary
-        var feed = $('lmv-comm');
-        feed.innerHTML = '';
-        addComm({ type: 'normal', badge: 'â€¢', text: 'Match started. ' + st.home + ' vs ' + st.away + ' â€” live ball-by-ball coverage begins.' }, false);
-
-        view.classList.add('open');
-        document.body.style.overflow = 'hidden';
-
-        // Live loop
-        clearTimers();
-        function tick() {
-          var ev = gen(st);
-          // update scoreboard
-          $('lmv-home-score').textContent = st.homeScore;
-          $('lmv-away-score').textContent = st.awayScore;
-          flash($('lmv-home-score')); flash($('lmv-away-score'));
-          st.state = cfg.state(st);
-          $('lmv-over').textContent = st.state;
-          $('lmv-home-sub').textContent = cfg.sub(st, 'home');
-          $('lmv-away-sub').textContent = cfg.sub(st, 'away');
-          // rotate players a bit for realism
-          if (Math.random() < 0.3) {
-            st.striker = sport === 'Tennis' ? st.home : (sport === 'Cricket' ? (Math.random() < .5 ? 'B Duckett' : 'J Root') : st.home + ' #' + (10 + Math.floor(Math.random() * 5)));
-            $('lmv-bat1').textContent = st.striker;
-            $('lmv-bat1-img').src = avatar(st.striker, 'f7941d');
-          }
-          addComm(ev, true);
-          // advance sport clock
-          if (sport === 'Cricket') st.over = Math.min(50, +(st.over + 0.1).toFixed(1));
-          else if (sport === 'Football') st.minute = Math.min(90, st.minute + 1);
-          else if (sport === 'Basketball') { st.clock = decClock(st.clock); if (st.clock === '00:00') { st.quarter = Math.min(4, st.quarter + 1); st.clock = '12:00'; } }
-          else if (sport === 'Baseball') { st.outs = (st.outs + 1) % 3; if (st.outs === 0) st.inning = Math.min(9, st.inning + 1); }
-          else if (sport === 'Hockey') st.clock = decClock(st.clock);
-          later(tick, 2600 + Math.random() * 1800);
-        }
-        later(tick, 1500);
-      }
-
-      function decClock(c) {
-        var p = c.split(':'); var m = parseInt(p[0], 10), s = parseInt(p[1], 10);
-        s -= 11; if (s < 0) { s += 60; m -= 1; } if (m < 0) m = 0;
-        return (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
-      }
-      function flash(el) { if (!el) return; el.classList.remove('score-flash'); void el.offsetWidth; el.classList.add('score-flash'); }
-
-      function addComm(ev, animate) {
-        var feed = $('lmv-comm');
-        var cls = 'comm-item ' + (ev.type === 'four' ? 'comm-four' : ev.type === 'six' ? 'comm-six' : ev.type === 'wicket' ? 'comm-wicket' : ev.type === 'milestone' ? 'comm-milestone' : '');
-        var color = ev.type === 'four' ? '#22c55e' : ev.type === 'six' ? '#a855f7' : ev.type === 'wicket' ? '#ef4444' : ev.type === 'milestone' ? '#f7941d' : '#94a3b8';
-        var row = document.createElement('div');
-        row.className = 'flex items-start gap-3 rounded-xl bg-white/5 p-3 ' + cls;
-        row.innerHTML =
-          '<span class="badge-pop shrink-0 w-9 h-9 text-sm" style="background:' + color + '22;color:' + color + ';border:1px solid ' + color + '55">' + (ev.badge || 'â€¢') + '</span>' +
-          '<div class="min-w-0"><p class="text-sm text-gray-100 leading-snug">' + ev.text + '</p>' +
-          '<p class="text-[10px] text-gray-500 mt-0.5">' + (ev.type === 'normal' ? 'Live' : ev.type.toUpperCase()) + '</p></div>';
-        feed.insertBefore(row, feed.firstChild);
-        while (feed.children.length > 40) feed.removeChild(feed.lastChild);
-        if (animate) {
-          var badge = row.querySelector('.badge-pop');
-          if (badge) { badge.style.animation = 'none'; void badge.offsetWidth; badge.style.animation = ''; }
-        }
-      }
-
-      function closeMatch() {
-        view.classList.remove('open');
-        document.body.style.overflow = '';
-        clearTimers();
-      }
-
-      // Wire up: clicking a LIVE card opens the view (instead of summary redirect)
-      document.querySelectorAll('[data-status="live"]').forEach(function (card) {
-        card.style.cursor = 'pointer';
-        card.addEventListener('click', function (e) {
-          // ignore clicks on the action buttons that explicitly navigate
-          if (e.target.closest('button[onclick]')) return;
-          openMatch(card);
-        });
-      });
-      $('lmv-close').addEventListener('click', closeMatch);
-      $('lmv-chat').addEventListener('click', function () {
-        var card = document.querySelector('[data-status="live"].open') || document.querySelector('[data-status="live"]');
-        var sport = card ? card.getAttribute('data-tournament') : 'cricket';
-        var home = card ? (card.getAttribute('data-home') || 'HOME') : 'HOME';
-        var away = card ? (card.getAttribute('data-away') || 'AWAY') : 'AWAY';
-        window.location.href = 'match-center.html?sport=' + sport.toLowerCase() + '&home=' + home + '&away=' + away + '&state=live';
-      });
-      document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeMatch(); });
-    })();
-    </script>
   <script src="js/notif-ws.js"></script>
   <script src="js/matches-data.js"></script>
   <script src="js/matches-render.js"></script>
   <script src="js/sport-filters.js"></script>
+  <script>
+    // Live match cards navigate to the real backend match-center URL.
+    // No local scoreboard/modal/simulation is created here.
+    document.addEventListener('click', function (e) {
+      var card = e.target.closest('[data-match-link][data-status="live"]');
+      if (!card) return;
+      if (e.target.closest('a,button,[onclick]')) return;
+      var href = card.getAttribute('data-match-link');
+      if (href) window.location.href = href;
+    });
+  </script>
+
+
+<script>
+/* FANCONNACT FIX: replace the old hardcoded Calendar/Trending match rows with real match data. */
+(function () {
+  'use strict';
+  if (window.__FANCONNACT_DYNAMIC_SIDEBAR__) return;
+  window.__FANCONNACT_DYNAMIC_SIDEBAR__ = true;
+
+  const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const team = (code, fallback) => (window.FANCONNECT_MATCHES?.TEAMS?.[code] || {name: fallback || code, cc: null});
+  const logo = t => t.logo || (t.cc ? 'https://flagcdn.com/w80/' + t.cc + '.png' : 'https://ui-avatars.com/api/?name=' + encodeURIComponent(t.name || 'Team') + '&background=334155&color=fff&size=64&bold=true');
+  const getDate = m => m.date || (m.startTime ? new Date(Number(m.startTime)).toLocaleDateString('en-CA') : '');
+  const fmt = d => { const x = new Date(d+'T12:00:00'); return {day:x.getDate(), dow:x.toLocaleDateString('en-US',{weekday:'short'}), month:x.toLocaleDateString('en-US',{month:'short'})}; };
+
+  function findCalendar() {
+    return [...document.querySelectorAll('h3')].find(h => h.textContent.trim().toLowerCase() === 'calendar')?.closest('div.bg-card-bg');
+  }
+
+  function render() {
+    const data = window.FANCONNECT_MATCHES;
+    if (!data || !Array.isArray(data.MATCHES) || !data.MATCHES.length) return false;
+    const box = findCalendar();
+    if (!box) return false;
+    const matches = data.MATCHES.slice().sort((a,b)=>(getDate(a)||'').localeCompare(getDate(b)||''));
+    const dates = [...new Set(matches.map(getDate).filter(Boolean))];
+    if (!dates.length) return false;
+
+    const selected = dates[0];
+    const base = new Date(selected+'T12:00:00');
+    const dayDates = [];
+    for (let i=-3;i<=3;i++) { const d=new Date(base); d.setDate(base.getDate()+i); dayDates.push(d.toISOString().slice(0,10)); }
+
+    const grid = box.querySelector('.grid.grid-cols-7.gap-2.text-center');
+    if (grid) grid.innerHTML = dayDates.map(d=>{
+      const f=fmt(d), has=matches.some(m=>getDate(m)===d), active=d===selected;
+      return '<div class="space-y-2"><p class="text-[10px] text-gray-500 uppercase font-bold">'+f.dow+'</p><button type="button" data-calendar-date="'+d+'" class="h-10 w-10 flex items-center justify-center rounded-lg text-sm '+(active?'bg-emerald-accent text-black font-bold ':'hover:bg-gray-800 ')+(has?'ring-1 ring-emerald-accent/40':'')+'">'+f.day+'</button></div>';
+    }).join('');
+
+    let list = box.querySelector('[data-dynamic-calendar-list]');
+    if (!list) { list=document.createElement('div'); list.setAttribute('data-dynamic-calendar-list','1'); list.className='mt-8 space-y-4'; const old=[...box.querySelectorAll('.mt-8.space-y-4')][0]; if(old) old.replaceWith(list); else grid?.after(list); }
+    const draw = date => {
+      const dayMatches=matches.filter(m=>getDate(m)===date).slice(0,4);
+      list.innerHTML = dayMatches.length ? dayMatches.map(m=>{
+        const h=team(m.home,m.homeName), a=team(m.away,m.awayName);
+        const live=m.status==='live', time=m.time||'';
+        return '<div class="flex items-center justify-between group cursor-pointer" data-match-link="'+esc(m.link||'')+'">'+
+          '<div class="flex items-center space-x-3 min-w-0"><img class="w-8 h-8 rounded object-contain dark:bg-gray-800 light:bg-gray-100 p-1" src="'+esc(logo(h))+'" alt="'+esc(h.name)+'"><div class="min-w-0"><p class="text-[10px] text-gray-500 font-bold leading-none mb-1 truncate">'+esc(m.tournament||m.series||m.format||'Match')+'</p><p class="text-xs font-bold dark:text-white light:text-slate-800 truncate">'+esc(h.name)+' vs '+esc(a.name)+'</p></div></div>'+ (live?'<span class="text-[10px] bg-red-500/10 text-red-500 px-1.5 py-0.5 rounded font-bold uppercase flex items-center"><span class="w-1 h-1 bg-red-500 rounded-full mr-1"></span>LIVE</span>':'<span class="text-[10px] text-gray-500 font-bold">'+esc(time||'Upcoming')+'</span>') + '</div>';
+      }).join('') : '<div class="text-xs text-gray-500 py-2">No matches scheduled</div>';
+      list.querySelectorAll('[data-match-link]').forEach(el=>el.addEventListener('click',()=>{const u=el.getAttribute('data-match-link');if(u)location.href=u;}));
+      grid?.querySelectorAll('[data-calendar-date]').forEach(b=>b.onclick=()=>{draw(b.dataset.calendarDate);grid.querySelectorAll('[data-calendar-date]').forEach(x=>x.classList.remove('bg-emerald-accent','text-black','font-bold'));b.classList.add('bg-emerald-accent','text-black','font-bold');});
+    };
+    draw(selected);
+    return true;
+  }
+
+  let tries=0; const wait=setInterval(()=>{ if(render() || ++tries>80) clearInterval(wait); },100);
+  window.addEventListener('fanconnact:matches-data-updated',render);
+})();
+</script>
+
+    <script type="module" src="js/script.js"></script>
 </body>
 </html>

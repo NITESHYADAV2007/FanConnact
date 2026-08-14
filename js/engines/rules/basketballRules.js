@@ -10,7 +10,7 @@ PredictionTrigger
 
 }
 
-from "../predictionEngine.js";
+from "../engine/predictionEngine.js";
 
 import{
 

@@ -4,6 +4,7 @@ const express = require("express");
 const router = express.Router();
 
 const { matches } = require("../providers/cricbuzz");
+const rankingsProvider = require("../providers/cricbuzz/rankings.provider");
 
 /* ===========================
       LIVE MATCHES
@@ -113,8 +114,43 @@ router.get("/recent", async (req, res) => {
 });
 
 
+
 /* ===========================
-      MATCH INFO
+      MATCH TEAM RANKINGS
+   Uses the same real ICC/team-ranking provider already installed in the
+   backend. No frontend fallback/alternate endpoint is needed.
+=========================== */
+router.get("/:matchId/rankings", async (req, res) => {
+
+    try {
+
+        const format = String(req.query.format || "t20").toLowerCase();
+        const women = String(req.query.women || "false").toLowerCase() === "true" ? 1 : 0;
+        const key = `MATCH_TEAM_RANKINGS_${format}_${women}`;
+
+        const data = await cacheManager.getOrCreate(
+            key,
+            3600,
+            () => rankingsProvider.getTeams(format, women)
+        );
+
+        res.json(data);
+
+    } catch (err) {
+
+        console.error("Team rankings failed:", err);
+
+        res.status(500).json({
+            success: false,
+            message: "Unable to fetch team rankings"
+        });
+
+    }
+
+});
+
+/* ===========================
+       MATCH INFO (30s cache)
 =========================== */
 router.get("/:matchId", async (req, res) => {
 
@@ -159,7 +195,8 @@ router.get("/:matchId/commentary", async (req, res) => {
 
     try {
 
-        const key = `COMMENTARY_${req.params.matchId}`;
+        const iid = Number(req.query.iid) || 1;
+        const key = `COMMENTARY_${req.params.matchId}_${iid}`;
 
         const data = await cacheManager.getOrCreate(
 
@@ -167,7 +204,7 @@ router.get("/:matchId/commentary", async (req, res) => {
 
             15,
 
-            () => matches.getCommentary(req.params.matchId)
+            () => matches.getCommentary(req.params.matchId, iid)
 
         );
 
@@ -196,7 +233,8 @@ router.get("/:matchId/hcommentary", async (req, res) => {
 
     try {
 
-        const key = `HCOMMENTARY_${req.params.matchId}`;
+        const iid = Number(req.query.iid) || 1;
+        const key = `HCOMMENTARY_${req.params.matchId}_${iid}`;
 
         const data = await cacheManager.getOrCreate(
 
@@ -204,7 +242,7 @@ router.get("/:matchId/hcommentary", async (req, res) => {
 
             15,
 
-            () => matches.getHCommentary(req.params.matchId)
+            () => matches.getHCommentary(req.params.matchId, iid)
 
         );
 
@@ -227,7 +265,7 @@ router.get("/:matchId/hcommentary", async (req, res) => {
 });
 
 /* ===========================
-      SCORECARD
+       SCORECARD (60s cache)
 =========================== */
 
 router.get("/:matchId/scorecard", async (req, res) => {
@@ -307,7 +345,8 @@ router.get("/:matchId/overs", async (req, res) => {
 
     try {
 
-        const key = `OVERS_${req.params.matchId}`;
+        const iid = Number(req.query.iid) || 1;
+        const key = `OVERS_${req.params.matchId}_${iid}`;
 
         const data = await cacheManager.getOrCreate(
 
@@ -315,7 +354,7 @@ router.get("/:matchId/overs", async (req, res) => {
 
             15,
 
-            () => matches.getOvers(req.params.matchId)
+            () => matches.getOvers(req.params.matchId, iid)
 
         );
 
@@ -343,7 +382,8 @@ router.get("/:matchId/overs/details", async (req, res) => {
 
     try {
 
-        const key = `OVER_DETAILS_${req.params.matchId}`;
+        const iid = Number(req.query.iid) || 1;
+        const key = `OVER_DETAILS_${req.params.matchId}_${iid}`;
 
         const data = await cacheManager.getOrCreate(
 
@@ -351,7 +391,7 @@ router.get("/:matchId/overs/details", async (req, res) => {
 
             15,
 
-            () => matches.getOversDetails(req.params.matchId)
+            () => matches.getOversDetails(req.params.matchId, iid)
 
         );
 
@@ -498,7 +538,7 @@ router.get("/:matchId/oversGraph", async (req, res) => {
 
             key,
 
-            300,
+            15,
 
             () => matches.getOversGraph(req.params.matchId)
 
@@ -531,15 +571,16 @@ router.get("/:matchId/ballsGraph", async (req, res) => {
 
     try {
 
-        const key = `BALLS_GRAPH_${req.params.matchId}`;
+        const iid = Number(req.query.iid) || 1;
+        const key = `BALLS_GRAPH_${req.params.matchId}_${iid}`;
 
         const data = await cacheManager.getOrCreate(
 
             key,
 
-            300,
+            15,
 
-            () => matches.getBallsGraph(req.params.matchId)
+            () => matches.getBallsGraph(req.params.matchId, iid)
 
         );
 
@@ -562,7 +603,7 @@ router.get("/:matchId/ballsGraph", async (req, res) => {
 });
 
 /* ===========================
-      PARTNERSHIP GRAPH
+       PARTNERSHIP GRAPH (300s cache)
 =========================== */
 
 router.get("/:matchId/partnershipGraph", async (req, res) => {

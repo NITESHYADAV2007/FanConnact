@@ -1,4 +1,4 @@
-import { db } from "../firebase-config.js";
+import { db, auth } from "../firebase-config.js";
 
 import {
 
@@ -42,7 +42,18 @@ const PREDICTIONS = "predictions";
 
 const USER_PREDICTIONS = "user_predictions";
 
+const USERS = "users";
 const MATCHES = "matches";
+
+function timestampMillis(value){
+    if(value == null) return null;
+    if(typeof value === "number") return value;
+    if(value instanceof Date) return value.getTime();
+    if(typeof value.toMillis === "function") return value.toMillis();
+    if(typeof value.seconds === "number") return value.seconds * 1000;
+    const parsed = new Date(value).getTime();
+    return Number.isFinite(parsed) ? parsed : null;
+}
 
 /*=====================================
 
@@ -147,65 +158,51 @@ export const PredictionType = {
 export async function getLivePredictions(
 
     matchId,
-
     sport,
-
     limitCount = 20
 
 ) {
-
     try {
-
         const q = query(
-
             collection(db, PREDICTIONS),
-
-            where("matchId", "==", matchId),
-
-            where("sport", "==", sport),
-
-            where("status", "==", PredictionStatus.LIVE),
-
-            orderBy("expiresAt", "asc"),
-
-            limit(limitCount)
-
+            where("matchId", "==", matchId)
         );
-
         const snapshot = await getDocs(q);
-
         const predictions = [];
-
         snapshot.forEach(docSnap => {
-
-            predictions.push({
-
-                id: docSnap.id,
-
-                ...docSnap.data()
-
-            });
-
+            const data = docSnap.data();
+            if(String(data.sport || "").toLowerCase() !== String(sport || "").toLowerCase()) return;
+            if(data.status !== PredictionStatus.LIVE) return;
+            predictions.push({ id: docSnap.id, ...data });
         });
-
-        return predictions;
-
-    }
-
-    catch (error) {
-
-        console.error(
-
-            "Error getting live predictions:",
-
-            error
-
-        );
-
+        predictions.sort((a,b) => (a.expiresAt?.toMillis?.() || 0) - (b.expiresAt?.toMillis?.() || 0));
+        return predictions.slice(0, limitCount);
+    } catch(error) {
+        console.error("Error getting live predictions:", error);
         return [];
-
     }
+}
 
+/*=====================================
+    GET ALL LIVE PREDICTIONS
+    Used by lifecycle worker across all matches.
+=====================================*/
+
+export async function getAllLivePredictions(limitCount = 100) {
+    try {
+        const q = query(
+            collection(db, PREDICTIONS),
+            where("status", "==", PredictionStatus.LIVE)
+        );
+        const snapshot = await getDocs(q);
+        const predictions = [];
+        snapshot.forEach(docSnap => predictions.push({ id: docSnap.id, ...docSnap.data() }));
+        predictions.sort((a,b) => (a.expiresAt?.toMillis?.() || 0) - (b.expiresAt?.toMillis?.() || 0));
+        return predictions.slice(0, limitCount);
+    } catch(error) {
+        console.error("Error getting all live predictions:", error);
+        return [];
+    }
 }
 
 /*=====================================
@@ -278,68 +275,21 @@ GET MATCH PREDICTIONS
 
 =====================================*/
 
-export async function getPredictionsByMatch(
-
-    matchId
-
-) {
-
+export async function getPredictionsByMatch(matchId) {
     try {
-
         const q = query(
-
             collection(db, PREDICTIONS),
-
-            where(
-
-                "matchId",
-
-                "==",
-
-                matchId
-
-            ),
-
-            orderBy(
-
-                "createdAt",
-
-                "asc"
-
-            )
-
+            where("matchId", "==", matchId)
         );
-
-        const snapshot =
-
-            await getDocs(q);
-
+        const snapshot = await getDocs(q);
         const predictions = [];
-
-        snapshot.forEach(docSnap => {
-
-            predictions.push({
-
-                id: docSnap.id,
-
-                ...docSnap.data()
-
-            });
-
-        });
-
+        snapshot.forEach(docSnap => predictions.push({ id: docSnap.id, ...docSnap.data() }));
+        predictions.sort((a,b) => (a.createdAt?.toMillis?.() || 0) - (b.createdAt?.toMillis?.() || 0));
         return predictions;
-
-    }
-
-    catch (error) {
-
-        console.error(error);
-
+    } catch(error) {
+        console.error("Get Match Predictions Error:", error);
         return [];
-
     }
-
 }
 
 /*=====================================
@@ -418,43 +368,14 @@ CHECK AVAILABILITY
 
 =====================================*/
 
-export function checkPredictionAvailability(
+export function checkPredictionAvailability(prediction) {
 
-    prediction
-
-) {
-
-    if (
-
-        prediction.status
-
-        !==
-
-        PredictionStatus.LIVE
-
-    ) {
-
+    if(prediction?.status !== PredictionStatus.LIVE){
         return false;
-
     }
 
-    const now =
-
-        Date.now();
-
-    const expire =
-
-        prediction.expiresAt
-
-            ?.toMillis();
-
-    if (!expire) {
-
-        return false;
-
-    }
-
-    return now < expire;
+    const expire = timestampMillis(prediction.expiresAt);
+    return expire != null && Date.now() < expire;
 
 }
 
@@ -480,196 +401,599 @@ export function isPredictionLocked(
 
 }
 
+
+/*=====================================
+        BACKEND MATCH BRIDGE
+    Match Center is backed by the live
+    Cricbuzz proxy on Node. Predictions
+    must use that same real match source;
+    Firestore remains the prediction store.
+=====================================*/
+
+const PREDICTION_API_BASES = Array.from(new Set([
+    "http://localhost:5000/api",
+    location.hostname &&
+    location.hostname !== "localhost" &&
+    location.hostname !== "127.0.0.1"
+        ? `http://${location.hostname}:5000/api`
+        : null
+].filter(Boolean)));
+
+async function predictionApi(path){
+    let lastError = null;
+
+    for(const base of PREDICTION_API_BASES){
+        try{
+            const response = await fetch(base + path, {
+                method: "GET",
+                headers: { Accept: "application/json" },
+                cache: "no-store"
+            });
+
+            if(!response.ok){
+                throw new Error(`HTTP ${response.status}`);
+            }
+
+            return await response.json();
+        }catch(error){
+            lastError = error;
+        }
+    }
+
+    throw lastError || new Error("Prediction match API unavailable");
+}
+
+function normalizePredictionMatch(raw, fallbackId = ""){
+    const root = raw?.data || raw || {};
+    const source =
+        root?.match ||
+        root?.matchInfo ||
+        root?.matchHeader ||
+        root?.matchheader ||
+        root;
+
+    const home =
+        source?.homeTeam ||
+        source?.home ||
+        source?.team1 ||
+        source?.teams?.home ||
+        root?.team1 ||
+        root?.homeTeam ||
+        root?.teams?.home ||
+        {};
+
+    const away =
+        source?.awayTeam ||
+        source?.away ||
+        source?.team2 ||
+        source?.teams?.away ||
+        root?.team2 ||
+        root?.awayTeam ||
+        root?.teams?.away ||
+        {};
+
+    const rawStatus = String(
+        source?.status ??
+        source?.state ??
+        root?.status ??
+        root?.state ??
+        source?.matchState ??
+        root?.matchState ??
+        ""
+    ).toLowerCase();
+
+    let status = "UPCOMING";
+    if(/live|in progress|inprogress|started|ongoing|innings break|stumps|delay/.test(rawStatus)){
+        status = "LIVE";
+    }else if(/complete|finished|result|ended|abandon|cancel/.test(rawStatus)){
+        status = "FINISHED";
+    }
+
+    const score =
+        source?.score ||
+        root?.score ||
+        root?.matchScore ||
+        {};
+
+    const scoreText = value => {
+        if(value == null) return "";
+        if(typeof value === "string" || typeof value === "number") return value;
+        return value.runs != null
+            ? `${value.runs}${value.wickets != null ? `/${value.wickets}` : ""}`
+            : "";
+    };
+
+    const currentInnings =
+        source?.currentInnings ||
+        root?.currentInnings ||
+        source?.innings?.current ||
+        root?.innings?.current ||
+        {};
+
+    const currentOver =
+        source?.currentOver ??
+        source?.over ??
+        currentInnings?.currentOver ??
+        currentInnings?.over ??
+        root?.currentOver ??
+        root?.over ??
+        root?.score?.currentOver ??
+        root?.score?.over ??
+        null;
+
+    const lastEvent =
+        source?.lastEvent ||
+        root?.lastEvent ||
+        root?.lastEventInfo ||
+        root?.recentEvents?.[0] ||
+        root?.events?.[0] ||
+        null;
+
+    return {
+        ...root,
+        ...source,
+        id: String(
+            source?.id ??
+            source?.matchId ??
+            root?.id ??
+            root?.matchId ??
+            root?.matchid ??
+            fallbackId
+        ),
+        sport: String(
+            source?.sport ||
+            root?.sport ||
+            "cricket"
+        ).toLowerCase(),
+        status,
+        statusText:
+            source?.statusText ||
+            source?.status ||
+            root?.statusText ||
+            root?.status ||
+            root?.state ||
+            "",
+        series: source?.series || root?.series || root?.seriesName || "",
+        matchType:
+            source?.matchType ||
+            source?.matchFormat ||
+            source?.format ||
+            root?.matchType ||
+            root?.matchFormat ||
+            root?.format ||
+            "",
+        startTime:
+            source?.startTime ||
+            source?.startDate ||
+            root?.startTime ||
+            root?.startDate ||
+            "",
+        homeTeam: {
+            id: home?.id ?? home?.teamId ?? "",
+            name:
+                home?.name ||
+                home?.teamName ||
+                home?.teamname ||
+                home?.displayName ||
+                "Team 1",
+            shortName:
+                home?.shortName ||
+                home?.short ||
+                home?.teamSName ||
+                home?.teamsname ||
+                ""
+        },
+        awayTeam: {
+            id: away?.id ?? away?.teamId ?? "",
+            name:
+                away?.name ||
+                away?.teamName ||
+                away?.teamname ||
+                away?.displayName ||
+                "Team 2",
+            shortName:
+                away?.shortName ||
+                away?.short ||
+                away?.teamSName ||
+                away?.teamsname ||
+                ""
+        },
+        score,
+        team1Score: scoreText(score.innings1 || score.team1Score),
+        team2Score: scoreText(score.innings2 || score.team2Score),
+
+        currentOver: Number(currentOver) || 0,
+
+        currentInnings,
+        innings:
+            source?.innings ||
+            root?.innings ||
+            [],
+
+        currentBatter:
+            source?.currentBatter ||
+            root?.currentBatter ||
+            source?.currentBatters?.[0] ||
+            root?.currentBatters?.[0] ||
+            null,
+
+        currentBowler:
+            source?.currentBowler ||
+            root?.currentBowler ||
+            source?.currentBowlers?.[0] ||
+            root?.currentBowlers?.[0] ||
+            null,
+
+        currentBatters:
+            source?.currentBatters ||
+            root?.currentBatters ||
+            source?.batsmen ||
+            root?.batsmen ||
+            [],
+
+        currentBowlers:
+            source?.currentBowlers ||
+            root?.currentBowlers ||
+            source?.bowlers ||
+            root?.bowlers ||
+            [],
+
+        topPlayers:
+            source?.topPlayers ||
+            root?.topPlayers ||
+            source?.players ||
+            root?.players ||
+            [],
+
+        lastEvent,
+
+        recentEvents:
+            source?.recentEvents ||
+            root?.recentEvents ||
+            source?.events ||
+            root?.events ||
+            [],
+
+        overHistory:
+            source?.overHistory ||
+            source?.overs ||
+            root?.overHistory ||
+            root?.overs ||
+            source?.recentOvers ||
+            root?.recentOvers ||
+            [],
+
+        lastOverRuns:
+            source?.lastOverRuns ??
+            source?.previousOverRuns ??
+            root?.lastOverRuns ??
+            root?.previousOverRuns ??
+            null,
+
+        lastOverHadWicket:
+            source?.lastOverHadWicket ??
+            root?.lastOverHadWicket ??
+            null,
+
+        lastOverHadSix:
+            source?.lastOverHadSix ??
+            root?.lastOverHadSix ??
+            null,
+
+        lastOverHadBoundary:
+            source?.lastOverHadBoundary ??
+            root?.lastOverHadBoundary ??
+            null,
+
+        expectedOverRuns:
+            source?.expectedOverRuns ??
+            root?.expectedOverRuns ??
+            source?.currentOverRunsExpected ??
+            root?.currentOverRunsExpected ??
+            null,
+
+        expectedPowerplay:
+            source?.expectedPowerplay ??
+            root?.expectedPowerplay ??
+            null,
+
+        expectedTotal:
+            source?.expectedTotal ??
+            root?.expectedTotal ??
+            null,
+
+        target: source?.target ?? root?.target ?? root?.targetscore ?? null,
+        runsNeeded:
+            source?.runsNeeded ??
+            root?.runsNeeded ??
+            root?.requiredruns ??
+            null,
+        ballsRemaining:
+            source?.ballsRemaining ??
+            root?.ballsRemaining ??
+            root?.requiredballs ??
+            null,
+
+        winner:
+            source?.winner ??
+            source?.winnerName ??
+            source?.winnerId ??
+            source?.result?.winner ??
+            root?.winner ??
+            root?.winnerName ??
+            root?.winnerId ??
+            root?.result?.winner ??
+            null,
+
+        winnerId:
+            source?.winnerId ??
+            source?.result?.winnerId ??
+            root?.winnerId ??
+            root?.result?.winnerId ??
+            null,
+
+        result: source?.result || root?.result || null,
+
+        tossWinner:
+            source?.tossWinner ??
+            source?.tossWinnerId ??
+            source?.toss?.winner ??
+            root?.tossWinner ??
+            root?.tossWinnerId ??
+            root?.toss?.winner ??
+            null,
+
+        tossWinnerId:
+            source?.tossWinnerId ??
+            source?.toss?.winnerId ??
+            root?.tossWinnerId ??
+            root?.toss?.winnerId ??
+            null,
+
+        highestScorerId:
+            source?.highestScorerId ??
+            source?.highestScorer?.id ??
+            root?.highestScorerId ??
+            root?.highestScorer?.id ??
+            null,
+
+        highestScorer:
+            source?.highestScorer ||
+            root?.highestScorer ||
+            null,
+
+        totalRuns:
+            source?.totalRuns ??
+            source?.totalScore ??
+            root?.totalRuns ??
+            root?.totalScore ??
+            root?.firstInningsRuns ??
+            null,
+
+        powerplayScore:
+            source?.powerplayScore ??
+            source?.powerplayRuns ??
+            root?.powerplayScore ??
+            root?.powerplayRuns ??
+            null,
+
+        deathOverRuns:
+            source?.deathOverRuns ??
+            source?.currentOverRuns ??
+            root?.deathOverRuns ??
+            root?.currentOverRuns ??
+            null,
+
+        nextOverRuns:
+            source?.nextOverRuns ??
+            root?.nextOverRuns ??
+            null,
+
+        wicketInNextOver:
+            source?.wicketInNextOver ??
+            root?.wicketInNextOver ??
+            null,
+
+        nextWicket:
+            source?.nextWicket ||
+            root?.nextWicket ||
+            null,
+
+        nextSix:
+            source?.nextSix ??
+            root?.nextSix ??
+            null,
+
+        nextBoundary:
+            source?.nextBoundary ??
+            root?.nextBoundary ??
+            null,
+
+        chaseSuccessful:
+            source?.chaseSuccessful ??
+            source?.chaseResult ??
+            root?.chaseSuccessful ??
+            root?.chaseResult ??
+            null,
+
+        playerReached50:
+            source?.playerReached50 ??
+            root?.playerReached50 ??
+            null,
+
+        playerReached100:
+            source?.playerReached100 ??
+            root?.playerReached100 ??
+            null
+    };
+}
+
+export async function getPredictionMatch(matchId){
+    const raw = await predictionApi(`/matches/${encodeURIComponent(matchId)}`);
+    return normalizePredictionMatch(raw, matchId);
+}
+
+export async function getDefaultPredictionMatch(){
+    // Direct prediction.html opens on a real live match first.
+    // If none is live, use the first real upcoming cricket match.
+    try{
+        const live = await predictionApi("/matches/live");
+        const liveList = Array.isArray(live) ? live : (live?.data || []);
+        const normalizedLive = liveList
+            .map(item => normalizePredictionMatch(item))
+            .filter(match => match && match.id && match.status === "LIVE");
+        if(normalizedLive.length){
+            return normalizedLive[0];
+        }
+    }catch(error){
+        console.warn("Prediction live-match lookup failed:", error);
+    }
+
+    const upcoming = await predictionApi("/matches/upcoming");
+    const upcomingList = Array.isArray(upcoming) ? upcoming : (upcoming?.data || []);
+    if(!upcomingList.length) return null;
+
+    return normalizePredictionMatch(upcomingList[0]);
+}
+
 /*=====================================
         GET MATCH
 =====================================*/
 
 export async function getMatch(matchId) {
 
+    // Match Center is the source of truth for real cricket matches.
+    // Firestore is used only as a fallback if the backend/API is temporarily
+    // unavailable.
+    try{
+        return await getPredictionMatch(matchId);
+    }catch(error){
+        console.warn("Match Center API lookup failed; checking Firestore:", error);
+    }
+
     try {
-
         const snapshot = await getDoc(
-
-            doc(db, MATCHES, matchId)
-
+            doc(db, MATCHES, String(matchId))
         );
 
-        if (!snapshot.exists()) {
-
-            return null;
-
+        if(snapshot.exists()){
+            return {
+                id: snapshot.id,
+                sport: "cricket",
+                ...snapshot.data()
+            };
         }
-
-        return {
-
-            id: snapshot.id,
-
-            ...snapshot.data()
-
-        };
-
+    }catch(error){
+        console.error("Get Match Error:", error);
     }
 
-    catch (error) {
-
-        console.error(
-
-            "Get Match Error",
-
-            error
-
-        );
-
-        return null;
-
-    }
-
+    return null;
 }
 
 /*=====================================
     USER ALREADY PREDICTED
 =====================================*/
 
-export async function hasUserPredicted(
-
-    uid,
-
-    predictionId
-
-) {
-
+export async function hasUserPredicted(uid, predictionId) {
     try {
-
-        const q = query(
-
-            collection(
-
-                db,
-
-                USER_PREDICTIONS
-
-            ),
-
-            where(
-
-                "userId",
-
-                "==",
-
-                uid
-
-            ),
-
-            where(
-
-                "predictionId",
-
-                "==",
-
-                predictionId
-
-            ),
-
-            limit(1)
-
-        );
-
-        const snapshot =
-
-            await getDocs(q);
-
-        return !snapshot.empty;
-
-    }
-
-    catch (error) {
-
-        console.error(error);
-
+        if(!uid || !predictionId) return false;
+        // New predictions always use this deterministic owner+prediction key.
+        // Reading the exact document avoids the user-history query and is also
+        // fully compatible with the Firestore rule that allows a user to read
+        // only their own prediction.
+        const ref = doc(db, USER_PREDICTIONS, `${uid}_${predictionId}`);
+        const snapshot = await getDoc(ref);
+        return snapshot.exists();
+    } catch(error){
+        console.error("Has User Predicted Error:", error);
         return false;
-
     }
-
 }
 
 /*=====================================
     GET USER PREDICTION
 =====================================*/
 
-export async function getUserPrediction(
-
-    uid,
-
-    predictionId
-
-) {
-
+export async function getUserPrediction(uid, predictionId) {
     try {
-
-        const q = query(
-
-            collection(
-
-                db,
-
-                USER_PREDICTIONS
-
-            ),
-
-            where(
-
-                "userId",
-
-                "==",
-
-                uid
-
-            ),
-
-            where(
-
-                "predictionId",
-
-                "==",
-
-                predictionId
-
-            ),
-
-            limit(1)
-
-        );
-
-        const snapshot =
-
-            await getDocs(q);
-
-        if (snapshot.empty) {
-
-            return null;
-
-        }
-
-        return {
-
-            id: snapshot.docs[0].id,
-
-            ...snapshot.docs[0].data()
-
-        };
-
-    }
-
-    catch (error) {
-
-        console.error(error);
-
+        if(!uid || !predictionId) return null;
+        // Read the exact deterministic document written by submitPrediction.
+        // This makes the locked state survive refresh without depending on a
+        // collection query or a composite/indexed history query.
+        const ref = doc(db, USER_PREDICTIONS, `${uid}_${predictionId}`);
+        const snapshot = await getDoc(ref);
+        if(!snapshot.exists()) return null;
+        return { id: snapshot.id, ...snapshot.data() };
+    } catch(error){
+        console.error("Get User Prediction Error:", error);
         return null;
-
     }
-
 }
 
+
+/*=====================================
+    PREDICTION ECONOMY / LIMITS
+=====================================*/
+
+export function normalizeCricketFormat(value){
+    const raw = String(
+        value?.matchType ??
+        value?.matchFormat ??
+        value?.format ??
+        value ??
+        ""
+    ).toLowerCase();
+
+    if(/test/.test(raw)) return "TEST";
+    if(/\bt10\b|ten10|ten-10|10 over/.test(raw)) return "T10";
+    if(/\bt20\b|twenty20|twenty-20|20 over/.test(raw)) return "T20";
+    if(/\bodi\b|one day|50 over/.test(raw)) return "ODI";
+
+    // Cricket leagues/unknown limited-overs matches default to T20-style
+    // pacing, but the match-specific limit remains conservative.
+    return "T20";
+}
+
+export function getPerMatchPredictionLimit(value){
+    switch(normalizeCricketFormat(value)){
+        case "T10": return 4;
+        case "T20": return 5;
+        case "ODI": return 5;
+        case "TEST": return 5;
+        default: return 5;
+    }
+}
+
+async function getPersistedUserMatchPredictionCount(uid, matchId){
+    if(!uid || !matchId) return 0;
+
+    try{
+        const q = query(
+            collection(db, USER_PREDICTIONS),
+            where("userId", "==", String(uid))
+        );
+
+        const snapshot = await getDocs(q);
+        let count = 0;
+
+        snapshot.forEach(docSnap => {
+            const row = docSnap.data() || {};
+            if(String(row.matchId || "") !== String(matchId)) return;
+
+            const status = String(row.status || "").toUpperCase();
+            if(status === "CANCELLED") return;
+
+            count++;
+        });
+
+        return count;
+    }catch(error){
+        console.warn("Persisted match prediction count lookup failed:", error);
+        return 0;
+    }
+}
+
+const GLOBAL_PREDICTION_SUBMIT_COOLDOWN_MS = 45 * 1000;
 
 /*=====================================
         SUBMIT PREDICTION
@@ -679,176 +1003,399 @@ export async function submitPrediction(data) {
 
     try {
 
-        /* Check Prediction */
+        if(!data?.userId || !data?.predictionId){
+            throw new Error("User and prediction are required.");
+        }
+
+        if(
+            !auth.currentUser ||
+            String(auth.currentUser.uid) !== String(data.userId)
+        ){
+            throw new Error("Authentication required.");
+        }
 
         const prediction =
+            await getPredictionById(data.predictionId);
 
-            await getPredictionById(
-
-                data.predictionId
-
-            );
-
-        if (!prediction) {
-
-            throw new Error(
-
-                "Prediction not found."
-
-            );
-
+        if(!prediction){
+            throw new Error("Prediction not found.");
         }
 
-        /* Check Open */
-
-        if (
-
-            !checkPredictionAvailability(
-
-                prediction
-
-            )
-
-        ) {
-
-            throw new Error(
-
-                "Prediction Closed."
-
-            );
-
+        if(!checkPredictionAvailability(prediction)){
+            throw new Error("Prediction Closed.");
         }
 
-        /* Already Submitted */
-
-        const exists =
-
-            await hasUserPredicted(
-
-                data.userId,
-
-                data.predictionId
-
-            );
-
-        if (exists) {
-
-            throw new Error(
-
-                "Already Predicted."
-
-            );
-
+        if(data.selectedOption == null){
+            throw new Error("Please select an option.");
         }
 
-        if (
-
-            data.selectedOption == null
-
-        ) {
-
-            throw new Error(
-
-                "Please select an option."
-
+        const validOption =
+            (prediction.options || []).some(
+                option =>
+                    String(option.id) ===
+                    String(data.selectedOption)
             );
 
+        if(!validOption){
+            throw new Error("Invalid prediction option.");
         }
 
-        const validOption = prediction.options.some(
+        /*
+        =====================================================
+        DETERMINISTIC USER PREDICTION ID
+        =====================================================
+        */
 
-            option => option.id === data.selectedOption
+        const userPredictionId =
+            `${data.userId}_${data.predictionId}`;
 
-        );
-
-        if (!validOption) {
-
-            throw new Error(
-
-                "Invalid prediction option."
-
-            );
-
-        }
-        /* Save */
-
-       const predictionRef = await addDoc(
-
-            collection(
-
-                db,
-
-                USER_PREDICTIONS
-
-            ),
-
-            {
-
-                ...data,
-
-                status: "PENDING",
-
-                createdAt:
-
-                    serverTimestamp()
-
-            }
-
-        );
-
-        /* Increase Player Count */
-
-        await updateDoc(
-
+        const userPredictionRef =
             doc(
-
                 db,
+                USER_PREDICTIONS,
+                userPredictionId
+            );
 
+        const predictionRef =
+            doc(
+                db,
                 PREDICTIONS,
-
                 data.predictionId
+            );
 
-            ),
+        const userRef =
+            doc(
+                db,
+                USERS,
+                data.userId
+            );
 
-            {
+        /*
+        Read the user's existing match submissions once before the transaction.
+        The transaction field remains the race-condition guard; this read also
+        repairs old users whose predictionMatchCounts field predates this limit.
+        */
+        const persistedMatchCount =
+            await getPersistedUserMatchPredictionCount(
+                data.userId,
+                prediction.matchId || data.matchId
+            );
 
-                totalPlayers:
+        /*
+        =====================================================
+        ATOMIC TRANSACTION
 
-                    increment(1)
+        1. Save the user's prediction.
+        2. Increase prediction player count.
+        3. Increase the user's totalPredictions immediately.
 
+        The same transaction protects all three values from
+        getting out of sync.
+        =====================================================
+        */
+
+        await runTransaction(
+            db,
+            async transaction => {
+
+                // Firestore transactions must read all documents
+                // before performing any writes.
+                const predictionSnap =
+                    await transaction.get(
+                        predictionRef
+                    );
+
+                const existingSnap =
+                    await transaction.get(
+                        userPredictionRef
+                    );
+
+                const userSnap =
+                    await transaction.get(
+                        userRef
+                    );
+
+                if(!predictionSnap.exists()){
+                    throw new Error(
+                        "Prediction not found."
+                    );
+                }
+
+                if(!userSnap.exists()){
+                    throw new Error(
+                        "User not found."
+                    );
+                }
+
+                if(existingSnap.exists()){
+                    throw new Error(
+                        "Prediction is already submitted and locked."
+                    );
+                }
+
+                const latest = predictionSnap.data();
+                const user = userSnap.data();
+
+                /*
+                -----------------------------------------------------
+                FORMAT-SPECIFIC PER-MATCH LIMIT
+
+                The limit is counted on submitted predictions for the
+                current user + match, not on generated questions.
+                -----------------------------------------------------
+                */
+                const matchIdKey = String(
+                    latest.matchId || data.matchId
+                );
+
+                const matchFormat =
+                    latest.format ||
+                    latest.matchFormat ||
+                    latest.matchType ||
+                    "T20";
+
+                const perMatchLimit =
+                    getPerMatchPredictionLimit(matchFormat);
+
+                const matchCounts =
+                    user.predictionMatchCounts &&
+                    typeof user.predictionMatchCounts === "object"
+                        ? { ...user.predictionMatchCounts }
+                        : {};
+
+                const currentMatchCount = Math.max(
+                    Number(matchCounts[matchIdKey]) || 0,
+                    Number(persistedMatchCount) || 0
+                );
+
+                if(currentMatchCount >= perMatchLimit){
+                    throw new Error(
+                        `You have reached the ${perMatchLimit}-prediction limit for this ${normalizeCricketFormat(matchFormat)} match.`
+                    );
+                }
+
+                /*
+                -----------------------------------------------------
+                GLOBAL SUBMISSION COOLDOWN
+
+                Prevents farming by jumping between many live matches.
+                -----------------------------------------------------
+                */
+                const lastSubmittedAt =
+                    timestampMillis(user.lastPredictionSubmittedAt);
+
+                if(
+                    lastSubmittedAt != null &&
+                    Date.now() - lastSubmittedAt <
+                        GLOBAL_PREDICTION_SUBMIT_COOLDOWN_MS
+                ){
+                    const remaining = Math.ceil(
+                        (
+                            GLOBAL_PREDICTION_SUBMIT_COOLDOWN_MS -
+                            (Date.now() - lastSubmittedAt)
+                        ) / 1000
+                    );
+
+                    throw new Error(
+                        `Please wait ${remaining}s before submitting another prediction.`
+                    );
+                }
+
+                matchCounts[matchIdKey] =
+                    currentMatchCount + 1;
+
+                if(!checkPredictionAvailability(latest)){
+                    throw new Error(
+                        "Prediction Closed."
+                    );
+                }
+
+                /*
+                -----------------------------
+                SAVE USER PREDICTION
+                -----------------------------
+                */
+
+                transaction.set(
+                    userPredictionRef,
+                    {
+                        ...data,
+
+                        userId:
+                            String(data.userId),
+
+                        predictionId:
+                            String(data.predictionId),
+
+                        selectedOption:
+                            String(data.selectedOption),
+
+                        status:
+                            "SUBMITTED",
+
+                        rewardStatus:
+                            "PENDING",
+
+                        locked:
+                            true,
+
+                        lockedAt:
+                            serverTimestamp(),
+
+                        /*
+                        Total prediction count is now recorded
+                        at submission time. The reward engine uses
+                        this flag so it does not count it again.
+                        */
+                        statsCounted:
+                            true,
+
+                        statsCountedAt:
+                            serverTimestamp(),
+
+                        createdAt:
+                            serverTimestamp()
+                    }
+                );
+
+                /*
+                -----------------------------
+                UPDATE PREDICTION
+                -----------------------------
+                */
+
+                const optionKey =
+                    String(data.selectedOption);
+
+                const optionCounts =
+                    latest.optionCounts &&
+                    typeof latest.optionCounts === "object"
+                        ? { ...latest.optionCounts }
+                        : {};
+
+                optionCounts[optionKey] =
+                    (
+                        Number(
+                            optionCounts[optionKey]
+                        ) || 0
+                    ) + 1;
+
+                transaction.update(
+                    predictionRef,
+                    {
+                        totalPlayers:
+                            increment(1),
+
+                        optionCounts,
+
+                        updatedAt:
+                            serverTimestamp()
+                    }
+                );
+
+                /*
+                -----------------------------
+                UPDATE USER STATS
+                -----------------------------
+                */
+
+                const currentTotal =
+                    Number(
+                        user.totalPredictions
+                    ) || 0;
+
+                transaction.update(
+                    userRef,
+                    {
+                        totalPredictions:
+                            currentTotal + 1,
+
+                        predictionMatchCounts:
+                            matchCounts,
+
+                        lastPredictionSubmittedAt:
+                            serverTimestamp(),
+
+                        updatedAt:
+                            serverTimestamp()
+                    }
+                );
             }
-
         );
 
-     return{
+        /*
+        =====================================================
+        READ BACK SAVED PREDICTION
+        =====================================================
+        */
 
-    success:true,
-
-    id:predictionRef.id
-
-};
-
-    }
-
-    catch (error) {
-
-        console.error(
-
-            error
-
-        );
+        const savedSnapshot =
+            await getDoc(
+                userPredictionRef
+            );
 
         return {
 
-            success: false,
+            success:
+                true,
 
-            message: error.message
+            id:
+                userPredictionId,
 
+            userPrediction:
+                savedSnapshot.exists()
+                    ? {
+                        id:
+                            savedSnapshot.id,
+
+                        ...savedSnapshot.data()
+                    }
+                    : null
         };
 
     }
+    catch(error){
 
+        console.error(
+            "Submit Prediction Error:",
+            error
+        );
+
+        const code =
+            String(error?.code || "").toLowerCase();
+
+        const message =
+            String(error?.message || "");
+
+        if(
+            code.includes("already-exists") ||
+            /already exists|already-exist/i.test(message)
+        ){
+            return {
+                success:false,
+                message:
+                    "Prediction is already submitted and locked."
+            };
+        }
+
+        return {
+            success:false,
+            message:
+                error.message ||
+                "Unable to submit prediction."
+        };
+    }
 }
+
+export function listenPredictionUsers(predictionId, callback){
+    const q=query(collection(db, USER_PREDICTIONS), where("predictionId","==",predictionId));
+    return onSnapshot(q, snapshot=>{
+        const rows=[];
+        snapshot.forEach(docSnap=>rows.push({id:docSnap.id,...docSnap.data()}));
+        callback(rows);
+    }, error=>console.error("Prediction users listener error:",error));
+}
+
 /*=====================================
         CREATE PREDICTION
 =====================================*/
@@ -881,28 +1428,37 @@ export async function createPrediction(prediction) {
 
         }
 
+        const sport = String(prediction.sport || "").toLowerCase();
+
+        // Prediction Arena is Cricket-only until other sport engines are
+        // intentionally enabled in a future release.
+        if(sport !== "cricket"){
+            throw new Error(
+                "Predictions are currently available for Cricket only."
+            );
+        }
+
+        const format =
+            prediction.format ||
+            prediction.matchFormat ||
+            prediction.matchType ||
+            "T20";
+
         /* Default Values */
-
         const predictionData = {
-
             status: PredictionStatus.LIVE,
-
+            sport: "cricket",
+            format,
             difficulty:
-
                 prediction.difficulty ||
-
                 Difficulty.EASY,
-
             totalPlayers: 0,
-
             topPercentage: 0,
-
             createdAt: serverTimestamp(),
-
             updatedAt: serverTimestamp(),
-
-            ...prediction
-
+            ...prediction,
+            sport: "cricket",
+            format
         };
 
         const docRef = await addDoc(
@@ -1018,19 +1574,41 @@ export async function closePrediction(
 
 ) {
 
-    return updatePrediction(
+    try {
 
-        predictionId,
+        return await runTransaction(db, async transaction => {
 
-        {
+            const ref = doc(db, PREDICTIONS, predictionId);
+            const snap = await transaction.get(ref);
 
-            status:
+            if(!snap.exists()) return false;
 
-                PredictionStatus.LOCKED
+            const data = snap.data();
 
-        }
+            if(data.status === PredictionStatus.LOCKED ||
+               data.status === PredictionStatus.COMPLETED){
+                return true;
+            }
 
-    );
+            if(data.status !== PredictionStatus.LIVE){
+                return false;
+            }
+
+            transaction.update(ref, {
+                status: PredictionStatus.LOCKED,
+                lockedAt: serverTimestamp()
+            });
+
+            return true;
+        });
+
+    }
+    catch(error){
+
+        console.error("Close Prediction Error:", error);
+        return false;
+
+    }
 
 }
 
@@ -1048,56 +1626,45 @@ export async function publishResult(
 
     try {
 
-        await runTransaction(
+        return await runTransaction(
 
             db,
 
             async (transaction) => {
 
-                const ref =
+                const ref = doc(db, PREDICTIONS, predictionId);
+                const snap = await transaction.get(ref);
 
-                    doc(
+                if(!snap.exists()) return false;
 
-                        db,
+                const data = snap.data();
 
-                        PREDICTIONS,
+                // Idempotent result publishing. Re-running the result engine
+                // with the same answer is safe and still allows reward recovery.
+                if(data.status === PredictionStatus.COMPLETED){
+                    return data.correctOption === correctOption;
+                }
 
-                        predictionId
+                if(data.status === PredictionStatus.CANCELLED){
+                    return false;
+                }
 
-                    );
+                transaction.update(ref, {
+                    status: PredictionStatus.COMPLETED,
+                    correctOption,
+                    completedAt: serverTimestamp()
+                });
 
-                transaction.update(
-
-                    ref,
-
-                    {
-
-                        status:
-
-                            PredictionStatus.COMPLETED,
-
-                        correctOption,
-
-                        completedAt:
-
-                            serverTimestamp()
-
-                    }
-
-                );
+                return true;
 
             }
 
         );
 
-        return true;
-
     }
+    catch(error){
 
-    catch (error) {
-
-        console.error(error);
-
+        console.error("Publish Result Error:", error);
         return false;
 
     }
@@ -1176,120 +1743,88 @@ export async function getPredictionUsers(
 
 }
 /*=====================================
+    USER PREDICTION HISTORY
+=====================================*/
+
+export async function getUserPredictions(uid, matchId = null) {
+
+    try {
+
+        // Query by userId only and filter matchId in memory. This avoids
+        // requiring a composite Firestore index for the prediction page.
+        const q = query(
+            collection(db, USER_PREDICTIONS),
+            where("userId", "==", uid)
+        );
+
+        const snapshot = await getDocs(q);
+        const rows = [];
+
+        snapshot.forEach(docSnap => {
+            const data = docSnap.data();
+            if(matchId && String(data.matchId) !== String(matchId)) return;
+            rows.push({
+                id: docSnap.id,
+                ...data
+            });
+        });
+
+        rows.sort((a,b) => {
+            const ta = a.createdAt?.toMillis?.() ||
+                (a.createdAt?.seconds ? a.createdAt.seconds * 1000 : 0);
+            const tb = b.createdAt?.toMillis?.() ||
+                (b.createdAt?.seconds ? b.createdAt.seconds * 1000 : 0);
+            return tb - ta;
+        });
+
+        return rows;
+
+    }
+    catch(error){
+
+        console.error("Get User Predictions Error:", error);
+        return [];
+
+    }
+
+}
+
+export async function getUserPredictionHistory(uid, matchId = null) {
+
+    const rows = await getUserPredictions(uid, matchId);
+
+    return Promise.all(rows.map(async row => ({
+        userPrediction: row,
+        prediction: await getPredictionById(row.predictionId)
+    })));
+
+}
+
+/*=====================================
     REALTIME LISTENER
 =====================================*/
 
-export function listenPredictions(
-
-    matchId,
-
-    sport,
-
-    callback
-
-) {
+export function listenPredictions(matchId, sport, callback) {
 
     const q = query(
-
-        collection(
-
-            db,
-
-            PREDICTIONS
-
-        ),
-
-        where(
-
-            "matchId",
-
-            "==",
-
-            matchId
-
-        ),
-
-        where(
-
-            "sport",
-
-            "==",
-
-            sport
-
-        )
-
+        collection(db, PREDICTIONS),
+        where("matchId", "==", matchId)
     );
 
     return onSnapshot(
-
         q,
-
         snapshot => {
-
-            snapshot.docChanges()
-
-                .forEach(change => {
-
-                    callback({
-
-                        id: change.doc.id,
-
-                        ...change.doc.data()
-
-                    });
-
-                });
-
-        }
-
-    );
-
-}
-/*=====================================
-    MATCH REALTIME
-=====================================*/
-
-export function listenMatch(
-
-    matchId,
-
-    callback
-
-){
-
-    return onSnapshot(
-
-        doc(
-
-            db,
-
-            MATCHES,
-
-            matchId
-
-        ),
-
-        snapshot=>{
-
-            if(
-
-                snapshot.exists()
-
-            ){
-
+            snapshot.docChanges().forEach(change => {
+                const data = change.doc.data();
+                if(String(data.sport || "").toLowerCase() !== String(sport || "").toLowerCase()) return;
                 callback({
-
-                    id:snapshot.id,
-
-                    ...snapshot.data()
-
+                    id: change.doc.id,
+                    changeType: change.type,
+                    ...data
                 });
-
-            }
-
-        }
-
+            });
+        },
+        error => console.error("Prediction Listener Error:", error)
     );
 
 }

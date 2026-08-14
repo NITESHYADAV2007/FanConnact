@@ -130,7 +130,7 @@
     }
 
     /* Brand emerald (#10b981) on white cards is low-contrast in light mode.
-       Darken the accent text so "Level 28", status lines and links stay
+       Darken the accent text so "Level 0", status lines and links stay
        readable. (Sport pages remap this to blue locally; this only affects
        pages like leaderboard that rely on the default emerald token.) */
     :root:not(.dark) .text-emerald-accent { color: #047857 !important; }
@@ -360,7 +360,7 @@
           <img id="user-profile-img" alt="User Profile" class="w-9 h-9 md:w-10 md:h-10 rounded-full border-2 border-emerald-accent" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDOdWz0yXTAfug92jAlZ-XZtnL5urTJNu8npwz7RIfeTacw2m4yeAoKNMAkf3MLOCIk0iI35_ID8tSabIp6I7MF2N_gez6RO01_i0q1DX3bj656URDlnI8A34wDvyRB5WoPOVTN1qvuyGRfskySDI-pCWAnw3raxBsKX2G6sEhrFHiweAO4TxLdxuB-4_oHoAPBbm9bwmrKrqSGKFEtAeXpM76OE_C1cQQSNmRYmIRT01ZVb4lT2k1tR1xDw6ujXtxiain2IWfiKxim" />
           <div class="hidden sm:block">
             <p id="user-name-display" class="text-sm font-bold text-slate-900 dark:text-white">NiteshY</p>
-            <p id="user-level-display" class="text-[10px] text-emerald-accent font-bold uppercase tracking-wider">Level 28</p>
+            <p id="user-level-display" class="text-[10px] text-emerald-accent font-bold uppercase tracking-wider">Level 0</p>
           </div>
         </div>
       </div>
@@ -761,14 +761,14 @@
     </div>
 
     <div class="flex justify-between text-[11px] text-slate-400 mt-1">
-        <span id="nextLevel">Next Level 2</span>
+        <span id="nextLevel">Next Level 1</span>
         <span id="xpRemaining">0 XP to go</span>
     </div>
 </div>
 
                       <div class="flex justify-between mt-2">
                         <span class="bg-[#6d5dfc33] text-purple-200 px-2 py-1 rounded text-xs" id="yourRowLevelM">
-                          Level 1
+                          Level 0
                         </span>
 
                       <span id="userXP"
@@ -833,7 +833,7 @@ class="w-full flex items-center justify-center rounded-xl border border-purple-5
     </div>
 
     <div class="flex justify-between text-sm text-slate-400 mt-3">
-        <span id="sidebar-nextLevel">Next Level 2</span>
+        <span id="sidebar-nextLevel">Next Level 1</span>
         <span id="sidebar-xpRemaining">0 XP to go</span>
     </div>
 
@@ -906,7 +906,6 @@ class="w-full flex items-center justify-center rounded-xl border border-purple-5
     </div>
 
   </main>
-  <script src="js/level-system.js"></script>
   <script src="js/leaderboard.js"></script>
   <script src="js/team-rankings-data.js"></script>
   <script type="module" src="js/script.js"></script>

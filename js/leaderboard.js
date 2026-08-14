@@ -4,6 +4,34 @@
 var leaderboardData = null;
 var leaderboardLoaded = false;
 
+// FanConnact level formula — keep this identical to services/userService.js.
+// Level 1 = 150 XP, Level 2 = 350 XP, Level 3 = 600 XP, etc.
+function fanConnactRequiredXP(level) {
+  level = Math.max(0, Math.floor(Number(level) || 0));
+  if (level <= 0) return 0;
+  return Math.floor(150 * level + ((level - 1) * level * 25));
+}
+
+function fanConnactCalculateLevel(xp) {
+  xp = Math.max(0, Math.floor(Number(xp) || 0));
+  var level = 0;
+  while (xp >= fanConnactRequiredXP(level + 1)) level++;
+  return level;
+}
+
+function fanConnactNextLevelXP(xp) {
+  return fanConnactRequiredXP(fanConnactCalculateLevel(xp) + 1);
+}
+
+function fanConnactXPProgress(xp) {
+  xp = Math.max(0, Math.floor(Number(xp) || 0));
+  var level = fanConnactCalculateLevel(xp);
+  var base = fanConnactRequiredXP(level);
+  var next = fanConnactRequiredXP(level + 1);
+  if (next <= base) return 0;
+  return Math.max(0, Math.min(1, (xp - base) / (next - base)));
+}
+
 // Wait until Firebase handles are exposed on window.__FB__ (set asynchronously
 // by js/script.js -> js/firebase-config.js). Returns true once ready.
 async function waitForFirebase(timeoutMs) {
@@ -55,9 +83,7 @@ async function loadRealUsers() {
     snap.forEach(function (doc) {
       var d = doc.data();
       var xp = parseInt(d.xp, 10) || 0;
-      var level = (window.LevelSystem && window.LevelSystem.levelFromXP)
-        ? window.LevelSystem.levelFromXP(xp)
-        : (parseInt(d.level, 10) || 1);
+      var level = fanConnactCalculateLevel(xp);
       var coins = parseInt(d.coins, 10);
       if (isNaN(coins)) coins = 100; // default 100 coins for every registered user
       var name = d.username || d.fullName || d.email || "Fan";
@@ -159,27 +185,36 @@ async function renderPodium() {
   var users = [data[0], data[1], data[2]];
   cards.forEach(function(el, idx) {
     if (!el) return;
+
+    // IMPORTANT:
+    // The podium HTML already has unique IDs for each live field:
+    // rank1-name / rank1-level / rank1-xp, etc.
+    // Do NOT use generic selectors such as ".font-black" here because
+    // the rank badge itself also has "font-black" and would get the XP.
+    var rank = idx + 1;
+    var nameEl = document.getElementById("rank" + rank + "-name");
+    var imgEl = document.getElementById("rank" + rank + "-img");
+    var levelEl = document.getElementById("rank" + rank + "-level");
+    var xpEl = document.getElementById("rank" + rank + "-xp");
+
     if (!users[idx]) {
-      // No real user for this podium slot — clear placeholder content.
-      var nameEl = el.querySelector("h2, h3");
-      var imgEl = el.querySelector("img");
-      var levelEl = el.querySelector(".level-badge");
-      var xpEl = el.querySelector(".font-black");
+      // No real user for this podium slot — clear only the data fields.
       if (nameEl) nameEl.textContent = "—";
       if (imgEl) imgEl.src = "assets/images/default-avatar.png?w=150";
-      if (levelEl) levelEl.textContent = "Level 1";
+      if (levelEl) levelEl.textContent = "Level 0";
       if (xpEl) xpEl.textContent = "0 XP";
       return;
     }
+
     var u = users[idx];
-    var nameEl2 = el.querySelector("h2, h3");
-    var imgEl2 = el.querySelector("img");
-    var levelEl2 = el.querySelector(".level-badge");
-    var xpEl2 = el.querySelector(".font-black");
-    if (nameEl2) nameEl2.textContent = u.name;
-    if (imgEl2) imgEl2.src = u.img;
-    if (levelEl2) levelEl2.textContent = "Level " + u.level;
-    if (xpEl2) xpEl2.textContent = u.xp.toLocaleString() + " XP";
+
+    // Update ONLY the intended podium fields.
+    // The fixed 1 / 2 / 3 rank badges in the HTML remain untouched.
+    if (nameEl) nameEl.textContent = u.name;
+    if (imgEl) imgEl.src = u.img;
+    if (levelEl) levelEl.textContent = "Level " + u.level;
+    if (xpEl) xpEl.textContent = u.xp.toLocaleString() + " XP";
+
     el.classList.add("cursor-pointer");
     el.addEventListener("click", function() { goToPlayer(u); });
   });
@@ -316,13 +351,11 @@ async function renderYourRank() {
     if (window.currentUserProfile && window.currentUserProfile.name) { profile = window.currentUserProfile; break; }
     await new Promise(function(r){ setTimeout(r, 100); });
   }
-  if (!profile) profile = { name: "You", username: "", photoURL: "assets/images/default-avatar.png?w=150", level: 1, xp: 0 };
+  if (!profile) profile = { name: "You", username: "", photoURL: "assets/images/default-avatar.png?w=150", level: 0, xp: 0 };
 
   // Derive XP + level from the real profile (prefer Firestore xp if present).
   var xp = parseInt(profile.xp, 10) || 0;
-  var level = (window.LevelSystem && window.LevelSystem.levelFromXP)
-    ? window.LevelSystem.levelFromXP(xp)
-    : (parseInt(profile.level, 10) || 1);
+  var level = fanConnactCalculateLevel(xp);
 
   // Find this user's rank within the real leaderboard data.
   var data = await getData();
@@ -334,10 +367,13 @@ async function renderYourRank() {
   rank = rank >= 0 ? rank + 1 : (data.length ? data.length + 1 : 1);
   var total = data.length || 1;
 
-  // Compute next-level progress via LevelSystem.
-  var nextXP = (window.LevelSystem && window.LevelSystem.nextLevelXP) ? window.LevelSystem.nextLevelXP(xp) : (xp + 1000);
-  var toGo = (window.LevelSystem && window.LevelSystem.xpToNextLevel) ? window.LevelSystem.xpToNextLevel(xp) : 1000;
-  var pct = (window.LevelSystem && window.LevelSystem.xpProgress) ? Math.round(window.LevelSystem.xpProgress(xp) * 100) : 0;
+  var headerLevel = document.getElementById("user-level-display");
+  if (headerLevel) headerLevel.textContent = "Level " + level;
+
+  // Compute next-level progress from the same userService formula.
+  var nextXP = fanConnactNextLevelXP(xp);
+  var toGo = Math.max(0, nextXP - xp);
+  var pct = Math.round(fanConnactXPProgress(xp) * 100);
 
   // Sidebar: Your Rank
   var curRank = document.getElementById("currentRank");

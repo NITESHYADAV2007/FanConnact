@@ -1,106 +1,95 @@
 /* ==========================================================
         FanConnact Reward Engine
+        One-time / idempotent rewards
 ========================================================== */
 
 import * as predictionService from "../services/predictionService.js";
 
 import {
-
-givePredictionReward
-
-}
-
-from "../services/userService.js";
+    givePredictionRewardOnce
+} from "../services/userService.js";
 
 import {
-
-updateGlobalLeaderboard
-
-}
-
-from "./leaderboardEngine.js";
+    updateGlobalLeaderboard
+} from "./leaderboardEngine.js";
 
 /* ==========================================================
         Process Rewards
 ========================================================== */
 
-export async function processRewards(
-
-    prediction
-
-){
+export async function processRewards(prediction, uid = null){
 
     try{
 
-        const users =
-
-        await predictionService.getPredictionUsers(
-
-            prediction.id
-
-        );
-
-        for(
-
-            const userPrediction
-
-            of users
-
-        ){
-
-            await rewardUser(
-
-                prediction,
-
-                userPrediction
-
-            );
-
+        // Client-side Firestore rules intentionally keep user_predictions
+        // private. Therefore result processing must reward the current user
+        // directly instead of querying every user's prediction.
+        if(!uid){
+            return false;
         }
 
-    }
+        const userPrediction =
+            await predictionService.getUserPrediction(
+                uid,
+                prediction.id
+            );
 
-    catch(error){
+        if(!userPrediction){
+            return false;
+        }
 
-        console.error(
-
-            "Reward Engine Error",
-
-            error
-
+        const result = await rewardUser(
+            prediction,
+            userPrediction
         );
 
+        if(result?.rewarded){
+            // Leaderboard rebuilding is optional and may require privileged
+            // server access. User XP/coins/reward history are already committed
+            // atomically by givePredictionRewardOnce().
+            return true;
+        }
+
+        return false;
+
+    }
+    catch(error){
+        console.error("Reward Engine Error", error);
+        return false;
     }
 
 }
+
 /* ==========================================================
         Reward User
 ========================================================== */
 
-async function rewardUser(
+async function rewardUser(prediction, userPrediction){
 
-    prediction,
+    const selected = userPrediction.selectedOption;
+    const correct = prediction.correctOption;
 
-    userPrediction
+    if(selected == null || correct == null){
+        return;
+    }
 
-){
+    const isCorrect = String(correct) === String(selected);
+    const uid = userPrediction.userId || userPrediction.uid;
 
-    const isCorrect =
+    if(!uid){
+        console.error(
+            "Reward skipped: userId missing on user_prediction",
+            userPrediction.id
+        );
+        return;
+    }
 
-        prediction.correctOption===
+    const result = await givePredictionRewardOnce(
+        userPrediction.id,
+        uid,
+        prediction.difficulty,
+        isCorrect
+    );
 
-        userPrediction.selectedOption;
-
-   await givePredictionReward(
-
-    userPrediction.uid,
-
-    prediction.difficulty,
-
-    isCorrect
-
-);
-
-await updateGlobalLeaderboard();
-
+    return result;
 }

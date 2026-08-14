@@ -22,8 +22,18 @@
           sport === activeTournament.toLowerCase();
         var sMatch = activeStatus === 'All' || card.getAttribute('data-status') === activeStatus;
         var show = tMatch && sMatch;
-        card.style.display = show ? '' : 'none';
-        if (show) anyVisible = true;
+
+        // Use the HTML hidden state + !important display so the selected
+        // status can never be overridden by a card/container CSS class.
+        // This keeps the initial "All" view intact, but makes Live /
+        // Upcoming / Finished switch the main match list itself.
+        card.hidden = !show;
+        if (show) {
+          card.style.removeProperty('display');
+          anyVisible = true;
+        } else {
+          card.style.setProperty('display', 'none', 'important');
+        }
       });
 
       var emptyMsg = matchesContainer.querySelector('.no-matches-msg');
@@ -55,7 +65,7 @@
         else if (text.indexOf('finished') !== -1) status = 'finished';
         var count = 0;
         cards.forEach(function (c) {
-          var tMatch = activeTournament === 'All' || c.getAttribute('data-tournament') === activeTournament;
+          var tMatch = activeTournament === 'All' || (c.getAttribute('data-tournament') || '').toLowerCase() === activeTournament.toLowerCase();
           var sMatch = status === 'All' || c.getAttribute('data-status') === status;
           if (tMatch && sMatch) count++;
         });
@@ -132,7 +142,17 @@
       });
     }
 
+    // The renderer and backend load asynchronously. Re-run counts whenever
+    // fresh cards are rendered and once on the next event-loop turn.
+    window.addEventListener('fanconnact:matches-rendered', function () {
+      // Cards can be replaced after an API refresh. Re-apply the currently
+      // selected filters to the newly-rendered cards.
+      filterMatches();
+    });
+
+    // First load: keep "All" selected and show all three statuses.
     filterMatches();
+    setTimeout(filterMatches, 0);
   }
 
   if (document.readyState === 'loading') {

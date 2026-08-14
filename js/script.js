@@ -1,3 +1,5 @@
+import { calculateLevel } from "./services/userService.js";
+
 // Apply saved appearance settings globally (compact, large text, reduce animation, THEME)
 (function() {
   try {
@@ -291,9 +293,7 @@ document.addEventListener("DOMContentLoaded", () => {
               userAvatarElem.style.borderWidth = "3px";
           }
           if (userLevelElem) {
-            const lvl = (window.LevelSystem && window.LevelSystem.levelFromXP)
-              ? window.LevelSystem.levelFromXP(data.xp || 0)
-              : (data.level || 1);
+            const lvl = calculateLevel(parseInt(data.xp, 10) || 0);
             userLevelElem.textContent = `Level ${lvl}`;
           }
 
@@ -313,9 +313,7 @@ document.addEventListener("DOMContentLoaded", () => {
             name: data.fullName || data.username || displayIdentity,
             username: data.username || '',
             photoURL: data.photoURL || photo,
-            level: (window.LevelSystem && window.LevelSystem.levelFromXP)
-              ? window.LevelSystem.levelFromXP(data.xp || 0)
-              : (data.level || 1),
+            level: calculateLevel(parseInt(data.xp, 10) || 0),
             uid: user.uid,
             xp: parseInt(data.xp, 10) || 0,
             coins: coins

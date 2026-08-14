@@ -22,7 +22,7 @@ yesNoOptions
 
 }
 
-from "../helpers/predictionHelper.js";
+from "../helpers/predictionHelpers.js";
 
 export const footballRules=[];
 
