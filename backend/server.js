@@ -5573,7 +5573,7 @@ async function fetchCricbuzzHscard(id) {
   try {
     const r = await fetch(`https://cricbuzz-cricket.p.rapidapi.com/mcenter/v1/${id}/hscard`, {
       signal: ctrl.signal,
-      headers: { "x-rapidapi-key": CRICKET_KEY, "x-rapidapi-host": "cricbuzz-cricket.p.rapidapi.com" },
+      headers: { "x-rapidapi-key": ALLSPORTS_KEY, "x-rapidapi-host": "cricbuzz-cricket.p.rapidapi.com" },
     });
     if (!r.ok) throw new Error("cricbuzz hscard " + r.status);
     const j = await r.json();
@@ -5748,8 +5748,9 @@ app.get("/api/live-matches/:id", async (req, res) => {
     if (sport === "cricket") {
       // cricket-live-line1 /match/:id often returns generic "Team A"/"Team B"
       // placeholders, so only merge the fields it actually provides and keep
-      // the real list data for names/scores/logos.
-      const detail = await fetchCricketLine("/match/" + id);
+      // the real list data for names/scores/logos. Skipped when CRICKET_KEY is
+      // not set (only APIs with keys in .env are used).
+      const detail = CRICKET_KEY ? await fetchCricketLine("/match/" + id) : null;
       if (detail && detail.data) {
         const d = detail.data;
         match = {
@@ -5822,15 +5823,17 @@ app.get("/api/live-matches", async (req, res) => {
     let results = [];
     if (!quotaExhausted()) {
       if (sport === "all") {
-        // Cricket from cricket-live-line-advance (real, with logos + live
-        // scores); the rest from FlashLive -> allsportsapi2 -> ESPN (bounded
-        // concurrency so the shared RapidAPI account limit isn't hit).
-        const cricket = await fetchCricketAdvance();
+        // Cricket from cricbuzz-cricket (real, with logos + live scores) — the
+        // only cricket API whose key exists in .env; the rest from FlashLive
+        // -> allsportsapi2 -> ESPN (bounded concurrency so the shared RapidAPI
+        // account limit isn't hit).
+        const cricket = await fetchCricbuzzLive();
         const others = await fetchAllSportsForAll();
         results = [...cricket, ...others];
       } else if (sport === "cricket") {
-        // Cricket data from cricket-live-line-advance (live + upcoming + recent).
-        results = await fetchCricketAdvance();
+        // Cricket data from cricbuzz-cricket (live + upcoming + recent) — the
+        // only cricket API with a key in .env.
+        results = await fetchCricbuzzLive();
       } else {
         // FlashLive (real, with logos) for football + the sports allsportsapi2
         // doesn't cover (volleyball, kabaddi, table-tennis, esports, rugby,
