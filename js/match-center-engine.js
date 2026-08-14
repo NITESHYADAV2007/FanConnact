@@ -1,4 +1,4 @@
-// ============================================================================
+﻿// ============================================================================
 //  match-center-engine.js
 //  Data-driven Match Center. Reads URL params (sport, home, away, state, match)
 //  and renders ALL panels (score header, match info, summary, scorecard,
@@ -57,7 +57,7 @@
   const REAL_MATCH = findRealMatch();
 
   // Backend proxy base (same as highlights.js) — localhost locally, Render anywhere else
-  const API_PROXY = (location.hostname === "localhost" || location.hostname === "127.0.0.1")
+  const API_PROXY = (location.hostname === "localhost" || location.hostname === "127.0.0.1" || location.protocol === "file:" || location.hostname === "")
     ? "http://localhost:5000/api"
     : "https://fanconnact-api.onrender.com/api";
 

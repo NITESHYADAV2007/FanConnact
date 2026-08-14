@@ -1,4 +1,4 @@
-/* ============================================================================
+﻿/* ============================================================================
  * matches-data.js  —  REAL match data (sourced from ESPNcricinfo / ESPN scoreboards)
  * Date captured: 2026-07-15 (Wednesday).  These are real fixtures/results for
  * the day.  Live scores tick client-side to simulate the ball-by-ball feed.
@@ -639,7 +639,7 @@
 
   // Backend proxy base: localhost when the site is served from the same machine,
   // otherwise the deployed Render API — works on ngrok, GitHub Pages, any domain.
-  const API_BASE = (location.hostname === "localhost" || location.hostname === "127.0.0.1")
+  const API_BASE = (location.hostname === "localhost" || location.hostname === "127.0.0.1" || location.protocol === "file:" || location.hostname === "")
     ? "http://localhost:5000"
     : "https://fanconnact-api.onrender.com";
 

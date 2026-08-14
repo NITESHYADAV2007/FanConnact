@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -1789,7 +1789,7 @@
       if (e.touches[0]) { showGraphTooltip(e.touches[0].clientX, e.touches[0].clientY); setTimeout(hideGraphTooltip, 2500); }
     }, { passive: true });
 
-    const API_BASE = (location.hostname === "localhost" || location.hostname === "127.0.0.1")
+    const API_BASE = (location.hostname === "localhost" || location.hostname === "127.0.0.1" || location.protocol === "file:" || location.hostname === "")
       ? 'http://localhost:5000'
       : 'https://fanconnact-api.onrender.com';
 

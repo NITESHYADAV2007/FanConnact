@@ -1,4 +1,4 @@
-/* ============================================================================
+﻿/* ============================================================================
  * top-players-widget.js  —  Populates the right-side "Top Players" widget on
  * every sport page with REAL rankings from the backend API.  All filter buttons
  * are activated and re-fetch data when clicked.  Falls back to the static
@@ -7,7 +7,7 @@
 (function () {
   "use strict";
 
-  const API_BASE = (location.hostname === "localhost" || location.hostname === "127.0.0.1")
+  const API_BASE = (location.hostname === "localhost" || location.hostname === "127.0.0.1" || location.protocol === "file:" || location.hostname === "")
     ? "http://localhost:5000"
     : "https://fanconnact-api.onrender.com";
 

@@ -1,10 +1,10 @@
-/* FANCONNECT real cricket data client — Cricbuzz proxy (backend).
+﻿/* FANCONNECT real cricket data client — Cricbuzz proxy (backend).
  * Loaded by match-center.html BEFORE match-center-engine.js.
  * Exposes window.FANCONNECT_CRICKET_API used by fetchCricketApi() for
  * scorecard, ball-by-ball commentary and wagon/overs data.
  */
 window.FANCONNECT_CRICKET_API = (function () {
-  var PROXY = (location.hostname === "localhost" || location.hostname === "127.0.0.1")
+  var PROXY = (location.hostname === "localhost" || location.hostname === "127.0.0.1" || location.protocol === "file:" || location.hostname === "")
     ? "http://localhost:5000/api/real/cricket/proxy"
     : "https://fanconnact-api.onrender.com/api/real/cricket/proxy";
 

@@ -1,4 +1,4 @@
-/* ============================================================================
+﻿/* ============================================================================
  * global-search.js  —  Wires up every "Search matches, players..." input
  * on the site.  Queries the backend /api/search endpoint (players + matches)
  * and shows a live dropdown.  Clicking a result navigates to the right page.
@@ -6,7 +6,7 @@
 (function () {
   "use strict";
 
-  const API_BASE = (location.hostname === "localhost" || location.hostname === "127.0.0.1")
+  const API_BASE = (location.hostname === "localhost" || location.hostname === "127.0.0.1" || location.protocol === "file:" || location.hostname === "")
     ? "http://localhost:5000"
     : "https://fanconnact-api.onrender.com";
   const SPORT_LABEL = {

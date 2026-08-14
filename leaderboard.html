@@ -1,4 +1,4 @@
-
+﻿
 
 <!DOCTYPE html>
 <html lang="en">
@@ -958,7 +958,7 @@ class="w-full flex items-center justify-center rounded-xl border border-purple-5
       });
     });
 
-    const API_BASE = (location.hostname === "localhost" || location.hostname === "127.0.0.1")
+    const API_BASE = (location.hostname === "localhost" || location.hostname === "127.0.0.1" || location.protocol === "file:" || location.hostname === "")
       ? 'http://localhost:5000'
       : 'https://fanconnact-api.onrender.com';
 
