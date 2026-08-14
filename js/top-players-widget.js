@@ -7,7 +7,9 @@
 (function () {
   "use strict";
 
-  const API_BASE = " http://localhost:5000";
+  const API_BASE = (location.hostname === "localhost" || location.hostname === "127.0.0.1")
+    ? "http://localhost:5000"
+    : "https://fanconnact-api.onrender.com";
 
   // Map page filename -> sport id used by the API.
   const PAGE_SPORT = {

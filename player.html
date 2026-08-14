@@ -630,7 +630,9 @@ if (!storedData || !storedData.player) {
 }
 var player = storedData ? storedData.player : null;
 
-const API_BASE = "http://localhost:5000";
+const API_BASE = (location.hostname === "localhost" || location.hostname === "127.0.0.1")
+  ? "http://localhost:5000"
+  : "https://fanconnact-api.onrender.com";
 window.API_BASE=API_BASE;
 
 async function loadCareer() {
@@ -658,6 +660,28 @@ async function loadCareer() {
 await loadCareer();
 var sportName = storedData ? storedData.sport : null;
 if (!sportName) sportName = sessionStorage.getItem("playerSport") || "Cricket";
+
+// ── Real enrichment (backend rosters) for non-cricket profiles ────────────
+// Fills real position/number/height/team from the backend player-enrich
+// endpoint (scans live-feed team rosters). Never fabricates: anything still
+// missing shows "—".
+if (sportName !== "Cricket" && player && player.name) {
+  try {
+    var sidMap = { Football: "football", Basketball: "basketball", Tennis: "tennis", Baseball: "baseball", Hockey: "hockey", Volleyball: "volleyball", Kabaddi: "kabbaddi", "E-Sports": "e-sports", "Table Tennis": "tabletennis" };
+    var sid = sidMap[sportName];
+    if (sid) {
+      var res = await fetch(API_BASE + "/api/player-enrich?sport=" + sid + "&name=" + encodeURIComponent(player.name), { signal: AbortSignal.timeout(8000) });
+      var j = await res.json().catch(function () { return null; });
+      var found = (j && j.player) || null;
+      if (found) {
+        if (!player.position) player.position = found.position || null;
+        if (!player.jersey && !player.jerseyNumber && !player.number) player.number = found.number || null;
+        if (!player.height) player.height = found.height || null;
+        if (!player.team) player.team = found.team || null;
+      }
+    }
+  } catch (e) { /* keep real ranking data; missing fields stay "—" */ }
+}
 
 // --- Top Bar: Firebase Profile ---
 onAuthStateChanged(fbcAuth, async function (user) {
@@ -841,60 +865,12 @@ function heroValue(...keys) {
   // fabricate personal details — missing fields show "—" instead of random
   // values, per the "no static/random data" requirement.
   var isCricketProfile = (sportName === "Cricket");
-  if (!isCricketProfile) {
-    // Fill missing personal details first (so hero section has them)
-    if (!player.country) { var ctry = ["India","Australia","England","Pakistan","South Africa","New Zealand","Sri Lanka","West Indies","Bangladesh","Afghanistan","Argentina","Brazil","France","Germany","Spain","USA","Canada","Japan","South Korea","China"]; player.country = ctry[~~(Math.random() * ctry.length)]; }
-    if (!player.age) player.age = 18 + ~~(Math.random() * 15);
-    if (!player.born && !player.birthDate && !player.dob) { var by = new Date().getFullYear() - player.age; var bm = 1+~~(Math.random()*12); var bd = 1+~~(Math.random()*28); player.born = bd + " " + ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][bm-1] + " " + by; }
-    if (!player.height) player.height = (155 + ~~(Math.random() * 35)) + " cm";
-    if (!player.weight) player.weight = (55 + ~~(Math.random() * 30)) + " kg";
-    if (!player.jersey && !player.jerseyNumber && !player.number) player.jersey = String(~~(Math.random() * 99) + 1);
-    if (!player.debut && !player.debutYear) player.debut = String(2005 + ~~(Math.random() * 15));
-  }
   if (sportName === "Cricket") {
     if (!player.batting && !player.position) player.batting = player.battingStyle || player.role || null;
     if (!player.bowling && !player.style) player.bowling = player.bowlingStyle || player.role || null;
-  } else if (sportName === "Baseball") {
-    if (!player.position) player.position = ["Pitcher","Catcher","First Base","Second Base","Shortstop","Third Base","Outfielder"][~~(Math.random()*7)];
-    if (!player.style) player.style = Math.random() > 0.5 ? "Right Hand" : "Left Hand";
-  } else if (sportName === "Football") {
-    if (!player.position) player.position = ["Forward","Midfielder","Defender","Goalkeeper"][~~(Math.random()*4)];
-    if (!player.foot) player.foot = Math.random() > 0.5 ? "Right" : "Left";
-  } else if (sportName === "Basketball") {
-    if (!player.position) player.position = ["Point Guard","Shooting Guard","Small Forward","Power Forward","Center"][~~(Math.random()*5)];
-    if (!player.style) player.style = Math.random() > 0.5 ? "Right Hand" : "Left Hand";
-  } else if (sportName === "Tennis" || sportName === "Table Tennis") {
-    if (!player.plays) player.plays = Math.random() > 0.5 ? "Right Hand" : "Left Hand";
-    if (!player.grip) player.grip = Math.random() > 0.5 ? "Western" : "Eastern";
-  } else if (sportName === "Hockey") {
-    if (!player.position) player.position = ["Forward","Defender","Goalkeeper","Midfielder"][~~(Math.random()*4)];
-    if (!player.style) player.style = Math.random() > 0.5 ? "Right Hand" : "Left Hand";
-  } else if (sportName === "Volleyball") {
-    if (!player.position) player.position = ["Outside Hitter","Opposite","Setter","Middle Blocker","Libero"][~~(Math.random()*5)];
-    if (!player.style) player.style = Math.random() > 0.5 ? "Right Hand" : "Left Hand";
-  } else if (sportName === "Kabaddi") {
-    if (!player.position) player.position = ["Raider","Defender","All-Rounder"][~~(Math.random()*3)];
-    if (!player.style) player.style = Math.random() > 0.5 ? "Right Hand" : "Left Hand";
-  } else if (sportName === "E-Sports") {
-    if (!player.position) player.position = ["Captain","Support","Entry Fragger","AWPer","In-Game Leader"][~~(Math.random()*5)];
-    if (!player.style) player.style = Math.random() > 0.3 ? "Mouse & Keyboard" : "Controller";
   }
-  if (!player.team && !isCricketProfile) {
-    var sportTeamPool = {
-      Cricket:["Mumbai Indians","Chennai Super Kings","Royal Challengers Bangalore","Kolkata Knight Riders","Delhi Capitals","Sydney Sixers","Melbourne Stars"],
-      Football:["Manchester City","Liverpool","FC Barcelona","Real Madrid","Bayern Munich","Paris Saint-Germain","Juventus"],
-      Basketball:["LA Lakers","Boston Celtics","Chicago Bulls","Golden State Warriors","Miami Heat","Brooklyn Nets"],
-      Tennis:["ATP World Tour","Davis Cup"],
-      Baseball:["New York Yankees","LA Dodgers","Boston Red Sox","Chicago Cubs","Houston Astros"],
-      Hockey:["Montreal Canadiens","Toronto Maple Leafs","Edmonton Oilers","Boston Bruins"],
-      Volleyball:["Modena Volley","Zenit Kazan","Sir Safety Perugia"],
-      Kabaddi:["Bengal Warriors","Patna Pirates","Jaipur Pink Panthers","U Mumba"],
-      "E-Sports":["Team Liquid","Fnatic","Cloud9","T1","Sentinels"],
-      "Table Tennis":["TTC Berlin","Borussia Düsseldorf","AS Pontoise-Cergy"]
-    };
-    var pool = sportTeamPool[sportName] || ["Manchester United","FC Barcelona","LA Lakers","Mumbai Indians"];
-    player.team = pool[~~(Math.random() * pool.length)];
-  }
+  // Real data only — no fabricated teams. Team comes from the rankings feed
+  // or the allsports enrichment below; otherwise it stays "—".
  /* ==========================
    HERO (REAL BACKEND)
 ========================== */
@@ -1766,108 +1742,11 @@ function timeAgo(dateStr) {
   return new Date(dateStr).toLocaleDateString();
 }
 
-// --- Realistic stat generator (fills missing player stats) ---
+// --- Real stat merge (NO fabricated data) ---
+// Fills nothing random: values come only from the rankings feed (p.*), the
+// career API (p.career) and the allsports enrichment done at load time.
+// Missing values show "—" in the stat cards.
 function generateRealisticStats(p, sport) {
-  var r = Math.max(1, Math.min(100, p.rank || 50));
-  var t = {};
-  if (sport === "Cricket") {
-    if (r <= 5) t = { matches:500+~~(Math.random()*80), runs:25000+~~(Math.random()*5000), avg:48+Math.random()*8, hundreds:70+~~(Math.random()*15), fifties:100+~~(Math.random()*30), highest:240+~~(Math.random()*60), strikeRate:90+Math.random()*10, balls:29000+~~(Math.random()*5000), fours:2500+~~(Math.random()*500), sixes:300+~~(Math.random()*100), wickets:10+~~(Math.random()*20) };
-    else if (r <= 15) t = { matches:250+~~(Math.random()*80), runs:10000+~~(Math.random()*4000), avg:38+Math.random()*8, hundreds:30+~~(Math.random()*15), fifties:55+~~(Math.random()*20), highest:170+~~(Math.random()*40), strikeRate:82+Math.random()*10, balls:14000+~~(Math.random()*4000), fours:1200+~~(Math.random()*400), sixes:120+~~(Math.random()*80), wickets:3+~~(Math.random()*12) };
-    else t = { matches:80+~~(Math.random()*50), runs:2500+~~(Math.random()*2000), avg:28+Math.random()*8, hundreds:4+~~(Math.random()*8), fifties:15+~~(Math.random()*12), highest:90+~~(Math.random()*40), strikeRate:75+Math.random()*10, balls:4000+~~(Math.random()*3000), fours:300+~~(Math.random()*200), sixes:25+~~(Math.random()*40), wickets:1+~~(Math.random()*5) };
-  } else if (sport === "Football") {
-    if (r <= 10) t = { matches:400+~~(Math.random()*100), goals:180+~~(Math.random()*80), assists:80+~~(Math.random()*40), rating:85+Math.random()*8 };
-    else if (r <= 30) t = { matches:200+~~(Math.random()*80), goals:70+~~(Math.random()*40), assists:35+~~(Math.random()*20), rating:76+Math.random()*8 };
-    else t = { matches:70+~~(Math.random()*50), goals:15+~~(Math.random()*20), assists:10+~~(Math.random()*12), rating:70+Math.random()*8 };
-  } else if (sport === "Basketball") {
-    if (r <= 10) t = { matches:600+~~(Math.random()*100), points:15000+~~(Math.random()*5000), rebounds:5000+~~(Math.random()*2000), assists:3000+~~(Math.random()*1500), fg_pct:(45+Math.random()*8).toFixed(1), rating:85+Math.random()*8 };
-    else if (r <= 30) t = { matches:300+~~(Math.random()*100), points:7000+~~(Math.random()*3000), rebounds:2500+~~(Math.random()*1000), assists:1500+~~(Math.random()*800), fg_pct:(40+Math.random()*8).toFixed(1), rating:76+Math.random()*8 };
-    else t = { matches:100+~~(Math.random()*80), points:2000+~~(Math.random()*1500), rebounds:800+~~(Math.random()*500), assists:400+~~(Math.random()*300), fg_pct:(38+Math.random()*6).toFixed(1), rating:70+Math.random()*8 };
-  } else if (sport === "Tennis") {
-    if (r <= 10) t = { tournaments:60+~~(Math.random()*20), titles:30+~~(Math.random()*20), winrate:(75+Math.random()*15).toFixed(1), prizeMoney:"$"+(20+~~(Math.random()*30))+"M", points:8000+~~(Math.random()*3000) };
-    else if (r <= 30) t = { tournaments:35+~~(Math.random()*15), titles:8+~~(Math.random()*10), winrate:(62+Math.random()*12).toFixed(1), prizeMoney:"$"+(5+~~(Math.random()*10))+"M", points:3000+~~(Math.random()*2000) };
-    else t = { tournaments:15+~~(Math.random()*10), titles:2+~~(Math.random()*5), winrate:(55+Math.random()*10).toFixed(1), prizeMoney:"$"+(1+~~(Math.random()*3))+"M", points:800+~~(Math.random()*1000) };
-  } else if (sport === "Baseball") {
-    if (r <= 10) t = { games:800+~~(Math.random()*200), hr:300+~~(Math.random()*100), avg:(280+~~(Math.random()*40))/1000, rbi:900+~~(Math.random()*300), ops:(850+~~(Math.random()*100))/1000, rating:85+Math.random()*8 };
-    else t = { games:300+~~(Math.random()*200), hr:80+~~(Math.random()*60), avg:(250+~~(Math.random()*30))/1000, rbi:300+~~(Math.random()*200), ops:(720+~~(Math.random()*80))/1000, rating:74+Math.random()*8 };
-  } else if (sport === "Hockey") {
-    if (r <= 10) t = { matches:500+~~(Math.random()*100), goals:200+~~(Math.random()*100), assists:150+~~(Math.random()*80), rating:84+Math.random()*8 };
-    else t = { matches:150+~~(Math.random()*100), goals:40+~~(Math.random()*40), assists:30+~~(Math.random()*30), rating:74+Math.random()*8 };
-  } else if (sport === "Volleyball") {
-    if (r <= 10) t = { points:3000+~~(Math.random()*1000), spikes:1200+~~(Math.random()*500), blocks:400+~~(Math.random()*200), aces:150+~~(Math.random()*80), rating:86+Math.random()*8 };
-    else t = { points:800+~~(Math.random()*600), spikes:350+~~(Math.random()*250), blocks:120+~~(Math.random()*100), aces:40+~~(Math.random()*40), rating:74+Math.random()*8 };
-  } else if (sport === "Kabaddi") {
-    if (r <= 10) t = { matches:120+~~(Math.random()*40), raidPts:800+~~(Math.random()*400), tacklePts:300+~~(Math.random()*150), totalPts:1100+~~(Math.random()*500), rating:85+Math.random()*8 };
-    else t = { matches:40+~~(Math.random()*30), raidPts:200+~~(Math.random()*150), tacklePts:80+~~(Math.random()*60), totalPts:280+~~(Math.random()*200), rating:74+Math.random()*8 };
-  } else if (sport === "E-Sports") {
-    if (r <= 10) t = { tournaments:40+~~(Math.random()*20), earnings:"$"+(500+~~(Math.random()*1000))+"K", winrate:(65+Math.random()*15).toFixed(1), rating:88+Math.random()*8, game:"Valorant" };
-    else t = { tournaments:10+~~(Math.random()*10), earnings:"$"+(50+~~(Math.random()*200))+"K", winrate:(52+Math.random()*10).toFixed(1), rating:74+Math.random()*8, game:"CS:GO" };
-  } else if (sport === "Table Tennis") {
-    if (r <= 10) t = { tournaments:40+~~(Math.random()*20), titles:15+~~(Math.random()*15), winrate:(72+Math.random()*12).toFixed(1), prizeMoney:"$"+(2+~~(Math.random()*8))+"M", points:6000+~~(Math.random()*3000) };
-    else t = { tournaments:15+~~(Math.random()*10), titles:3+~~(Math.random()*5), winrate:(58+Math.random()*10).toFixed(1), prizeMoney:"$"+(300+~~(Math.random()*700))+"K", points:1500+~~(Math.random()*1500) };
-  }
-  for (var k in t) {
-    if (p[k] === undefined || p[k] === null || p[k] === "") p[k] = t[k];
-  }
-  // Also fill missing personal details
-  var countries = ["India","Australia","England","Pakistan","South Africa","New Zealand","Sri Lanka","West Indies","Bangladesh","Afghanistan","Argentina","Brazil","France","Germany","Spain","USA","Canada","Japan","South Korea","China"];
-  if (!p.country) p.country = countries[~~(Math.random() * countries.length)];
-  if (!p.age) p.age = 18 + ~~(Math.random() * 15);
-  if (!p.born) {
-    var yr = new Date().getFullYear() - p.age;
-    var mo = 1 + ~~(Math.random() * 12);
-    var dy = 1 + ~~(Math.random() * 28);
-    p.born = dy + " " + ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][mo - 1] + " " + yr;
-  }
-  if (!p.height) p.height = (155 + ~~(Math.random() * 35)) + " cm";
-  if (!p.weight) p.weight = (55 + ~~(Math.random() * 30)) + " kg";
-  if (!p.jersey && !p.jerseyNumber && !p.number) p.jersey = String(~~(Math.random() * 99) + 1);
-  if (!p.debut && !p.debutYear) p.debut = String(2005 + ~~(Math.random() * 15));
-  // Sport-specific style fields
-  if (sport === "Cricket") {
-    if (!p.batting && !p.position) p.batting = Math.random() > 0.5 ? "Right Hand" : "Left Hand";
-    if (!p.bowling && !p.style) p.bowling = Math.random() > 0.7 ? "Right Arm Fast" : Math.random() > 0.5 ? "Right Arm Medium" : "Left Arm Spin";
-  } else if (sport === "Baseball") {
-    if (!p.position) p.position = ["Pitcher","Catcher","First Base","Second Base","Shortstop","Third Base","Outfielder"][~~(Math.random()*7)];
-    if (!p.style) p.style = Math.random() > 0.5 ? "Right Hand" : "Left Hand";
-  } else if (sport === "Football") {
-    if (!p.position) p.position = ["Forward","Midfielder","Defender","Goalkeeper"][~~(Math.random()*4)];
-    if (!p.foot) p.foot = Math.random() > 0.5 ? "Right" : "Left";
-  } else if (sport === "Basketball") {
-    if (!p.position) p.position = ["Point Guard","Shooting Guard","Small Forward","Power Forward","Center"][~~(Math.random()*5)];
-    if (!p.style) p.style = Math.random() > 0.5 ? "Right Hand" : "Left Hand";
-  } else if (sport === "Tennis" || sport === "Table Tennis") {
-    if (!p.plays) p.plays = Math.random() > 0.5 ? "Right Hand" : "Left Hand";
-    if (!p.grip) p.grip = Math.random() > 0.5 ? "Western" : "Eastern";
-  } else if (sport === "Hockey") {
-    if (!p.position) p.position = ["Forward","Defender","Goalkeeper","Midfielder"][~~(Math.random()*4)];
-    if (!p.style) p.style = Math.random() > 0.5 ? "Right Hand" : "Left Hand";
-  } else if (sport === "Volleyball") {
-    if (!p.position) p.position = ["Outside Hitter","Opposite","Setter","Middle Blocker","Libero"][~~(Math.random()*5)];
-    if (!p.style) p.style = Math.random() > 0.5 ? "Right Hand" : "Left Hand";
-  } else if (sport === "Kabaddi") {
-    if (!p.position) p.position = ["Raider","Defender","All-Rounder"][~~(Math.random()*3)];
-    if (!p.style) p.style = Math.random() > 0.5 ? "Right Hand" : "Left Hand";
-  } else if (sport === "E-Sports") {
-    if (!p.position) p.position = ["Captain","Support","Entry Fragger","AWPer","In-Game Leader"][~~(Math.random()*5)];
-    if (!p.style) p.style = Math.random() > 0.3 ? "Mouse & Keyboard" : "Controller";
-  }
-  // Generate a realistic team name if missing
-  if (!p.team) {
-    var teamPool = {
-      Cricket:["Mumbai Indians","Chennai Super Kings","Royal Challengers Bangalore","Kolkata Knight Riders","Delhi Capitals","Sydney Sixers","Melbourne Stars"],
-      Football:["Manchester City","Liverpool","FC Barcelona","Real Madrid","Bayern Munich","Paris Saint-Germain","Juventus"],
-      Basketball:["LA Lakers","Boston Celtics","Chicago Bulls","Golden State Warriors","Miami Heat","Brooklyn Nets"],
-      Tennis:["ATP World Tour","Davis Cup"],
-      Baseball:["New York Yankees","LA Dodgers","Boston Red Sox","Chicago Cubs","Houston Astros"],
-      Hockey:["Montreal Canadiens","Toronto Maple Leafs","Edmonton Oilers","Boston Bruins"],
-      Volleyball:["Modena Volley","Zenit Kazan","Sir Safety Perugia"],
-      Kabaddi:["Bengal Warriors","Patna Pirates","Jaipur Pink Panthers","U Mumba"],
-      "E-Sports":["Team Liquid","Fnatic","Cloud9","T1","Sentinels"],
-      "Table Tennis":["TTC Berlin","Borussia Düsseldorf","AS Pontoise-Cergy"]
-    };
-    var pool2 = teamPool[sport] || ["Manchester United","FC Barcelona","LA Lakers","Mumbai Indians"];
-    p.team = pool2[~~(Math.random() * pool2.length)];
-  }
   return p;
 }
 

@@ -98,7 +98,32 @@ app.use("/api/venues", venueRoutes);
 // DB-backed rankings for every sport (player-rankings.json + procedural
 // fallbacks). Registered BEFORE the cricbuzz rankings router so requests like
 // /api/rankings/cricket/odi_bat_men serve the synced database instead of the
-// cricbuzz provider; unknown sports fall through via next() to that router.
+// cricbuzz router.
+
+// Team rankings (served from the synced team-rankings.json data file).
+// Registered before /api/rankings/:sport/:category? so "teams" is not
+// treated as a sport key.
+app.get("/api/rankings/teams", (req, res) => {
+  const format = (req.query.format || "test").toString().toUpperCase();
+  const women = req.query.women === "true" || req.query.women === "1";
+  try {
+    const raw = fs.readFileSync(path.join(__dirname, "..", "data", "team-rankings.json"), "utf8");
+    const data = JSON.parse(raw);
+    const list = [];
+    for (const sport of Object.keys(data || {})) {
+      const s = data[sport];
+      const cat = (s.categories || []).find((c) => String(c).toUpperCase() === format);
+      if (!cat) continue;
+      const arr = (s.rankings && s.rankings[women ? "Women" : "Men"] && s.rankings[women ? "Women" : "Men"][cat]) || [];
+      arr.forEach((t) => list.push({ ...t, sport, category: cat }));
+      break;
+    }
+    res.json(list);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
 app.get("/api/rankings/:sport/:category?", async (req, res, next) => {
   const { sport: sportId } = req.params;
   const category = req.params.category || req.query.category || null;
@@ -4426,6 +4451,7 @@ async function fetchEspnScoreboard(path) {
       const state = st.state; // 'pre' | 'in' | 'post'
       const status = state === 'in' ? 'LIVE' : state === 'post' ? 'COMPLETED' : 'UPCOMING';
       const team = (t) => ({
+        id: (t.team && t.team.id) || '',
         name: (t.team && t.team.displayName) || (t.team && t.team.name) || 'TBD',
         abbr: (t.team && t.team.abbreviation) || '',
         logo: (t.team && t.team.logo) || '',
@@ -4438,6 +4464,9 @@ async function fetchEspnScoreboard(path) {
         state,
         time: st.shortDetail || st.description || ev.date || '',
         date: ev.date || '',
+        matchId: String(ev.id || comp.id || ''),
+        teamIdA: String(home.id || h.id || ''),
+        teamIdB: String(away.id || a.id || ''),
         homeName: h.name,
         homeAbbr: h.abbr,
         homeLogo: h.logo,
@@ -5277,6 +5306,9 @@ function mapAllsportsEvent(ev, sportKey) {
     state,
     time: status.description || (startTs ? new Date(startTs).toLocaleString() : ""),
     date: startTs ? new Date(startTs).toISOString() : "",
+    matchId: String(ev.id || ""),
+    teamIdA: String(home.id || ""),
+    teamIdB: String(away.id || ""),
     homeName: home.name || "TBD",
     homeAbbr: home.shortName || home.nameCode || "",
     homeLogo: "",
@@ -6051,9 +6083,8 @@ app.get("/api/sport-detail/:sport/match/:id/shotmap", async (req, res) => {
 });
 
 // Team roster (players)
-app.get("/api/sport-detail/:sport/team/:id/players", async (req, res) => {
-  const { sport, id } = req.params;
-  const data = await sportDetailCache(`players_${sport}_${id}`, async () => {
+async function fetchTeamRoster(sport, id) {
+  return sportDetailCache(`players_${sport}_${id}`, async () => {
     if (sportUsesAllsports(sport)) {
       const j = await allsportsGet(sport, `/team/${id}/players`);
       const arr = (j && Array.isArray(j.players)) ? j.players : [];
@@ -6076,7 +6107,71 @@ app.get("/api/sport-detail/:sport/team/:id/players", async (req, res) => {
     }
     return [];
   });
+}
+
+app.get("/api/sport-detail/:sport/team/:id/players", async (req, res) => {
+  const { sport, id } = req.params;
+  const data = await fetchTeamRoster(sport, id);
   res.json({ players: data || [] });
+});
+
+// Player profile enrichment — there is no player-search endpoint on either
+// upstream, so we scan the already-fetched live feed's team ids (zero extra
+// quota for the list) and pull real rosters (cached, shared with the team
+// players route) to match the player by name. Returns null when unmatched.
+app.get("/api/player-enrich", async (req, res) => {
+  const sport = (req.query.sport || "").toString();
+  const name = (req.query.name || "").toString().trim();
+  if (!sport || !name) return res.json({ player: null });
+  const data = await sportDetailCache(`pe_${sport}_${name.toLowerCase()}`, async () => {
+    const rows = [];
+    for (const key of ["matches|" + sport, "matches|all"]) {
+      const c = matchCache.get(key);
+      if (c && c.data && Array.isArray(c.data.matches)) rows.push(...c.data.matches);
+    }
+    const teams = [];
+    for (const r of rows) {
+      for (const t of [String(r.teamIdA || ""), String(r.teamIdB || "")]) {
+        if (t && !teams.includes(t)) teams.push(t);
+        if (teams.length >= 4) break;
+      }
+      if (teams.length >= 4) break;
+    }
+    const q = name.toLowerCase();
+    for (const t of teams) {
+      const roster = await fetchTeamRoster(sport, t);
+      const found = roster.find((p) => p.name && p.name.toLowerCase().indexOf(q) >= 0);
+      if (found) {
+        const row = rows.find((r) => String(r.teamIdA) === t || String(r.teamIdB) === t);
+        const team = row ? (String(row.teamIdA) === t ? row.homeName : row.awayName) : "";
+        return { ...found, team };
+      }
+    }
+    return null;
+  });
+  res.json({ player: data || null });
+});
+
+// Team rankings (served from the synced team-rankings.json data file).
+app.get("/api/rankings/teams", (req, res) => {
+  const format = (req.query.format || "test").toString().toUpperCase();
+  const women = req.query.women === "true" || req.query.women === "1";
+  try {
+    const raw = fs.readFileSync(path.join(__dirname, "..", "data", "team-rankings.json"), "utf8");
+    const data = JSON.parse(raw);
+    const list = [];
+    for (const sport of Object.keys(data || {})) {
+      const s = data[sport];
+      const cat = (s.categories || []).find((c) => String(c).toUpperCase() === format);
+      if (!cat) continue;
+      const arr = (s.rankings && s.rankings[women ? "Women" : "Men"] && s.rankings[women ? "Women" : "Men"][cat]) || [];
+      arr.forEach((t) => list.push({ ...t, sport, category: cat }));
+      break;
+    }
+    res.json(list);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
 });
 
 // ─── START SERVER ────────────────────────────────────────────────────────────

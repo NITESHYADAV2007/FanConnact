@@ -56,11 +56,13 @@
   }
   const REAL_MATCH = findRealMatch();
 
-  // Backend proxy base (same as highlights.js) for real team rankings
-  const API_PROXY = "http://localhost:5000/api";
+  // Backend proxy base (same as highlights.js) — localhost locally, Render anywhere else
+  const API_PROXY = (location.hostname === "localhost" || location.hostname === "127.0.0.1")
+    ? "http://localhost:5000/api"
+    : "https://fanconnact-api.onrender.com/api";
 
   // ============================================================================
-  // FANCONNECT API MANAGER (PART-1)
+  // FANCONNECT API MANAGER (PART-1) — real backend endpoints (ALL sports)
   // ============================================================================
 
   const API = {
@@ -71,102 +73,236 @@
 
         const fullUrl = API_PROXY + url;
 
-        console.log("FETCH =>", fullUrl);
-
         const res = await fetch(fullUrl, {
           method: "GET",
-          headers: {
-            "Accept": "application/json"
-          }
+          headers: { "Accept": "application/json" }
         });
 
-        console.log("STATUS =>", res.status);
         if (!res.ok) {
           throw new Error(`HTTP ${res.status}`);
         }
 
-        const json = await res.json();
-
-        console.log("FETCH URL =", API_PROXY + url);
-        console.log("FETCH JSON =", json);
-
-        return json;
-
+        return await res.json();
 
       }
       catch (err) {
 
-        console.error("API ERROR:", API_PROXY + url);
-
-        console.error(err);
-
+        console.error("API ERROR:", API_PROXY + url, err.message);
         throw err;
 
       }
 
     },
 
-
-
-    async getMatch() {
-
-      return await this.request(
-        `/matches/${MATCHID}`
+    // Real match row from the live list (every sport has home/away name,
+    // logo, score, venue, series). Works even without a numeric id.
+    async realMatch() {
+      const j = await this.request(
+        `/live-matches/${encodeURIComponent(MATCHID)}?sport=${encodeURIComponent(SPORT)}`
       );
-
+      return (j && j.match) || j || null;
     },
 
-
-
-    async getScorecard() {
-
-      return await this.request(
-        `/matches/${MATCHID}/scorecard`
-      );
-
+    // Cricbuzz proxy (cricket only) — responses arrive wrapped as {data: ...}
+    async cricbuzz(path) {
+      try {
+        const j = await this.request("/real/cricket/proxy" + path);
+        return (j && j.data !== undefined) ? j.data : j;
+      } catch (e) {
+        console.error("cricbuzz", path, e.message);
+        return null;
+      }
     },
 
-
-
-    async getCommentary() {
-
-      return await this.request(
-        `/matches/${MATCHID}/commentary`
-      );
-
-    },
-
-
-
-    async getSquads() {
-
-      return await this.request(
-        `/matches/${MATCHID}/squads`
-      );
-
-    },
-
-
-
-    async getOvers() {
-
-      return await this.request(
-        `/matches/${MATCHID}/overs`
-      );
-
-    },
-
-
-
-    async getHighlights() {
-
-      return await this.request(
-        `/matches/${MATCHID}/highlights`
-      );
-
+    // Allsportsapi2 / FlashLive proxy (non-cricket sports)
+    async sportDetail(path) {
+      try {
+        return await this.request("/sport-detail" + path);
+      } catch (e) {
+        console.error("sportDetail", path, e.message);
+        return null;
+      }
     }
 
   };
+
+  // ============================================================================
+  // BACKEND → LEGACY CONTRACT MAPPERS
+  // The normalizers below read the OLD api-sports shapes; these mappers
+  // translate the NEW backend responses back into those shapes.
+  // ============================================================================
+
+  // /api/live-matches/:id row → legacy match object (match.teams.home...)
+  function mapBackendMatch(m) {
+    if (!m) return null;
+    const hAbbr = m.homeAbbr || (m.homeTeam && m.homeTeam.short) || "";
+    const aAbbr = m.awayAbbr || (m.awayTeam && m.awayTeam.short) || "";
+    return {
+      ...m,
+      teams: {
+        home: { teamname: m.homeName || (m.homeTeam && m.homeTeam.name) || "TBD", teamsname: hAbbr, teamSName: hAbbr, logo: m.homeLogo || "" },
+        away: { teamname: m.awayName || (m.awayTeam && m.awayTeam.name) || "TBD", teamsname: aAbbr, teamSName: aAbbr, logo: m.awayLogo || "" }
+      },
+      venue: m.venue ? { name: m.venue } : null,
+      series: m.series || m.league || "",
+      statusText: m.status || m.state || "",
+      result: m.result || "",
+      toss: m.toss || "",
+      matchType: m.matchType || "",
+    };
+  }
+
+  // cricbuzz advance (or score.teamX.innings) → legacy scorecard[]
+  function mapCricbuzzScorecard(adv) {
+    if (!adv) return null;
+    let innings = Array.isArray(adv.innings) ? adv.innings : [];
+    if (!innings.length && adv.score) {
+      const t1 = adv.score.team1 || {}, t2 = adv.score.team2 || {};
+      const pick = (t, nm) => (Array.isArray(t.innings) ? t.innings : []).map((i) => ({ ...i, batteamname: t.name || nm, batteamshortname: t.short_name || "" }));
+      innings = [
+        ...pick(t1, HOME_T.name),
+        ...pick(t2, AWAY_T.name)
+      ];
+    }
+    if (!innings.length) return null;
+    return mapInnings(innings.slice(0, 4));
+  }
+
+  function mapInnings(innings) {
+    const out = [];
+    innings.forEach((inn) => {
+      const bat = (inn.batting || inn.batsmen || inn.batsman || []).map((b) => ({
+        name: b.name || b.batter || "—",
+        runs: b.runs != null ? b.runs : 0,
+        balls: b.balls != null ? b.balls : 0,
+        fours: b.fours != null ? b.fours : 0,
+        sixes: b.sixes != null ? b.sixes : 0,
+        strkrate: b.sr != null ? b.sr : (b.strike_rate != null ? b.strike_rate : "0.00"),
+        outdec: b.out_desc != null ? b.out_desc : (b.out ? b.out : "not out")
+      }));
+      const bowl = (inn.bowling || inn.bowlers || inn.bowler || []).map((b) => ({
+        name: b.name || b.bowler || "—",
+        overs: b.overs != null ? b.overs : "0.0",
+        maidens: b.maidens != null ? b.maidens : 0,
+        runs: b.runs != null ? b.runs : 0,
+        wickets: b.wickets != null ? b.wickets : 0,
+        economy: b.economy != null ? b.economy : "0.00"
+      }));
+      const score = inn.score != null ? inn.score : (inn.runs != null ? inn.runs : "");
+      out.push({
+        batteamname: inn.batteamname || inn.teamname || inn.team || "—",
+        batteamshortname: inn.batteamshortname || inn.team_short || "",
+        score: String(score),
+        wickets: inn.wickets != null ? inn.wickets : (inn.wkts != null ? inn.wkts : ""),
+        overs: inn.overs != null ? inn.overs : (inn.ov != null ? inn.ov : "0.0"),
+        runrate: inn.run_rate != null ? inn.run_rate : (inn.crr != null ? inn.crr : "0.00"),
+        iscurrentinnings: !!(inn.iscurrentinnings || inn.current || inn.isCurrent),
+        batsman: bat,
+        bowler: bowl
+      });
+    });
+    return out.length ? { scorecard: out } : null;
+  }
+
+  // cricbuzz commentary → legacy comwrapper[]
+  function mapCricbuzzCommentary(data) {
+    if (!data) return null;
+    const items = Array.isArray(data) ? data : (data.commentary || data.comwrapper || data.items || []);
+    if (!Array.isArray(items) || !items.length) return null;
+    return {
+      comwrapper: items.slice(0, 300).map((raw) => {
+        const c = raw.commentary || raw;
+        const low = String(c.event || c.eventtype || "").toUpperCase();
+        return {
+          commentary: {
+            overnum: c.overnum != null ? c.overnum : (c.over != null ? c.over : ""),
+            eventtype: low || "NORMAL",
+            commtxt: c.commtxt || c.comm || c.text || c.comment || "",
+            batsmanName: c.batsmanName || c.batsman || c.striker || "",
+            nonStrikerName: c.nonStrikerName || c.nonstriker || "",
+            bowlerName: c.bowlerName || c.bowler || "",
+            newBatsmanName: c.newBatsmanName || c.new_batsman || "",
+            timestamp: c.timestamp || ""
+          }
+        };
+      })
+    };
+  }
+
+  // cricbuzz squads → legacy {team1:{players:[{player:xi},{player:bench}]}, team2:...}
+  function mapCricbuzzSquads(data) {
+    if (!data) return null;
+    const t1 = data.team1 || data.home || {}, t2 = data.team2 || data.away || {};
+    if (!t1 || !t2) return null;
+    const pick = (t) => {
+      const ps = t.players;
+      const xi = Array.isArray(ps) ? (ps[0] && ps[0].player) || ps[0] || ps : (ps && (ps.teamPlayers || ps.playing)) || [];
+      const bench = Array.isArray(ps) ? (ps[1] && ps[1].player) || ps[1] || [] : (ps && ps.benchPlayers) || [];
+      const m = (p) => ({ name: p.name || p.playerName || "—", role: p.role || p.position || "Player", captain: !!p.captain, keeper: !!p.keeper || p.wicketkeeper });
+      const arr = (x) => (Array.isArray(x) ? x : []);
+      return { xi: arr(xi).map(m), bench: arr(bench).map(m) };
+    };
+    return {
+      team1: { name: t1.name || HOME_T.name, players: [{ player: pick(t1).xi }, { player: pick(t1).bench }] },
+      team2: { name: t2.name || AWAY_T.name, players: [{ player: pick(t2).xi }, { player: pick(t2).bench }] }
+    };
+  }
+
+  // overs graph → legacy overs[]
+  function mapOversGraph(data) {
+    const arr = Array.isArray(data) ? data : (data && (data.overs || data.overs_breakdown || data.data)) || [];
+    if (!Array.isArray(arr) || !arr.length) return null;
+    return arr.map((o, i) => ({
+      over: o.over != null ? Number(o.over) : (o.ov != null ? Number(o.ov) : (i + 1)),
+      runs: o.runs != null ? Number(o.runs) : (o.r != null ? Number(o.r) : 0),
+      wickets: o.wickets != null ? Number(o.wickets) : 0,
+      score: o.score != null ? String(o.score) : "",
+      rate: o.rate != null ? Number(o.rate) : (o.run_rate != null ? Number(o.run_rate) : 0)
+    }));
+  }
+
+  // non-cricket lineups → legacy squads (players[0] = starting XI)
+  function mapLineupsSquads(data) {
+    if (!data || !Array.isArray(data.home)) return null;
+    const m = (p) => ({ name: p.name || "—", role: p.position || "Player", captain: false, keeper: false });
+    return {
+      team1: { name: "", players: [{ player: data.home.map(m) }, { player: [] }] },
+      team2: { name: "", players: [{ player: (data.away || []).map(m) }, { player: [] }] }
+    };
+  }
+
+  // non-cricket incidents → legacy commentary items
+  function mapIncidentsCommentary(data) {
+    const items = (data && data.incidents) || [];
+    if (!items.length) return null;
+    return {
+      comwrapper: items.map((it) => ({
+        commentary: {
+          overnum: it.minute != null ? it.minute : "",
+          eventtype: String(it.type || "NORMAL").toUpperCase(),
+          commtxt: it.text || it.comment || "",
+          batsmanName: it.player || "",
+          nonStrikerName: "",
+          bowlerName: "",
+          newBatsmanName: "",
+          timestamp: it.time || ""
+        }
+      }))
+    };
+  }
+
+  // /api/news → legacy highlights[]
+  function mapNewsHighlights(j) {
+    const arts = (j && (j.articles || j.news || [])) || [];
+    if (!Array.isArray(arts) || !arts.length) return null;
+    return arts.slice(0, 20).map((a) => ({
+      title: a.title || "",
+      text: a.description || a.summary || "",
+      image: a.image || a.imageUrl || "",
+      time: a.publishedAt || a.date || "",
+      type: "news"
+    }));
+  }
 
 
   // ============================================================================
@@ -195,59 +331,45 @@
 
   async function loadRealMatchData() {
 
-    console.log("Loading Match:", MATCHID);
+    console.log("Loading Match:", MATCHID, "sport:", SPORT);
 
-    
-
-    let match = null;
-    let scorecard = null;
-    let commentary = null;
-    let squads = null;
-    let overs = null;
-    let highlights = null;
-
+    // Real match row (names, logos, scores, venue, series) for EVERY sport.
     try {
+      const match = await API.realMatch();
+      if (match && match.matchId) {
+        REAL_DATA.match = mapBackendMatch(match);
+        const mid = String(match.matchId);
 
-      match = await API.getMatch();
-
-      scorecard = await API.getScorecard();
-
-      commentary = await API.getCommentary();
-
-      squads = await API.getSquads();
-
-      overs = await API.getOvers();
-
-      highlights = await API.getHighlights();
-
+        if (SC.isCricket) {
+          // Cricket: real cricbuzz scorecard, commentary, squads, overs graph
+          const [adv, comm, squads, og, news] = await Promise.all([
+            API.cricbuzz("/matches/" + mid + "/advance"),
+            API.cricbuzz("/matches/" + mid + "/innings/1/commentary"),
+            API.cricbuzz("/matches/" + mid + "/squads"),
+            API.cricbuzz("/matches/" + mid + "/oversgraph"),
+            API.request("/news").catch(() => null)
+          ]);
+          REAL_DATA.scorecard = mapCricbuzzScorecard(adv);
+          REAL_DATA.commentary = mapCricbuzzCommentary(comm);
+          REAL_DATA.squads = mapCricbuzzSquads(squads);
+          REAL_DATA.overs = mapOversGraph(og);
+          REAL_DATA.highlights = mapNewsHighlights(news);
+        } else {
+          // Non-cricket: real incidents (commentary) + lineups (squads)
+          const [inc, lu] = await Promise.all([
+            API.sportDetail("/" + SPORT + "/match/" + mid + "/incidents"),
+            API.sportDetail("/" + SPORT + "/match/" + mid + "/lineups")
+          ]);
+          REAL_DATA.commentary = mapIncidentsCommentary(inc);
+          REAL_DATA.squads = mapLineupsSquads(lu);
+        }
+      } else {
+        console.warn("No real match row for", MATCHID, "— keeping built-in panels");
+      }
     }
     catch (e) {
-
       console.error("LOAD FAILED", e);
-
     }
-
-
-    REAL_DATA.match = match;
-
-    console.log("MATCH =", match);
-    REAL_DATA.scorecard = scorecard;
-
-    REAL_DATA.commentary = commentary;
-
-    REAL_DATA.squads = squads;
-
-    REAL_DATA.overs = overs;
-
-    REAL_DATA.highlights = highlights;
-
-
-    console.log("REAL DATA");
-    console.log(JSON.stringify(REAL_DATA, null, 2));
-
-    console.log("MATCH RESPONSE");
-    console.log(REAL_DATA.match);
-    console.log("================================");
 
     BACKEND_READY =
       !!REAL_DATA.match &&
@@ -257,6 +379,7 @@
       !!REAL_DATA.overs;
 
     console.log("BACKEND_READY =", BACKEND_READY);
+    console.log("REAL_DATA =", REAL_DATA);
 
     if (!BACKEND_READY) {
 
@@ -274,15 +397,9 @@
 
     }
 
-    console.log("Mapped Scorecard");
-    console.log(JSON.stringify(M.scorecard, null, 2));
-
     console.log("REAL SCORECARD");
     console.log(JSON.stringify(REAL_DATA.scorecard, null, 2));
 
-    console.log("INNINGS 1", JSON.stringify(REAL_DATA.scorecard.scorecard[0], null, 2));
-console.log("INNINGS 2", JSON.stringify(REAL_DATA.scorecard.scorecard[1], null, 2));
-    
 updateTeamsFromBackend();
 
 const NORMALIZED =
@@ -1429,11 +1546,13 @@ if (
     AWAY_CODE = TEAM_CODE_MAP[AWAY_CODE] || AWAY_CODE;
 
     Object.assign(HOME_T, teamMeta(HOME_CODE), {
-      name: data.teams?.home?.teamname || HOME_T.name
+      name: data.teams?.home?.teamname || HOME_T.name,
+      img: data.teams?.home?.logo || HOME_T.img || HOME_T.flag
     });
 
     Object.assign(AWAY_T, teamMeta(AWAY_CODE), {
-      name: data.teams?.away?.teamname || AWAY_T.name
+      name: data.teams?.away?.teamname || AWAY_T.name,
+      img: data.teams?.away?.logo || AWAY_T.img || AWAY_T.flag
     });
 
     console.log("HOME TEAM =", HOME_T);

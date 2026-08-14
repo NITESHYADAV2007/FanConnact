@@ -637,243 +637,95 @@
     }
   ];
 
+  // Backend proxy base: localhost when the site is served from the same machine,
+  // otherwise the deployed Render API — works on ngrok, GitHub Pages, any domain.
+  const API_BASE = (location.hostname === "localhost" || location.hostname === "127.0.0.1")
+    ? "http://localhost:5000"
+    : "https://fanconnact-api.onrender.com";
+
+  // Backend sport keys → website sport keys (page filters: data-filter="kabbaddi", "e-sports", "tabletennis")
+  const SPORT_ALIAS = {
+    esports: "e-sports",
+    kabbaddi: "kabaddi",
+    "table-tennis": "tabletennis"
+  };
+
   async function loadBackendMatches() {
-
-    const [liveRes, upcomingRes, recentRes] = await Promise.all([
-
-      fetch("http://localhost:5000/api/matches/live"),
-
-      fetch("http://localhost:5000/api/matches/upcoming"),
-
-      fetch("http://localhost:5000/api/matches/recent")
-
-    ]);
-
-    const live = await liveRes.json();
-    const upcoming = await upcomingRes.json();
-    const recent = await recentRes.json();
-
-    const api = [
-    ...live,
-    ...upcoming.filter(
-        x =>
-            !live.some(y => y.id === x.id)
-    ),
-    ...recent.filter(
-        x =>
-            !live.some(y => y.id === x.id)
-    )
-];
-
-    const seen = new Set();
-
-    const uniqueMatches = api.filter(match => {
-
-      if (seen.has(match.id)) return false;
-
-      seen.add(match.id);
-
-      return true;
-
-    });
-
     try {
+      const res = await fetch(API_BASE + "/api/live-matches?sport=all");
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      const j = await res.json();
+      const list = (j && Array.isArray(j.matches)) ? j.matches : [];
+      if (!list.length) {
+        console.warn("[matches] Backend returned no matches (quota?) — keeping static list");
+        return;
+      }
 
+      const seen = new Set();
+      const out = [];
+      list.forEach(raw => {
+        const m = raw || {};
+        const sport = SPORT_ALIAS[m.sport] || m.sport || "cricket";
+        const hName = m.homeName || (m.homeTeam && m.homeTeam.name) || "TBD";
+        const aName = m.awayName || (m.awayTeam && m.awayTeam.name) || "TBD";
+        const hAbbr = (m.homeAbbr || (m.homeTeam && m.homeTeam.short) || hName).toLowerCase();
+        const aAbbr = (m.awayAbbr || (m.awayTeam && m.awayTeam.short) || aName).toLowerCase();
+        const id = String(m.matchId || m.id || (hAbbr + "-" + aAbbr + "-" + (m.date || m.time || Date.now())));
+        if (seen.has(id)) return;
+        seen.add(id);
 
-      // Existing dummy matches remove
-      MATCHES.length = 0;
-
-      uniqueMatches.forEach(match => {
-
-      const homeKey = (match.homeTeam?.short || "").toLowerCase();
-const awayKey = (match.awayTeam?.short || "").toLowerCase();
-
-const MAP = {
-    wisxi: "wi",
-    slu19: "sl",
-    indu19: "ind",
-    paku19: "pak",
-    namw: "nam",
-    ugaw: "uga",
-    hkcw: "hk",
-    tanw: "tan"
-};
-
-const hk = MAP[homeKey] || homeKey;
-const ak = MAP[awayKey] || awayKey;
-
-       if (!TEAMS[hk]) {
-          TEAMS[hk] = {
-           name: match.homeTeam?.name || hk.toUpperCase(),
-            cc: null,
-            color: "#2563eb",
-            flag: "🏏"
-          };
-        }
-
-        if (!TEAMS[ak]) {
-          TEAMS[ak] = {
-            name: match.awayTeam?.name || ak.toUpperCase(),
-            cc: null,
-            color: "#ef4444",
-            flag: "🏏"
-          };
-        }
-
-        const innings = match.score || {};
-const inn1 =
-    innings?.innings1?.inngs1 ||
-    innings?.innings1?.inngs2 ||
-    innings?.innings1 ||
-    null;
-
-const inn2 =
-    innings?.innings2?.inngs2 ||
-    innings?.innings2?.inngs1 ||
-    innings?.innings2 ||
-    null;
-
-const homeScore =
-    inn1 && inn1.runs != null
-        ? `${inn1.runs}/${inn1.wickets ?? 0}`
-        : (
-            match.score?.team1Score ||
-            match.score?.home ||
-            ""
-        );
-const awayScore =
-    inn2?.runs != null
-        ? `${inn2.runs}/${inn2.wickets ?? 0}`
-        : (
-            innings?.team2Score ||
-            match.score?.team2Score ||
-            match.score?.away ||
-            ""
-        );
-
-const detail =
-    inn2?.overs != null
-        ? `${inn2.overs} ov`
-        : inn1?.overs != null
-            ? `${inn1.overs} ov`
-            : "";
-       
-        const s = (match.status || "").toLowerCase();
-
+        const s = String(m.status || m.state || "").toLowerCase();
         let status = "upcoming";
+        if (s.includes("live") || s.includes("in progress") || s.includes("stumps") ||
+            s.includes("innings") || s.includes("lunch") || s.includes("tea") || s.includes("drinks")) status = "live";
+        else if (s.includes("complete") || s.includes("won") || s.includes("result") ||
+                 s.includes("finished") || s === "post") status = "finished";
 
-        if (
-          s.includes("in progress") ||
-          s.includes("stumps") ||
-          s.includes("day") ||
-          s.includes("lunch") ||
-          s.includes("tea") ||
-          s.includes("innings") ||
-          s.includes("drinks")
-        ) {
+        const hs = (m.homeScore != null && m.homeScore !== "" ? String(m.homeScore) : "");
+        const as = (m.awayScore != null && m.awayScore !== "" ? String(m.awayScore) : "");
 
-          status = "live";
+        let dt = null;
+        if (m.startTime) dt = new Date(Number(m.startTime));
+        else if (m.date) dt = new Date(m.date);
+        const date = dt && !isNaN(dt.getTime()) ? dt.toLocaleDateString("en-CA") : "";
+        const time = dt && !isNaN(dt.getTime())
+          ? dt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+          : (m.time || "");
 
-        }
-        else if (
-          s.includes("complete") ||
-          s.includes("won") ||
-          s.includes("result")
-        ) {
+        if (!TEAMS[hAbbr]) TEAMS[hAbbr] = { name: hName, cc: null, color: "#2563eb", flag: sport === "cricket" ? "🏏" : "🏆", logo: m.homeLogo || "" };
+        if (!TEAMS[aAbbr]) TEAMS[aAbbr] = { name: aName, cc: null, color: "#ef4444", flag: sport === "cricket" ? "🏏" : "🏆", logo: m.awayLogo || "" };
 
-          status = "finished";
-
-        }
-
-MATCHES.push({
-
-    id: match.id,
-
-    sport: "cricket",
-
-    status,
-
-    tournament: match.series,
-
-    format: match.matchType,
-
-    stage: "",
-
-    venue: match.venue,
-
-    date: match.startTime
-    ? new Date(Number(match.startTime)).toLocaleDateString("en-CA")
-    : "",
-
-time: match.startTime
-    ? new Date(Number(match.startTime)).toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit"
-      })
-    : "",
-
-    rules: match.matchType,
-home: hk,
-
-away: ak,
-
-    homeName: match.homeTeam.name,
-
-    awayName: match.awayTeam.name,
-
-   score: {
-
-    home: homeScore,
-
-    away: awayScore,
-
-    detail: detail,
-
-    innings1: inn1,
-
-    innings2: inn2
-
-},
-
-    statusLine: match.status,
-
-result:
-status === "finished"
-    ? (
-        match.result ||
-        match.status ||
-        ""
-      )
-    : "",
-
-    link: "match-center.html?id=" + match.id
-
-});
-
+        out.push({
+          id, sport, status,
+          tournament: m.series || m.league || "",
+          format: m.matchType || "",
+          stage: m.stage || "",
+          venue: m.venue || "",
+          date, time,
+          rules: m.matchType || "",
+          home: hAbbr, away: aAbbr,
+          homeName: hName, awayName: aName,
+          homeLogo: m.homeLogo || "", awayLogo: m.awayLogo || "",
+          score: { home: hs, away: as, detail: (sport === "cricket" ? (m.state || "") : "") },
+          statusLine: m.status || m.state || "",
+          result: status === "finished" ? (m.result || m.status || "") : "",
+          link: "match-center.html?id=" + encodeURIComponent(id) +
+                "&sport=" + encodeURIComponent(sport) +
+                "&home=" + encodeURIComponent(hAbbr) +
+                "&away=" + encodeURIComponent(aAbbr) +
+                "&state=" + status +
+                (m.series ? "&series=" + encodeURIComponent(m.series) : "")
+        });
       });
-      window.FANCONNECT_MATCHES = {
 
-        TEAMS,
-
-        MATCHES,
-
-        capturedOn: new Date().toISOString()
-
-      };
-
-      console.log("✅ Backend Loaded :", MATCHES);
-
-      // Next step me mapping karenge.
-
-
+      if (!out.length) return;
+      MATCHES.length = 0;
+      out.forEach(x => MATCHES.push(x));
+      window.FANCONNECT_MATCHES = { TEAMS, MATCHES, capturedOn: new Date().toISOString() };
+      console.log("✅ Backend Loaded:", MATCHES.length);
+    } catch (e) {
+      console.error("Backend Error:", e);
     }
-
-    catch (e) {
-
-      console.error("Backend Error :", e);
-
-    }
-
   }
 
   loadBackendMatches();

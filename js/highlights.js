@@ -1,9 +1,9 @@
 // SECURITY: the API-Sports key lives ONLY in backend/.env (gitignored) and is
 // NEVER exposed to the browser. All live-score calls go through the backend
 // proxy (/api/matches/:sport) which enforces the 100/day quota + cache.
-const API_PROXY_BASE = (location.protocol === 'file:')
-  ?  "http://192.168.1.11:5000/api"
-  : (location.origin.includes('localhost') ?  "http://192.168.1.11:5000/api" : location.origin);
+const API_PROXY_BASE = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+  ? 'http://localhost:5000/api'
+  : 'https://fanconnact-api.onrender.com/api';
 
 const SPORT_APIS = {
   football: { base: 'https://v3.football.api-sports.io', endpoint: '/fixtures', dateParam: 'date', leagueParam: 'league' },
@@ -49,12 +49,24 @@ async function fetchApiSports(sport, date) {
   const config = SPORT_APIS[sport];
   if (!config) return null;
   try {
-    // Proxy through backend (key stays server-side, quota + cache applied)
-    const url = `${API_PROXY_BASE}/api/matches/${sport}?date=${encodeURIComponent(date)}`;
-    const res = await fetch(url, { signal: AbortSignal.timeout(5000) });
+    // Proxy through backend (key stays server-side, quota + cache applied).
+    // Maps our normalized backend shape to the api-sports shape the renderer expects.
+    const url = `${API_PROXY_BASE}/live-matches?sport=${encodeURIComponent(sport)}`;
+    const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
     if (!res.ok) return null;
-    const data = await res.json();
-    return data.matches || [];
+    const j = await res.json();
+    return (j.matches || []).map(m => ({
+      fixture: {
+        id: m.matchId || (m.homeAbbr + "-" + m.awayAbbr),
+        status: { short: m.status === "LIVE" ? "1" : (m.status === "COMPLETED" ? "FT" : "") }
+      },
+      league: { name: m.league || m.series || "League", logo: "" },
+      teams: {
+        home: { name: m.homeName || "Home", logo: m.homeLogo || "" },
+        away: { name: m.awayName || "Away", logo: m.awayLogo || "" }
+      },
+      goals: { home: m.homeScore || 0, away: m.awayScore || 0 }
+    }));
   } catch (e) {
     return null;
   }

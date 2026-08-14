@@ -1789,8 +1789,12 @@
       if (e.touches[0]) { showGraphTooltip(e.touches[0].clientX, e.touches[0].clientY); setTimeout(hideGraphTooltip, 2500); }
     }, { passive: true });
 
+    const API_BASE = (location.hostname === "localhost" || location.hostname === "127.0.0.1")
+      ? 'http://localhost:5000'
+      : 'https://fanconnact-api.onrender.com';
+
     function loadGraph() {
-      fetch('http://localhost:5000/api/match/graphs').then(r => r.json()).then(d => {
+      fetch(API_BASE + '/api/match/graphs').then(r => r.json()).then(d => {
         graphData = d;
         graphFilters.innerHTML = '';
         d.filters.forEach(f => {
@@ -1823,7 +1827,7 @@
     const newsLoading = document.getElementById('news-loading');
     const newsSource = document.getElementById('news-source');
     function loadNews() {
-      fetch(' http://localhost:5000/api/match/news').then(r => r.json()).then(d => {
+      fetch(API_BASE + '/api/match/news').then(r => r.json()).then(d => {
         if (d.source) newsSource.textContent = d.source;
         newsList.innerHTML = '';
         (d.articles || []).forEach(a => {

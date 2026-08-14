@@ -6,7 +6,9 @@
 (function () {
   "use strict";
 
-  const API_BASE = " http://localhost:5000";
+  const API_BASE = (location.hostname === "localhost" || location.hostname === "127.0.0.1")
+    ? "http://localhost:5000"
+    : "https://fanconnact-api.onrender.com";
   const SPORT_LABEL = {
     cricket: "Cricket", football: "Football", basketball: "Basketball",
     tennis: "Tennis", baseball: "Baseball", hockey: "Hockey",

@@ -958,11 +958,15 @@ class="w-full flex items-center justify-center rounded-xl border border-purple-5
       });
     });
 
+    const API_BASE = (location.hostname === "localhost" || location.hostname === "127.0.0.1")
+      ? 'http://localhost:5000'
+      : 'https://fanconnact-api.onrender.com';
+
     let usingBackendForTeams = false;
 
     async function loadTeamSports() {
       try {
-        const res = await fetch(' http://localhost:5000/api/leaderboard', { signal: AbortSignal.timeout(3000) });
+        const res = await fetch(API_BASE + '/api/leaderboard', { signal: AbortSignal.timeout(3000) });
         if (res.ok) {
           const data = await res.json();
           if (data.sports && data.sports.length) {
@@ -1025,7 +1029,7 @@ class="w-full flex items-center justify-center rounded-xl border border-purple-5
 
     function refreshTeamData() {
       if (usingBackendForTeams) {
-        fetch(' http://localhost:5000/api/sync/trigger', { method: 'POST', signal: AbortSignal.timeout(3000) }).catch(() => {});
+        fetch(API_BASE + '/api/sync/trigger', { method: 'POST', signal: AbortSignal.timeout(3000) }).catch(() => {});
       }
       setTimeout(function() {
         if (usingBackendForTeams) {
@@ -1115,7 +1119,7 @@ class="w-full flex items-center justify-center rounded-xl border border-purple-5
             'test';
 
         const url =
-            `http://localhost:5000/api/rankings/teams?format=${encodeURIComponent(format)}&women=${women}`;
+            `${API_BASE}/api/rankings/teams?format=${encodeURIComponent(format)}&women=${women}`;
 
         const res = await fetch(url, {
             signal: AbortSignal.timeout(8000)

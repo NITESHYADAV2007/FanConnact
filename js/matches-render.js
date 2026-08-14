@@ -83,6 +83,7 @@
 
   }
   function logo(t) {
+    if (t && t.logo) return t.logo;
     if (t.cc) return "https://flagcdn.com/w80/" + t.cc + ".png";
     return "https://ui-avatars.com/api/?name=" + encodeURIComponent(t.name.replace(/\s+/g, "+")) +
       "&background=" + (t.color || "#6B7280").replace("#", "") + "&color=ffffff&size=64&bold=true";
