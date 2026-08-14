@@ -34,7 +34,7 @@ module.exports = {
         `/mcenter/v1/${id}/scard`,
 
     SQUADS: id =>
-        `/mcenter/v1/${id}/teams`,
+        `/mcenter/v1/${id}/squads`,
 
     OVERS: (id, iid = 1, tms = Date.now()) =>
         `/mcenter/v1/${id}/overs?iid=${iid}&tms=${tms}`,
@@ -52,7 +52,7 @@ module.exports = {
         `/mcenter/v1/${id}/hleanback`,
 
     OVERS_GRAPH: id =>
-        `/mcenter/v1/${id}/oversGraph`,
+        `/mcenter/v1/${id}/oversgraph`,
 
     BALL_GRAPH: (id, iid = 1) =>
         `/mcenter/v1/${id}/ballsGraph?iid=${iid}`,

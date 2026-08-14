@@ -155,7 +155,7 @@
   // cricbuzz advance (or score.teamX.innings) → legacy scorecard[]
   function mapCricbuzzScorecard(adv) {
     if (!adv) return null;
-    let innings = Array.isArray(adv.innings) ? adv.innings : [];
+    let innings = Array.isArray(adv.innings) ? adv.innings : (Array.isArray(adv.scorecard) ? adv.scorecard : []);
     if (!innings.length && adv.score) {
       const t1 = adv.score.team1 || {}, t2 = adv.score.team2 || {};
       const pick = (t, nm) => (Array.isArray(t.innings) ? t.innings : []).map((i) => ({ ...i, batteamname: t.name || nm, batteamshortname: t.short_name || "" }));
@@ -165,20 +165,21 @@
       ];
     }
     if (!innings.length) return null;
-    return mapInnings(innings.slice(0, 4));
+    const matchDone = !!(adv.ismatchcomplete || adv.isMatchComplete || adv.matchComplete);
+    return mapInnings(innings.slice(0, 4), matchDone);
   }
 
-  function mapInnings(innings) {
+  function mapInnings(innings, matchDone) {
     const out = [];
-    innings.forEach((inn) => {
+    innings.forEach((inn, idx) => {
       const bat = (inn.batting || inn.batsmen || inn.batsman || []).map((b) => ({
         name: b.name || b.batter || "—",
         runs: b.runs != null ? b.runs : 0,
         balls: b.balls != null ? b.balls : 0,
         fours: b.fours != null ? b.fours : 0,
         sixes: b.sixes != null ? b.sixes : 0,
-        strkrate: b.sr != null ? b.sr : (b.strike_rate != null ? b.strike_rate : "0.00"),
-        outdec: b.out_desc != null ? b.out_desc : (b.out ? b.out : "not out")
+        strkrate: b.sr != null ? b.sr : (b.strike_rate != null ? b.strike_rate : (b.strkrate != null ? b.strkrate : "0.00")),
+        outdec: b.out_desc != null ? b.out_desc : (b.out ? b.out : (b.outdec != null ? b.outdec : "not out"))
       }));
       const bowl = (inn.bowling || inn.bowlers || inn.bowler || []).map((b) => ({
         name: b.name || b.bowler || "—",
@@ -191,12 +192,12 @@
       const score = inn.score != null ? inn.score : (inn.runs != null ? inn.runs : "");
       out.push({
         batteamname: inn.batteamname || inn.teamname || inn.team || "—",
-        batteamshortname: inn.batteamshortname || inn.team_short || "",
+        batteamshortname: inn.batteamshortname || inn.team_short || inn.batteamsname || "",
         score: String(score),
         wickets: inn.wickets != null ? inn.wickets : (inn.wkts != null ? inn.wkts : ""),
         overs: inn.overs != null ? inn.overs : (inn.ov != null ? inn.ov : "0.0"),
-        runrate: inn.run_rate != null ? inn.run_rate : (inn.crr != null ? inn.crr : "0.00"),
-        iscurrentinnings: !!(inn.iscurrentinnings || inn.current || inn.isCurrent),
+        runrate: inn.run_rate != null ? inn.run_rate : (inn.crr != null ? inn.crr : (inn.runrate != null ? inn.runrate : "0.00")),
+        iscurrentinnings: !!(inn.iscurrentinnings || inn.current || inn.isCurrent || (!matchDone && idx === innings.length - 1)),
         batsman: bat,
         bowler: bowl
       });
@@ -216,7 +217,7 @@
         return {
           commentary: {
             overnum: c.overnum != null ? c.overnum : (c.over != null ? c.over : ""),
-            eventtype: low || "NORMAL",
+            eventtype: (low && low !== "NONE" && low !== "0") ? low : "NORMAL",
             commtxt: c.commtxt || c.comm || c.text || c.comment || "",
             batsmanName: c.batsmanName || c.batsman || c.striker || "",
             nonStrikerName: c.nonStrikerName || c.nonstriker || "",
