@@ -29543,10 +29543,10 @@
         "team": "LAD",
         "position": "DH",
         "hr": 27,
-        "avg": 0.2923433,
+        "avg": 0.2916666,
         "rbi": 74,
-        "ops": 0.9374004,
-        "games": 116,
+        "ops": 0.9353708,
+        "games": 112,
         "_source": "espn"
       },
       {
@@ -30249,7 +30249,7 @@
         "rank": 72,
         "name": "Ben Rice",
         "team": "NYY",
-        "position": "1B",
+        "position": "DH",
         "hr": 32,
         "avg": 0.2558139,
         "rbi": 76,
@@ -57056,7 +57056,7 @@
     ]
   },
   "_meta": {
-    "lastSync": "2026-08-14T06:32:01.962Z",
+    "lastSync": "2026-08-14T19:34:16.116Z",
     "syncInterval": "6h"
   },
   "cricket": {

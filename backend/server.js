@@ -5027,12 +5027,87 @@ async function fetchReelsForAccount(username) {
   }
 }
 
+// ─── SINGLE-API REELS: FetchSocial (all-in-one scraper — YT Shorts + TikTok + IG Reels) ───
+// One RapidAPI package, same key (IG_KEY). Resolves a post URL → direct playable mp4.
+const FS_HOST = "fetchsocial-all-in-one-scraper.p.rapidapi.com";
+
+// Curated source post URLs per sport (real, verified links). Missing sports
+// fall back to 'all'. Extend this list to grow the feed.
+const REEL_SOURCES = {
+  all: [
+    "https://www.tiktok.com/@espn/video/7628293233671408926",
+    "https://www.instagram.com/reel/DYzlRqdSz4p/",
+    "https://www.youtube.com/shorts/2zwkCs5IEgg",
+    "https://www.youtube.com/shorts/vFqlmtZH_Uo",
+    "https://www.tiktok.com/@espn/video/7480032614724668702",
+  ],
+  cricket: [
+    "https://www.instagram.com/reel/DYzlRqdSz4p/",
+    "https://www.youtube.com/shorts/2zwkCs5IEgg",
+    "https://www.youtube.com/shorts/vFqlmtZH_Uo",
+    "https://www.youtube.com/watch?v=XUNdgKwFjTE",
+  ],
+  basketball: [
+    "https://www.tiktok.com/@espn/video/7628293233671408926",
+    "https://www.tiktok.com/@espn/video/7655345420343774494",
+    "https://www.tiktok.com/@espn/video/7598362911144201503",
+    "https://www.tiktok.com/@espn/video/7480032614724668702",
+  ],
+  baseball: [
+    "https://www.tiktok.com/@espn/video/7492951916318575903",
+  ],
+};
+
+async function fetchReelViaFetchSocial(url) {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), 15000);
+  try {
+    const r = await fetch(`https://${FS_HOST}/rapidapi/v1/fetch`, {
+      method: "POST",
+      signal: ctrl.signal,
+      headers: {
+        "X-RapidAPI-Key": IG_KEY,
+        "X-RapidAPI-Host": FS_HOST,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ url }),
+    });
+    if (!r.ok) throw new Error("fetchsocial " + r.status);
+    const j = await r.json();
+    const data = j && j.data ? j.data : {};
+    const media = Array.isArray(data.media) ? data.media : [];
+    const video = media.find((m) => m.type === "video") ||
+      media.find((m) => (m.url || "").toLowerCase().endsWith(".mp4"));
+    if (!video || !video.url) return null;
+    const img = media.find((m) => m.type === "image");
+    const author = data.author || {};
+    return {
+      code: String((j.url || url).split("/").filter(Boolean).pop() || "fs"),
+      type: 2,
+      caption: data.content || data.title || "",
+      likeCount: 0,
+      commentCount: 0,
+      viewCount: 0,
+      takenAt: Math.floor(Date.now() / 1000),
+      videoUrl: video.url,
+      imageUrl: img ? img.url : "",
+      link: j.url || url,
+      source: j.platform || "social",
+      user: { username: author.name || "", avatar: author.url || "" },
+    };
+  } catch (e) {
+    console.error("FetchSocial resolve failed for", url, e.message);
+    return null;
+  } finally {
+    clearTimeout(t);
+  }
+}
+
 app.get("/api/reels", async (req, res) => {
   try {
     const sport = (req.query.sport || "all").toString();
     const page = Math.max(0, parseInt(req.query.page || "0", 10) || 0);
     const pageSize = Math.min(50, parseInt(req.query.pageSize || "20", 10) || 20);
-    const accounts = REEL_SPORT_ACCOUNTS[sport] || REEL_SPORT_ACCOUNTS.all;
     // Serve the persisted DB immediately if it's still fresh (free, no quota).
     const last = getLast("reels", sport);
     if (last && dbAge("reels", sport) < REEL_CACHE_TTL) {
@@ -5042,27 +5117,34 @@ app.get("/api/reels", async (req, res) => {
       return res.json({ ...last, cached: true, page, pageSize, total: all.length, hasMore: start + pageSize < all.length, reels: slice });
     }
     let reels = [];
-    if (!quotaExhausted()) {
-      const lists = await Promise.all(accounts.map((u) => fetchReelsForAccount(u)));
-      reels = lists.flat();
+    // Primary: FetchSocial single-API resolver (YT Shorts + TikTok + IG Reels).
+    const urls = REEL_SOURCES[sport] || REEL_SOURCES.all;
+    const results = await Promise.allSettled(urls.map((u) => fetchReelViaFetchSocial(u)));
+    reels = results.filter((x) => x.status === "fulfilled" && x.value).map((x) => x.value);
+    // Fallback: curated Instagram accounts (existing flow) — keeps feed alive if FetchSocial is down.
+    if (reels.length === 0) {
+      const accounts = REEL_SPORT_ACCOUNTS[sport] || REEL_SPORT_ACCOUNTS.all;
+      if (!quotaExhausted()) {
+        const lists = await Promise.all(accounts.map((u) => fetchReelsForAccount(u)));
+        reels = lists.flat();
+      }
     }
-    // De-dupe by code, prefer video reels first
+    // De-dupe by link/code
     const seen = new Set();
     reels = reels.filter((r) => {
-      if (seen.has(r.code)) return false;
-      seen.add(r.code);
+      const k = r.link || r.code;
+      if (seen.has(k)) return false;
+      seen.add(k);
       return true;
     });
-    reels.sort((a, b) => (b.type === 2 ? 1 : 0) - (a.type === 2 ? 1 : 0) || b.takenAt - a.takenAt);
     if (reels.length === 0) {
-      // Serve last stored reels when quota exhausted or fetch failed.
       if (last && Array.isArray(last.reels)) reels = last.reels;
     } else {
-      storeLast("reels", sport, { source: "instagram", sport, count: reels.length, reels });
+      storeLast("reels", sport, { source: "fetchsocial", sport, count: reels.length, reels });
     }
     const start = page * pageSize;
     const slice = reels.slice(start, start + pageSize);
-    res.json({ source: "instagram", sport, count: slice.length, page, pageSize, total: reels.length, hasMore: start + pageSize < reels.length, reels: slice, cached: reels.length === 0 && !!last });
+    res.json({ source: "fetchsocial", sport, count: slice.length, page, pageSize, total: reels.length, hasMore: start + pageSize < reels.length, reels: slice, cached: reels.length === 0 && !!last });
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
