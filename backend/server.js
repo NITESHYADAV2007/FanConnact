@@ -5030,6 +5030,7 @@ async function fetchReelsForAccount(username) {
 // ─── SINGLE-API REELS: FetchSocial (all-in-one scraper — YT Shorts + TikTok + IG Reels) ───
 // One RapidAPI package, same key (IG_KEY). Resolves a post URL → direct playable mp4.
 const FS_HOST = "fetchsocial-all-in-one-scraper.p.rapidapi.com";
+let lastReelsThrottle = 0;
 
 // Curated source post URLs per sport (real, verified links). Missing sports
 // fall back to 'all'. Extend this list to grow the feed.
@@ -5097,6 +5098,7 @@ async function fetchReelViaFetchSocial(url) {
     };
   } catch (e) {
     console.error("FetchSocial resolve failed for", url, e.message);
+    if (e && e.message === "fetchsocial 429") lastReelsThrottle = Date.now();
     return null;
   } finally {
     clearTimeout(t);
@@ -5118,11 +5120,14 @@ app.get("/api/reels", async (req, res) => {
     }
     let reels = [];
     // Primary: FetchSocial single-API resolver (YT Shorts + TikTok + IG Reels).
-    const urls = REEL_SOURCES[sport] || REEL_SOURCES.all;
-    const results = await Promise.allSettled(urls.map((u) => fetchReelViaFetchSocial(u)));
-    reels = results.filter((x) => x.status === "fulfilled" && x.value).map((x) => x.value);
+    // Throttle: skip API spam for 60s after a 429 so app polling doesn't hammer a dead quota.
+    if (Date.now() - lastReelsThrottle > 60000) {
+      const urls = REEL_SOURCES[sport] || REEL_SOURCES.all;
+      const results = await Promise.allSettled(urls.map((u) => fetchReelViaFetchSocial(u)));
+      reels = results.filter((x) => x.status === "fulfilled" && x.value).map((x) => x.value);
+    }
     // Fallback: curated Instagram accounts (existing flow) — keeps feed alive if FetchSocial is down.
-    if (reels.length === 0) {
+    if (reels.length === 0 && Date.now() - lastReelsThrottle > 60000) {
       const accounts = REEL_SPORT_ACCOUNTS[sport] || REEL_SPORT_ACCOUNTS.all;
       if (!quotaExhausted()) {
         const lists = await Promise.all(accounts.map((u) => fetchReelsForAccount(u)));
