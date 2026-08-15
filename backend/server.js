@@ -5356,7 +5356,7 @@ async function fetchAllsportsLive(sportSlug) {
 // events with team logos for football and the sports allsportsapi2/ESPN don't
 // cover well (volleyball, kabaddi, table-tennis, esports, rugby, hockey).
 // Same RapidAPI key as the cricket host, separate host quota.
-const FLASH_KEY = process.env.FLASH_KEY || CRICKET_KEY;
+const FLASH_KEY = process.env.FLASH_KEY || ALLSPORTS_KEY;
 const FLASH_HOST = "flashlive-sports.p.rapidapi.com";
 // app/config sport key -> FlashLive sport id (v1/sports/list)
 const APP_TO_FLASH = {
