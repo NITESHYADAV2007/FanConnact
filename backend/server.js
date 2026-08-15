@@ -5217,6 +5217,10 @@ const ALLSPORTS_LIVE = {
   baseball: "/api/baseball/matches/live",
   "american-football": "/api/american-football/matches/live",
   cricket: "/api/cricket/matches/live",
+  volleyball: "/api/volleyball/matches/live",
+  "ice-hockey": "/api/ice-hockey/matches/live",
+  rugby: "/api/rugby/matches/live",
+  handball: "/api/handball/matches/live",
 };
 
 // Cricket live scores from cricket-live-line-advance (entitysport).
@@ -5285,6 +5289,9 @@ const APP_TO_ALLSPORTS = {
   baseball: "baseball",
   football: "american-football", // NFL as proxy for football live
   cricket: "cricket",
+  hockey: "ice-hockey",
+  volleyball: "volleyball",
+  rugby: "rugby",
 };
 const matchCache = new Map();
 // Live scores change fast — keep the in-memory cache short so the app's
@@ -5325,7 +5332,7 @@ function mapAllsportsEvent(ev, sportKey) {
   };
 }
 
-async function fetchAllsportsLive(sportSlug) {
+async function fetchAllsportsLive(appKey, sportSlug) {
   const path = ALLSPORTS_LIVE[sportSlug];
   if (!path) return [];
   const ctrl = new AbortController();
@@ -5341,7 +5348,7 @@ async function fetchAllsportsLive(sportSlug) {
     if (!r.ok) throw new Error("allsports " + r.status);
     const j = await r.json();
     const events = j.events || [];
-    return events.map((ev) => mapAllsportsEvent(ev, sportSlug));
+    return events.map((ev) => mapAllsportsEvent(ev, appKey));
   } catch (e) {
     console.error("Allsports fetch failed", sportSlug, e.message);
     return [];
@@ -5447,14 +5454,15 @@ async function fetchFlashLiveForSport(sportKey) {
   }
 }
 
-// Best available live source for one sport: FlashLive -> allsportsapi2 -> ESPN.
+// Best available live source for one sport: allsportsapi2 -> FlashLive -> ESPN.
 async function fetchLiveForSport(sport) {
-  let slug = await fetchFlashLiveForSport(sport);
-  if (slug && slug.length) return slug;
+  let slug;
   if (APP_TO_ALLSPORTS[sport]) {
-    slug = await fetchAllsportsLive(APP_TO_ALLSPORTS[sport]);
+    slug = await fetchAllsportsLive(sport, APP_TO_ALLSPORTS[sport]);
     if (slug && slug.length) return slug;
   }
+  slug = await fetchFlashLiveForSport(sport);
+  if (slug && slug.length) return slug;
   if (SPORT_ESPN_PATHS[sport] && SPORT_ESPN_PATHS[sport].length) {
     slug = await fetchEspnMatchesForSport(sport);
   }
@@ -6178,6 +6186,41 @@ app.get("/api/rankings/teams", (req, res) => {
     res.json(list);
   } catch (e) {
     res.status(500).json({ error: e.message });
+  }
+});
+
+// ─── Match predictions proxy (cricbuzz forecast for cricket; others unsupported) ──
+app.get("/api/prediction/:sport/match/:id", async (req, res) => {
+  const { sport, id } = req.params;
+  if (sport !== "cricket") {
+    return res.json({ predictions: null, error: "predictions not available for this sport" });
+  }
+  const cacheKey = `prediction|${sport}|${id}`;
+  const cached = SPORT_DETAIL_CACHE.get(cacheKey);
+  if (cached && Date.now() - cached.t < 10 * 60 * 1000) return res.json(cached.v);
+  try {
+    const call = async (path) => {
+      const r = await fetch(`${CRICBUZZ_BASE}${path}`, {
+        headers: { "x-rapidapi-key": CRICBUZZ_KEY, "x-rapidapi-host": CRICBUZZ_HOST },
+        signal: AbortSignal.timeout(12000),
+      });
+      return r.ok ? r.json() : null;
+    };
+    const [players, matchUps] = await Promise.all([
+      call(`/forecast/v1/allPlayers/${id}`),
+      call(`/forecast/v1/matchUps/${id}`),
+    ]);
+    const body = {
+      predictions: {
+        playersByRole: (players && players.playersByRole) || [],
+        cards: (matchUps && matchUps.cards) || [],
+        disclaimer: (players && players.disclaimer) || (matchUps && matchUps.disclaimer) || "",
+      },
+    };
+    SPORT_DETAIL_CACHE.set(cacheKey, { t: Date.now(), v: body });
+    res.json(body);
+  } catch (e) {
+    res.status(500).json({ error: e.message, predictions: null });
   }
 });
 

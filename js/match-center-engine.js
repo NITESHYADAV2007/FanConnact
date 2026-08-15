@@ -342,19 +342,21 @@
         const mid = String(match.matchId);
 
         if (SC.isCricket) {
-          // Cricket: real cricbuzz scorecard, commentary, squads, overs graph
-          const [adv, comm, squads, og, news] = await Promise.all([
+          // Cricket: real cricbuzz scorecard, commentary, squads, overs graph, predictions
+          const [adv, comm, squads, og, news, pred] = await Promise.all([
             API.cricbuzz("/matches/" + mid + "/advance"),
             API.cricbuzz("/matches/" + mid + "/innings/1/commentary"),
             API.cricbuzz("/matches/" + mid + "/squads"),
             API.cricbuzz("/matches/" + mid + "/oversgraph"),
-            API.request("/news").catch(() => null)
+            API.request("/news").catch(() => null),
+            API.request("/prediction/cricket/match/" + mid).catch(() => null)
           ]);
           REAL_DATA.scorecard = mapCricbuzzScorecard(adv);
           REAL_DATA.commentary = mapCricbuzzCommentary(comm);
           REAL_DATA.squads = mapCricbuzzSquads(squads);
           REAL_DATA.overs = mapOversGraph(og);
           REAL_DATA.highlights = mapNewsHighlights(news);
+          REAL_DATA.predictions = (pred && pred.predictions) || null;
         } else {
           // Non-cricket: real incidents (commentary) + lineups (squads)
           const [inc, lu] = await Promise.all([
@@ -374,10 +376,7 @@
 
     BACKEND_READY =
       !!REAL_DATA.match &&
-      !!REAL_DATA.scorecard &&
-      !!REAL_DATA.commentary &&
-      !!REAL_DATA.squads &&
-      !!REAL_DATA.overs;
+      (!!REAL_DATA.scorecard || !!REAL_DATA.commentary);
 
     console.log("BACKEND_READY =", BACKEND_READY);
     console.log("REAL_DATA =", REAL_DATA);
@@ -1071,6 +1070,74 @@ function normalizeHighlights() {
             ) || "news"
 
     }));
+
+}
+
+// Summary built from the REAL match row + scorecard (never random).
+function normalizeSummary(data) {
+
+    const sc = safeArray(
+        REAL_DATA.scorecard && REAL_DATA.scorecard.scorecard
+    );
+
+    const lastInn = sc[sc.length - 1] || {};
+
+    const bats = safeArray(
+        lastInn.batsman
+    );
+
+    const bowl = safeArray(
+        lastInn.bowler
+    );
+
+    let topBat = null;
+    let topBowl = null;
+
+    bats.forEach((b) => {
+        const r = parseInt(b.runs, 10) || 0;
+        if (!topBat || r > (parseInt(topBat.runs, 10) || 0)) topBat = b;
+    });
+
+    bowl.forEach((b) => {
+        const w = parseInt(b.wickets, 10) || 0;
+        if (!topBowl || w > (parseInt(topBowl.wickets, 10) || 0)) topBowl = b;
+    });
+
+    const series = safeString(data && (data.series || data.league));
+    const venue = safeString(data && (data.venue && data.venue.name ? data.venue.name : (data.venue || "")));
+    const state = safeString(data && data.state);
+    const resultLine = safeString(data && (data.result || data.statusText || data.time));
+    const matchType = safeString(data && data.matchType);
+
+    const homeScoreLine = lastInn.score != null
+        ? ("Scored " + lastInn.score + (lastInn.wickets != null ? "/" + lastInn.wickets : "") + " in " + lastInn.overs + " overs.")
+        : safeString(data && data.homeScore);
+
+    return {
+
+        sub: [series, venue].filter(Boolean).join(" · "),
+
+        resultLine,
+
+        points: [
+            { i: "🏏", t: (matchType ? "<b>" + matchType + ":</b> " : "") + series },
+            { i: "📊", t: "<b>" + HOME_T.name + ":</b> " + homeScoreLine },
+            { i: "📊", t: "<b>" + AWAY_T.name + ":</b> " + safeString(data && data.awayScore) },
+            { i: "🟢", t: state ? "<b>Status:</b> " + state : "" }
+        ].filter((p) => p.t),
+
+        performers: [
+            { flag: "🏏", label: "Top Batter (" + (lastInn.batteamname || "Match") + ")", name: topBat ? (topBat.name + " · " + topBat.runs + " runs") : "" },
+            { flag: "⚾", label: "Top Bowler", name: topBowl ? (topBowl.name + " · " + topBowl.wickets + " wickets") : "" },
+            { flag: "🟢", label: "Match State", name: state }
+        ].filter((p) => p.name),
+
+        potm: {
+            name: topBat ? topBat.name : safeString(data && data.homeName),
+            desc: topBat ? (topBat.runs + " runs" + (topBowl ? " · " + topBowl.name + " " + topBowl.wickets + " wkts" : "")) : ""
+        }
+
+    };
 
 }
 
@@ -2507,7 +2574,7 @@ if (sc && !BACKEND_READY) {
     const cat = rankingCategoryFor(SPORT, FORMAT_PARAM);
     if (!cat) return;
     const gender = genderFor(HOME, HOME_T.name);
-    const url = API_PROXY + '/api/leaderboard/' + backendSport + '/' + gender + '/' + cat;
+    const url = API_PROXY + '/leaderboard/' + backendSport + '/' + gender + '/' + cat;
     try {
       const res = await fetch(url, { signal: AbortSignal.timeout(5000) });
       if (!res.ok) return;
@@ -2671,6 +2738,12 @@ if (sc && !BACKEND_READY) {
 
     }
     const p = $('panel-squads'); if (!p) return;
+
+    if (!REAL_DATA.squads) {
+      p.innerHTML = '<div class="col-span-12 bg-white dark:bg-[#12172D] rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-800"><h3 class="font-bold text-gray-800 dark:text-white text-sm uppercase tracking-wide mb-6">Squads</h3><p class="text-sm text-gray-500 dark:text-gray-400">Squad lists are not available for this match in the data feed.</p></div>';
+      return;
+    }
+
     const squadCol = (tm, key) => {
       const xi = M.squads[key].xi.map(p => {
         const badges = (p.c ? '<span class="text-[10px] font-bold text-crexGold border border-crexGold/40 rounded px-1">C</span>' : '') + (p.wk ? '<span class="text-[10px] font-bold text-blue-500 border border-blue-500/40 rounded px-1">WK</span>' : '');
@@ -2684,6 +2757,44 @@ if (sc && !BACKEND_READY) {
       sessionStorage.setItem('playerSport', SC.label);
       sessionStorage.setItem('playerView', JSON.stringify({ player: { name: a.dataset.pname, country: a.dataset.pcountry }, sport: SC.label }));
     }));
+  }
+
+  function renderPredictions() {
+
+    const p = $('panel-predictions'); if (!p) return;
+    const pred = REAL_DATA.predictions;
+    if (!pred) return;
+
+    console.log("Using Backend Predictions");
+
+    const roleGroups = (pred.playersByRole || []).map(g => {
+      const players = (g.players || []).filter(x => x.isVisible !== false).map(x => {
+        const badges = (x.badges || []).map(b =>
+          '<span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">' + esc(b.label || '') + '</span>'
+        ).join('');
+        const initials = (x.name || '-').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+        return '<div class="flex items-start gap-3 p-3 rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50/40 dark:bg-white/5">' +
+          '<img alt="" class="w-9 h-9 rounded-full border border-gray-200 dark:border-white/10 shrink-0" src="https://ui-avatars.com/api/?name=' + encodeURIComponent(initials) + '&background=2196f3&color=fff&size=72" onerror="this.style.display=\'none\'">' +
+          '<div class="min-w-0 flex-1"><div class="flex flex-wrap items-center gap-1.5"><span class="text-sm font-semibold text-gray-800 dark:text-white">' + esc(x.name) + '</span>' + (x.teamShortName ? '<span class="text-[10px] font-bold text-gray-400">' + esc(x.teamShortName) + '</span>' : '') + badges + '</div>' +
+          (x.description ? '<p class="text-xs text-gray-500 dark:text-gray-400 mt-1.5 leading-relaxed">' + esc(x.description) + '</p>' : '') +
+          '</div></div>';
+      }).join('');
+      return '<div><p class="text-xs font-bold text-gray-500 dark:text-gray-400 mb-2 uppercase tracking-wide">' + esc(g.role || 'Players') + '</p><div class="grid grid-cols-1 md:grid-cols-2 gap-3">' + players + '</div></div>';
+    }).join('');
+
+    const cards = (pred.cards || []).map(c => {
+      const subs = (c.subCard || []).map(s => {
+        const rows = (s.stats || []).map(st => '<tr><td class="px-3 py-1.5 text-xs text-gray-500 dark:text-gray-400">' + esc(st.label || '') + '</td><td class="px-3 py-1.5 text-xs font-semibold text-gray-800 dark:text-white text-right">' + esc(st.value || '') + '</td></tr>').join('');
+        return '<div class="rounded-lg border border-gray-200 dark:border-gray-800 overflow-hidden"><p class="px-3 py-2 text-xs font-bold text-crexGold bg-gray-50 dark:bg-white/5 border-b border-gray-200 dark:border-gray-800">' + esc(s.subCardHeading || '') + '</p><table class="w-full">' + rows + '</table></div>';
+      }).join('');
+      return '<div class="rounded-lg border border-gray-200 dark:border-gray-800 p-4"><p class="text-sm font-bold text-gray-800 dark:text-white mb-3">' + esc(c.cardHeading || '') + '</p>' + (c.cardLabel ? '<p class="text-[11px] text-gray-400 mb-3 uppercase tracking-wide">' + esc(c.cardLabel) + '</p>' : '') + '<div class="grid grid-cols-1 md:grid-cols-2 gap-3">' + subs + '</div></div>';
+    }).join('');
+
+    p.innerHTML = '<div class="col-span-12 bg-white dark:bg-[#12172D] rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-800">' +
+      '<h3 class="font-bold text-gray-800 dark:text-white text-sm uppercase tracking-wide mb-6">Predictions</h3>' +
+      '<div id="predictions" class="space-y-8">' + roleGroups + (cards ? '<div><p class="text-xs font-bold text-gray-500 dark:text-gray-400 mb-3 uppercase tracking-wide">Key Match-Ups</p><div class="space-y-3">' + cards + '</div></div>' : '') + '</div>' +
+      (pred.disclaimer ? '<p class="text-[10px] text-gray-400 mt-6">' + esc(pred.disclaimer) + '</p>' : '') +
+      '</div>';
   }
 
   function renderCommentary() {
@@ -3449,6 +3560,13 @@ if (sc && !BACKEND_READY) {
     try { renderCommentary(); } catch (e) { console.error('commentary', e); }
     try { renderRules(); } catch (e) { console.error('rules', e); }
     try { renderSquads(); } catch (e) { console.error('squads', e); }
+    try {
+      const ptab = document.querySelector('#match-tabs .tab-link[data-tab="predictions"]');
+      if (ptab && REAL_DATA.predictions && (REAL_DATA.predictions.playersByRole || []).length) {
+        ptab.classList.remove('hidden');
+        renderPredictions();
+      }
+    } catch (e) { console.error('predictions', e); }
     try { renderGraph(); } catch (e) { console.error('graph', e); }
     try { renderNews(); } catch (e) { console.error('news', e); }
     try { setupTabs(); } catch (e) { console.error('tabs', e); }

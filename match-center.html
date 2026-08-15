@@ -266,6 +266,7 @@
 <a class="tab-link py-4 border-b-4 border-transparent hover:text-crexGold transition-all cursor-pointer whitespace-nowrap" href="#" data-tab="scorecard">Scorecard</a>
 <a class="tab-link py-4 border-b-4 border-transparent hover:text-crexGold transition-all cursor-pointer whitespace-nowrap" href="#" data-tab="commentary">Commentary</a>
 <a class="tab-link py-4 border-b-4 border-transparent hover:text-crexGold transition-all cursor-pointer whitespace-nowrap" href="#" data-tab="squads">Squads</a>
+<a class="tab-link py-4 border-b-4 border-transparent hover:text-crexGold transition-all cursor-pointer whitespace-nowrap hidden" href="#" data-tab="predictions">Predictions</a>
 <a class="tab-link py-4 border-b-4 border-transparent hover:text-crexGold transition-all cursor-pointer whitespace-nowrap" href="#" data-tab="rules">Rules</a>
 <a class="tab-link py-4 border-b-4 border-transparent hover:text-crexGold transition-all cursor-pointer whitespace-nowrap" href="#" data-tab="live-chat">Live Chat</a>
 
@@ -1220,6 +1221,15 @@
   </div>
 </div>
 <!-- END: PANEL Squads -->
+
+<!-- PANEL: Predictions (real data from backend) -->
+<div id="panel-predictions" class="tab-panel grid grid-cols-12 gap-6 hidden">
+  <div class="col-span-12 bg-white dark:bg-[#12172D] rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-800">
+    <h3 class="font-bold text-gray-800 dark:text-white text-sm uppercase tracking-wide mb-6">Predictions</h3>
+    <div id="predictions" class="space-y-8"></div>
+  </div>
+</div>
+<!-- END: PANEL Predictions -->
 
 <!-- PANEL: Rules & Regulations (sport-aware) -->
 <div id="panel-rules" class="tab-panel grid grid-cols-12 gap-6 hidden">
