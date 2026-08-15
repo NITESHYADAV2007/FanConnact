@@ -6,8 +6,8 @@ module.exports = {
 
     apiKey: process.env.CRICBUZZ_API_KEY || "",
 
-    apiHost: process.env.CRICBUZZ_API_HOST || "cricbuzz-cricket.p.rapidapi.com",
+    apiHost: process.env.CRICBUZZ_API_HOST || "cricbuzz-cricket2.p.rapidapi.com",
 
-    baseURL: process.env.CRICBUZZ_BASE_URL || "https://cricbuzz-cricket.p.rapidapi.com"
+    baseURL: process.env.CRICBUZZ_BASE_URL || "https://cricbuzz-cricket2.p.rapidapi.com"
 
 };

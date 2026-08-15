@@ -5186,6 +5186,10 @@ app.get("/api/reels", async (req, res) => {
 
 // ─── REAL MATCHES (allsportsapi2 for most sports, cricbuzz for cricket) ─────
 const ALLSPORTS_KEY = process.env.ALLSPORTS_KEY || "";
+// Cricbuzz (MEGA plan on cricbuzz-cricket2) — live feed, hscard, series stats.
+const CRICBUZZ_BASE = (process.env.CRICBUZZ_BASE_URL || "https://cricbuzz-cricket2.p.rapidapi.com").replace(/\/+$/, "");
+const CRICBUZZ_HOST = process.env.CRICBUZZ_API_HOST || "cricbuzz-cricket2.p.rapidapi.com";
+const CRICBUZZ_KEY = process.env.CRICBUZZ_API_KEY || ALLSPORTS_KEY;
 // New cricket API (cricket-live-line1) — live scores, news, rankings, team logos.
 const CRICKET_KEY = process.env.CRICKET_KEY || "";
 const CRICKET_HOST = "cricket-live-line1.p.rapidapi.com";
@@ -5490,17 +5494,17 @@ async function fetchCricbuzzLive() {
   const t = setTimeout(() => ctrl.abort(), 20000);
   try {
     const sections = await Promise.all([
-      fetch("https://cricbuzz-cricket.p.rapidapi.com/matches/v1/live", {
+      fetch(`${CRICBUZZ_BASE}/matches/v1/live`, {
         signal: ctrl.signal,
-        headers: { "X-Rapidapi-Key": ALLSPORTS_KEY, "X-Rapidapi-Host": "cricbuzz-cricket.p.rapidapi.com" },
+        headers: { "X-Rapidapi-Key": CRICBUZZ_KEY, "X-Rapidapi-Host": CRICBUZZ_HOST },
       }).catch(() => null),
-      fetch("https://cricbuzz-cricket.p.rapidapi.com/matches/v1/upcoming", {
+      fetch(`${CRICBUZZ_BASE}/matches/v1/upcoming`, {
         signal: ctrl.signal,
-        headers: { "X-Rapidapi-Key": ALLSPORTS_KEY, "X-Rapidapi-Host": "cricbuzz-cricket.p.rapidapi.com" },
+        headers: { "X-Rapidapi-Key": CRICBUZZ_KEY, "X-Rapidapi-Host": CRICBUZZ_HOST },
       }).catch(() => null),
-      fetch("https://cricbuzz-cricket.p.rapidapi.com/matches/v1/recent", {
+      fetch(`${CRICBUZZ_BASE}/matches/v1/recent`, {
         signal: ctrl.signal,
-        headers: { "X-Rapidapi-Key": ALLSPORTS_KEY, "X-Rapidapi-Host": "cricbuzz-cricket.p.rapidapi.com" },
+        headers: { "X-Rapidapi-Key": CRICBUZZ_KEY, "X-Rapidapi-Host": CRICBUZZ_HOST },
       }).catch(() => null),
     ]);
     const out = [];
@@ -5571,9 +5575,9 @@ async function fetchCricbuzzHscard(id) {
   const ctrl = new AbortController();
   const t = setTimeout(() => ctrl.abort(), 9000);
   try {
-    const r = await fetch(`https://cricbuzz-cricket.p.rapidapi.com/mcenter/v1/${id}/hscard`, {
+    const r = await fetch(`${CRICBUZZ_BASE}/mcenter/v1/${id}/hscard`, {
       signal: ctrl.signal,
-      headers: { "x-rapidapi-key": ALLSPORTS_KEY, "x-rapidapi-host": "cricbuzz-cricket.p.rapidapi.com" },
+      headers: { "x-rapidapi-key": CRICBUZZ_KEY, "x-rapidapi-host": CRICBUZZ_HOST },
     });
     if (!r.ok) throw new Error("cricbuzz hscard " + r.status);
     const j = await r.json();
@@ -5872,16 +5876,16 @@ async function resolveCricbuzzSeriesId(title) {
     map = {};
     try {
       const sections = await Promise.all([
-        fetch("https://cricbuzz-cricket.p.rapidapi.com/matches/v1/live", {
-          headers: { "X-Rapidapi-Key": ALLSPORTS_KEY, "X-Rapidapi-Host": "cricbuzz-cricket.p.rapidapi.com" },
+        fetch(`${CRICBUZZ_BASE}/matches/v1/live`, {
+          headers: { "X-Rapidapi-Key": CRICBUZZ_KEY, "X-Rapidapi-Host": CRICBUZZ_HOST },
           signal: AbortSignal.timeout(10000),
         }).catch(() => null),
-        fetch("https://cricbuzz-cricket.p.rapidapi.com/matches/v1/upcoming", {
-          headers: { "X-Rapidapi-Key": ALLSPORTS_KEY, "X-Rapidapi-Host": "cricbuzz-cricket.p.rapidapi.com" },
+        fetch(`${CRICBUZZ_BASE}/matches/v1/upcoming`, {
+          headers: { "X-Rapidapi-Key": CRICBUZZ_KEY, "X-Rapidapi-Host": CRICBUZZ_HOST },
           signal: AbortSignal.timeout(10000),
         }).catch(() => null),
-        fetch("https://cricbuzz-cricket.p.rapidapi.com/matches/v1/recent", {
-          headers: { "X-Rapidapi-Key": ALLSPORTS_KEY, "X-Rapidapi-Host": "cricbuzz-cricket.p.rapidapi.com" },
+        fetch(`${CRICBUZZ_BASE}/matches/v1/recent`, {
+          headers: { "X-Rapidapi-Key": CRICBUZZ_KEY, "X-Rapidapi-Host": CRICBUZZ_HOST },
           signal: AbortSignal.timeout(10000),
         }).catch(() => null),
       ]);
@@ -5928,10 +5932,10 @@ app.get("/api/tournament-stats", async (req, res) => {
 
     const types = ["mostRuns", "mostWickets", "mostSixes"];
     const results = await Promise.all(types.map(async (type) => {
-      const r = await fetch(`https://cricbuzz-cricket.p.rapidapi.com/stats/v1/series/${seriesId}?statsType=${type}`, {
+      const r = await fetch(`${CRICBUZZ_BASE}/stats/v1/series/${seriesId}?statsType=${type}`, {
         headers: {
-          "X-Rapidapi-Key": ALLSPORTS_KEY,
-          "X-Rapidapi-Host": "cricbuzz-cricket.p.rapidapi.com",
+          "X-Rapidapi-Key": CRICBUZZ_KEY,
+          "X-Rapidapi-Host": CRICBUZZ_HOST,
         },
         signal: AbortSignal.timeout(9000),
       });
