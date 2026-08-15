@@ -152,6 +152,34 @@
     };
   }
 
+  // Real match row → M.score (header/summary) — REAL ONLY, no fabricated values
+  function realScoreFromMatch(m) {
+    if (!m) return null;
+    const up = String(m.status || '').toUpperCase();
+    const stateTxt = String(m.state || '') + ' ' + String(m.time || '') + ' ' + String(m.result || '');
+    const isLive = up.indexOf('LIVE') >= 0 || /inning|stumps|tea|lunch|session|break|progress/i.test(stateTxt);
+    const isUpcoming = up.indexOf('UPCOMING') >= 0 || /yet to|starts|begins/i.test(stateTxt);
+    const isFinished = !isLive && !isUpcoming && /won|lost|draw|tie|result|completed/i.test(stateTxt);
+    const parse = (s) => {
+      s = String(s == null ? '' : s);
+      const m2 = /^([\d\-]+)(?:\/(\d+))?/.exec(s);
+      const ov = /\(([^)]+)\)/.exec(s);
+      const score = m2 ? m2[1] : '—';
+      const sub = m2 && m2[2] != null ? '/' + m2[2] : '';
+      const detail = ov ? ov[1] + ' ov' : (s && s !== score && s !== score + sub ? s : '');
+      return { score, sub, detail };
+    };
+    const h = parse(m.homeScore), a = parse(m.awayScore);
+    return {
+      home: { score: h.score, sub: h.sub, detail: h.detail },
+      away: { score: a.score, sub: a.sub, detail: a.detail },
+      resultText: m.result || (isLive ? 'Live' : isUpcoming ? 'Match begins soon' : (m.time || m.state || 'Completed')),
+      subText: m.time || m.state || '',
+      status: isLive ? 'live' : (isUpcoming ? 'upcoming' : 'finished'),
+      icon: isLive ? '🔴' : (isUpcoming ? '⏳' : '🏆')
+    };
+  }
+
   // cricbuzz advance (or score.teamX.innings) → legacy scorecard[]
   function mapCricbuzzScorecard(adv) {
     if (!adv) return null;
@@ -339,6 +367,8 @@
       const match = await API.realMatch();
       if (match && match.matchId) {
         REAL_DATA.match = mapBackendMatch(match);
+        const rs = realScoreFromMatch(match);
+        if (rs) M.score = rs;
         const mid = String(match.matchId);
 
         if (SC.isCricket) {
@@ -380,22 +410,6 @@
 
     console.log("BACKEND_READY =", BACKEND_READY);
     console.log("REAL_DATA =", REAL_DATA);
-
-    if (!BACKEND_READY) {
-
-      if (!REAL_DATA.scorecard) {
-        M.scorecard = buildScorecard();
-      }
-
-      if (!REAL_DATA.commentary) {
-        M.comm = buildCommentary();
-      }
-
-      if (!REAL_DATA.overs) {
-        M.graph = buildGraph();
-      }
-
-    }
 
     console.log("REAL SCORECARD");
     console.log(JSON.stringify(REAL_DATA.scorecard, null, 2));
@@ -1959,19 +1973,10 @@ if (
 
   }
 
-  // scorecard (sport-aware)
-  if (!REAL_DATA.scorecard || !M.scorecard) {
-    M.scorecard = buildScorecard();
-  }
-
-  // commentary
-  if (!REAL_DATA.commentary || !Array.isArray(M.comm)) {
-    M.comm = buildCommentary();
-  }
-  // graph
-  if (!REAL_DATA.overs || !M.graph) {
-    M.graph = buildGraph();
-  }
+  // scorecard / commentary / graph — REAL DATA ONLY (no automatic fills)
+  if (!REAL_DATA.scorecard) M.scorecard = null;
+  if (!REAL_DATA.commentary) M.comm = [];
+  if (!REAL_DATA.overs) M.graph = null;
 
   // news
   M.news = buildNews();
@@ -2254,6 +2259,13 @@ if (
   function renderScoreHeader() {
     const sec = $('score-header'); if (!sec) return;
     const st = M.score;
+
+    if (!REAL_DATA.match) {
+      sec.innerHTML = '<div class="max-w-7xl mx-auto"><div class="rounded-2xl bg-white text-slate-900 dark:bg-[#12172D] dark:text-white border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden"><div class="p-10 text-center"><p class="text-sm text-gray-500 dark:text-gray-400">Live match data is currently unavailable from the data feed. Please try again shortly.</p></div></div></div>';
+      renderCurrentPlayers();
+      return;
+    }
+
     const statusBadge = st.status === 'live'
       ? '<span class="inline-flex items-center gap-1.5 self-start sm:self-auto px-3 py-1 rounded-full bg-red-500/20 text-red-300 text-[11px] font-semibold border border-red-500/30"><span class="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse"></span> Live</span>'
       : st.status === 'upcoming'
@@ -2266,7 +2278,7 @@ if (
     const awaySubId = 'score-sub-away';
     const teamPanel = (tm, sc, reverse) => {
       const won = sc.won;
-      const resBadge = st.status === 'finished'
+      const resBadge = st.status === 'finished' && won != null
         ? '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full ' + (won ? 'bg-emerald-500/15 bak dark:text-emerald-300' : 'bg-red-500/15 text-red-600 dark:text-red-300') + ' text-[10px] font-bold uppercase tracking-wide">' + (won ? 'Won' : 'Lost') + '</span>'
         : '';
       return '<div class="flex items-center gap-4 p-5 md:p-6 ' + (reverse ? 'md:flex-row-reverse md:text-right' : '') + '">' +
@@ -2304,7 +2316,7 @@ if (
 
   function renderCurrentPlayers() {
     const el = $('current-players'); if (!el) return;
-    if (STATE !== 'live') { el.innerHTML = ''; return; }
+    if (STATE !== 'live' || !REAL_DATA.squads) { el.innerHTML = ''; return; }
     // For cricket, reflect the live crease (striker / non-striker / bowler)
     let homePlayer, awayPlayer, roleHome, roleAway;
     if (SC.isCricket && liveInnings) {
@@ -2631,6 +2643,12 @@ if (sc && !BACKEND_READY) {
   function renderSummary() {
     const p = $('panel-summary'); if (!p) return;
     const st = M.score;
+
+    if (!REAL_DATA.scorecard && !REAL_DATA.commentary) {
+      p.innerHTML = '<div class="col-span-12 bg-white dark:bg-[#12172D] rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-800"><h3 class="font-bold text-gray-800 dark:text-white text-sm uppercase tracking-wide mb-6">Match Summary</h3><p class="text-sm text-gray-500 dark:text-gray-400">Match summary is not available yet — it appears once live data is flowing.</p></div>';
+      return;
+    }
+
     if (!M.summary.points) {
       M.summary.points = [];
     }
@@ -2672,13 +2690,19 @@ if (sc && !BACKEND_READY) {
     const won = sc.won;
     return '<div class="p-6 flex items-center gap-4"><img alt="' + esc(tm.name) + '" class="w-14 h-14 rounded-full border-2 border-slate-200 dark:border-white/20 shadow" src="' + tm.img + '">' +
       '<div><div class="flex items-center gap-2"><p class="text-base font-semibold text-slate-900 dark:text-white">' + esc(tm.name) + '</p>' +
-      (M.score.status === 'finished' ? '<span class="px-2 py-0.5 rounded-full ' + (won ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-300' : 'bg-red-500/15 text-red-600 dark:text-red-300') + ' text-[10px] font-bold uppercase">' + (won ? 'Won' : 'Lost') + '</span>' : '') + '</div>' +
+      (M.score.status === 'finished' && won != null ? '<span class="px-2 py-0.5 rounded-full ' + (won ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-300' : 'bg-red-500/15 text-red-600 dark:text-red-300') + ' text-[10px] font-bold uppercase">' + (won ? 'Won' : 'Lost') + '</span>' : '') + '</div>' +
       '<div class="flex items-baseline gap-1.5 mt-1"><span class="text-3xl font-extrabold text-slate-900 dark:text-white">' + esc(sc.score) + '</span><span class="text-lg font-semibold text-slate-500 dark:text-gray-300">' + esc(sc.sub) + '</span></div>' +
       '<p class="text-xs text-slate-500 dark:text-gray-400 mt-1">' + esc(sc.detail || '') + '</p></div></div>';
   }
 
   function renderScorecard() {
     const p = $('panel-scorecard'); if (!p) return;
+
+    if (!REAL_DATA.scorecard) {
+      p.innerHTML = '<div class="col-span-12 bg-white dark:bg-[#12172D] rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-800"><h3 class="font-bold text-gray-800 dark:text-white text-sm uppercase tracking-wide mb-6">Scorecard</h3><p class="text-sm text-gray-500 dark:text-gray-400">Live scorecard is not available for this match right now.</p></div>';
+      return;
+    }
+
     const sc = M.scorecard;
     // ======================================================
     // USE REAL BACKEND SCORECARD
@@ -2806,6 +2830,19 @@ if (sc && !BACKEND_READY) {
     }
 
     const p = $('panel-commentary'); if (!p) return;
+
+    if (!REAL_DATA.commentary) {
+      p.innerHTML = '<div class="col-span-12 bg-white dark:bg-[#12172D] rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-800"><h3 class="font-bold text-gray-800 dark:text-white text-sm uppercase tracking-wide mb-6">Commentary</h3><p class="text-sm text-gray-500 dark:text-gray-400">Ball-by-ball commentary is not available for this match right now.</p></div>';
+      return;
+    }
+
+    if (SC.isCricket && !M.comm.label) {
+      const inn = ((REAL_DATA.scorecard && REAL_DATA.scorecard.scorecard) || []).find(i => i.iscurrentinnings);
+      M.comm.label = inn
+        ? (inn.batteamname || '') + ' ' + (inn.score != null ? inn.score + '/' + inn.wickets : '') + (inn.overs ? ' · ' + inn.overs + ' ov' : '')
+        : '';
+    }
+
     const comments = Array.isArray(M.comm)
       ? M.comm
       : (M.comm?.items || []);
@@ -2825,7 +2862,7 @@ if (sc && !BACKEND_READY) {
       p.innerHTML =
         '<div class="col-span-12 lg:col-span-8 space-y-6">' +
         '<div id="comm-players" class="bg-white dark:bg-[#12172D] rounded-lg shadow-sm border border-gray-200 dark:border-gray-800 p-4 flex items-center gap-4 overflow-x-auto"><span class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wide shrink-0">' + esc(M.comm.label) + '</span></div>' +
-        '<div class="bg-white dark:bg-[#12172D] rounded-lg shadow-sm border border-gray-200 dark:border-gray-800 p-4 flex flex-col sm:flex-row sm:items-center gap-4"><div class="inline-flex rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700" id="comm-filters"><button class="comm-filter px-3.5 py-1.5 text-xs font-semibold rounded-md text-white bg-crexGold" data-filter="all">All</button><button class="comm-filter px-3.5 py-1.5 text-xs font-semibold rounded-md text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white" data-filter="four">4s/PTS</button><button class="comm-filter px-3.5 py-1.5 text-xs font-semibold rounded-md text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white" data-filter="six">6s/GOAL</button><button class="comm-filter px-3.5 py-1.5 text-xs font-semibold rounded-md text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white" data-filter="wicket">Wickets</button><button class="comm-filter px-3.5 py-1.5 text-xs font-semibold rounded-md text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white" data-filter="milestone">Milestones</button></div>' + (STATE === 'live' ? '<span class="text-xs text-gray-400 ml-auto hidden sm:block">Updates every few seconds · scroll for history</span>' : '') + '</div>' +
+        '<div class="bg-white dark:bg-[#12172D] rounded-lg shadow-sm border border-gray-200 dark:border-gray-800 p-4 flex flex-col sm:flex-row sm:items-center gap-4"><div class="inline-flex rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700" id="comm-filters"><button class="comm-filter px-3.5 py-1.5 text-xs font-semibold rounded-md text-white bg-crexGold" data-filter="all">All</button><button class="comm-filter px-3.5 py-1.5 text-xs font-semibold rounded-md text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white" data-filter="four">4s/PTS</button><button class="comm-filter px-3.5 py-1.5 text-xs font-semibold rounded-md text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white" data-filter="six">6s/GOAL</button><button class="comm-filter px-3.5 py-1.5 text-xs font-semibold rounded-md text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white" data-filter="wicket">Wickets</button><button class="comm-filter px-3.5 py-1.5 text-xs font-semibold rounded-md text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white" data-filter="milestone">Milestones</button></div>' + (STATE === 'live' ? '<span class="text-xs text-gray-400 ml-auto hidden sm:block">Auto-refresh every 20s from live data</span>' : '') + '</div>' +
         '<section class="bg-white dark:bg-[#12172D] rounded-lg shadow-sm overflow-hidden border border-gray-200 dark:border-gray-800"><div class="flex items-center justify-between px-5 py-4 bg-[#0b1626] text-white"><h3 class="font-bold text-sm uppercase tracking-wide">Commentary</h3>' + liveTag + '<span id="comm-innings-label" class="text-xs text-gray-300">' + esc(M.comm.label) + '</span></div><div id="comm-feed" class="divide-y divide-gray-100 dark:divide-gray-800">' + (feed || '<p class="p-6 text-sm text-gray-400">No commentary yet.</p>') + '</div></section>' +
         '</div>' +
         '<aside class="col-span-12 lg:col-span-4 space-y-6">' +
@@ -2833,6 +2870,32 @@ if (sc && !BACKEND_READY) {
         '<section class="bg-white dark:bg-[#12172D] rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-800"><h3 class="font-bold text-gray-800 dark:text-white text-sm uppercase tracking-wide mb-4">Over-by-Over</h3><div id="over-history"><p class="text-xs text-gray-400">Over-by-over summary will appear here.</p></div></section>' +
         '<section class="bg-white dark:bg-[#12172D] rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-800"><h3 class="font-bold text-gray-800 dark:text-white text-sm uppercase tracking-wide mb-4">Live Positions</h3><div id="live-positions"><p class="text-xs text-gray-400">Live player positions appear here during the game.</p></div></section>' +
         '</aside>';
+    }
+
+    // This Over + Over-by-Over from the REAL commentary (no fake progression)
+    if (SC.isCricket) {
+      const ovMap = new Map();
+      comments.forEach(it => {
+        const ov = String(it.over || '');
+        if (!ov) return;
+        if (!ovMap.has(ov)) ovMap.set(ov, []);
+        ovMap.get(ov).push(String(it.badge || '•'));
+      });
+      const overNos = [...ovMap.keys()].sort((a, b) => parseFloat(a) - parseFloat(b));
+      const lastOver = overNos.length ? overNos[overNos.length - 1] : '';
+      const thisOverEl = $('this-over-widget');
+      if (thisOverEl) {
+        if (lastOver) {
+          const balls = ovMap.get(lastOver);
+          thisOverEl.innerHTML = '<div class="flex items-center justify-between text-sm mb-2"><span class="text-gray-500 dark:text-gray-400">Over ' + esc(lastOver) + '</span><span class="font-mono text-emerald-600 dark:text-emerald-400 font-bold">' + esc(balls.join(' ')) + '</span></div><div class="flex flex-wrap gap-1.5">' + balls.map(b => '<span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-gray-100 dark:bg-white/10">' + esc(b) + '</span>').join('') + '</div>';
+        } else {
+          thisOverEl.innerHTML = '<p class="text-xs text-gray-400">Waiting for first ball…</p>';
+        }
+      }
+      const overHistEl = $('over-history');
+      if (overHistEl && overNos.length) {
+        overHistEl.innerHTML = overNos.slice(-10).map(ov => '<div class="flex items-center justify-between py-1 text-xs"><span class="text-gray-500 dark:text-gray-400">Over ' + esc(ov) + '</span><span class="font-mono text-emerald-600 dark:text-emerald-400">' + esc(ovMap.get(ov).join(' ')) + '</span></div>').join('');
+      }
     }
 
     // filter handlers
@@ -2843,8 +2906,8 @@ if (sc && !BACKEND_READY) {
       (filterFeed || $('comm-feed'))?.querySelectorAll('.comm-item').forEach(it => { it.style.display = (f === 'all' || it.dataset.type === f) ? '' : 'none'; });
     }));
 
-    // live loop — only for live matches (score + commentary update live)
-    if (STATE === 'live') startLiveLoop($('comm-feed'));
+    // live loop — REAL data polling only (no manual/fake score, over or timeline updates)
+    if (STATE === 'live' && REAL_DATA.match) startRealLiveLoop();
   }
 
   // Rules & Regulations panel (sport-aware, proper for ALL games)
@@ -2861,6 +2924,40 @@ if (sc && !BACKEND_READY) {
 
   let liveTimer = null;
   let liveTick = 0;
+  let realLiveTimer = null;
+
+  // Real live loop: poll the backend proxy and re-render from REAL data only.
+  async function startRealLiveLoop() {
+    if (realLiveTimer) return;
+    const mid = REAL_DATA.match && (REAL_DATA.match.matchId || REAL_DATA.match.id);
+    if (!mid) return;
+    realLiveTimer = setInterval(async () => {
+      try {
+        const fresh = await API.request('/live-matches/' + mid + '?sport=' + SPORT);
+        if (fresh && fresh.matchId) {
+          REAL_DATA.match = mapBackendMatch(fresh);
+          const rs = realScoreFromMatch(fresh);
+          if (rs) M.score = rs;
+          updateTeamsFromBackend();
+        }
+        if (SC.isCricket) {
+          const sc = mapCricbuzzScorecard(await API.cricbuzz('/matches/' + mid + '/advance'));
+          if (sc) REAL_DATA.scorecard = sc;
+          const cm = mapCricbuzzCommentary(await API.cricbuzz('/matches/' + mid + '/innings/1/commentary'));
+          if (cm) REAL_DATA.commentary = cm;
+        } else {
+          const cm = mapIncidentsCommentary(await API.sportDetail('/' + SPORT + '/match/' + mid + '/incidents'));
+          if (cm) REAL_DATA.commentary = cm;
+        }
+        applyNormalizedModel(normalizeBackendData());
+        renderScoreHeader(); renderSummary();
+        renderScorecard(); renderCommentary(); renderSquads();
+      } catch (e) {
+        console.error('live poll failed', e);
+      }
+    }, 20000);
+  }
+
   function flashScore() {
     const sec = $('score-header'); if (!sec) return;
     sec.querySelectorAll('.score-flash').forEach(el => {
@@ -3359,6 +3456,12 @@ if (sc && !BACKEND_READY) {
     }
 
     const p = $('panel-graph'); if (!p) return;
+
+    if (!REAL_DATA.overs || !M.graph) {
+      p.innerHTML = '<div class="col-span-12 bg-white dark:bg-[#12172D] rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-800"><h3 class="font-bold text-gray-800 dark:text-white text-sm uppercase tracking-wide mb-6">Graph</h3><p class="text-sm text-gray-500 dark:text-gray-400">The overs/run-rate graph is not available for this match right now.</p></div>';
+      return;
+    }
+
     const filtersEl = $('graph-filters'); const svg = $('graph-svg'); const legend = $('graph-legend'); const loading = $('graph-loading');
     if (!svg) return;
     let active = M.graph.active;
@@ -3462,7 +3565,8 @@ if (sc && !BACKEND_READY) {
     const list = $('news-list'); const src = $('news-source'); const loading = $('news-loading');
     if (src) src.textContent = M.news.source;
     if (!list) return;
-    list.innerHTML = M.news.articles.map(a => '<a href="#" class="flex gap-3 rounded-lg border border-gray-200 dark:border-gray-800 p-3 hover:border-crexGold transition-colors bg-gray-50/40 dark:bg-white/5">' +
+    const articles = Array.isArray(M.news.articles) ? M.news.articles : [];
+    list.innerHTML = articles.map(a => '<a href="#" class="flex gap-3 rounded-lg border border-gray-200 dark:border-gray-800 p-3 hover:border-crexGold transition-colors bg-gray-50/40 dark:bg-white/5">' +
       (a.image ? '<img src="' + a.image + '" alt="" class="w-16 h-16 rounded-md object-cover shrink-0 border border-gray-200 dark:border-white/10" onerror="this.style.display=\'none\'">' : '') +
       '<div class="min-w-0 flex-1"><p class="text-sm font-semibold text-gray-800 dark:text-white leading-snug">' + esc(a.title) + '</p><p class="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">' + esc(a.desc) + '</p><p class="text-[10px] text-gray-400 mt-1.5 uppercase tracking-wide">' + esc(a.time) + '</p></div></a>').join('');
     if (loading) loading.style.display = 'none';
@@ -3531,6 +3635,10 @@ if (sc && !BACKEND_READY) {
       M.meta.series =
         match?.series ||
         "";
+
+      M.meta.toss =
+        match?.toss ||
+        "—";
 
       console.log("✅ Backend Match Loaded");
 
