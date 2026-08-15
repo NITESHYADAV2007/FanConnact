@@ -233,20 +233,18 @@ GRAND_SLAM: "GRAND_SLAM",
 ========================================================== */
 
 const ENGINE_CONFIG = {
-    // Safety floor between separate generation cycles for one match.
+    // Normal/checkpoint generations keep a safety floor. Event predictions
+    // use event-spacing instead so a real six/wicket/four is not missed.
     MIN_INTERVAL_SECONDS: 45,
 
-    // Never stack many live questions. Pre-match may show two at once.
-    MAX_ACTIVE_LIVE_PREDICTIONS: 1,
+    MAX_ACTIVE_LIVE_PREDICTIONS: 5,
     MAX_ACTIVE_PREMATCH_PREDICTIONS: 2,
 
-    // At most two pre-match questions can be created in one engine pass.
-    // Live/event generation is deliberately one at a time.
     MAX_GENERATIONS_PREMATCH_PER_RUN: 2,
-    MAX_GENERATIONS_LIVE_PER_RUN: 1,
+    MAX_GENERATIONS_LIVE_PER_RUN: 3,
 
     MAX_PREMATCH: 2,
-    MAX_LIVE: 1,
+    MAX_LIVE: 20,
     MAX_POSTMATCH: 1
 };
 
@@ -255,36 +253,18 @@ const ENGINE_CONFIG = {
 ========================================================== */
 
 function normalizeCricketFormat(match){
-    const raw = String(
-        match?.matchType ??
-        match?.matchFormat ??
-        match?.format ??
-        match?.matchInfo?.matchType ??
-        ""
-    ).toLowerCase();
-
-    if(/\btest\b/.test(raw)) return "TEST";
-    if(/\bt10(?:i)?\b|ten10|ten-10|10\s*over/.test(raw)) return "T10";
-    if(/\bt20(?:i)?\b|twenty20|twenty-20|20\s*over/.test(raw)) return "T20";
-    if(/\bodi\b|one day|50\s*over/.test(raw)) return "ODI";
-
-    return "T20";
+    return Helpers.cricketFormat(match);
 }
 
 function getMatchPredictionLimit(match){
-    switch(normalizeCricketFormat(match)){
-        case "T10": return 4;
-        case "T20": return 5;
-        case "ODI": return 5;
-        case "TEST": return 5;
-        default: return 5;
-    }
+    return Number(Helpers.formatConfig(match)?.matchLimit) || 20;
 }
 
 function maxActiveForMatch(match){
-    return String(match?.status || "").toUpperCase() === "UPCOMING"
-        ? ENGINE_CONFIG.MAX_ACTIVE_PREMATCH_PREDICTIONS
-        : ENGINE_CONFIG.MAX_ACTIVE_LIVE_PREDICTIONS;
+    if(String(match?.status || "").toUpperCase() === "UPCOMING"){
+        return ENGINE_CONFIG.MAX_ACTIVE_PREMATCH_PREDICTIONS;
+    }
+    return Number(Helpers.formatConfig(match)?.maxActiveLive) || ENGINE_CONFIG.MAX_ACTIVE_LIVE_PREDICTIONS;
 }
 
 /* ==========================================================
@@ -528,49 +508,113 @@ function saveTrigger(triggerKey){
 }
 
 function buildTriggerKey(match, ruleId, prediction){
-    const eventId =
-        match?.lastEvent?.id ??
-        match?.lastEvent?.eventId ??
-        match?.lastEvent?.timestamp ??
-        match?.lastEvent?.ballId ??
-        "";
-
-    const over =
-        match?.currentOver ??
-        match?.over ??
-        match?.currentInnings?.over ??
-        "";
-
-    const batter =
-        match?.currentBatter?.id ??
-        match?.currentBatter?.playerId ??
-        "";
-
     const base = prediction?.trigger || ruleId || "UNKNOWN";
     const type = String(prediction?.type || "");
 
-    // One meaningful chase/milestone should not repeat every 30 seconds.
+    if(type === "NEXT_BALL_EVENT" || prediction?.eventPrediction){
+        const sourceEvent = prediction?.sourceEventKey || Helpers.eventKey(match) || "event";
+        return `${match.id}:${base}:event:${sourceEvent}`;
+    }
+
+    if(type === "POWERPLAY_SCORE"){
+        return `${match.id}:${base}:POWERPLAY`;
+    }
+
     if(type === "CHASE"){
         return `${match.id}:${base}`;
     }
 
-    // Pre-match questions are inherently match-scoped.
-    if([
-        "MATCH_WINNER",
-        "TOSS_WINNER",
-        "TOTAL_RUNS",
-        "HIGHEST_SCORER"
-    ].includes(type)){
+    if(["MATCH_WINNER","TOSS_WINNER","TOTAL_RUNS","HIGHEST_SCORER"].includes(type)){
         return `${match.id}:${base}`;
     }
 
-    return [
-        match.id,
-        base,
-        over,
-        eventId,
-        batter
-    ].join(":");
+    // A milestone belongs to the player, not to an over. This prevents the
+    // same 41-49 / 91-99 window from creating a new question every over.
+    if(type === "PLAYER_FIFTY" || type === "PLAYER_CENTURY"){
+        const playerId = prediction?.targetPlayerId ||
+            prediction?.batterId ||
+            prediction?.targetPlayerName ||
+            match?.currentBatter?.id ||
+            match?.currentBatter?.playerId ||
+            match?.currentBatter?.name ||
+            "";
+        return `${match.id}:${type}:player:${playerId}`;
+    }
+
+    if(type === "NEXT_OVER_RUNS" && prediction?.checkpointOver != null){
+        return `${match.id}:${base}:over:${prediction.checkpointOver}`;
+    }
+
+    const over = Helpers.currentOverNumber(match) ?? "";
+    const batter = match?.currentBatter?.id ?? match?.currentBatter?.playerId ?? "";
+    return [match.id, base, over, batter].join(":");
+}
+
+function eventPredictionSpacingAllowed(match, prediction, existing){
+    if(!prediction?.eventPrediction) return true;
+
+    const cfg = Helpers.formatConfig(match) || {};
+    const currentOver = Helpers.currentOverNumber(match);
+    const currentEventKey = String(prediction.sourceEventKey || "");
+
+    const prior = existing
+        .filter(item => item?.eventPrediction === true || item?.type === "NEXT_BALL_EVENT")
+        .sort((a,b) => {
+            const ta = a?.createdAt?.toMillis ? a.createdAt.toMillis() : new Date(a?.createdAt || 0).getTime();
+            const tb = b?.createdAt?.toMillis ? b.createdAt.toMillis() : new Date(b?.createdAt || 0).getTime();
+            return tb - ta;
+        });
+
+    for(const item of prior){
+        if(currentEventKey && String(item.sourceEventKey || "") === currentEventKey){
+            return false;
+        }
+
+        const previousOver = Number(item.eventOver);
+        if(Number.isFinite(currentOver) && Number.isFinite(previousOver)){
+            const diff = currentOver - previousOver;
+            const min = Number.isFinite(Number(cfg.eventMinOvers)) ? Number(cfg.eventMinOvers) : 1;
+            const sameType = String(item.sourceEventType || "").toUpperCase() ===
+                String(prediction.sourceEventType || "").toUpperCase();
+            const required = sameType
+                ? Number.isFinite(Number(cfg.sameEventMinOvers)) ? Number(cfg.sameEventMinOvers) : Math.max(2, min)
+                : min;
+
+            if(diff < required) return false;
+        }else{
+            const createdAt = item?.createdAt?.toMillis
+                ? item.createdAt.toMillis()
+                : new Date(item?.createdAt || 0).getTime();
+            if(Number.isFinite(createdAt) && Date.now() - createdAt < 90 * 1000){
+                return false;
+            }
+        }
+
+        break;
+    }
+
+    return true;
+}
+
+/* ==========================================================
+        Priority Slot Helpers
+========================================================== */
+
+function isUrgentPrediction(data){
+    const type = String(data?.type || "").toUpperCase();
+    return data?.eventPrediction === true ||
+        type === "NEXT_BALL_EVENT" ||
+        type === "PLAYER_FIFTY" ||
+        type === "PLAYER_CENTURY";
+}
+
+/*
+ * Keep one slot available for a real event/milestone while the remaining
+ * slots are used by normal over/checkpoint predictions. The total card count
+ * still never exceeds the format-specific maxActiveLive.
+ */
+function normalActiveLimit(match){
+    return Math.max(0, maxActiveForMatch(match) - 1);
 }
 
 /* ==========================================================
@@ -583,7 +627,8 @@ async function generatePrediction(data, options = {}){
     const matchId = String(data.matchId);
     const formatLimit = Number(data.matchPredictionLimit) || 5;
 
-    if(!canGeneratePrediction(matchId, options.ignoreCooldown === true)){
+    const bypassGenerationFloor = options.ignoreCooldown === true || data.eventPrediction === true;
+    if(!canGeneratePrediction(matchId, bypassGenerationFloor)){
         return false;
     }
 
@@ -611,8 +656,13 @@ async function generatePrediction(data, options = {}){
 
     if(sameTrigger) return false;
 
+    if(!eventPredictionSpacingAllowed(data, data, existing)){
+        return false;
+    }
+
     const generatedTotal = existing.filter(item =>
-        String(item.sport || "").toLowerCase() === "cricket"
+        String(item.sport || "").toLowerCase() === "cricket" &&
+        String(item.status || "").toUpperCase() !== "CANCELLED"
     ).length;
 
     if(generatedTotal >= formatLimit) return false;
@@ -633,6 +683,13 @@ async function generatePrediction(data, options = {}){
             : maxActiveForMatch(data);
 
     if(activeCount >= maxActive) return false;
+
+    // One slot is deliberately reserved for an event/milestone. This keeps
+    // FOUR/SIX/WICKET and 41-49 / 91-99 milestone questions able to appear
+    // without ever exceeding the format cap.
+    if(!isUrgentPrediction(data) && activeCount >= normalActiveLimit(data)){
+        return false;
+    }
 
     const result = await predictionService.createPrediction({
         ...data,
@@ -728,7 +785,7 @@ async function processPredictionQueue(match){
     const maxActive =
         isPrematch
             ? ENGINE_CONFIG.MAX_ACTIVE_PREMATCH_PREDICTIONS
-            : ENGINE_CONFIG.MAX_ACTIVE_LIVE_PREDICTIONS;
+            : maxActiveForMatch(match);
 
     const maxThisRun =
         isPrematch
@@ -756,7 +813,9 @@ async function processPredictionQueue(match){
         const createdNow = await generatePrediction(
             prediction.data,
             {
-                ignoreCooldown: isPrematch && created > 0,
+                ignoreCooldown:
+                    created > 0 ||
+                    prediction.data.eventPrediction === true,
                 maxActive
             }
         );
@@ -908,13 +967,35 @@ async function generateCricketPredictions(match) {
         return;
     }
 
-    const totalGenerated = existing.filter(item =>
+    // Milestones have no expiry. Resolve them from the latest live snapshot
+    // before deciding whether new questions can be generated.
+    try{
+        const lifecycle = await import("./resultEngine.js");
+        for(const prediction of existing){
+            const type = String(prediction?.type || "").toUpperCase();
+            if(
+                String(prediction?.status || "").toUpperCase() === "LIVE" &&
+                (type === "PLAYER_FIFTY" || type === "PLAYER_CENTURY")
+            ){
+                await lifecycle.processPredictionResult(prediction, {
+                    ...match,
+                    id: String(match.id),
+                    sport: "cricket"
+                }, null);
+            }
+        }
+    }catch(error){
+        console.warn("Milestone result reconciliation skipped:", error);
+    }
+
+    const refreshed = await predictionService.getPredictionsByMatch(String(match.id));
+    const totalGenerated = refreshed.filter(item =>
         String(item.sport || "").toLowerCase() === "cricket"
     ).length;
 
     if(totalGenerated >= limit) return;
 
-    const active = existing.filter(item => {
+    const active = refreshed.filter(item => {
         if(String(item.status || "").toUpperCase() !== "LIVE") return false;
 
         const expiresAt = item.expiresAt?.toMillis
@@ -924,7 +1005,11 @@ async function generateCricketPredictions(match) {
         return expiresAt == null || expiresAt > Date.now();
     }).length;
 
-    if(active >= maxActiveForMatch(match)) return;
+    if(active >= maxActiveForMatch(match) && !refreshed.some(item =>
+        String(item.status || "").toUpperCase() === "LIVE" &&
+        item?.eventPrediction === true &&
+        String(item.sourceEventKey || "") === String(Helpers.eventKey(match) || "")
+    )) return;
 
     await executeRules(
         cricketRules,

@@ -422,7 +422,9 @@
                 data-icon="verified"
                 >verified</span
               >
-              Elite Predictor • Since 2023
+              <span id="profile-hero-title">Predictor</span>
+              <span aria-hidden="true">•</span>
+              <span id="profile-member-since">Member since —</span>
             </p>
             <div
               class="flex flex-wrap justify-center md:justify-start gap-2 md:gap-sm pt-2 md:pt-md"
@@ -476,70 +478,12 @@
             </div>
           </div>
         </div>
-        <!-- Achievements Section (New) -->
-        <div class="w-full lg:w-auto space-y-2 md:space-y-md">
-          <h4
-            class="text-surface-dim text-label-sm uppercase tracking-widest text-center lg:text-left"
-          >
+        <!-- Achievements Section -->
+        <div id="profile-achievements-section" class="w-full lg:w-auto space-y-2 md:space-y-md hidden">
+          <h4 class="text-surface-dim text-label-sm uppercase tracking-widest text-center lg:text-left">
             Achievements
           </h4>
-          <div class="flex justify-center lg:justify-start gap-3 md:gap-md">
-            <div class="group relative">
-              <div
-                class="w-10 h-10 md:w-14 md:h-14 rounded-full bg-secondary-container/20 flex items-center justify-center border border-secondary/30 text-secondary-fixed hover:scale-110 transition-transform cursor-help"
-              >
-                <span
-                  class="material-symbols-outlined text-xl md:text-3xl"
-                  data-icon="nest_clock_farsight_analog"
-                  >nest_clock_farsight_analog</span
-                >
-              </div>
-              <span
-                class="absolute -bottom-8 left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 transition-transform bg-on-surface text-surface px-2 py-1 rounded text-[10px] whitespace-nowrap"
-                >Early Bird</span
-              >
-            </div>
-            <div class="group relative">
-              <div
-                class="w-10 h-10 md:w-14 md:h-14 rounded-full bg-primary/20 flex items-center justify-center border border-primary/30 text-primary-fixed hover:scale-110 transition-transform cursor-help"
-              >
-                <span
-                  class="material-symbols-outlined text-xl md:text-3xl"
-                  data-icon="psychology_alt"
-                  >psychology_alt</span
-                >
-              </div>
-              <span
-                class="absolute -bottom-8 left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 transition-transform bg-on-surface text-surface px-2 py-1 rounded text-[10px] whitespace-nowrap"
-                >Quiz Master</span
-              >
-            </div>
-            <div class="group relative">
-              <div
-                class="w-10 h-10 md:w-14 md:h-14 rounded-full bg-yellow-500/20 flex items-center justify-center border border-yellow-500/30 text-yellow-500 hover:scale-110 transition-transform cursor-help"
-              >
-                <span
-                  class="material-symbols-outlined text-xl md:text-3xl"
-                  data-icon="military_tech"
-                  style="font-variation-settings: &quot;FILL&quot; 1"
-                  >military_tech</span
-                >
-              </div>
-              <span
-                class="absolute -bottom-8 left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 transition-transform bg-on-surface text-surface px-2 py-1 rounded text-[10px] whitespace-nowrap"
-                >Top 1%</span
-              >
-            </div>
-            <div
-              class="w-10 h-10 md:w-14 md:h-14 rounded-full bg-surface-variant/10 flex items-center justify-center border border-outline-variant/10 text-surface-dim opacity-50"
-            >
-              <span
-                class="material-symbols-outlined text-xl md:text-3xl"
-                data-icon="lock"
-                >lock</span
-              >
-            </div>
-          </div>
+          <div id="profile-achievements-list" class="flex justify-center lg:justify-start gap-3 md:gap-md flex-wrap"></div>
         </div>
       </div>
         <!-- Dashboard Grid -->
@@ -654,66 +598,8 @@
               <div
                 class="p-4 md:p-6 max-h-[400px] overflow-y-auto custom-scrollbar space-y-3 md:space-y-4"
               >
-                <div
-                  class="flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-xl hover:bg-surface-variant/10 transition-colors group"
-                >
-                  <div
-                    class="w-8 h-8 md:w-10 md:h-10 bg-secondary/20 rounded-lg flex items-center justify-center text-secondary-fixed shrink-0"
-                  >
-                    <span class="material-symbols-outlined text-base md:text-xl" data-icon="groups"
-                      >groups</span
-                    >
-                  </div>
-                  <div class="flex-1 min-w-0">
-                    <p class="text-gray-900 dark:text-white font-medium text-sm md:text-base truncate">
-                       Joined RCB vs CSK Fan War
-                      </p>
-                    <p class="text-surface-dim text-xs md:text-body-sm">2 hours ago</p>
-                  </div>
-                  <span
-                    class="text-primary-fixed font-bold text-xs md:text-sm opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
-                    >JOINED</span
-                  >
-                </div>
-                <div
-                  class="flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-xl hover:bg-surface-variant/10 transition-colors group"
-                >
-                  <div
-                    class="w-8 h-8 md:w-10 md:h-10 bg-primary/20 rounded-lg flex items-center justify-center text-primary-fixed shrink-0"
-                  >
-                    <span class="material-symbols-outlined text-base md:text-xl" data-icon="quiz"
-                      >quiz</span
-                    >
-                  </div>
-                  <div class="flex-1 min-w-0">
-                    <p class="text-gray-900 dark:text-white font-medium text-sm md:text-base truncate">
-                       Won 50 FanCoins in Daily Quiz
-                      </p>
-                    <p class="text-surface-dim text-xs md:text-body-sm">Yesterday</p>
-                  </div>
-                  <span class="text-primary-fixed font-bold text-xs md:text-sm shrink-0">+50 FC</span>
-                </div>
-                <div
-                  class="flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-xl hover:bg-surface-variant/10 transition-colors group"
-                >
-                  <div
-                    class="w-8 h-8 md:w-10 md:h-10 bg-tertiary/20 rounded-lg flex items-center justify-center text-tertiary-fixed shrink-0"
-                  >
-                    <span
-                      class="material-symbols-outlined text-base md:text-xl"
-                      data-icon="sports_cricket"
-                      >sports_cricket</span
-                    >
-                  </div>
-                  <div class="flex-1 min-w-0">
-                    <p class="text-gray-900 dark:text-white font-medium text-sm md:text-base truncate">
-                       Placed prediction on MI vs CSK
-                      </p>
-                    <p class="text-surface-dim text-xs md:text-body-sm">2 days ago</p>
-                  </div>
-                  <span class="text-surface-dim text-xs md:text-body-sm italic shrink-0"
-                    >Pending</span
-                  >
+                <div id="profile-recent-activity-list" class="space-y-3 md:space-y-4">
+                  <div class="text-surface-dim text-sm text-center py-6">Loading activity…</div>
                 </div>
               </div>
             </div>
@@ -1181,6 +1067,169 @@
         return level;
       }
 
+      // ── Real profile metadata / achievements / activity ──
+      function toMillis(value) {
+        if (!value) return null;
+        if (typeof value?.toMillis === "function") return value.toMillis();
+        if (typeof value?.seconds === "number") return value.seconds * 1000;
+        if (value instanceof Date) return value.getTime();
+        const parsed = Date.parse(value);
+        return Number.isFinite(parsed) ? parsed : null;
+      }
+
+      function formatRelativeTime(value) {
+        const ms = toMillis(value);
+        if (!ms) return "";
+        const diff = Math.max(0, Date.now() - ms);
+        const minute = 60 * 1000;
+        const hour = 60 * minute;
+        const day = 24 * hour;
+        if (diff < minute) return "Just now";
+        if (diff < hour) return `${Math.floor(diff / minute)}m ago`;
+        if (diff < day) return `${Math.floor(diff / hour)}h ago`;
+        if (diff < 7 * day) return `${Math.floor(diff / day)}d ago`;
+        return new Date(ms).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
+      }
+
+      function normalizeAchievement(item) {
+        if (typeof item === "string") return { name: item, icon: "military_tech" };
+        if (!item || typeof item !== "object") return null;
+        const name = item.name || item.title || item.label || item.achievement || item.badge;
+        if (!name) return null;
+        return { name: String(name), icon: item.icon || item.iconName || "military_tech" };
+      }
+
+      function renderProfileAchievements(data) {
+        const section = document.getElementById("profile-achievements-section");
+        const list = document.getElementById("profile-achievements-list");
+        if (!section || !list) return;
+        const raw = data?.achievements || data?.badges || data?.unlockedAchievements || [];
+        const items = Array.isArray(raw) ? raw.map(normalizeAchievement).filter(Boolean) : [];
+        list.innerHTML = "";
+        if (!items.length) {
+          section.classList.add("hidden");
+          return;
+        }
+        items.slice(0, 6).forEach(item => {
+          const wrapper = document.createElement("div");
+          wrapper.className = "group relative";
+          const icon = document.createElement("div");
+          icon.className = "w-10 h-10 md:w-14 md:h-14 rounded-full bg-primary/20 flex items-center justify-center border border-primary/30 text-primary-fixed hover:scale-110 transition-transform cursor-help";
+          const iconName = String(item.icon).replace(/[<>]/g, "");
+          icon.innerHTML = `<span class="material-symbols-outlined text-xl md:text-3xl">${iconName}</span>`;
+          const label = document.createElement("span");
+          label.className = "absolute -bottom-8 left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 transition-transform bg-on-surface text-surface px-2 py-1 rounded text-[10px] whitespace-nowrap z-10";
+          label.textContent = item.name;
+          wrapper.append(icon, label);
+          list.appendChild(wrapper);
+        });
+        section.classList.remove("hidden");
+      }
+
+      function renderRecentActivityEmpty(message = "No recent activity yet.") {
+        const list = document.getElementById("profile-recent-activity-list");
+        if (list) list.innerHTML = `<div class="text-surface-dim text-sm text-center py-8">${message}</div>`;
+      }
+
+      function activityIcon(type) {
+        const t = String(type || "").toLowerCase();
+        if (t.includes("quiz")) return "quiz";
+        if (t.includes("fanwar") || t.includes("fan war")) return "groups";
+        if (t.includes("coin")) return "monetization_on";
+        return "sports_cricket";
+      }
+
+      function renderRecentActivity(items) {
+        const list = document.getElementById("profile-recent-activity-list");
+        if (!list) return;
+        if (!items.length) return renderRecentActivityEmpty();
+        list.innerHTML = "";
+        items.slice(0, 8).forEach(item => {
+          const row = document.createElement("div");
+          row.className = "flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-xl hover:bg-surface-variant/10 transition-colors group";
+          const iconWrap = document.createElement("div");
+          iconWrap.className = "w-8 h-8 md:w-10 md:h-10 bg-primary/20 rounded-lg flex items-center justify-center text-primary-fixed shrink-0";
+          iconWrap.innerHTML = `<span class="material-symbols-outlined text-base md:text-xl">${activityIcon(item.type)}</span>`;
+          const body = document.createElement("div");
+          body.className = "flex-1 min-w-0";
+          const title = document.createElement("p");
+          title.className = "text-gray-900 dark:text-white font-medium text-sm md:text-base truncate";
+          title.textContent = item.title || "Activity";
+          const time = document.createElement("p");
+          time.className = "text-surface-dim text-xs md:text-body-sm";
+          time.textContent = formatRelativeTime(item.createdAt || item.timestamp || item.date);
+          body.append(title, time);
+          row.append(iconWrap, body);
+          if (item.meta) {
+            const meta = document.createElement("span");
+            meta.className = "text-primary-fixed font-bold text-xs md:text-sm shrink-0";
+            meta.textContent = item.meta;
+            row.appendChild(meta);
+          }
+          list.appendChild(row);
+        });
+      }
+
+      async function loadRealRecentActivity(uid, profileData) {
+        try {
+          const stored = profileData?.recentActivity || profileData?.activities;
+          if (Array.isArray(stored) && stored.length) {
+            renderRecentActivity(stored.map(item => ({
+              ...item,
+              title: item.title || item.name || item.text,
+              meta: item.meta || item.reward || item.status || ""
+            })).sort((a, b) => (toMillis(b.createdAt || b.timestamp || b.date) || 0) - (toMillis(a.createdAt || a.timestamp || a.date) || 0)));
+            return;
+          }
+
+          // userPredictions is already used by FanConnact's prediction service and is user-scoped.
+          const predictionSnap = await getDocs(collection(db, "userPredictions"));
+          const rows = [];
+          predictionSnap.forEach(snap => {
+            const row = snap.data() || {};
+            if (String(row.userId || "") !== String(uid)) return;
+            rows.push({ id: snap.id, ...row });
+          });
+          rows.sort((a, b) => (toMillis(b.createdAt || b.submittedAt || b.timestamp) || 0) - (toMillis(a.createdAt || a.submittedAt || a.timestamp) || 0));
+
+          const activities = [];
+          for (const row of rows.slice(0, 8)) {
+            let prediction = null;
+            if (row.predictionId) {
+              try {
+                const snap = await getDoc(doc(db, "predictions", String(row.predictionId)));
+                if (snap.exists()) prediction = snap.data() || {};
+              } catch (_) {}
+            }
+            const matchName = row.matchName || row.matchTitle || row.match?.name || prediction?.matchName || prediction?.matchTitle;
+            const question = row.question || prediction?.question;
+            const title = matchName ? `Placed prediction on ${matchName}` : question ? `Predicted: ${question}` : "Placed a match prediction";
+            const status = String(row.result || row.status || "").toUpperCase();
+            let meta = "";
+            if (status === "WON") meta = row.rewardCoins ? `+${Number(row.rewardCoins)} FC` : "WON";
+            else if (status === "LOST") meta = "LOST";
+            else if (status === "CANCELLED") meta = "CANCELLED";
+            else if (status) meta = status;
+            activities.push({ type: "prediction", title, meta, createdAt: row.createdAt || row.submittedAt || row.timestamp });
+          }
+          renderRecentActivity(activities);
+        } catch (error) {
+          console.warn("[profile] recent activity load failed:", error);
+          renderRecentActivityEmpty();
+        }
+      }
+
+      function populateProfileMeta(data, user) {
+        const title = data?.profileTitle || data?.title || data?.badgeTitle || data?.rankTitle || data?.userTitle || "Predictor";
+        const titleEl = document.getElementById("profile-hero-title");
+        if (titleEl) titleEl.textContent = title;
+        const memberSince = data?.createdAt || data?.joinedAt || data?.registeredAt || user?.metadata?.creationTime;
+        const memberMillis = toMillis(memberSince);
+        const sinceEl = document.getElementById("profile-member-since");
+        if (sinceEl) sinceEl.textContent = memberMillis ? `Member since ${new Date(memberMillis).getFullYear()}` : "Member since —";
+        renderProfileAchievements(data);
+      }
+
       onAuthStateChanged(auth, async (user) => {
         if (!user) {
           window.location.href = "login.html";
@@ -1245,6 +1294,8 @@
 
           // ── Populate real stats (coins/xp/level/rank/followers) ──
           populateProfileStats(data, user.uid);
+          populateProfileMeta(data, user);
+          loadRealRecentActivity(user.uid, data);
           renderFollowRequests();
         }
       });

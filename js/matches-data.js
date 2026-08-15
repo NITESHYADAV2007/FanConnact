@@ -207,435 +207,9 @@
     djo: { name: "Novak Djokovic", cc: "rs", color: "#C09A2E", flag: "🇷🇸" }
   };
 
-  // Real matches for 2026-07-15 (status: live | upcoming | finished)
-  const MATCHES = [
-    // ===================== CRICKET =====================
-    {
-      id: "zim-ban-1st-t20i",
-      sport: "cricket",
-      status: "finished",
-      tournament: "Bangladesh tour of Zimbabwe 2026",
-      format: "T20I",
-      stage: "1st T20I",
-      venue: "Bulawayo",
-      date: "2026-07-15",
-      rules: "T20 · 20 overs/side · bat first sets target",
-      home: "zim", away: "ban",
-      score: { home: "170/6", away: "138", detail: "BAN (19/20 ov, T:171)" },
-      result: "Zimbabwe won by 32 runs",
-      link: "match-center.html?sport=cricket&home=zim&away=ban&state=finished&series=Bangladesh%20tour%20of%20Zimbabwe%202026&format=T20I"
-    },
-    {
-      id: "wiw-irew-3rd-odi",
-      sport: "cricket",
-      status: "live",
-      tournament: "West Indies Women tour of Ireland 2026",
-      format: "ODI",
-      stage: "3rd ODI",
-      venue: "Bready",
-      date: "2026-07-15",
-      rules: "ODI · 50 overs/side · DLS may apply",
-      home: "wi-w", away: "ire-w",
-      score: { home: "257", away: "19/1", detail: "IRE-W (5.5/50 ov, T:258)" },
-      statusLine: "IRE Women need 239 runs from 44.1 overs",
-      target: 258,
-      link: "match-center.html?sport=cricket&home=wi-w&away=ire-w&state=live&series=West%20Indies%20Women%20tour%20of%20Ireland%202026&format=ODI"
-    },
-    {
-      id: "vit-blast-qf1",
-      sport: "cricket",
-      status: "upcoming",
-      tournament: "Vitality Blast Men 2026",
-      format: "T20 (100-ball style Blast)",
-      stage: "Quarter-Final 1",
-      venue: "Southampton",
-      date: "2026-07-15",
-      time: "9:00 PM",
-      rules: "T20 Blast · 20 overs/side",
-      home: "ham", away: "ess",
-      link: "match-center.html?sport=cricket&home=ham&away=ess&state=upcoming&series=Vitality%20Blast%20Men%202026&format=T20"
-    },
-    {
-      id: "vit-blast-qf2",
-      sport: "cricket",
-      status: "upcoming",
-      tournament: "Vitality Blast Men 2026",
-      format: "T20",
-      stage: "Quarter-Final 2",
-      venue: "Northampton",
-      date: "2026-07-15",
-      time: "9:30 PM",
-      rules: "T20 Blast · 20 overs/side",
-      home: "nor", away: "glo",
-      link: "match-center.html?sport=cricket&home=nor&away=glo&state=upcoming&series=Vitality%20Blast%20Men%202026&format=T20"
-    },
-    {
-      id: "vit-blast-qf3",
-      sport: "cricket",
-      status: "upcoming",
-      tournament: "Vitality Blast Men 2026",
-      format: "T20",
-      stage: "Quarter-Final 3",
-      venue: "Nottingham",
-      date: "2026-07-15",
-      time: "9:00 PM",
-      rules: "T20 Blast · 20 overs/side",
-      home: "not", away: "sur",
-      link: "match-center.html?sport=cricket&home=not&away=sur&state=upcoming&series=Vitality%20Blast%20Men%202026&format=T20"
-    },
-    {
-      id: "vit-blast-qf4",
-      sport: "cricket",
-      status: "upcoming",
-      tournament: "Vitality Blast Men 2026",
-      format: "T20",
-      stage: "Quarter-Final 4",
-      venue: "Leeds",
-      date: "2026-07-15",
-      time: "9:00 PM",
-      rules: "T20 Blast · 20 overs/side",
-      home: "yor", away: "som",
-      link: "match-center.html?sport=cricket&home=yor&away=som&state=upcoming&series=Vitality%20Blast%20Men%202026&format=T20"
-    },
-    {
-      id: "mlc-qualifier",
-      sport: "cricket",
-      status: "upcoming",
-      tournament: "Major League Cricket 2026",
-      format: "T20",
-      stage: "Qualifier (D/N)",
-      venue: "Oakland",
-      date: "2026-07-15",
-      time: "3:00 AM",
-      rules: "MLC · 20 overs/side",
-      home: "lak", away: "sf",
-      link: "match-center.html?sport=cricket&home=lak&away=sf&state=upcoming&series=Major%20League%20Cricket%202026&format=T20"
-    },
-    {
-      id: "mlc-eliminator",
-      sport: "cricket",
-      status: "upcoming",
-      tournament: "Major League Cricket 2026",
-      format: "T20",
-      stage: "Eliminator 1 (N)",
-      venue: "Oakland",
-      date: "2026-07-15",
-      time: "7:00 AM",
-      rules: "MLC · 20 overs/side",
-      home: "ny", away: "wf",
-      link: "match-center.html?sport=cricket&home=ny&away=wf&state=upcoming&series=Major%20League%20Cricket%202026&format=T20"
-    },
-    {
-      id: "eng-ind-2nd-odi",
-      sport: "cricket",
-      status: "upcoming",
-      tournament: "India tour of England 2026",
-      format: "ODI",
-      stage: "2nd ODI (D/N)",
-      venue: "Cardiff",
-      date: "2026-07-16",
-      time: "5:30 PM",
-      rules: "ODI · 50 overs/side",
-      home: "eng", away: "ind",
-      link: "match-center.html?sport=cricket&home=eng&away=ind&state=upcoming&series=India%20tour%20of%20England%202026&format=ODI"
-    },
-    {
-      id: "wi-nz-3rd-odi",
-      sport: "cricket",
-      status: "upcoming",
-      tournament: "New Zealand tour of West Indies 2026",
-      format: "ODI",
-      stage: "3rd ODI (D/N)",
-      venue: "Providence",
-      date: "2026-07-16",
-      time: "12:00 AM",
-      rules: "ODI · 50 overs/side",
-      home: "wi-w", away: "nz",
-      link: "match-center.html?sport=cricket&home=wi-w&away=nz&state=upcoming&series=New%20Zealand%20tour%20of%20West%20Indies%202026&format=ODI"
-    },
-
-    // ===================== FOOTBALL =====================
-    {
-      id: "eng-arg-wc",
-      sport: "football",
-      status: "live",
-      tournament: "FIFA World Cup 2026",
-      format: "Knockout",
-      stage: "Group / Knockout",
-      venue: "Mercedes-Benz Stadium, Atlanta",
-      date: "2026-07-15",
-      rules: "90 min + stoppage · win = 3pts, draw = 1pt",
-      home: "eng_f", away: "arg",
-      score: { home: "1", away: "1", detail: "72'" },
-      statusLine: "Group stage · 72' minutes played",
-      link: "match-center.html?sport=football&home=eng&away=arg&state=live&series=FIFA%20World%20Cup%202026&format=Knockout"
-    },
-
-    // ===================== BASKETBALL =====================
-    {
-      id: "lal-bos-sl",
-      sport: "basketball",
-      status: "live",
-      tournament: "NBA Summer League 2026",
-      format: "NBA",
-      stage: "Summer League",
-      venue: "Cox Pavilion",
-      date: "2026-07-15",
-      rules: "4 × 12 min quarters · 24s shot clock",
-      home: "lal", away: "bos",
-      score: { home: "102", away: "98", detail: "Q4 · 2:45 left" },
-      statusLine: "Q4 · 2:45 remaining",
-      link: "match-center.html?sport=basketball&home=lal&away=bos&state=live&series=NBA%20Summer%20League%202026&format=NBA"
-    },
-
-    // ===================== TENNIS =====================
-    {
-      id: "alc-djo-example",
-      sport: "tennis",
-      status: "upcoming",
-      tournament: "Wimbledon 2026",
-      format: "Grand Slam",
-      stage: "Final",
-      venue: "Centre Court, London",
-      date: "2026-07-15",
-      time: "2:00 PM",
-      rules: "Best of 5 sets · tie-break at 6-6",
-      home: "alc", away: "djo",
-      link: "match-center.html?sport=tennis&home=alc&away=djo&state=upcoming&series=Wimbledon%202026&format=Grand%20Slam"
-    },
-
-    // ===================== MORE REAL FIXTURES (2026-07-15) =====================
-    {
-      id: "fra-esp-wc",
-      sport: "football",
-      status: "finished",
-      tournament: "FIFA World Cup 2026",
-      format: "Knockout",
-      stage: "Group Stage",
-      venue: "MetLife Stadium",
-      date: "2026-07-15",
-      rules: "90 min + stoppage · win = 3pts, draw = 1pt",
-      home: "eng_f", away: "arg",
-      score: { home: "0", away: "2", detail: "FT" },
-      result: "Argentina won 2-0",
-      link: "match-center.html?sport=football&home=eng&away=arg&state=finished&series=FIFA%20World%20Cup%202026&format=Knockout"
-    },
-    {
-      id: "gsw-lal-sl",
-      sport: "basketball",
-      status: "upcoming",
-      tournament: "NBA Summer League 2026",
-      format: "NBA",
-      stage: "Summer League",
-      venue: "Cox Pavilion",
-      date: "2026-07-15",
-      time: "9:30 PM",
-      rules: "4 × 12 min quarters · 24s shot clock",
-      home: "gsw", away: "lal",
-      link: "match-center.html?sport=basketball&home=gsw&away=lal&state=upcoming&series=NBA%20Summer%20League%202026&format=NBA"
-    },
-    {
-      id: "sin-xyz-tennis",
-      sport: "tennis",
-      status: "live",
-      tournament: "Wimbledon 2026",
-      format: "Grand Slam",
-      stage: "Semi-Final",
-      venue: "Centre Court, London",
-      date: "2026-07-15",
-      rules: "Best of 5 sets · tie-break at 6-6",
-      home: "alc", away: "djo",
-      score: { home: "2", away: "1", detail: "Set 4" },
-      statusLine: "Alcaraz leads 2-1 in sets",
-      link: "match-center.html?sport=tennis&home=alc&away=djo&state=live&series=Wimbledon%202026&format=Grand%20Slam"
-    },
-
-    // ===================== BASEBALL =====================
-    {
-      id: "nyy-bosb-mlb",
-      sport: "baseball",
-      status: "live",
-      tournament: "MLB 2026 Regular Season",
-      format: "MLB",
-      stage: "Game 2",
-      venue: "Yankee Stadium, New York",
-      date: "2026-07-15",
-      rules: "9 innings · most runs wins",
-      home: "nyy", away: "bos_b",
-      score: { home: "5", away: "3", detail: "Bot 7th" },
-      statusLine: "Yankees leading after 6½",
-      link: "match-center.html?sport=baseball&home=nyy&away=bos_b&state=live&series=MLB%202026&format=MLB"
-    },
-    {
-      id: "lad-sfb-mlb",
-      sport: "baseball",
-      status: "upcoming",
-      tournament: "MLB 2026 Regular Season",
-      format: "MLB",
-      stage: "Game 1",
-      venue: "Dodger Stadium, Los Angeles",
-      date: "2026-07-15",
-      time: "22:10",
-      rules: "9 innings · most runs wins",
-      home: "lad", away: "sf_b",
-      link: "match-center.html?sport=baseball&home=lad&away=sf_b&state=upcoming&series=MLB%202026&format=MLB"
-    },
-
-    // ===================== HOCKEY =====================
-    {
-      id: "tbl-col-nhl",
-      sport: "hockey",
-      status: "live",
-      tournament: "NHL 2026 Stanley Cup Playoffs",
-      format: "NHL",
-      stage: "Final G3",
-      venue: "Amalie Arena, Tampa",
-      date: "2026-07-15",
-      rules: "3 periods · OT if tied",
-      home: "tbl", away: "col",
-      score: { home: "2", away: "2", detail: "2nd Period" },
-      statusLine: "Tied midway 2nd",
-      link: "match-center.html?sport=hockey&home=tbl&away=col&state=live&series=Stanley%20Cup%20Final&format=NHL"
-    },
-    {
-      id: "tor-edm-nhl",
-      sport: "hockey",
-      status: "upcoming",
-      tournament: "NHL 2026 Stanley Cup Playoffs",
-      format: "NHL",
-      stage: "Final G4",
-      venue: "Scotiabank Arena, Toronto",
-      date: "2026-07-16",
-      time: "19:00",
-      rules: "3 periods · OT if tied",
-      home: "tor", away: "edm",
-      link: "match-center.html?sport=hockey&home=tor&away=edm&state=upcoming&series=Stanley%20Cup%20Final&format=NHL"
-    },
-
-    // ===================== E-SPORTS =====================
-    {
-      id: "sr-fnc-val",
-      sport: "e-sports",
-      status: "live",
-      tournament: "VCT 2026 Masters",
-      format: "VALORANT",
-      stage: "Grand Final",
-      venue: "Online",
-      date: "2026-07-15",
-      rules: "Best of 5 maps · first to 13 rounds",
-      home: "sr", away: "fnc",
-      score: { home: "2", away: "1", detail: "Map 4" },
-      statusLine: "Sentinels lead series 2-1",
-      link: "match-center.html?sport=e-sports&home=sr&away=fnc&state=live&series=VCT%202026%20Masters&format=VALORANT"
-    },
-    {
-      id: "t1-g2-lol",
-      sport: "e-sports",
-      status: "upcoming",
-      tournament: "Worlds 2026 Playoffs",
-      format: "LoL",
-      stage: "Semifinal",
-      venue: "Online",
-      date: "2026-07-15",
-      time: "20:30",
-      rules: "Best of 5 games · first to 3",
-      home: "t1", away: "g2",
-      link: "match-center.html?sport=e-sports&home=t1&away=g2&state=upcoming&series=Worlds%202026&format=LoL"
-    },
-
-    // ===================== KABADDI =====================
-    {
-      id: "pun-hyd-pkl",
-      sport: "kabaddi",
-      status: "live",
-      tournament: "Pro Kabaddi League 2026",
-      format: "PKL",
-      stage: "Match 42",
-      venue: "Mumbai",
-      date: "2026-07-15",
-      rules: "40 min · most points wins",
-      home: "pun", away: "hyd",
-      score: { home: "24", away: "18", detail: "Half" },
-      statusLine: "Puneri lead at half",
-      link: "match-center.html?sport=kabaddi&home=pun&away=hyd&state=live&series=Pro%20Kabaddi%202026&format=PKL"
-    },
-    {
-      id: "ben-pat-pkl",
-      sport: "kabaddi",
-      status: "upcoming",
-      tournament: "Pro Kabaddi League 2026",
-      format: "PKL",
-      stage: "Match 43",
-      venue: "Mumbai",
-      date: "2026-07-15",
-      time: "21:00",
-      rules: "40 min · most points wins",
-      home: "ben", away: "pat",
-      link: "match-center.html?sport=kabaddi&home=ben&away=pat&state=upcoming&series=Pro%20Kabaddi%202026&format=PKL"
-    },
-
-    // ===================== TABLE TENNIS =====================
-    {
-      id: "wang-har-tt",
-      sport: "tabletennis",
-      status: "live",
-      tournament: "WTT Champions 2026",
-      format: "Singles",
-      stage: "Quarterfinal",
-      venue: "Las Vegas",
-      date: "2026-07-15",
-      rules: "Best of 7 games · 11 points",
-      home: "wang", away: "har",
-      score: { home: "2", away: "1", detail: "Game 4" },
-      statusLine: "Wang leads 2-1",
-      link: "match-center.html?sport=tabletennis&home=wang&away=har&state=live&series=WTT%20Champions%202026&format=Singles"
-    },
-    {
-      id: "sun-hay-tt",
-      sport: "tabletennis",
-      status: "upcoming",
-      tournament: "WTT Champions 2026",
-      format: "Singles",
-      stage: "Quarterfinal",
-      venue: "Las Vegas",
-      date: "2026-07-15",
-      time: "19:30",
-      rules: "Best of 7 games · 11 points",
-      home: "sun", away: "hay",
-      link: "match-center.html?sport=tabletennis&home=sun&away=hay&state=upcoming&series=WTT%20Champions%202026&format=Singles"
-    },
-
-    // ===================== VOLLEYBALL =====================
-    {
-      id: "bra-pol-vnl",
-      sport: "volleyball",
-      status: "live",
-      tournament: "Volleyball Nations League 2026",
-      format: "Mens",
-      stage: "Pool 7",
-      venue: "Gdansk",
-      date: "2026-07-15",
-      rules: "Best of 5 sets · 25 points",
-      home: "bra", away: "pol",
-      score: { home: "2", away: "1", detail: "Set 4" },
-      statusLine: "Brazil lead 2-1",
-      link: "match-center.html?sport=volleyball&home=bra&away=pol&state=live&series=VNL%202026&format=Mens"
-    },
-    {
-      id: "usa-ita-vnl",
-      sport: "volleyball",
-      status: "upcoming",
-      tournament: "Volleyball Nations League 2026",
-      format: "Mens",
-      stage: "Pool 7",
-      venue: "Gdansk",
-      date: "2026-07-15",
-      time: "22:00",
-      rules: "Best of 5 sets · 25 points",
-      home: "usa_v", away: "ita_v",
-      link: "match-center.html?sport=volleyball&home=usa_v&away=ita_v&state=upcoming&series=VNL%202026&format=Mens"
-    }
-  ];
+  // Backend/API is authoritative for the homepage. Static match fixtures are not
+  // used for live scores; MATCHES is populated only from backend responses.
+  const MATCHES = [];
 
   // ---------------------------------------------------------------------------
   // Dynamic Cricbuzz team registry
@@ -691,7 +265,82 @@
 
   function teamLogoUrl(imageId) {
     if (!imageId) return '';
-    return 'https://static.cricbuzz.com/a/img/v1/i1/c' + encodeURIComponent(imageId) + '/i.jpg';
+    const value = String(imageId).trim();
+    if (!value) return '';
+    if (/^https?:\/\//i.test(value)) return value;
+    return 'https://static.cricbuzz.com/a/img/v1/i1/c' + encodeURIComponent(value) + '/i.jpg';
+  }
+
+  function firstArray(...values) {
+    for (const value of values) {
+      if (Array.isArray(value)) return value;
+    }
+    return [];
+  }
+
+  function unwrapMatchList(payload) {
+    return firstArray(
+      payload,
+      payload?.data,
+      payload?.matches,
+      payload?.data?.matches,
+      payload?.data?.list,
+      payload?.list
+    );
+  }
+
+  function unwrapScorePart(value) {
+    if (value == null || value === '') return null;
+    if (Array.isArray(value)) return value.find(Boolean) || null;
+    if (typeof value !== 'object') return value;
+
+    return value.inngs1 ||
+      value.inngs2 ||
+      value.innings1 ||
+      value.innings2 ||
+      value.scoreDetails ||
+      value.score ||
+      value;
+  }
+
+  function formatScorePart(value) {
+    const part = unwrapScorePart(value);
+    if (part == null || part === '') return '';
+
+    if (typeof part === 'string' || typeof part === 'number') {
+      return String(part);
+    }
+
+    const runs = part.runs ?? part.run ?? part.score ?? part.r;
+    const wickets = part.wickets ?? part.wkts ?? part.wicket ?? part.w;
+    if (runs != null && runs !== '') {
+      return wickets != null && wickets !== ''
+        ? String(runs) + '/' + String(wickets)
+        : String(runs);
+    }
+
+    const text = part.scoreText || part.scoretext || part.display || part.value || '';
+    return text != null ? String(text) : '';
+  }
+
+  function formatOvers(value) {
+    const part = unwrapScorePart(value);
+    if (part == null || typeof part !== 'object') return '';
+    const overs = part.overs ?? part.over ?? part.ov;
+    return overs != null && overs !== '' ? String(overs) + ' ov' : '';
+  }
+
+  function normalizeStatus(rawStatus, resultText) {
+    const text = String(rawStatus || '').toLowerCase() + ' ' + String(resultText || '').toLowerCase();
+    if (/(complete|completed|finished|result|won|draw|tie|no result|abandon|cancel)/i.test(text)) return 'finished';
+    if (/(live|in progress|innings break|stumps|lunch|tea|day\\s*[1-5]|session|drinks|rain delay|delayed)/i.test(text)) return 'live';
+    if (/(upcoming|scheduled|not started|preview|fixture|yet to start|match starts|starts at)/i.test(text)) return 'upcoming';
+    return 'upcoming';
+  }
+
+  function teamKey(rawTeam) {
+    return String(rawTeam?.short || rawTeam?.teamSName || rawTeam?.code || rawTeam?.name || '')
+      .toLowerCase().trim();
   }
 
   function registerDynamicTeam(raw, category) {
@@ -739,250 +388,247 @@
     console.log('[matches] Dynamic Cricbuzz teams loaded:', Object.keys(TEAM_ID_META).length);
   }
 
-  async function loadBackendMatches() {
-
-    await Promise.allSettled([loadDynamicTeamRegistry()]);
-
-    const [liveRes, upcomingRes, recentRes] = await Promise.all([
-      fetch("http://localhost:5000/api/matches/live"),
-      fetch("http://localhost:5000/api/matches/upcoming"),
-      fetch("http://localhost:5000/api/matches/recent")
-    ]);
-
-    const live = await liveRes.json();
-    const upcoming = await upcomingRes.json();
-    const recent = await recentRes.json();
-
-    const api = [
-    ...live,
-    ...upcoming.filter(
-        x =>
-            !live.some(y => y.id === x.id)
-    ),
-    ...recent.filter(
-        x =>
-            !live.some(y => y.id === x.id)
-    )
-];
-
-    const seen = new Set();
-
-    const uniqueMatches = api.filter(match => {
-
-      if (seen.has(match.id)) return false;
-
-      seen.add(match.id);
-
-      return true;
-
-    });
-
-    try {
-
-
-      // Existing dummy matches remove
-      MATCHES.length = 0;
-
-      uniqueMatches.forEach(match => {
-
-      const homeKey = (match.homeTeam?.short || "").toLowerCase();
-const awayKey = (match.awayTeam?.short || "").toLowerCase();
-
-const MAP = {
-    wisxi: "wi",
-    slu19: "sl",
-    indu19: "ind",
-    paku19: "pak",
-    namw: "nam",
-    ugaw: "uga",
-    hkcw: "hk",
-    tanw: "tan"
-};
-
-const hk = MAP[homeKey] || homeKey;
-const ak = MAP[awayKey] || awayKey;
-
-       if (!TEAMS[hk]) {
-          const byId = TEAM_ID_META[String(match.homeTeam?.id || match.homeTeam?.teamId || '')];
-          TEAMS[hk] = byId ? { ...byId } : {
-            name: match.homeTeam?.name || hk.toUpperCase(),
-            cc: countryCodeFor(match.homeTeam?.countryName || match.homeTeam?.country || ''),
-            color: "#2563eb",
-            flag: "🏏",
-            logo: teamLogoUrl(match.homeTeam?.imageId) || null
-          };
-        }
-
-        if (!TEAMS[ak]) {
-          const byId = TEAM_ID_META[String(match.awayTeam?.id || match.awayTeam?.teamId || '')];
-          TEAMS[ak] = byId ? { ...byId } : {
-            name: match.awayTeam?.name || ak.toUpperCase(),
-            cc: countryCodeFor(match.awayTeam?.countryName || match.awayTeam?.country || ''),
-            color: "#ef4444",
-            flag: "🏏",
-            logo: teamLogoUrl(match.awayTeam?.imageId) || null
-          };
-        }
-
-        const innings = match.score || {};
-const inn1 =
-    innings?.innings1?.inngs1 ||
-    innings?.innings1?.inngs2 ||
-    innings?.innings1 ||
-    null;
-
-const inn2 =
-    innings?.innings2?.inngs2 ||
-    innings?.innings2?.inngs1 ||
-    innings?.innings2 ||
-    null;
-
-const homeScore =
-    inn1 && inn1.runs != null
-        ? `${inn1.runs}/${inn1.wickets ?? 0}`
-        : (
-            match.score?.team1Score ||
-            match.score?.home ||
-            ""
-        );
-const awayScore =
-    inn2?.runs != null
-        ? `${inn2.runs}/${inn2.wickets ?? 0}`
-        : (
-            innings?.team2Score ||
-            match.score?.team2Score ||
-            match.score?.away ||
-            ""
-        );
-
-const detail =
-    inn2?.overs != null
-        ? `${inn2.overs} ov`
-        : inn1?.overs != null
-            ? `${inn1.overs} ov`
-            : "";
-       
-        const s = (match.status || "").toLowerCase();
-
-        let status = "upcoming";
-
-        if (
-          s.includes("in progress") ||
-          s.includes("stumps") ||
-          s.includes("day") ||
-          s.includes("lunch") ||
-          s.includes("tea") ||
-          s.includes("innings") ||
-          s.includes("drinks")
-        ) {
-
-          status = "live";
-
-        }
-        else if (
-          s.includes("complete") ||
-          s.includes("won") ||
-          s.includes("result")
-        ) {
-
-          status = "finished";
-
-        }
-
-MATCHES.push({
-
-    id: match.id,
-
-    sport: "cricket",
-
-    status,
-
-    tournament: match.series,
-
-    format: match.matchType,
-
-    stage: "",
-
-    venue: match.venue,
-
-    date: match.startTime
-    ? new Date(Number(match.startTime)).toLocaleDateString("en-CA")
-    : "",
-
-time: match.startTime
-    ? new Date(Number(match.startTime)).toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit"
-      })
-    : "",
-
-    rules: match.matchType,
-home: hk,
-
-away: ak,
-
-    homeName: match.homeTeam.name,
-
-    awayName: match.awayTeam.name,
-
-   score: {
-
-    home: homeScore,
-
-    away: awayScore,
-
-    detail: detail,
-
-    innings1: inn1,
-
-    innings2: inn2
-
-},
-
-    statusLine: match.status,
-
-result:
-status === "finished"
-    ? (
-        match.result ||
-        match.status ||
-        ""
-      )
-    : "",
-
-    link: "match-center.html?id=" + match.id
-
-});
-
-      });
-      window.FANCONNECT_MATCHES = {
-
-        TEAMS,
-
-        MATCHES,
-
-        capturedOn: new Date().toISOString()
-
-      };
-
-      console.log("✅ Backend Loaded :", MATCHES);
-
-      // Backend data arrived after the static fallback may have been rendered.
-      // Let the renderer perform the single authoritative re-render.
-      window.dispatchEvent(new CustomEvent("fanconnact:matches-data-updated"));
-
-      // Next step me mapping karenge.
-
-
+  let backendRefreshPromise = null;
+  let backendHasLoadedOnce = false;
+
+  async function fetchJson(path) {
+    const bases = Array.from(new Set([
+      'http://localhost:5000/api',
+      location.hostname && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1'
+        ? ('http://' + location.hostname + ':5000/api')
+        : null
+    ].filter(Boolean)));
+
+    let lastError = null;
+    for (const base of bases) {
+      try {
+        const res = await fetch(base + path, {
+          headers: { Accept: 'application/json' },
+          cache: 'no-store'
+        });
+        if (!res.ok) throw new Error('HTTP ' + res.status + ' for ' + path);
+        return await res.json();
+      } catch (err) {
+        lastError = err;
+      }
     }
-
-    catch (e) {
-
-      console.error("Backend Error :", e);
-
-    }
-
+    throw lastError || new Error('Backend unavailable');
   }
+
+  function normalizeBackendMatch(match) {
+    if (!match || typeof match !== 'object') return null;
+
+    const homeTeam = match.homeTeam || match.team1 || match.teams?.home || {};
+    const awayTeam = match.awayTeam || match.team2 || match.teams?.away || {};
+    const homeName = homeTeam.name || homeTeam.teamName || homeTeam.teamname || '';
+    const awayName = awayTeam.name || awayTeam.teamName || awayTeam.teamname || '';
+    if (!homeName || !awayName) return null;
+
+    const homeKeyRaw = teamKey(homeTeam) || normTeam(homeName);
+    const awayKeyRaw = teamKey(awayTeam) || normTeam(awayName);
+
+    const MAP = {
+      wisxi: 'wi',
+      slu19: 'sl',
+      indu19: 'ind',
+      paku19: 'pak',
+      namw: 'nam',
+      ugaw: 'uga',
+      hkcw: 'hk',
+      tanw: 'tan'
+    };
+
+    const hk = MAP[homeKeyRaw] || homeKeyRaw;
+    const ak = MAP[awayKeyRaw] || awayKeyRaw;
+
+    const homeId = homeTeam.id ?? homeTeam.teamId ?? '';
+    const awayId = awayTeam.id ?? awayTeam.teamId ?? '';
+
+    const ensureTeam = (key, raw, id, fallbackColor) => {
+      const existing = TEAMS[key] || {};
+      const byId = TEAM_ID_META[String(id)] || {};
+      const country = raw.countryName || raw.country || raw.nation || byId.countryName || '';
+      const cc = raw.cc || countryCodeFor(country || raw.name || raw.teamName || '');
+      const imageId = raw.imageId || raw.imageID || raw.logoId || byId.imageId || '';
+      TEAMS[key] = {
+        ...byId,
+        ...existing,
+        name: raw.name || raw.teamName || raw.teamname || existing.name || key.toUpperCase(),
+        cc: cc || existing.cc || null,
+        color: existing.color || byId.color || fallbackColor,
+        flag: existing.flag || (cc ? '🌐' : '🏏'),
+        logo: teamLogoUrl(imageId) || existing.logo || null,
+        imageId: imageId || existing.imageId || null,
+        teamId: id || existing.teamId || null
+      };
+    };
+
+    ensureTeam(hk, homeTeam, homeId, '#2563eb');
+    ensureTeam(ak, awayTeam, awayId, '#ef4444');
+
+    const score = match.score || match.scoreCard || {};
+    const innings1 = score.innings1 ?? score.team1Score ?? score.team1 ?? score.home;
+    const innings2 = score.innings2 ?? score.team2Score ?? score.team2 ?? score.away;
+
+    const homeScore = formatScorePart(innings1);
+    const awayScore = formatScorePart(innings2);
+
+    const detail =
+      formatOvers(innings2) ||
+      formatOvers(innings1) ||
+      String(score.detail || score.statusLine || match.statusText || '');
+
+    const status = normalizeStatus(match.status || match.state, match.result || match.statusText);
+
+    return {
+      id: String(match.id ?? match.matchId ?? ''),
+      sport: String(match.sport || 'cricket').toLowerCase(),
+      status,
+      tournament: match.series || match.tournament || '',
+      format: match.matchType || match.matchFormat || match.format || '',
+      stage: match.stage || '',
+      venue: typeof match.venue === 'object' ? (match.venue.name || '') : (match.venue || ''),
+      date: match.startTime
+        ? new Date(Number(match.startTime)).toLocaleDateString('en-CA')
+        : (match.date || ''),
+      time: match.startTime
+        ? new Date(Number(match.startTime)).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        : (match.time || ''),
+      rules: match.rules || match.matchType || match.matchFormat || '',
+      home: hk,
+      away: ak,
+      homeName,
+      awayName,
+      score: {
+        home: homeScore,
+        away: awayScore,
+        detail,
+        innings1: unwrapScorePart(innings1),
+        innings2: unwrapScorePart(innings2)
+      },
+      statusLine: match.statusText || match.result || match.status || '',
+      result: status === 'finished' ? (match.result || match.statusText || match.status || '') : '',
+      link: 'match-center.html?id=' + encodeURIComponent(String(match.id ?? match.matchId ?? ''))
+    };
+  }
+
+  async function loadBackendMatches() {
+    if (backendRefreshPromise) return backendRefreshPromise;
+
+    backendRefreshPromise = (async () => {
+      try {
+        await Promise.allSettled([loadDynamicTeamRegistry()]);
+
+        const paths = ['/matches/live', '/matches/upcoming', '/matches/recent'];
+        const settled = await Promise.allSettled(paths.map(fetchJson));
+
+        const live = settled[0].status === 'fulfilled' ? unwrapMatchList(settled[0].value) : [];
+        const upcoming = settled[1].status === 'fulfilled' ? unwrapMatchList(settled[1].value) : [];
+        const recent = settled[2].status === 'fulfilled' ? unwrapMatchList(settled[2].value) : [];
+
+        const seen = new Set();
+        const sourceMatches = [...live, ...upcoming, ...recent];
+        const normalized = [];
+
+        for (const raw of sourceMatches) {
+          const item = normalizeBackendMatch(raw);
+          if (!item || !item.id || seen.has(item.id)) continue;
+          seen.add(item.id);
+          normalized.push(item);
+        }
+
+        const anyEndpointSucceeded = settled.some(r => r.status === 'fulfilled');
+
+        // Do not destroy the last good live data because one API request failed.
+        // On the first successful backend response, replace the old static data entirely.
+        if (anyEndpointSucceeded) {
+          MATCHES.length = 0;
+          normalized.forEach(item => MATCHES.push(item));
+          backendHasLoadedOnce = true;
+
+          window.FANCONNECT_BACKEND_MATCHES_READY = true;
+          window.FANCONNECT_MATCHES = {
+            TEAMS,
+            MATCHES,
+            capturedOn: new Date().toISOString(),
+            source: 'FanConnact backend'
+          };
+
+          console.log('✅ FanConnact backend matches:', MATCHES.length, MATCHES);
+          window.dispatchEvent(new CustomEvent('fanconnact:matches-data-updated'));
+        } else if (!backendHasLoadedOnce) {
+          window.FANCONNECT_BACKEND_MATCHES_READY = false;
+          console.warn('⚠️ FanConnact backend unavailable; no fake/stale live score injected.');
+        }
+      } catch (err) {
+        console.error('Backend Error:', err);
+        if (!backendHasLoadedOnce) {
+          window.FANCONNECT_BACKEND_MATCHES_READY = false;
+        }
+      } finally {
+        backendRefreshPromise = null;
+      }
+    })();
+
+    return backendRefreshPromise;
+  }
+
+  // Initial/page-load refresh: fetch all three match buckets.
+  // The recurring ticker must NOT refetch upcoming/recent every 30 seconds.
+  async function refreshLiveMatchesOnly() {
+    if (backendRefreshPromise) return backendRefreshPromise;
+
+    backendRefreshPromise = (async () => {
+      try {
+        const payload = await fetchJson('/matches/live');
+        const live = unwrapMatchList(payload);
+
+        const normalizedLive = [];
+        const seen = new Set();
+
+        for (const raw of live) {
+          const item = normalizeBackendMatch(raw);
+          if (!item || !item.id || seen.has(item.id)) continue;
+          seen.add(item.id);
+          normalizedLive.push(item);
+        }
+
+        // Replace only live entries while preserving the cached upcoming/recent
+        // data already loaded on the page.
+        const nonLive = MATCHES.filter(item => item.status !== 'live');
+        MATCHES.length = 0;
+        [...nonLive, ...normalizedLive].forEach(item => MATCHES.push(item));
+
+        backendHasLoadedOnce = true;
+        window.FANCONNECT_BACKEND_MATCHES_READY = true;
+        window.FANCONNECT_MATCHES = {
+          TEAMS,
+          MATCHES,
+          capturedOn: new Date().toISOString(),
+          source: 'FanConnact backend'
+        };
+
+        window.dispatchEvent(new CustomEvent('fanconnact:matches-data-updated'));
+      } catch (err) {
+        console.warn('[matches] Live-only refresh failed:', err);
+      } finally {
+        backendRefreshPromise = null;
+      }
+    })();
+
+    return backendRefreshPromise;
+  }
+
+  // Used only by the 30-second live ticker.
+  window.FANCONNECT_refreshLiveMatches = refreshLiveMatchesOnly;
+  window.FANCONNECT_refreshMatches = loadBackendMatches;
+
+  window.FANCONNECT_MATCHES = {
+    TEAMS,
+    MATCHES,
+    capturedOn: null,
+    source: 'FanConnact backend'
+  };
 
   loadBackendMatches();
 

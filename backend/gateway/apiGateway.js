@@ -132,6 +132,25 @@ api.interceptors.response.use(
 
         }
 
+        const status = error.response?.status;
+
+        // 429 is handled by cacheManager for match-list endpoints. Do not
+        // label it as an application/API crash or retry it here.
+        if (status === 429) {
+
+            console.warn(
+                "⚠️ RapidAPI rate limit (429)",
+                {
+                    url: configReq.url,
+                    status,
+                    message: error.message
+                }
+            );
+
+            throw error;
+
+        }
+
         console.error(
 
             "❌ API ERROR",
@@ -140,7 +159,7 @@ api.interceptors.response.use(
 
                 url: configReq.url,
 
-                status: error.response?.status,
+                status,
 
                 message: error.message
 

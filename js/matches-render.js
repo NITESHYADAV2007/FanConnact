@@ -114,9 +114,9 @@
       statusBadge =
         '<span class="bg-red-500/15 text-red-500 text-[10px] font-bold px-2 py-0.5 rounded flex items-center">' +
         '<span class="w-1.5 h-1.5 bg-red-500 rounded-full mr-1.5 animate-pulse"></span>LIVE</span>';
-      const hs = m.score?.home || "0";
+      const hs = m.score?.home || "—";
 
-      const as = m.score?.away || "0";
+      const as = m.score?.away || "—";
 
       const detail = m.score?.detail
         ? esc(m.score.detail)
@@ -330,9 +330,9 @@ as =
 
     window.__FANCONNACT_MATCH_REFRESH_TIMER = setInterval(async () => {
       try {
-        if (typeof window.FANCONNECT_refreshMatches !== "function") return;
+        if (typeof window.FANCONNECT_refreshLiveMatches !== "function") return;
 
-        await window.FANCONNECT_refreshMatches();
+        await window.FANCONNECT_refreshLiveMatches();
         // matches-data.js dispatches fanconnact:matches-data-updated after the
         // backend response. That event performs the single re-render.
       } catch (err) {
@@ -411,15 +411,11 @@ as =
 
     }
 
-    if (!MATCHES.length) {
+    // Backend/API is authoritative. Do not replace it with stale Firestore/static
+    // match data when the live provider is unavailable.
+    getData();
 
-      await loadMatchesFromFirestore();
-
-      getData();
-
-    }
-
-    console.log("Renderer Loaded:", MATCHES.length);
+    console.log("Renderer Loaded:", MATCHES.length, "backend:", !!window.FANCONNECT_BACKEND_MATCHES_READY);
 
     // 0) dashboard hero carousel
     renderDashboardHero();

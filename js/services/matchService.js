@@ -19,6 +19,48 @@ import * as matchAPI from "../api/normalizeMatch.js";
 
 const matchCache = new Map();
 
+let predictionGenerationInFlight = new Set();
+
+async function triggerPredictionGeneration(matchOrMatches){
+    const list = Array.isArray(matchOrMatches) ? matchOrMatches : [matchOrMatches];
+
+    for(const raw of list){
+        if(!raw) continue;
+
+        const match = {
+            ...raw,
+            id: String(raw.id ?? raw.matchId ?? ""),
+            sport: String(raw.sport || "cricket").toLowerCase()
+        };
+
+        if(!match.id || match.sport !== "cricket") continue;
+
+        const status = String(
+            match.status ?? match.state ?? match.matchState ?? ""
+        ).toUpperCase();
+
+        if(!["LIVE","IN PROGRESS","INPROGRESS","STARTED","ONGOING"].includes(status) &&
+           raw.isLive !== true){
+            continue;
+        }
+
+        const key = match.id;
+        if(predictionGenerationInFlight.has(key)) continue;
+
+        predictionGenerationInFlight.add(key);
+
+        try{
+            const engine = await import("../engines/predictionEngine.js");
+            await engine.generatePredictions(match);
+        }catch(error){
+            // Prediction generation must never break Match Center.
+            console.warn("Live prediction generation skipped:", error);
+        }finally{
+            predictionGenerationInFlight.delete(key);
+        }
+    }
+}
+
 /* ==========================================================
         Live Matches
 ========================================================== */
@@ -33,7 +75,11 @@ export async function getLiveMatches(forceRefresh = false){
 
     ){
 
-        return matchCache.get("live");
+        const cached = matchCache.get("live");
+        // Fire-and-forget: cache remains exactly the same; predictions are
+        // generated from the latest snapshot already available to Match Center.
+        triggerPredictionGeneration(cached).catch(()=>{});
+        return cached;
 
     }
 
@@ -50,6 +96,10 @@ export async function getLiveMatches(forceRefresh = false){
             matches
 
         );
+
+        // Match Center's fresh API snapshot is also a prediction source.
+        // This keeps generation independent from the Prediction page.
+        triggerPredictionGeneration(matches).catch(()=>{});
 
         return matches;
 
@@ -203,7 +253,9 @@ export async function getMatch(
 
     ){
 
-        return matchCache.get(matchId);
+        const cached = matchCache.get(matchId);
+        triggerPredictionGeneration(cached).catch(()=>{});
+        return cached;
 
     }
 
@@ -224,6 +276,8 @@ export async function getMatch(
             match
 
         );
+
+        triggerPredictionGeneration(match).catch(()=>{});
 
         return match;
 
@@ -328,6 +382,8 @@ export function listenMatch(
                     match
 
                 );
+
+                triggerPredictionGeneration(match).catch(()=>{});
 
                 callback(match);
 

@@ -135,10 +135,10 @@ document.addEventListener("DOMContentLoaded", () => {
   // Monitor Real Auth State (firebase loaded lazily so a network/CDN
   // failure can never block the rest of this module from running).
   (async () => {
-    let auth, db, onAuthStateChanged, doc, getDoc, signOut;
+    let auth, db, onAuthStateChanged, doc, getDoc, onSnapshot, signOut;
     try {
       ({ onAuthStateChanged, signOut } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"));
-      ({ doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"));
+      ({ doc, getDoc, onSnapshot } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"));
       ({ auth, db } = await import("./firebase-config.js"));
     } catch (e) {
       console.warn("[script] firebase unavailable:", e);
@@ -218,11 +218,11 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    // Update every FanCoin badge across the site with the real balance
-    // (defaults to 100 for every registered user). Safe to call repeatedly.
+    // Update every FanCoin badge across the site from Firestore.
+    // No dummy/default wallet balance is used here.
     function updateCoinBadges(coins) {
-      var c = parseInt(coins, 10);
-      if (isNaN(c)) c = 100;
+      var c = Number(coins);
+      if (!Number.isFinite(c)) return;
       var formatted = c.toLocaleString();
       // Top-bar wallet badge(s). Some pages (e.g. dashboard) have MORE THAN ONE
       // element with id="wallet-coin-balance" (top bar + wallet card), so we
@@ -247,6 +247,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const userNameElem = document.getElementById("user-name-display");
     const userAvatarElem = document.getElementById("user-profile-img");
     const userLevelElem = document.getElementById("user-level-display");
+    const dashboardStreakElem = document.getElementById("dashboard-current-streak");
     const welcomeElem = document.getElementById("welcome-message");
 
     if (user) {
@@ -262,22 +263,37 @@ document.addEventListener("DOMContentLoaded", () => {
       if (welcomeElem)
         welcomeElem.innerHTML = `Welcome back, ${displayIdentity}! <span class="ml-2 text-2xl">👋</span>`;
       if (userAvatarElem) userAvatarElem.src = photo;
-      // Expose the auth-based profile immediately (Firestore may refine it)
+      // Firestore is the source of truth for gamification fields.
+      // Keep auth-only identity available while the database profile loads,
+      // but do not paint dummy coins/XP/streak values.
       window.currentUserProfile = {
         name: displayIdentity,
         username: '',
         photoURL: photo,
-        level: 1,
+        level: null,
         uid: user.uid,
-        xp: 0,
-        coins: 100
+        xp: null,
+        coins: null,
+        currentStreak: null,
+        bestStreak: null,
+        totalPredictions: null,
+        correctPredictions: null,
+        wrongPredictions: null,
+        accuracy: null,
+        rewardPoints: null,
+        totalXPEarned: null,
+        totalCoinsEarned: null
       };
-      updateCoinBadges(100);
 
-      // Fetch extra Firestore details in the background
+      // Keep the user profile live so Dashboard, FanCoin and other modules
+      // immediately reflect Firestore changes without a page refresh.
       try {
-        const userDoc = await getDoc(doc(db, "users", user.uid));
-        if (userDoc.exists()) {
+        onSnapshot(doc(db, "users", user.uid), (userDoc) => {
+          if (!userDoc.exists()) {
+            console.warn("[script] Firestore user document not found:", user.uid);
+            return;
+          }
+
           const data = userDoc.data();
           if (data.username) displayIdentity = `@${data.username}`;
           if (data.frame && userAvatarElem) {
@@ -306,22 +322,45 @@ document.addEventListener("DOMContentLoaded", () => {
             const name = data.fullName || data.username || displayIdentity;
             welcomeElem.textContent = `Welcome back, ${name}!`;
           }
-          // Expose the real database profile for other modules (e.g. chat)
-          const realCoins = parseInt(data.coins, 10);
-          const coins = isNaN(realCoins) ? 100 : realCoins; // default 100 coins for every registered user
+          // Expose the complete real database profile for other modules.
+          const xp = Number.isFinite(Number(data.xp)) ? Number(data.xp) : 0;
+          const coins = Number.isFinite(Number(data.coins)) ? Number(data.coins) : 0;
+          const level = Number.isFinite(Number(data.level))
+            ? Number(data.level)
+            : calculateLevel(xp);
+          const currentStreak = Number.isFinite(Number(data.currentStreak)) ? Number(data.currentStreak) : 0;
+
+          if (dashboardStreakElem) {
+            dashboardStreakElem.textContent = currentStreak.toLocaleString();
+          }
+
           window.currentUserProfile = {
             name: data.fullName || data.username || displayIdentity,
             username: data.username || '',
             photoURL: data.photoURL || photo,
-            level: calculateLevel(parseInt(data.xp, 10) || 0),
+            level,
             uid: user.uid,
-            xp: parseInt(data.xp, 10) || 0,
-            coins: coins
+            xp,
+            coins,
+            currentStreak,
+            bestStreak: Number.isFinite(Number(data.bestStreak)) ? Number(data.bestStreak) : 0,
+            totalPredictions: Number.isFinite(Number(data.totalPredictions)) ? Number(data.totalPredictions) : 0,
+            correctPredictions: Number.isFinite(Number(data.correctPredictions)) ? Number(data.correctPredictions) : 0,
+            wrongPredictions: Number.isFinite(Number(data.wrongPredictions)) ? Number(data.wrongPredictions) : 0,
+            accuracy: Number.isFinite(Number(data.accuracy)) ? Number(data.accuracy) : 0,
+            rewardPoints: Number.isFinite(Number(data.rewardPoints)) ? Number(data.rewardPoints) : 0,
+            totalXPEarned: Number.isFinite(Number(data.totalXPEarned)) ? Number(data.totalXPEarned) : 0,
+            totalCoinsEarned: Number.isFinite(Number(data.totalCoinsEarned)) ? Number(data.totalCoinsEarned) : 0
           };
+
           updateCoinBadges(coins);
-        }
+
+          window.dispatchEvent(new CustomEvent("fanconnact:user-profile-updated", {
+            detail: window.currentUserProfile
+          }));
+        });
       } catch (error) {
-        console.error("Error fetching user data from Firestore:", error);
+        console.error("Error listening to user data from Firestore:", error);
       }
     } else {
       // Default Guest State

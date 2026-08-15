@@ -443,6 +443,51 @@ async function predictionApi(path){
     throw lastError || new Error("Prediction match API unavailable");
 }
 
+
+// Resolve the actual striker without assuming batsmen[0] is always on strike.
+// This is prediction-only data mapping; match/cache behaviour is unchanged.
+function resolvePredictionCurrentBatter(root, current, currentBatters) {
+    const explicit =
+        root?.currentBatter || root?.currentbatter ||
+        current?.currentBatter || current?.currentbatter ||
+        root?.striker || current?.striker ||
+        root?.onStrikeBatter || current?.onStrikeBatter || null;
+
+    if (explicit && typeof explicit === 'object') return explicit;
+
+    const list = Array.isArray(currentBatters) ? currentBatters.filter(Boolean) : [];
+    if (!list.length) return null;
+    if (list.length === 1) return list[0];
+
+    const strikerId = String(
+        root?.strikerId ?? root?.strikerID ?? current?.strikerId ?? current?.strikerID ?? ''
+    );
+    const strikerName = String(
+        root?.strikerName ?? current?.strikerName ?? ''
+    ).trim().toLowerCase();
+
+    const marked = list.find(b => {
+        const flag = b?.isStriker ?? b?.isOnStrike ?? b?.onStrike ?? b?.striker ?? b?.isOnstrike;
+        if (flag === true || String(flag).toLowerCase() === 'true') return true;
+        const role = String(b?.battingStatus ?? b?.status ?? b?.role ?? '').toLowerCase();
+        return role.includes('striker') || role === 'on strike' || role === 'onstrike';
+    });
+    if (marked) return marked;
+
+    if (strikerId) {
+        const byId = list.find(b => String(b?.id ?? b?.playerId ?? b?.batsmanId ?? b?.batId ?? '') === strikerId);
+        if (byId) return byId;
+    }
+    if (strikerName) {
+        const byName = list.find(b => String(b?.name ?? b?.playerName ?? b?.batsmanName ?? '').trim().toLowerCase() === strikerName);
+        if (byName) return byName;
+    }
+
+    // Do not guess from [0] when two active batters exist.
+    return null;
+}
+
+
 function normalizePredictionMatch(raw, fallbackId = ""){
     const root = raw?.data || raw || {};
     const source =
@@ -472,20 +517,25 @@ function normalizePredictionMatch(raw, fallbackId = ""){
         root?.teams?.away ||
         {};
 
-    const rawStatus = String(
-        source?.status ??
+    // Provider display text can say things like "India opt to bat" while the
+    // actual lifecycle is exposed separately as `state: inprogress`.
+    // Lifecycle MUST prefer state/matchState/isLive over display status.
+    const lifecycleValue =
         source?.state ??
-        root?.status ??
         root?.state ??
         source?.matchState ??
         root?.matchState ??
-        ""
-    ).toLowerCase();
+        source?.status ??
+        root?.status ??
+        "";
+
+    const rawStatus = String(lifecycleValue).toLowerCase().trim();
+    const isLive = source?.isLive === true || root?.isLive === true;
 
     let status = "UPCOMING";
-    if(/live|in progress|inprogress|started|ongoing|innings break|stumps|delay/.test(rawStatus)){
+    if(isLive || /live|in progress|inprogress|started|ongoing|innings break|stumps|rain delay/.test(rawStatus)){
         status = "LIVE";
-    }else if(/complete|finished|result|ended|abandon|cancel/.test(rawStatus)){
+    }else if(/complete|completed|finished|result|ended|match ended|abandon|cancel/.test(rawStatus)){
         status = "FINISHED";
     }
 
@@ -611,11 +661,11 @@ function normalizePredictionMatch(raw, fallbackId = ""){
             [],
 
         currentBatter:
-            source?.currentBatter ||
-            root?.currentBatter ||
-            source?.currentBatters?.[0] ||
-            root?.currentBatters?.[0] ||
-            null,
+            resolvePredictionCurrentBatter(
+                root,
+                source?.currentInnings || root?.currentInnings || source?.current || root?.current || {},
+                source?.currentBatters || root?.currentBatters || source?.batsmen || root?.batsmen || []
+            ),
 
         currentBowler:
             source?.currentBowler ||
@@ -940,27 +990,28 @@ export function normalizeCricketFormat(value){
         value?.matchType ??
         value?.matchFormat ??
         value?.format ??
+        value?.seriesName ??
+        value?.series ??
         value ??
         ""
     ).toLowerCase();
 
+    if(/hundred|the hundred|100\s*ball|100\s*balls/.test(raw)) return "HUNDRED";
     if(/test/.test(raw)) return "TEST";
     if(/\bt10\b|ten10|ten-10|10 over/.test(raw)) return "T10";
     if(/\bt20\b|twenty20|twenty-20|20 over/.test(raw)) return "T20";
     if(/\bodi\b|one day|50 over/.test(raw)) return "ODI";
-
-    // Cricket leagues/unknown limited-overs matches default to T20-style
-    // pacing, but the match-specific limit remains conservative.
     return "T20";
 }
 
 export function getPerMatchPredictionLimit(value){
     switch(normalizeCricketFormat(value)){
-        case "T10": return 4;
-        case "T20": return 5;
-        case "ODI": return 5;
-        case "TEST": return 5;
-        default: return 5;
+        case "T10": return 12;
+        case "T20": return 20;
+        case "ODI": return 30;
+        case "HUNDRED": return 20;
+        case "TEST": return 40;
+        default: return 20;
     }
 }
 
@@ -993,7 +1044,7 @@ async function getPersistedUserMatchPredictionCount(uid, matchId){
     }
 }
 
-const GLOBAL_PREDICTION_SUBMIT_COOLDOWN_MS = 45 * 1000;
+const GLOBAL_PREDICTION_SUBMIT_COOLDOWN_MS = 10 * 1000;
 
 /*=====================================
         SUBMIT PREDICTION

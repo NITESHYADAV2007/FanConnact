@@ -6,9 +6,14 @@ import {
     selectedOverCheckpoint,
     shouldUseEventPrediction,
     eventType,
+    eventKey,
+    currentOverNumber,
     expiry,
     players,
-    nextOverRunsOptions
+    nextOverRunsOptions,
+    currentBatter,
+    bowlers,
+    milestoneExpiry
 } from "../helpers/predictionHelpers.js";
 
 export const cricketRules = [];
@@ -125,125 +130,82 @@ cricketRules.push({
 
 cricketRules.push({
     id: "POWERPLAY",
-    priority: 85,
+    priority: 86,
     condition(match){
         const cfg = formatConfig(match);
-        const over = Math.floor(
-            Number(
-                match.currentOver ??
-                match.over ??
-                match.currentInnings?.over ??
-                0
-            )
-        );
+        const over = currentOverNumber(match);
+        if(String(match.status || "").toUpperCase() !== "LIVE") return false;
+        if(cfg.powerplayStart == null || cfg.powerplayEnd == null || over == null) return false;
 
+        // Open the powerplay question DURING the powerplay, not after it has
+        // already finished. The result is resolved when the window closes.
+        const wholeOver = Math.floor(over);
+        return wholeOver >= cfg.powerplayStart && wholeOver < cfg.powerplayEnd;
+    },
+    build(match, helpers){
+        return {
+            ...Builder.powerplay(
+                match,
+                helpers.powerplayOptions(match),
+                helpers.expiry(match, "POWERPLAY_SCORE", "medium")
+            ),
+            powerplayPrediction: true,
+            powerplayEndOver: formatConfig(match).powerplayEnd
+        };
+    }
+});
+
+/* ==========================================================
+   EVENT -> NEXT BALL
+   A real FOUR/SIX/WICKET opens a next-ball event prediction.
+   This is completely independent of normal over checkpoints.
+   The engine applies event spacing so consecutive event balls do
+   not create a prediction every poll/over.
+========================================================== */
+
+cricketRules.push({
+    id: "EVENT_NEXT_BALL",
+    priority: 94,
+    condition(match){
         return (
             String(match.status || "").toUpperCase() === "LIVE" &&
-            cfg.powerplayEnd != null &&
-            Number.isFinite(over) &&
-            over === cfg.powerplayEnd
+            Boolean(eventKey(match)) &&
+            ["FOUR", "SIX", "WICKET"].includes(eventType(match)) &&
+            shouldUseEventPrediction(match, "NEXT_BALL")
         );
     },
     build(match, helpers){
-        return Builder.powerplay(
+        return Builder.nextBallEvent(
             match,
-            helpers.powerplayOptions(match),
-            helpers.expiry(match, "POWERPLAY_SCORE", "medium")
-        );
-    }
-});
-
-/* ==========================================================
-   OCCASIONAL EVENT: WICKET
-   Only a real provider event can open this.
-========================================================== */
-
-cricketRules.push({
-    id: "EVENT_WICKET",
-    priority: 72,
-    condition(match){
-        return (
-            String(match.status || "").toUpperCase() === "LIVE" &&
-            eventType(match) === "WICKET" &&
-            shouldUseEventPrediction(match, "WICKET")
-        );
-    },
-    build(match){
-        return Builder.wicketYesNo(
-            match,
-            expiry(match, "WICKET", "medium"),
-            "medium"
-        );
-    }
-});
-
-/* ==========================================================
-   OCCASIONAL EVENT: SIX
-========================================================== */
-
-cricketRules.push({
-    id: "EVENT_SIX",
-    priority: 70,
-    condition(match){
-        return (
-            String(match.status || "").toUpperCase() === "LIVE" &&
-            eventType(match) === "SIX" &&
-            shouldUseEventPrediction(match, "SIX")
-        );
-    },
-    build(match){
-        return Builder.nextSix(
-            match,
-            expiry(match, "NEXT_SIX", "easy"),
+            helpers.expiry(match, "NEXT_BALL_EVENT", "easy"),
             "easy"
         );
     }
 });
 
 /* ==========================================================
-   OCCASIONAL EVENT: FOUR / BOUNDARY
-========================================================== */
-
-cricketRules.push({
-    id: "EVENT_BOUNDARY",
-    priority: 68,
-    condition(match){
-        return (
-            String(match.status || "").toUpperCase() === "LIVE" &&
-            ["FOUR", "BOUNDARY"].includes(eventType(match)) &&
-            shouldUseEventPrediction(match, "BOUNDARY")
-        );
-    },
-    build(match){
-        return Builder.nextBoundary(
-            match,
-            expiry(match, "NEXT_BOUNDARY", "easy")
-        );
-    }
-});
-
-/* ==========================================================
    PLAYER MILESTONES
-   Only when the real current batter is close to the milestone.
+   Works for every cricket format (T10, T20, ODI, The Hundred and Test).
 ========================================================== */
 
 cricketRules.push({
     id: "PLAYER_FIFTY",
     priority: 76,
     condition(match){
-        const runs = Number(match.currentBatter?.runs);
+        const batter = currentBatter(match);
+        const runs = Number(batter?.runs);
         return (
             String(match.status || "").toUpperCase() === "LIVE" &&
             Number.isFinite(runs) &&
-            runs >= 45 &&
+            runs >= 41 &&
             runs < 50
         );
     },
     build(match, helpers){
         return Builder.playerFifty(
             match,
-            match.currentBatter,
-            helpers.expiry(match, "PLAYER_FIFTY", "hard")
+            currentBatter(match),
+            helpers.milestoneExpiry()
         );
     }
 });
@@ -252,22 +214,99 @@ cricketRules.push({
     id: "PLAYER_CENTURY",
     priority: 78,
     condition(match){
-        const runs = Number(match.currentBatter?.runs);
+        const batter = currentBatter(match);
+        const runs = Number(batter?.runs);
         return (
             String(match.status || "").toUpperCase() === "LIVE" &&
             Number.isFinite(runs) &&
-            runs >= 90 &&
+            runs >= 91 &&
             runs < 100
         );
     },
     build(match, helpers){
         return Builder.playerCentury(
             match,
-            match.currentBatter,
-            helpers.expiry(match, "PLAYER_CENTURY", "hard")
+            currentBatter(match),
+            helpers.milestoneExpiry()
         );
     }
 });
+
+
+/* ==========================================================
+   LIVE EVENT / CONTINUOUS PREDICTIONS
+   All existing cricket prediction types are eligible. The engine
+   enforces the format-specific active cap and duplicate protection.
+========================================================== */
+
+cricketRules.push({
+    id: "NEXT_WICKET",
+    priority: 68,
+    condition(match){
+        return (
+            String(match.status || "").toUpperCase() === "LIVE" &&
+            bowlers(match).length >= 2
+        );
+    },
+    build(match, helpers){
+        return Builder.nextWicket(
+            match,
+            bowlers(match),
+            helpers.expiry(match, "NEXT_WICKET", "medium")
+        );
+    }
+});
+
+cricketRules.push({
+    id: "NEXT_BOUNDARY",
+    priority: 58,
+    condition(match){
+        return String(match.status || "").toUpperCase() === "LIVE";
+    },
+    build(match, helpers){
+        return Builder.nextBoundary(
+            match,
+            helpers.expiry(match, "NEXT_BOUNDARY", "easy")
+        );
+    }
+});
+
+cricketRules.push({
+    id: "NEXT_SIX",
+    priority: 56,
+    condition(match){
+        return String(match.status || "").toUpperCase() === "LIVE";
+    },
+    build(match, helpers){
+        return Builder.nextSix(
+            match,
+            helpers.expiry(match, "NEXT_SIX", "easy")
+        );
+    }
+});
+
+cricketRules.push({
+    id: "WICKET",
+    priority: 54,
+    condition(match){
+        return (
+            String(match.status || "").toUpperCase() === "LIVE" &&
+            (
+                match.wicketInNextOver != null ||
+                match.nextWicket != null ||
+                match.wicketInOver != null
+            )
+        );
+    },
+    build(match, helpers){
+        return Builder.wicketYesNo(
+            match,
+            helpers.expiry(match, "WICKET", "medium"),
+            "medium"
+        );
+    }
+});
+
 
 /* ==========================================================
    DEATH OVER

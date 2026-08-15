@@ -15,6 +15,7 @@ const PredictionTrigger = Object.freeze({
     NEXT_SIX: "NEXT_SIX",
     NEXT_WICKET: "NEXT_WICKET",
     NEXT_BOUNDARY: "NEXT_BOUNDARY",
+    NEXT_BALL_EVENT: "NEXT_BALL_EVENT",
     BATSMAN_50: "BATSMAN_50",
     BATSMAN_100: "BATSMAN_100",
     DEATH_OVER: "DEATH_OVER",
@@ -41,7 +42,13 @@ function build({
 
     options,
 
-    expiresAt
+    expiresAt,
+
+    milestoneTarget = null,
+
+    targetPlayerId = null,
+
+    targetPlayerName = null
 
 }){
     return{
@@ -63,7 +70,13 @@ match.sport,
 
         options,
 
-        expiresAt
+        expiresAt,
+
+        ...(milestoneTarget != null ? { milestoneTarget } : {}),
+
+        ...(targetPlayerId != null ? { targetPlayerId: String(targetPlayerId) } : {}),
+
+        ...(targetPlayerName ? { targetPlayerName: String(targetPlayerName) } : {})
 
     };
 
@@ -214,7 +227,13 @@ export function playerFifty(
 
         ],
 
-        expiresAt
+        expiresAt,
+
+        milestoneTarget: 50,
+
+        targetPlayerId: batter.id ?? batter.playerId ?? batter.name,
+
+        targetPlayerName: batter.name
 
     });
 
@@ -379,14 +398,68 @@ export function nextOverRuns(
 }
 
 /* ==========================================================
-        Wicket Yes / No
+        Event -> Next Ball Prediction
+        The triggering event is stored so resultEngine can resolve
+        against the FIRST provider event after the trigger.
 ========================================================== */
 
-export function wicketYesNo(
+function sourceEventKey(match){
+    return String(
+        match?.lastEvent?.id ??
+        match?.lastEvent?.eventId ??
+        match?.lastEvent?.timestamp ??
+        match?.lastEvent?.ballId ??
+        match?.lastEvent?.key ??
+        ""
+    );
+}
+
+function sourceEventType(match){
+    const event = match?.lastEvent || {};
+    const explicit = String(event.type ?? event.eventType ?? event.name ?? "").toUpperCase();
+    if(explicit.includes("WICKET")) return "WICKET";
+    if(explicit.includes("SIX")) return "SIX";
+    if(explicit.includes("FOUR") || explicit.includes("BOUNDARY")) return "FOUR";
+    if(event.wicket || event.isWicket || event.dismissal) return "WICKET";
+    const runs = Number(event.runs ?? event.totalRuns ?? event.batRuns);
+    if(runs === 6) return "SIX";
+    if(runs === 4 || event.isBoundary) return "FOUR";
+    return "";
+}
+
+export function nextBallEvent(
     match,
     expiresAt,
-    difficulty = "medium"
+    difficulty = "easy"
 ){
+    return {
+        ...build({
+            trigger: PredictionTrigger.NEXT_BALL_EVENT,
+            match,
+            type: "NEXT_BALL_EVENT",
+            difficulty,
+            question: "What will happen on the next ball?",
+            options: [
+                { id: "FOUR", text: "Four" },
+                { id: "SIX", text: "Six" },
+                { id: "WICKET", text: "Wicket" },
+                { id: "OTHER", text: "Other" }
+            ],
+            expiresAt
+        }),
+        eventPrediction: true,
+        sourceEventKey: sourceEventKey(match),
+        sourceEventType: sourceEventType(match),
+        eventOver: Number(match?.currentOver ?? match?.over ?? match?.currentInnings?.over ?? 0) || 0
+    };
+}
+
+/* ==========================================================
+        Legacy Event Predictions
+        Kept for compatibility with older stored predictions.
+========================================================== */
+
+export function wicketYesNo(match, expiresAt, difficulty = "medium"){
     return build({
         trigger: PredictionTrigger.WICKET,
         match,
@@ -401,21 +474,28 @@ export function wicketYesNo(
     });
 }
 
-/* ==========================================================
-        Six Yes / No
-========================================================== */
-
-export function nextSix(
-    match,
-    expiresAt,
-    difficulty = "easy"
-){
+export function nextSix(match, expiresAt, difficulty = "easy"){
     return build({
         trigger: PredictionTrigger.NEXT_SIX,
         match,
         type: "NEXT_SIX",
         difficulty,
         question: "Will a six be hit in the next over?",
+        options: [
+            { id: "yes", text: "Yes" },
+            { id: "no", text: "No" }
+        ],
+        expiresAt
+    });
+}
+
+export function nextBoundary(match, expiresAt){
+    return build({
+        trigger: PredictionTrigger.NEXT_BOUNDARY,
+        match,
+        type: "NEXT_BOUNDARY",
+        difficulty: "easy",
+        question: "Will the next scoring shot be a Boundary?",
         options: [
             { id: "yes", text: "Yes" },
             { id: "no", text: "No" }
@@ -465,56 +545,6 @@ export function nextWicket(
 /* ==========================================================
         Boundary
 ========================================================== */
-
-export function nextBoundary(
-
-    match,
-
-    expiresAt
-
-){
-
-    return build({
-
-        trigger:
-
-        PredictionTrigger.NEXT_BOUNDARY,
-
-        match,
-
-        type:"NEXT_BOUNDARY",
-
-        difficulty:"easy",
-
-        question:
-
-        "Will the next scoring shot be a Boundary?",
-
-        options:[
-
-            {
-
-                id:"yes",
-
-                text:"Yes"
-
-            },
-
-            {
-
-                id:"no",
-
-                text:"No"
-
-            }
-
-        ],
-
-        expiresAt
-
-    });
-
-}
 
 /* ==========================================================
         Player Century
@@ -566,7 +596,13 @@ export function playerCentury(
 
         ],
 
-        expiresAt
+        expiresAt,
+
+        milestoneTarget: 100,
+
+        targetPlayerId: batter.id ?? batter.playerId ?? batter.name,
+
+        targetPlayerName: batter.name
 
     });
 

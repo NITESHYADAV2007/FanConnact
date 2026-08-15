@@ -549,7 +549,7 @@
                   </p>
                 </div>
 
-                <button class="how-play-btn">
+                <button class="how-play-btn" id="howToPlayBtn" type="button" aria-haspopup="dialog" aria-controls="howToPlayModal">
                   <i class="fa-regular fa-circle-question"></i>
 
                   How To Play
@@ -701,6 +701,127 @@
           </div>
         </section>
       </div>
+
+      <!-- HOW TO PLAY MODAL -->
+      <div id="howToPlayModal" class="how-to-play-modal" aria-hidden="true">
+        <div class="how-to-play-backdrop" data-how-to-play-close></div>
+
+        <section class="how-to-play-dialog" role="dialog" aria-modal="true" aria-labelledby="howToPlayTitle">
+          <div class="how-to-play-header">
+            <div>
+              <div class="how-to-play-kicker">
+                <i class="fa-solid fa-circle-info"></i>
+                Prediction Arena
+              </div>
+              <h2 id="howToPlayTitle">How To Play</h2>
+              <p>Predict smart. Earn XP. Collect Coins. Climb the Leaderboard.</p>
+            </div>
+
+            <button type="button" class="how-to-play-close" data-how-to-play-close aria-label="Close How To Play">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+
+          <div class="how-to-play-content custom-scrollbar">
+            <div class="how-to-play-section">
+              <h3><span>1</span> How predictions work</h3>
+              <ul>
+                <li>Choose an available prediction for the selected cricket match.</li>
+                <li>Select one option and submit your prediction.</li>
+                <li>Once submitted, your prediction cannot be changed.</li>
+                <li>Predictions appear only when their rule/trigger is active; the system does not create questions on every over.</li>
+              </ul>
+            </div>
+
+            <div class="how-to-play-section">
+              <h3><span>2</span> Pre-match predictions</h3>
+              <ul>
+                <li><strong>Match Winner:</strong> Who will win the match?</li>
+                <li><strong>Toss:</strong> Who will win the toss?</li>
+                <li><strong>Highest Run Scorer:</strong> Who will be the highest run scorer?</li>
+                <li><strong>Total Score:</strong> What will be the total score?</li>
+              </ul>
+              <p class="how-to-play-note">Only a small number of pre-match questions are kept active at a time.</p>
+            </div>
+
+            <div class="how-to-play-section">
+              <h3><span>3</span> Live match predictions</h3>
+              <ul>
+                <li><strong>Next Over Runs:</strong> Predict the runs in the selected over checkpoint.</li>
+                <li><strong>Powerplay Score:</strong> Predict the score during the powerplay window.</li>
+                <li><strong>Next Wicket:</strong> Predict which bowler will take the next wicket.</li>
+                <li><strong>Next Boundary:</strong> Predict whether the next scoring shot will be a boundary.</li>
+                <li><strong>Next Six:</strong> Predict whether a six will be hit in the next over.</li>
+                <li><strong>Wicket:</strong> Predict whether a wicket will fall in the next over when that trigger is available.</li>
+              </ul>
+            </div>
+
+            <div class="how-to-play-section">
+              <h3><span>4</span> Special live predictions</h3>
+              <ul>
+                <li><strong>Next Ball Event:</strong> After a real Four, Six, or Wicket event, predict what happens on the next ball: Four, Six, Wicket, or Other.</li>
+                <li><strong>Fifty:</strong> When the current batter is approaching 50, predict whether they will score a Fifty.</li>
+                <li><strong>Century:</strong> When the current batter is approaching 100, predict whether they will score a Century.</li>
+                <li><strong>Death Over:</strong> During the configured death-over point, predict the runs scored in that over.</li>
+                <li><strong>Chase:</strong> In a close late chase, predict whether the batting team will successfully chase the target.</li>
+              </ul>
+            </div>
+
+            <div class="how-to-play-section">
+              <h3><span>5</span> Cricket format rules</h3>
+              <ul>
+                <li>The Prediction Arena is cricket-only right now.</li>
+                <li>The system recognizes T10, T20, ODI, The Hundred, and Test formats.</li>
+                <li>Normal-over questions use selected checkpoints instead of appearing every over.</li>
+                <li>Powerplay and death-over questions follow the format's configured windows.</li>
+                <li>Live prediction limits are format-specific, so the board does not become overloaded with questions.</li>
+              </ul>
+            </div>
+
+            <div class="how-to-play-section">
+              <h3><span>6</span> Results & rewards</h3>
+              <ul>
+                <li>Live/event predictions can be resolved during the match when the required result is available.</li>
+                <li>Match Winner, Highest Scorer, and Total Score are final-outcome predictions and are resolved only after the match is actually finished.</li>
+                <li>Correctness is checked against the actual match result/event data.</li>
+                <li>Rewards are processed from your selected option, prediction difficulty, and whether the prediction was correct.</li>
+                <li>Your completed predictions move to Results/My Predictions after they are resolved.</li>
+              </ul>
+            </div>
+
+            <div class="how-to-play-footer">
+              <i class="fa-solid fa-star"></i>
+              <span>For a better experience, visit FanConnact.</span>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <style>
+        .how-to-play-modal{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;padding:24px}
+        .how-to-play-modal.is-open{display:flex}
+        .how-to-play-backdrop{position:absolute;inset:0;background:rgba(2,8,18,.72);backdrop-filter:blur(4px)}
+        .how-to-play-dialog{position:relative;width:min(720px,100%);max-height:min(82vh,760px);overflow:hidden;border:1px solid #2a2e35;border-radius:22px;background:#11161d;color:#f8fafc;box-shadow:0 24px 80px rgba(0,0,0,.45);display:flex;flex-direction:column}
+        .how-to-play-header{flex:0 0 auto;display:flex;align-items:flex-start;justify-content:space-between;gap:20px;padding:22px 24px 18px;border-bottom:1px solid #252b33;background:linear-gradient(180deg,rgba(16,185,129,.09),rgba(16,185,129,0))}
+        .how-to-play-kicker{color:#10b981;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;display:flex;align-items:center;gap:7px;margin-bottom:5px}
+        .how-to-play-header h2{margin:0;font-size:24px;line-height:1.2;font-weight:800}
+        .how-to-play-header p{margin:7px 0 0;color:#9ca3af;font-size:13px}
+        .how-to-play-close{flex:0 0 auto;width:38px;height:38px;border:1px solid #303740;border-radius:12px;background:#171c23;color:#cbd5e1;cursor:pointer;display:grid;place-items:center;transition:.2s ease}
+        .how-to-play-close:hover{background:#202730;color:#fff;transform:translateY(-1px)}
+        .how-to-play-content{min-height:0;overflow-y:auto;padding:18px 24px 22px}
+        .how-to-play-section{padding:16px 0;border-bottom:1px solid #222831}
+        .how-to-play-section:first-child{padding-top:4px}
+        .how-to-play-section h3{margin:0 0 10px;display:flex;align-items:center;gap:10px;font-size:15px;font-weight:800;color:#fff}
+        .how-to-play-section h3 span{width:26px;height:26px;flex:0 0 26px;display:grid;place-items:center;border-radius:8px;background:rgba(16,185,129,.14);color:#34d399;font-size:12px;font-weight:800}
+        .how-to-play-section ul{margin:0;padding-left:20px;color:#c4ccd7;font-size:13px;line-height:1.65}
+        .how-to-play-section li{margin:4px 0}
+        .how-to-play-section strong{color:#f3f4f6}
+        .how-to-play-note{margin:9px 0 0;padding:9px 11px;border-radius:10px;background:#171c23;color:#98a2b3;font-size:12px;line-height:1.5}
+        .how-to-play-footer{margin-top:16px;padding:13px 15px;border:1px solid rgba(16,185,129,.22);border-radius:12px;background:rgba(16,185,129,.07);color:#9fe8c8;display:flex;align-items:center;gap:9px;font-size:12px;font-weight:700}
+        .how-to-play-footer i{color:#10b981}
+        @media(max-width:640px){.how-to-play-modal{padding:12px}.how-to-play-dialog{max-height:88vh;border-radius:18px}.how-to-play-header{padding:18px 18px 15px}.how-to-play-header h2{font-size:21px}.how-to-play-content{padding:14px 18px 18px}}
+      </style>
+
     </main>
     <script src="js/theme.js"></script>
     <script type="module" src="js/sidebar.js"></script>

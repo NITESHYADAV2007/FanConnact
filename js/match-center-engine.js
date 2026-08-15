@@ -321,6 +321,10 @@
     };
 
     // Match + scorecard are the source of truth for state, format and current innings.
+    // Load the same dynamic International / League / Domestic / Women team
+    // registry used by the homepage before resolving the Match Center logos.
+    await loadDynamicTeamRegistry().catch(err => console.warn('[Match Center] team registry unavailable:', err));
+
     const [match, scorecard] = await Promise.all([
       API.getMatch().catch(() => null),
       API.getScorecard().catch(() => null)
@@ -1945,6 +1949,117 @@ if (Array.isArray(model.overs) && model.overs.length) {
   // Player data is always taken from the current match squads endpoint.
   const REAL_PLAYERS = {};
 
+  // ------------------------------------------------------------------
+  // DYNAMIC CRICBUZZ TEAM REGISTRY
+  // Keep the Match Center on the same backend-driven team mapping used by
+  // matches-data.js. This is intentionally local to this engine so the
+  // Match Center does not depend on a static/mock match file being loaded.
+  // ------------------------------------------------------------------
+  const TEAM_ID_META = Object.create(null);
+  const DYNAMIC_TEAMS = Object.create(null);
+
+  function teamLogoUrl(imageId) {
+    if (!imageId) return '';
+    const value = String(imageId).trim();
+    if (!value) return '';
+    if (/^https?:\/\//i.test(value)) return value;
+    return 'https://static.cricbuzz.com/a/img/v1/i1/c' + encodeURIComponent(value) + '/i.jpg';
+  }
+
+  function dynamicTeamKey(value) {
+    return safeString(value).toLowerCase().replace(/[^a-z0-9]/g, '');
+  }
+
+  const DYNAMIC_COUNTRY_CODES = {
+    india:'in', pakistan:'pk', australia:'au', england:'gb-eng', 'south africa':'za',
+    'new zealand':'nz', 'sri lanka':'lk', bangladesh:'bd', afghanistan:'af',
+    ireland:'ie', zimbabwe:'zw', 'west indies':'ag', nepal:'np', scotland:'gb-sct',
+    namibia:'na', oman:'om', 'united arab emirates':'ae', 'hong kong':'hk',
+    'papua new guinea':'pg', canada:'ca', 'united states':'us', usa:'us',
+    malaysia:'my', germany:'de', denmark:'dk', singapore:'sg', kuwait:'kw',
+    vanuatu:'vu', jersey:'je', fiji:'fj', italy:'it', belgium:'be', uganda:'ug',
+    kenya:'ke', tanzania:'tz', rwanda:'rw', nigeria:'ng', botswana:'bw',
+    malawi:'mw', zambia:'zm', ghana:'gh', 'sierra leone':'sl', thailand:'th',
+    bhutan:'bt', indonesia:'id', cambodia:'kh', japan:'jp', 'south korea':'kr',
+    philippines:'ph', qatar:'qa', bahrain:'bh', saudi:'sa', france:'fr', spain:'es',
+    portugal:'pt', netherlands:'nl', austria:'at', switzerland:'ch', romania:'ro',
+    croatia:'hr', serbia:'rs', greece:'gr', cyprus:'cy', estonia:'ee', latvia:'lv',
+    lithuania:'lt', luxembourg:'lu', sweden:'se', norway:'no', finland:'fi',
+    iceland:'is', argentina:'ar', brazil:'br', chile:'cl', peru:'pe', mexico:'mx',
+    costa:'cr', 'costa rica':'cr', panama:'pa', colombia:'co', bahamas:'bs',
+    jamaica:'jm', guyana:'gy', suriname:'sr', 'trinidad and tobago':'tt',
+    barbados:'bb', 'british virgin islands':'vg'
+  };
+
+  function dynamicCountryCode(value) {
+    const n = dynamicTeamKey(value);
+    if (!n) return '';
+    const direct = DYNAMIC_COUNTRY_CODES[n];
+    if (direct) return direct;
+    const key = Object.keys(DYNAMIC_COUNTRY_CODES).find(k => dynamicTeamKey(k) === n);
+    return key ? DYNAMIC_COUNTRY_CODES[key] : '';
+  }
+
+  function extractDynamicTeamList(payload) {
+    if (Array.isArray(payload)) return payload;
+    if (Array.isArray(payload?.list)) return payload.list;
+    if (Array.isArray(payload?.data)) return payload.data;
+    if (Array.isArray(payload?.data?.list)) return payload.data.list;
+    if (Array.isArray(payload?.teams)) return payload.teams;
+    if (Array.isArray(payload?.data?.teams)) return payload.data.teams;
+    return [];
+  }
+
+  function registerDynamicTeam(raw, category) {
+    if (!raw || typeof raw !== 'object') return;
+    const name = raw.teamName || raw.name || raw.team || '';
+    const short = raw.teamSName || raw.shortName || raw.teamShortName || raw.code || '';
+    const id = raw.teamId ?? raw.id ?? '';
+    if (!name && !short) return;
+
+    const countryName = raw.countryName || raw.country || raw.nation || '';
+    const cc = dynamicCountryCode(countryName || name);
+    const imageId = raw.imageId || raw.imageID || raw.logoId || '';
+    const isNational = category === 'international' || !!countryName;
+    const logo = teamLogoUrl(imageId);
+    const meta = {
+      name: name || short,
+      short: short || '',
+      cc: cc || '',
+      color: '#2563eb',
+      flag: cc ? (cc === 'in' ? '🇮🇳' : cc === 'pk' ? '🇵🇰' : '🌐') : '🏏',
+      logo: logo || null,
+      imageId: imageId || null,
+      teamId: id || null,
+      category: category || 'unknown',
+      countryName: countryName || null,
+      isNational
+    };
+
+    const keys = new Set([dynamicTeamKey(short), dynamicTeamKey(name)].filter(Boolean));
+    keys.forEach(key => { DYNAMIC_TEAMS[key] = { ...(DYNAMIC_TEAMS[key] || {}), ...meta }; });
+    if (id !== '') TEAM_ID_META[String(id)] = meta;
+  }
+
+  async function loadDynamicTeamRegistry() {
+    const categories = ['international', 'league', 'domestic', 'women'];
+    const results = await Promise.allSettled(categories.map(async category => {
+      const res = await fetch(API_BASES[0] + '/teams/' + category, {
+        headers: { Accept: 'application/json' },
+        cache: 'no-store'
+      });
+      if (!res.ok) throw new Error(category + ' teams: HTTP ' + res.status);
+      return { category, payload: await res.json() };
+    }));
+
+    results.forEach(result => {
+      if (result.status !== 'fulfilled') return;
+      extractDynamicTeamList(result.value.payload).forEach(team => registerDynamicTeam(team, result.value.category));
+    });
+
+    console.log('[Match Center] Dynamic Cricbuzz teams loaded:', Object.keys(TEAM_ID_META).length);
+  }
+
 
   function flagCodeForTeam(team) {
     // Prefer an explicit provider country/ISO code. If it is missing, resolve
@@ -2708,14 +2823,29 @@ if (Array.isArray(model.overs) && model.overs.length) {
 
   function teamMeta(code) {
     const normalized = safeString(code).toLowerCase();
-    const t = TEAM_REGISTRY[normalized];
-    if (t) {
-      const img = t.cc ? ('https://flagcdn.com/w80/' + t.cc + '.png') :
-        ('https://ui-avatars.com/api/?name=' + encodeURIComponent(normalized.toUpperCase()) + '&background=' + t.color.replace('#', '') + '&color=ffffff&size=64&bold=true');
-      return { code: normalized, name: t.name || '', flag: t.flag, cc: t.cc || '', color: t.color, img: img, rankName: t.rankName || '' };
+    const key = dynamicTeamKey(code);
+    const dynamic = DYNAMIC_TEAMS[key] || {};
+    const t = TEAM_REGISTRY[normalized] || dynamic;
+    if (t && Object.keys(t).length) {
+      const cc = t.cc || '';
+      const color = t.color || '#6B7280';
+      const img = t.logo || (cc
+        ? 'https://flagcdn.com/w80/' + cc + '.png'
+        : 'https://ui-avatars.com/api/?name=' + encodeURIComponent(normalized.toUpperCase()) + '&background=' + color.replace('#', '') + '&color=ffffff&size=64&bold=true');
+      return {
+        code: normalized,
+        name: t.name || '',
+        flag: t.flag || (cc ? '🌐' : '🏏'),
+        cc,
+        color,
+        img,
+        rankName: t.rankName || '',
+        imageId: t.imageId || '',
+        category: t.category || '',
+        isNational: !!t.isNational
+      };
     }
-    const name = '';
-    return { code: normalized, name, flag: '🏳️', cc: '', color: '#6B7280', img: 'https://ui-avatars.com/api/?name=' + encodeURIComponent(name) + '&background=6B7280&color=ffffff&size=64&bold=true' };
+    return { code: normalized, name: '', flag: '🏳️', cc: '', color: '#6B7280', img: 'https://ui-avatars.com/api/?name=' + encodeURIComponent(normalized.toUpperCase() || 'TEAM') + '&background=6B7280&color=ffffff&size=64&bold=true', imageId: '', category: '', isNational: false };
   }
 
   const HOME_T = teamMeta(HOME);
@@ -2746,26 +2876,36 @@ if (Array.isArray(model.overs) && model.overs.length) {
     HOME_CODE = homeShort || HOME_CODE || '';
     AWAY_CODE = awayShort || AWAY_CODE || '';
 
-    const hMeta = teamMeta(HOME_CODE);
-    const aMeta = teamMeta(AWAY_CODE);
-    const hFlagCode = flagCodeForTeam(resolvedHome);
-    const aFlagCode = flagCodeForTeam(resolvedAway);
+    const homeId = resolvedHome.teamId ?? resolvedHome.teamid ?? resolvedHome.id ?? '';
+    const awayId = resolvedAway.teamId ?? resolvedAway.teamid ?? resolvedAway.id ?? '';
+    const hDynamic = TEAM_ID_META[String(homeId)] || DYNAMIC_TEAMS[dynamicTeamKey(homeShort)] || DYNAMIC_TEAMS[dynamicTeamKey(homeName)] || {};
+    const aDynamic = TEAM_ID_META[String(awayId)] || DYNAMIC_TEAMS[dynamicTeamKey(awayShort)] || DYNAMIC_TEAMS[dynamicTeamKey(awayName)] || {};
+    const hMeta = { ...teamMeta(HOME_CODE), ...hDynamic };
+    const aMeta = { ...teamMeta(AWAY_CODE), ...aDynamic };
+    const hFlagCode = flagCodeForTeam({ ...hDynamic, ...resolvedHome });
+    const aFlagCode = flagCodeForTeam({ ...aDynamic, ...resolvedAway });
+
+    const homeImageId = resolvedHome.imageId || resolvedHome.imageID || resolvedHome.logoId || hDynamic.imageId || hMeta.imageId || '';
+    const awayImageId = resolvedAway.imageId || resolvedAway.imageID || resolvedAway.logoId || aDynamic.imageId || aMeta.imageId || '';
+    const homeLogo = safeLabel(resolvedHome.imageurl || resolvedHome.imageUrl || resolvedHome.teamImage || resolvedHome.logo || resolvedHome.logoUrl || resolvedHome.teamLogo || resolvedHome.image) || teamLogoUrl(homeImageId);
+    const awayLogo = safeLabel(resolvedAway.imageurl || resolvedAway.imageUrl || resolvedAway.teamImage || resolvedAway.logo || resolvedAway.logoUrl || resolvedAway.teamLogo || resolvedAway.image) || teamLogoUrl(awayImageId);
+
+    // Country teams use the real country flag. League/domestic teams use the
+    // provider logo/imageId. Unknown teams keep the existing safe fallback.
+    const hUseFlag = !!hFlagCode && (hDynamic.isNational || !homeLogo);
+    const aUseFlag = !!aFlagCode && (aDynamic.isNational || !awayLogo);
 
     Object.assign(HOME_T, hMeta, {
       code: HOME_CODE,
-      name: homeName || 'Unavailable',
-      flag: hFlagCode ? '🏳️' : hMeta.flag,
-      img: hFlagCode
-        ? 'https://flagcdn.com/w80/' + hFlagCode + '.png'
-        : (safeLabel(resolvedHome.imageurl || resolvedHome.imageUrl || resolvedHome.teamImage || resolvedHome.logo || resolvedHome.logoUrl || resolvedHome.teamLogo || resolvedHome.image) || hMeta.img)
+      name: homeName || hMeta.name || 'Unavailable',
+      flag: hUseFlag ? '🏳️' : (hMeta.flag || '🏏'),
+      img: hUseFlag ? 'https://flagcdn.com/w80/' + hFlagCode + '.png' : (homeLogo || hMeta.img)
     });
     Object.assign(AWAY_T, aMeta, {
       code: AWAY_CODE,
-      name: awayName || 'Unavailable',
-      flag: aFlagCode ? '🏳️' : aMeta.flag,
-      img: aFlagCode
-        ? 'https://flagcdn.com/w80/' + aFlagCode + '.png'
-        : (safeLabel(resolvedAway.imageurl || resolvedAway.imageUrl || resolvedAway.teamImage || resolvedAway.logo || resolvedAway.logoUrl || resolvedAway.teamLogo || resolvedAway.image) || aMeta.img)
+      name: awayName || aMeta.name || 'Unavailable',
+      flag: aUseFlag ? '🏳️' : (aMeta.flag || '🏏'),
+      img: aUseFlag ? 'https://flagcdn.com/w80/' + aFlagCode + '.png' : (awayLogo || aMeta.img)
     });
 
     M.home = HOME_T;

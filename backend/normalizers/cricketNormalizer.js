@@ -259,6 +259,62 @@ function normalizeRecentMatches(apiResponse) {
 
 }
 
+
+// Resolve the actual striker without assuming batsmen[0] is always on strike.
+// This is prediction-only data mapping; match/cache behaviour is unchanged.
+function resolveCurrentBatter(root, current, currentBatters) {
+    const explicit =
+        root?.currentBatter || root?.currentbatter ||
+        current?.currentBatter || current?.currentbatter ||
+        root?.striker || current?.striker ||
+        root?.onStrikeBatter || current?.onStrikeBatter ||
+        root?.strikerBatter || current?.strikerBatter ||
+        root?.currentStriker || current?.currentStriker || null;
+
+    if (explicit && typeof explicit === 'object') return explicit;
+
+    const list = Array.isArray(currentBatters) ? currentBatters.filter(Boolean) : [];
+    if (!list.length) return null;
+
+    // Normalize the common provider field names without changing the
+    // original match/cache payload.
+    const normalized = list.map(b => ({
+        ...b,
+        id: b?.id ?? b?.playerId ?? b?.batsmanId ?? b?.batId ?? b?.player_id,
+        name: b?.name ?? b?.playerName ?? b?.batsmanName ?? b?.displayName ?? "",
+        runs: b?.runs ?? b?.score ?? b?.runsScored ?? b?.batRuns ?? b?.batsmanRuns
+    }));
+
+    if (normalized.length === 1) return normalized[0];
+
+    const strikerId = String(
+        root?.strikerId ?? root?.strikerID ?? current?.strikerId ?? current?.strikerID ?? ''
+    );
+    const strikerName = String(
+        root?.strikerName ?? current?.strikerName ?? ''
+    ).trim().toLowerCase();
+
+    const marked = normalized.find(b => {
+        const flag = b?.isStriker ?? b?.isOnStrike ?? b?.onStrike ?? b?.striker ?? b?.isOnstrike;
+        if (flag === true || String(flag).toLowerCase() === 'true') return true;
+        const role = String(b?.battingStatus ?? b?.status ?? b?.role ?? '').toLowerCase();
+        return role.includes('striker') || role === 'on strike' || role === 'onstrike';
+    });
+    if (marked) return marked;
+
+    if (strikerId) {
+        const byId = normalized.find(b => String(b?.id ?? b?.playerId ?? b?.batsmanId ?? b?.batId ?? '') === strikerId);
+        if (byId) return byId;
+    }
+    if (strikerName) {
+        const byName = normalized.find(b => String(b?.name ?? b?.playerName ?? b?.batsmanName ?? '').trim().toLowerCase() === strikerName);
+        if (byName) return byName;
+    }
+
+    // Do not guess from [0] when two active batters exist.
+    return null;
+}
+
 function normalizeMatchDetails(apiResponse) {
     if (!apiResponse) return null;
 
@@ -344,6 +400,11 @@ function normalizeMatchDetails(apiResponse) {
         innings,
         currentInnings: current,
         currentBatters: root?.batsmen || root?.currentBatters || current?.batsmen || [],
+        currentBatter: resolveCurrentBatter(
+            root,
+            current,
+            root?.batsmen || root?.currentBatters || current?.batsmen || []
+        ),
         currentBowlers: root?.bowlers || root?.currentBowlers || current?.bowlers || [],
         partnership: root?.partnership || root?.currentPartnership || current?.partnership || {},
         currentRunRate: root?.currentRunRate ?? root?.currentrunrate ?? current?.currentRunRate ?? current?.runrate ?? current?.crr,

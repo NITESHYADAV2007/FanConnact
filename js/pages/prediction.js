@@ -5,7 +5,6 @@
 
 import * as predictionService from "../services/predictionService.js";
 import * as userService from "../services/userService.js";
-import { handleMatchFinished, closeExpiredPredictions } from "../engines/predictionLifecycle.js";
 import { auth } from "../firebase-config.js";
 import {
     onAuthStateChanged
@@ -15,7 +14,6 @@ let generatePredictions = null;
 
 async function runPredictionEngine(){
     if(!state.match || state.sport !== "cricket") return;
-    if(!state.user?.uid) return;
 
     try{
         if(!generatePredictions){
@@ -55,10 +53,9 @@ const state = {
     unsubscribeUser: null,
     unsubscribePredictions: null,
     countdownTimer: null,
-    lifecycleTimer: null,
     matchPollTimer: null,
+    matchPollBusy: false,
     selectedOptions: new Map(),
-    lastMatchStatus: null
 };
 
 const ui = {
@@ -230,48 +227,6 @@ function setText(id, value){
     if(el) el.textContent = value;
 }
 
-async function processLifecycleWatch(){
-    if(!state.matchId) return;
-
-    try{
-        const latest = await loadMatch();
-        if(!latest) return;
-
-        // Close expired questions first, then generate the next eligible
-        // question from the fresh match snapshot.
-        await closeExpiredPredictions();
-
-        const status = String(latest.status || "").toUpperCase();
-
-        if(status === "FINISHED" || status === "COMPLETED"){
-            await handleMatchFinished(latest);
-            await refreshHistory();
-        }else if(status === "LIVE" || status === "UPCOMING"){
-            await runPredictionEngine();
-        }
-
-        await loadPredictions();
-        state.lastMatchStatus = status;
-    }catch(error){
-        console.warn("Prediction lifecycle watch failed:", error);
-    }
-}
-
-function startLifecycleWatch(){
-    if(state.matchPollTimer) clearInterval(state.matchPollTimer);
-    if(state.lifecycleTimer) clearInterval(state.lifecycleTimer);
-
-    state.lastMatchStatus =
-        String(state.match?.status || "").toUpperCase();
-
-    // One lifecycle loop only. The old two-interval setup could run the engine
-    // twice at the same time and race duplicate creation.
-    state.lifecycleTimer = setInterval(
-        processLifecycleWatch,
-        30000
-    );
-}
-
 async function loadMatch(){
     /*
      * IMPORTANT:
@@ -435,23 +390,77 @@ async function loadMatch(){
 
                 const firstInnings = innings[0] || {};
                 const secondInnings = innings[1] || {};
+
+                // Scorecard data is only an enrichment source. It must never
+                // replace a valid match pair with duplicate/ambiguous teams.
                 const homeName = teamNameFrom(homeSource) || teamNameFrom(firstInnings);
                 const awayName = teamNameFrom(awaySource) || teamNameFrom(secondInnings);
+                const validScoreTeams = Boolean(
+                    homeName &&
+                    awayName &&
+                    homeName.toLowerCase() !== awayName.toLowerCase()
+                );
 
-                if(homeName && awayName){
-                    const scoreStatus = headers.state || headers.status || scoreSource.state || scoreSource.status;
-                    const scoreStart = headers.matchstarttimestamp || headers.startTime || scoreSource.startdate || scoreSource.startTime;
+                const scoreStatus =
+                    headers.state ??
+                    headers.matchState ??
+                    headers.status ??
+                    scoreSource.state ??
+                    scoreSource.matchState ??
+                    scoreSource.status ??
+                    null;
+                const scoreIsLive =
+                    headers.isLive === true ||
+                    scoreSource.isLive === true;
+                const scoreStart =
+                    headers.matchstarttimestamp || headers.startTime ||
+                    scoreSource.startdate || scoreSource.startTime || null;
+
+                // IMPORTANT:
+                // The match endpoint is the primary source, but it can lag behind
+                // the live scorecard. Match Center is already showing this match
+                // as LIVE, so a stale "UPCOMING" value from /matches/:id must NOT
+                // force the Prediction hero back to UPCOMING.
+                //
+                // Also, scorecard "state" can be display text such as
+                // "India opt to bat". Never treat that text as a lifecycle status.
+                const explicitScorecardStatus =
+                    classifyLifecycleValue(scoreStatus);
+
+                const scorecardHasLiveEvidence =
+                    scoreIsLive === true ||
+                    explicitScorecardStatus === "LIVE" ||
+                    hasLiveScorecardEvidence(scoreRoot, scoreSource, innings);
+
+                const scorecardLifecycle =
+                    explicitScorecardStatus === "FINISHED"
+                        ? "FINISHED"
+                        : scorecardHasLiveEvidence
+                            ? "LIVE"
+                            : null;
+
+                if(validScoreTeams){
+                    const currentStatus = String(
+                        state.match?.status || "UPCOMING"
+                    ).toUpperCase();
+
+                    const resolvedStatus =
+                        scorecardLifecycle === "FINISHED"
+                            ? "FINISHED"
+                            : scorecardLifecycle === "LIVE"
+                                ? "LIVE"
+                                : currentStatus;
 
                     state.match = {
                         ...(state.match || {}),
                         id: String(state.matchId),
                         sport: String(state.sport || "cricket").toLowerCase(),
-                        status: normalizeMatchStatus(
-                            state.match?.status || scoreStatus,
-                            state.match?.state || scoreStatus,
-                            state.match?.isLive
-                        ),
+                        status: resolvedStatus,
                         startTime: state.match?.startTime || scoreStart || null,
+
+                        // Keep the API pair when it is already valid. Use the
+                        // scorecard pair only when the API pair is missing or
+                        // duplicated. This prevents "India vs India".
                         homeTeam: {
                             ...(state.match?.homeTeam || {}),
                             ...homeSource,
@@ -462,6 +471,11 @@ async function loadMatch(){
                             ...awaySource,
                             name: awayName
                         }
+                    };
+                }else if(scorecardLifecycle){
+                    state.match = {
+                        ...(state.match || {}),
+                        status: scorecardLifecycle
                     };
                 }
             }
@@ -868,14 +882,12 @@ function realTeamName(team){
     ).trim();
 }
 
-function normalizeMatchStatus(status, stateValue, isLive){
-    if(isLive === true) return "LIVE";
-
-    // Cricbuzz exposes the actual lifecycle in `state` (for example
-    // "inprogress"), while `status` can contain text such as
-    // "Team A opt to bowl". Always trust state when it exists.
-    const raw = String(stateValue ?? status ?? "").trim().toLowerCase();
-    const value = raw.replace(/[-_]+/g, " ").replace(/\s+/g, " ");
+function classifyLifecycleValue(value){
+    const normalized = String(value ?? "")
+        .trim()
+        .toLowerCase()
+        .replace(/[-_]+/g, " ")
+        .replace(/\\s+/g, " ");
 
     if([
         "live",
@@ -885,9 +897,8 @@ function normalizeMatchStatus(status, stateValue, isLive){
         "ongoing",
         "innings break",
         "stumps",
-        "rain delay",
-        "match delayed"
-    ].includes(value)){
+        "rain delay"
+    ].includes(normalized)){
         return "LIVE";
     }
 
@@ -901,9 +912,108 @@ function normalizeMatchStatus(status, stateValue, isLive){
         "abandoned",
         "cancelled",
         "canceled"
-    ].includes(value)){
+    ].includes(normalized)){
         return "FINISHED";
     }
+
+    return null;
+}
+
+function hasLiveScorecardEvidence(scoreRoot, scoreSource, innings){
+    const sources = [
+        scoreRoot,
+        scoreSource,
+        ...(Array.isArray(innings) ? innings : [])
+    ].filter(Boolean);
+
+    for(const source of sources){
+        if(typeof source !== "object") continue;
+
+        if(source.isLive === true || source.live === true){
+            return true;
+        }
+
+        const explicit =
+            classifyLifecycleValue(source.status) ||
+            classifyLifecycleValue(source.state) ||
+            classifyLifecycleValue(source.matchState);
+
+        if(explicit === "LIVE") return true;
+
+        // A live scorecard normally exposes an active over/score. Do not use
+        // team names, toss text, or scheduled start time as live evidence.
+        const numericKeys = [
+            "currentOver",
+            "over",
+            "currentScore",
+            "score",
+            "runs",
+            "totalRuns",
+            "scoreText"
+        ];
+
+        if(numericKeys.some(key => {
+            const value = source[key];
+            if(value == null || value === "") return false;
+            if(typeof value === "number") return value >= 0;
+            if(typeof value === "object") return (
+                value.runs != null ||
+                value.score != null ||
+                value.total != null
+            );
+            return /\\d/.test(String(value));
+        })){
+            return true;
+        }
+    }
+
+    return false;
+}
+
+function normalizeMatchStatus(status, stateValue, isLive){
+    if(isLive === true) return "LIVE";
+
+    const normalize = value => String(value ?? "")
+        .trim()
+        .toLowerCase()
+        .replace(/[-_]+/g, " ")
+        .replace(/\s+/g, " ");
+
+    const classify = value => {
+        if([
+            "live",
+            "in progress",
+            "inprogress",
+            "started",
+            "ongoing",
+            "innings break",
+            "stumps",
+            "rain delay"
+        ].includes(value)) return "LIVE";
+
+        if([
+            "finished",
+            "completed",
+            "complete",
+            "ended",
+            "result",
+            "match ended",
+            "abandoned",
+            "cancelled",
+            "canceled"
+        ].includes(value)) return "FINISHED";
+
+        return null;
+    };
+
+    // Prefer a definitive lifecycle value from state, but NEVER let an
+    // unrecognised state/display string overwrite a definitive status.
+    // Example: state="India opt to bat", status="live" must remain LIVE.
+    const fromState = classify(normalize(stateValue));
+    if(fromState) return fromState;
+
+    const fromStatus = classify(normalize(status));
+    if(fromStatus) return fromStatus;
 
     return "UPCOMING";
 }
@@ -919,7 +1029,8 @@ function hasRealTeams(match){
         home.toLowerCase() !== "team a" &&
         away.toLowerCase() !== "team b" &&
         home !== "Loading..." &&
-        away !== "Loading..."
+        away !== "Loading..." &&
+        home.toLowerCase() !== away.toLowerCase()
     );
 }
 
@@ -1230,10 +1341,48 @@ function renderPredictionCard(prediction){
         resultLine+=`<div class="prediction-my-pick">Your prediction: <strong>${escapeHtml(selected?.text??mine.selectedOption)}</strong>${won?'<span class="prediction-result-badge won">WON</span>':''}${lost?'<span class="prediction-result-badge lost">LOST</span>':''}${mine.rewardStatus==='REWARDED'?`<span class="prediction-reward-earned">+${Number(mine.rewardXP)||0} XP · +${Number(mine.rewardCoins)||0} Coins</span>`:''}</div>`;
     }
     const submitHtml=!mine && !locked && selectedId!=null ? `<div class="prediction-submit-wrap"><button type="button" class="prediction-submit-btn" data-prediction-submit data-prediction-id="${escapeHtml(prediction.id)}">Submit Prediction</button></div>`:'';
-    return `<div class="prediction-card" data-card-id="${escapeHtml(prediction.id)}"><div class="prediction-card-header"><div class="prediction-live"><span class="live-dot ${status==='LIVE' && !mine?'':'completed'}"></span>${escapeHtml(displayStatus)}</div><div class="prediction-timer"><i class="fa-regular fa-clock"></i><div><span class="time-value" data-expiry="${escapeHtml(toMillis(prediction.expiresAt)??'')}">${escapeHtml(formatExpiry(prediction.expiresAt)||'—')}</span><small>${mine||locked?'Locked':'Time Left'}</small></div></div></div><h2 class="prediction-question">${escapeHtml(prediction.question||'Prediction')}</h2><div class="prediction-options">${optionsHtml||'<div class="text-sm text-gray-400">No real options are available.</div>'}</div>${submitHtml}${resultLine}<div class="prediction-footer"><div class="reward-section"><span class="reward-title">Reward</span><div class="reward-item coins">🪙 +${Number(rewards.correct?.coins)||0} Coins</div><div class="reward-item xp">⭐ +${Number(rewards.correct?.xp)||0} XP</div></div><div class="prediction-count"><strong>${Number(prediction.totalPlayers)||0}</strong><span>People Predict</span></div></div></div>`;
+    const timerValue = predictionTimerValue(prediction);
+    const timerLabel = predictionTimerLabel(prediction, mine, locked);
+    const timerData = (prediction?.milestoneTarget === 50 || prediction?.milestoneTarget === 100)
+        ? ""
+        : `data-expiry="${escapeHtml(toMillis(prediction.expiresAt)??'')}"`;
+
+    return `<div class="prediction-card" data-card-id="${escapeHtml(prediction.id)}"><div class="prediction-card-header"><div class="prediction-live"><span class="live-dot ${status==='LIVE' && !mine?'':'completed'}"></span>${escapeHtml(displayStatus)}</div><div class="prediction-timer"><i class="fa-regular fa-clock"></i><div><span class="time-value" ${timerData}>${escapeHtml(timerValue)}</span><small>${escapeHtml(timerLabel)}</small></div></div></div><h2 class="prediction-question">${escapeHtml(prediction.question||'Prediction')}</h2><div class="prediction-options">${optionsHtml||'<div class="text-sm text-gray-400">No real options are available.</div>'}</div>${submitHtml}${resultLine}<div class="prediction-footer"><div class="reward-section"><span class="reward-title">Reward</span><div class="reward-item coins">🪙 +${Number(rewards.correct?.coins)||0} Coins</div><div class="reward-item xp">⭐ +${Number(rewards.correct?.xp)||0} XP</div></div><div class="prediction-count"><strong>${Number(prediction.totalPlayers)||0}</strong><span>People Predict</span></div></div></div>`;
 }
 
-function isOpen(prediction){ const expiry=toMillis(prediction.expiresAt); return String(prediction.status)==='LIVE' && expiry!=null && expiry>Date.now(); }
+function isOpen(prediction){
+    if(String(prediction?.status || "").toUpperCase() !== "LIVE") return false;
+
+    // Milestone questions intentionally have no wall-clock expiry. They stay
+    // open until the user submits or the milestone is actually completed.
+    if(
+        prediction?.milestoneTarget === 50 ||
+        prediction?.milestoneTarget === 100 ||
+        prediction?.type === "PLAYER_FIFTY" ||
+        prediction?.type === "PLAYER_CENTURY"
+    ){
+        return true;
+    }
+
+    const expiry = toMillis(prediction?.expiresAt);
+    return expiry != null && expiry > Date.now();
+}
+
+function predictionTimerLabel(prediction, mine, locked){
+    if(mine || locked) return "Locked";
+
+    const target = Number(prediction?.milestoneTarget);
+    if(target === 50 || target === 100) return `Until ${target}`;
+
+    return "Time Left";
+}
+
+function predictionTimerValue(prediction){
+    const target = Number(prediction?.milestoneTarget);
+    if(target === 50 || target === 100) return `Until ${target}`;
+
+    return formatExpiry(prediction?.expiresAt) || "—";
+}
 
 async function submitPrediction(predictionId){
     if(!state.user){
@@ -1342,6 +1491,19 @@ async function submitPrediction(predictionId){
 }
 
 function renderResults(){
+    const matchStatus = String(state.match?.status || "UPCOMING").toUpperCase();
+
+    // Results are strictly post-match. A completed live/event prediction
+    // must not make the Results tab appear before the actual match finishes.
+    if(matchStatus !== "FINISHED" && matchStatus !== "COMPLETED"){
+        showMessage(
+            matchStatus === "LIVE"
+                ? "Results will appear here after the match is actually finished."
+                : "Results will appear here after the match is finished."
+        );
+        return;
+    }
+
     const completed = state.history.filter(item =>
         item.prediction && item.prediction.status === "COMPLETED"
     );
@@ -1411,6 +1573,33 @@ function startCountdowns(){
 }
 
 function attachEvents(){
+    const howToPlayModal = document.getElementById("howToPlayModal");
+    const howToPlayButton = document.getElementById("howToPlayBtn");
+
+    function closeHowToPlay(){
+        if(!howToPlayModal) return;
+        howToPlayModal.classList.remove("is-open");
+        howToPlayModal.setAttribute("aria-hidden", "true");
+    }
+
+    if(howToPlayModal && howToPlayButton){
+        howToPlayButton.addEventListener("click", () => {
+            howToPlayModal.classList.add("is-open");
+            howToPlayModal.setAttribute("aria-hidden", "false");
+            howToPlayModal.querySelector(".how-to-play-close")?.focus();
+        });
+
+        howToPlayModal.querySelectorAll("[data-how-to-play-close]").forEach(button => {
+            button.addEventListener("click", closeHowToPlay);
+        });
+
+        document.addEventListener("keydown", event => {
+            if(event.key === "Escape" && howToPlayModal.classList.contains("is-open")){
+                closeHowToPlay();
+            }
+        });
+    }
+
     document.querySelectorAll(".tab-btn").forEach(button => {
         button.addEventListener("click", async () => {
             document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
@@ -1523,6 +1712,50 @@ function showToast(message, type = "success"){
     console[type === "error" ? "error" : "log"](message);
 }
 
+
+/* ==========================================================
+   LIVE PREDICTION REFRESH
+   Generation must not depend on the Prediction page staying open.
+   This page still refreshes its own match snapshot so milestone/event
+   rules see the latest batter/over/event data.
+========================================================== */
+
+async function refreshPredictionMatch(){
+    if(state.matchPollBusy || !state.matchId) return;
+    state.matchPollBusy = true;
+
+    try{
+        const latest = await loadMatch();
+        if(!latest) return;
+
+        await runPredictionEngine();
+        await loadPredictions();
+
+        if(
+            String(latest.status || "").toUpperCase() === "FINISHED" ||
+            String(latest.status || "").toUpperCase() === "COMPLETED"
+        ){
+            if(state.matchPollTimer){
+                clearInterval(state.matchPollTimer);
+                state.matchPollTimer = null;
+            }
+        }
+    }catch(error){
+        console.warn("Prediction live refresh skipped:", error);
+    }finally{
+        state.matchPollBusy = false;
+    }
+}
+
+function startPredictionMatchPolling(){
+    if(state.matchPollTimer) clearInterval(state.matchPollTimer);
+
+    // 20s keeps milestone/event generation responsive without creating a
+    // per-ball API hammering loop. Match Service cache itself is untouched.
+    state.matchPollTimer = setInterval(refreshPredictionMatch, 20000);
+}
+
+
 async function init(){
     try{
         getURLParameters();
@@ -1549,7 +1782,7 @@ async function init(){
         await runPredictionEngine();
         await loadPredictions();
         listenRealtime();
-        startLifecycleWatch();
+        startPredictionMatchPolling();
     }
     catch(error){
         console.error("Prediction page init error:", error);

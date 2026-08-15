@@ -853,91 +853,7 @@
                     <span class="material-symbols-outlined text-red-500 text-lg">local_fire_department</span>
                   </div>
                 </div>
-                <div class="space-y-4">
-                  <!-- Game 1 -->
-                  <div class="flex items-center justify-between group cursor-pointer">
-                    <div class="flex items-center space-x-3">
-                      <img
-                        class="w-8 h-8 rounded object-contain dark:bg-gray-800 light:bg-gray-100 p-1"
-                        src="https://upload.wikimedia.org/wikipedia/en/thumb/c/cd/Mumbai_Indians_Logo.svg/512px-Mumbai_Indians_Logo.svg.png"
-                      />
-                      <div>
-                        <p class="text-[10px] text-gray-500 font-bold leading-none mb-1">
-                          IPL 2024 â€¢ Match 56
-                        </p>
-                        <p class="text-xs font-bold dark:text-white light:text-slate-800">
-                          MI vs CSK
-                        </p>
-                      </div>
-                    </div>
-                    <span class="text-[10px] bg-red-500/10 text-red-500 px-1.5 py-0.5 rounded font-bold uppercase flex items-center">
-                      <span class="w-1 h-1 bg-red-500 rounded-full mr-1"></span>
-                      LIVE
-                    </span>
-                  </div>
-                  <!-- Game 2 -->
-                  <div class="flex items-center justify-between group cursor-pointer">
-                    <div class="flex items-center space-x-3">
-                      <img
-                        class="w-8 h-8 rounded object-contain dark:bg-gray-800 light:bg-gray-100 p-1"
-                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuD5F4IAkw1Tcq3s82q-6HXUUCMtiuOErKPjyhaUcdL-37MM8XeziLK_571FCMPnzLlHNvGzsWYgaXyVqH4L9Q5lxN_naZ3vna4ipayFNEW1kfZ0uL5mn9XUSTWC5_EfV_RiBYched_rJOEcjRPpiAm_HTCu44QjjNt7WNRiuCq1L8EyYcGkt-UxwWBAUNWxKedZJ4jqpvxGILKeuu2QtBpWiUnmzufAFGe3ThGPCmL09CdD_vq_A5oBbFaOVv5vsKVsdUgu18eRoTAD"
-                      />
-                      <div>
-                        <p class="text-[10px] text-gray-500 font-bold leading-none mb-1">
-                          Premier League â€¢ Matchday 37
-                        </p>
-                        <p class="text-xs font-bold dark:text-white light:text-slate-800">
-                          LIV vs MCI
-                        </p>
-                      </div>
-                    </div>
-                    <span class="text-[10px] bg-red-500/10 text-red-500 px-1.5 py-0.5 rounded font-bold uppercase flex items-center">
-                      <span class="w-1 h-1 bg-red-500 rounded-full mr-1"></span>
-                      LIVE
-                    </span>
-                  </div>
-                  <!-- Game 3 -->
-                  <div class="flex items-center justify-between group cursor-pointer">
-                    <div class="flex items-center space-x-3">
-                      <img
-                        class="w-8 h-8 rounded object-contain dark:bg-gray-800 light:bg-gray-100 p-1"
-                        src="https://upload.wikimedia.org/wikipedia/en/thumb/a/ad/New_York_Yankees_logo.svg/512px-New_York_Yankees_logo.svg.png"
-                      />
-                      <div>
-                        <p class="text-[10px] text-gray-500 font-bold leading-none mb-1">
-                          MLB â€¢ Dodger Stadium
-                        </p>
-                        <p class="text-xs font-bold dark:text-white light:text-slate-800">
-                          LAD vs NYY
-                        </p>
-                      </div>
-                    </div>
-                    <span class="text-[10px] bg-red-500/10 text-red-500 px-1.5 py-0.5 rounded font-bold uppercase flex items-center">
-                      <span class="w-1 h-1 bg-red-500 rounded-full mr-1"></span>
-                      LIVE
-                    </span>
-                  </div>
-                  <!-- Game 4 -->
-                  <div class="flex items-center justify-between group cursor-pointer">
-                    <div class="flex items-center space-x-3">
-                      <img
-                        class="w-8 h-8 rounded object-contain dark:bg-gray-800 light:bg-gray-100 p-1"
-                        src="https://upload.wikimedia.org/wikipedia/en/thumb/2/2b/Chennai_Super_Kings_Logo.svg/512px-Chennai_Super_Kings_Logo.svg.png"
-                      />
-                      <div>
-                        <p class="text-[10px] text-gray-500 font-bold leading-none mb-1">
-                          IPL 2025 â€¢ Qualifier 1
-                        </p>
-                        <p class="text-xs font-bold dark:text-white light:text-slate-800">
-                          CSK vs RCB
-                        </p>
-                      </div>
-                    </div>
-                    <span class="text-[10px] text-gray-500 font-bold">
-                      Upcoming
-                    </span>
-                  </div>
-                </div>
+                <div class="space-y-4" data-dynamic-trending-games></div>
               </div>
               <!-- END: TrendingGamesWidget -->
             </div>
@@ -1022,6 +938,76 @@
   window.addEventListener('fanconnact:matches-data-updated',render);
 })();
 </script>
+
+    <script>
+    /* FANCONNACT: real Trending Games only. Uses the existing FANCONNECT_MATCHES data. */
+    (function () {
+      'use strict';
+      if (window.__FANCONNACT_REAL_TRENDING__) return;
+      window.__FANCONNACT_REAL_TRENDING__ = true;
+
+      const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({
+        '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
+      }[c]));
+      const getTeam = (code, fallback) =>
+        window.FANCONNECT_MATCHES?.TEAMS?.[code] || { name: fallback || code || 'Team', cc: null };
+      const getLogo = t => t.logo || (t.cc
+        ? 'https://flagcdn.com/w80/' + t.cc + '.png'
+        : 'https://ui-avatars.com/api/?name=' + encodeURIComponent(t.name || 'Team') + '&background=334155&color=fff&size=64&bold=true');
+
+      function render() {
+        const box = document.querySelector('[data-dynamic-trending-games]');
+        const data = window.FANCONNECT_MATCHES;
+        if (!box || !data || !Array.isArray(data.MATCHES)) return false;
+
+        // Real data only: live games first, then upcoming games.
+        const matches = data.MATCHES
+          .filter(m => m && (m.status === 'live' || m.status === 'upcoming'))
+          .sort((a, b) => (a.status === 'live' ? 0 : 1) - (b.status === 'live' ? 0 : 1));
+
+        const selected = matches.slice(0, 4);
+        if (!selected.length) {
+          box.innerHTML = '<div class="text-xs text-gray-500 py-2">No live or upcoming games</div>';
+          return true;
+        }
+
+        box.innerHTML = selected.map(m => {
+          const h = getTeam(m.home, m.homeName);
+          const a = getTeam(m.away, m.awayName);
+          const isLive = m.status === 'live';
+          const href = m.link || '';
+          const competition = (m.tournament || m.series || m.format || 'Match') + (m.stage ? ' • ' + m.stage : '');
+          const status = isLive
+            ? '<span class="text-[10px] bg-red-500/10 text-red-500 px-1.5 py-0.5 rounded font-bold uppercase flex items-center"><span class="w-1 h-1 bg-red-500 rounded-full mr-1"></span>LIVE</span>'
+            : '<span class="text-[10px] text-gray-500 font-bold">' + esc(m.time || 'Upcoming') + '</span>';
+
+          return '<div class="flex items-center justify-between group cursor-pointer" data-real-trending-link="' + esc(href) + '">' +
+            '<div class="flex items-center space-x-3 min-w-0">' +
+              '<img class="w-8 h-8 rounded object-contain dark:bg-gray-800 light:bg-gray-100 p-1" src="' + esc(getLogo(h)) + '" alt="' + esc(h.name) + '">' +
+              '<div class="min-w-0">' +
+                '<p class="text-[10px] text-gray-500 font-bold leading-none mb-1 truncate">' + esc(competition) + '</p>' +
+                '<p class="text-xs font-bold dark:text-white light:text-slate-800 truncate">' + esc(h.name) + ' vs ' + esc(a.name) + '</p>' +
+              '</div>' +
+            '</div>' + status +
+          '</div>';
+        }).join('');
+
+        box.querySelectorAll('[data-real-trending-link]').forEach(row => {
+          row.addEventListener('click', function () {
+            const href = this.getAttribute('data-real-trending-link');
+            if (href) window.location.href = href;
+          });
+        });
+        return true;
+      }
+
+      let tries = 0;
+      const timer = setInterval(() => {
+        if (render() || ++tries > 80) clearInterval(timer);
+      }, 100);
+      window.addEventListener('fanconnact:matches-data-updated', render);
+    })();
+    </script>
 
     <script type="module" src="js/script.js"></script>
 </body>

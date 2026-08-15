@@ -31,11 +31,35 @@ export async function processMatchResults(match, uid = null){
         from the latest match snapshot instead of blindly locking them.
 ========================================================== */
 
+function isFinishedMatch(match){
+    const status = String(match?.status || "").toUpperCase();
+    if(status === "FINISHED" || status === "COMPLETED") return true;
+
+    const rawState = String(match?.state ?? match?.matchState ?? "").toLowerCase();
+    const rawStatus = String(match?.statusText ?? match?.status ?? "").toLowerCase();
+    const finishedPattern = /finished|completed|complete|match ended|ended|result|abandoned|abandon|cancelled|canceled/;
+    return finishedPattern.test(rawState) || finishedPattern.test(rawStatus);
+}
+
+const POST_MATCH_ONLY_TYPES = new Set([
+    "MATCH_WINNER",
+    "HIGHEST_SCORER",
+    "TOTAL_RUNS"
+]);
+
 export async function processPredictionResult(prediction, match, uid = null){
 
     if(!prediction || !match) return false;
 
     if(prediction.status === "CANCELLED") return false;
+
+    // Final match-outcome questions may be resolved only after the provider
+    // says the actual match is finished. Live/event questions can still be
+    // resolved during the match.
+    const type = String(prediction.type || "").toUpperCase();
+    if(POST_MATCH_ONLY_TYPES.has(type) && !isFinishedMatch(match)){
+        return false;
+    }
 
     const correctOption = getCorrectOption(prediction, match);
 
@@ -161,6 +185,132 @@ function resolveTeamOrPlayerOption(prediction, value){
     return resolveOptionByValue(prediction, value);
 }
 
+function eventKeyOf(event){
+    return String(
+        event?.id ??
+        event?.eventId ??
+        event?.timestamp ??
+        event?.ballId ??
+        event?.key ??
+        ""
+    );
+}
+
+function normalizeCricketEvent(event){
+    const explicit = String(
+        event?.type ?? event?.eventType ?? event?.name ?? ""
+    ).toUpperCase().trim();
+    if(explicit.includes("WICKET")) return "WICKET";
+    if(explicit.includes("SIX")) return "SIX";
+    if(explicit.includes("FOUR") || explicit.includes("BOUNDARY")) return "FOUR";
+    if(event?.wicket || event?.isWicket || event?.dismissal) return "WICKET";
+    const runs = Number(event?.runs ?? event?.totalRuns ?? event?.batRuns);
+    if(runs === 6) return "SIX";
+    if(runs === 4 || event?.isBoundary) return "FOUR";
+    return "OTHER";
+}
+
+/* ==========================================================
+        Cricket Milestone Player Resolver
+========================================================== */
+
+function normalizedPlayerId(player){
+    if(!player || typeof player !== "object") return "";
+    return String(
+        player.id ??
+        player.playerId ??
+        player.batsmanId ??
+        player.batId ??
+        ""
+    ).trim().toLowerCase();
+}
+
+function normalizedPlayerName(player){
+    if(!player || typeof player !== "object") return "";
+    return String(
+        player.name ??
+        player.playerName ??
+        player.batsmanName ??
+        player.displayName ??
+        player.batsman ??
+        ""
+    ).trim().toLowerCase();
+}
+
+function allKnownBatters(match){
+    const root = match?.data || match || {};
+    const current = root?.currentInnings || root?.currentinnings || root?.current || {};
+
+    return [
+        root?.currentBatter,
+        root?.currentbatter,
+        root?.striker,
+        current?.currentBatter,
+        current?.currentbatter,
+        current?.striker,
+        ...(Array.isArray(root?.currentBatters) ? root.currentBatters : []),
+        ...(Array.isArray(root?.batsmen) ? root.batsmen : []),
+        ...(Array.isArray(current?.currentBatters) ? current.currentBatters : []),
+        ...(Array.isArray(current?.batsmen) ? current.batsmen : []),
+        ...(Array.isArray(root?.players) ? root.players : []),
+        ...(Array.isArray(root?.topPlayers) ? root.topPlayers : [])
+    ].filter(Boolean);
+}
+
+function targetPlayerRuns(match, prediction){
+    const targetId = String(
+        prediction?.targetPlayerId ??
+        prediction?.batterId ??
+        ""
+    ).trim().toLowerCase();
+
+    const targetName = String(
+        prediction?.targetPlayerName ??
+        prediction?.batterName ??
+        ""
+    ).trim().toLowerCase();
+
+    const players = allKnownBatters(match);
+
+    const target = players.find(player => {
+        const id = normalizedPlayerId(player);
+        const name = normalizedPlayerName(player);
+        return (targetId && id === targetId) || (targetName && name === targetName);
+    });
+
+    if(target){
+        return numericValue(
+            target.runs ??
+            target.score ??
+            target.runsScored ??
+            target.batRuns ??
+            target.batsmanRuns
+        );
+    }
+
+    // Provider-specific explicit milestone flags are safe when they identify
+    // the same player; otherwise do not accidentally resolve another batter.
+    const explicit50 = match.playerReached50;
+    const explicit100 = match.playerReached100;
+    const targetForFlag = typeof explicit50 === "object"
+        ? explicit50
+        : (typeof explicit100 === "object" ? explicit100 : null);
+
+    if(targetForFlag){
+        const id = normalizedPlayerId(targetForFlag);
+        const name = normalizedPlayerName(targetForFlag);
+        const samePlayer =
+            (targetId && id === targetId) ||
+            (targetName && name === targetName);
+
+        if(samePlayer){
+            return 100;
+        }
+    }
+
+    return null;
+}
+
 /* ==========================================================
         Correct Option Resolver
 ========================================================== */
@@ -224,6 +374,23 @@ function getCorrectOption(prediction, match){
 
             return resolveRangeOption(prediction, actual) ??
                 resolveOptionByValue(prediction, match.nextOverRunsRange);
+        }
+
+        case "NEXT_BALL_EVENT": {
+            const current = match.lastEvent || match.recentEvents?.[0] || match.events?.[0] || null;
+            if(!current) return null;
+
+            const currentKey = eventKeyOf(current);
+            const sourceKey = String(prediction.sourceEventKey || "");
+
+            // The triggering ball itself cannot answer a "next ball" question.
+            // We need a different provider event before resolving it.
+            if(sourceKey && currentKey && sourceKey === currentKey){
+                return null;
+            }
+
+            const actual = normalizeCricketEvent(current);
+            return resolveOptionByValue(prediction, actual);
         }
 
         case "WICKET": {

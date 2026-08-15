@@ -110,7 +110,7 @@
                 <p>YOUR FAN COINS</p>
                 <div class="coins">
                   <div class="coin-icon">FC</div>
-                  <h2 id="fancoin-balance">100</h2>
+                  <h2 id="fancoin-balance">—</h2>
                 </div>
                 <div class="buttons">
                   <button type="button" onclick="window.location.href='prediction.html'" class="green-btn">Earn Coins</button>
@@ -154,12 +154,12 @@
             <!-- LEVEL -->
             <div class="level-card">
               <div>
-                <h2>&#x1F947; Gold Fan</h2>
-                <p>Keep going! Next level is Diamond Fan</p>
+                <h2 id="fancoin-tier">&#x1F6E1; Bronze Fan</h2>
+                <p id="fancoin-level-message">Level —</p>
                 <div class="progress">
-                  <div class="progress-fill" style="width:75%;"></div>
+                  <div id="fancoin-xp-progress" class="progress-fill" style="width:0%;"></div>
                 </div>
-                <small>750 / 1000 XP</small>
+                <small id="fancoin-xp-text">— XP</small>
               </div>
               <div>
                 <h4>LEVEL BENEFITS</h4>
@@ -173,22 +173,22 @@
 
             <!-- FAN LEVELS -->
             <div class="fan-levels">
-              <div class="fan-card">
+              <div class="fan-card" data-fan-tier="bronze">
                 <div class="level-icon bronze">&#x1F6E1;</div>
                 <h4>Bronze Fan</h4>
                 <p>0 - 500</p>
               </div>
-              <div class="fan-card">
+              <div class="fan-card" data-fan-tier="silver">
                 <div class="level-icon silver">&#x1F6E1;</div>
                 <h4>Silver Fan</h4>
                 <p>500 - 2000</p>
               </div>
-              <div class="fan-card active">
+              <div class="fan-card" data-fan-tier="gold">
                 <div class="level-icon gold">&#x1F3C6;</div>
                 <h4>Gold Fan</h4>
                 <p>2000 - 5000</p>
               </div>
-              <div class="fan-card">
+              <div class="fan-card" data-fan-tier="diamond">
                 <div class="level-icon diamond">&#x1F48E;</div>
                 <h4>Diamond Fan</h4>
                 <p>5000+</p>
@@ -212,59 +212,137 @@
         </div>
 
         <script>
-          // Real balance + transactions for the logged-in user (default 100 coins).
-          // Falls back to a single "Welcome Bonus" entry if no history exists.
+          // Firestore is the only source of truth for FanCoins, XP, level,
+          // streak-related profile fields and reward transactions.
           let TX_DATA = [];
-          (async function loadFanCoin() {
-            let balance = 100;
-            try {
-              if (window.__FB__ && window.__FB__.db) {
-                const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
-                let uid = null;
-                if (window.currentUserProfile && window.currentUserProfile.uid) uid = window.currentUserProfile.uid;
-                else if (window.__FB__.auth && window.__FB__.auth.currentUser) uid = window.__FB__.auth.currentUser.uid;
-                if (uid) {
-                  const snap = await getDoc(doc(window.__FB__.db, "users", uid));
-                  if (snap.exists()) {
-                    const d = snap.data();
-                    const c = parseInt(d.coins, 10);
-                    balance = isNaN(c) ? 100 : c;
-                    if (Array.isArray(d.coinHistory)) {
-                      TX_DATA = d.coinHistory.map(function(t) {
-                        const amt = parseInt(t.amount, 10) || 0;
-                        return { label: t.label || "Coin Adjustment", amount: (amt >= 0 ? "+" : "") + amt, type: amt >= 0 ? "plus" : "minus", date: t.date || "" };
-                      });
-                    }
-                  }
-                }
-              }
-            } catch (e) { console.warn("[fancoin] balance load failed:", e.message); }
-            if (!TX_DATA.length) {
-              TX_DATA = [{ label: "Welcome Bonus", amount: "+100", type: "plus", date: new Date().toISOString().slice(0, 10) }];
+          let txShowAll = false;
+          let unsubscribeUser = null;
+          let unsubscribeRewards = null;
+
+          const FIRESTORE_CDN = "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+          function toNumber(value, fallback = 0) {
+            const n = Number(value);
+            return Number.isFinite(n) ? n : fallback;
+          }
+
+          function getRequiredXP(level) {
+            level = Math.max(0, Math.floor(toNumber(level, 0)));
+            if (level <= 0) return 0;
+            return Math.floor(150 * level + ((level - 1) * level * 25));
+          }
+
+          function calculateLevelFromXP(xp) {
+            xp = Math.max(0, toNumber(xp, 0));
+            let level = 0;
+            while (xp >= getRequiredXP(level + 1)) level++;
+            return level;
+          }
+
+          function getFanTier(coins) {
+            if (coins >= 5000) return { key: "diamond", icon: "💎", name: "Diamond Fan", next: "Maximum Fan Tier" };
+            if (coins >= 2000) return { key: "gold", icon: "🏆", name: "Gold Fan", next: "Diamond Fan" };
+            if (coins >= 500) return { key: "silver", icon: "🛡️", name: "Silver Fan", next: "Gold Fan" };
+            return { key: "bronze", icon: "🛡️", name: "Bronze Fan", next: "Silver Fan" };
+          }
+
+          function renderProfile(data) {
+            const coins = toNumber(data.coins, 0);
+            const xp = toNumber(data.xp, 0);
+            const firestoreLevel = Number(data.level);
+            const level = Number.isFinite(firestoreLevel)
+              ? firestoreLevel
+              : calculateLevelFromXP(xp);
+            const tier = getFanTier(coins);
+
+            const balanceEl = document.getElementById("fancoin-balance");
+            if (balanceEl) balanceEl.textContent = coins.toLocaleString();
+
+            const tierEl = document.getElementById("fancoin-tier");
+            if (tierEl) tierEl.textContent = `${tier.icon} ${tier.name}`;
+
+            const levelMsg = document.getElementById("fancoin-level-message");
+            if (levelMsg) {
+              levelMsg.textContent = tier.key === "diamond"
+                ? `Level ${level} · ${tier.next}`
+                : `Level ${level} · Keep going! Next tier is ${tier.next}`;
             }
-            const balEl = document.getElementById("fancoin-balance");
-            if (balEl) balEl.textContent = balance.toLocaleString();
-            renderTX(txShowAll);
-          })();
+
+            const currentThreshold = getRequiredXP(level);
+            const nextThreshold = getRequiredXP(level + 1);
+            const span = Math.max(1, nextThreshold - currentThreshold);
+            const progress = Math.min(100, Math.max(0, ((xp - currentThreshold) / span) * 100));
+
+            const progressEl = document.getElementById("fancoin-xp-progress");
+            if (progressEl) progressEl.style.width = `${progress}%`;
+
+            const xpText = document.getElementById("fancoin-xp-text");
+            if (xpText) xpText.textContent = `${xp.toLocaleString()} / ${nextThreshold.toLocaleString()} XP`;
+
+            document.querySelectorAll("[data-fan-tier]").forEach(card => {
+              card.classList.toggle("active", card.dataset.fanTier === tier.key);
+            });
+
+            window.fanCoinProfile = {
+              uid: data.uid || (window.currentUserProfile && window.currentUserProfile.uid) || null,
+              coins,
+              xp,
+              level,
+              currentStreak: toNumber(data.currentStreak, 0),
+              bestStreak: toNumber(data.bestStreak, 0),
+              totalPredictions: toNumber(data.totalPredictions, 0),
+              correctPredictions: toNumber(data.correctPredictions, 0),
+              wrongPredictions: toNumber(data.wrongPredictions, 0),
+              accuracy: toNumber(data.accuracy, 0),
+              rewardPoints: toNumber(data.rewardPoints, 0),
+              totalXPEarned: toNumber(data.totalXPEarned, 0),
+              totalCoinsEarned: toNumber(data.totalCoinsEarned, 0)
+            };
+          }
+
+          function timestampToDate(value) {
+            if (!value) return null;
+            if (typeof value.toDate === "function") return value.toDate();
+            if (value instanceof Date) return value;
+            const d = new Date(value);
+            return Number.isNaN(d.getTime()) ? null : d;
+          }
+
+          function formatTxDate(value) {
+            const date = timestampToDate(value);
+            if (!date) return "—";
+            return date.toLocaleDateString("en-IN", {
+              year: "numeric",
+              month: "2-digit",
+              day: "2-digit"
+            });
+          }
 
           function renderTxItem(t) {
             return '<div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.07);font-size:13px;">' +
               '<div><div style="font-weight:500;">' + t.label + '</div><div style="font-size:11px;color:#9ba7bd;margin-top:2px;">' + t.date + '</div></div>' +
-              '<span style="color:' + (t.type==='plus'?'#2EF06B':'#ff5c5c') + ';font-weight:700;white-space:nowrap;">' + t.amount + '</span>' +
+              '<span style="color:' + (t.type === 'plus' ? '#2EF06B' : '#ff5c5c') + ';font-weight:700;white-space:nowrap;">' + t.amount + '</span>' +
               '</div>';
           }
-
-          let txShowAll = false;
 
           function renderTX(showAll) {
             const list = document.getElementById("tx-list-sidebar");
             const count = document.getElementById("tx-count");
             const btn = document.getElementById("view-all-tx-btn");
-            const visible = showAll ? TX_DATA.length : 5;
+            if (!list || !count || !btn) return;
+
+            const visible = showAll ? TX_DATA.length : Math.min(5, TX_DATA.length);
             list.style.maxHeight = showAll ? "420px" : "280px";
-            list.innerHTML = TX_DATA.slice(0, visible).map(renderTxItem).join("");
+
+            if (!TX_DATA.length) {
+              list.innerHTML = '<div style="padding:18px 0;color:#9ba7bd;font-size:13px;">No transactions yet.</div>';
+            } else {
+              list.innerHTML = TX_DATA.slice(0, visible).map(renderTxItem).join("");
+            }
+
             count.textContent = visible + " of " + TX_DATA.length;
             btn.textContent = showAll ? "SHOW LESS" : "VIEW ALL TRANSACTIONS (" + TX_DATA.length + ")";
+            btn.style.display = TX_DATA.length ? "" : "none";
           }
 
           function toggleAllTransactions() {
@@ -272,7 +350,121 @@
             renderTX(txShowAll);
           }
 
+          window.toggleAllTransactions = toggleAllTransactions;
+
+          async function getFirebaseHandles() {
+            if (window.__FB__ && window.__FB__.db && window.__FB__.auth) {
+              return { db: window.__FB__.db, auth: window.__FB__.auth };
+            }
+            return null;
+          }
+
+          async function loadFanCoin() {
+            try {
+              const handles = await getFirebaseHandles();
+              if (!handles) return;
+
+              const {
+                doc,
+                collection,
+                query,
+                where,
+                orderBy,
+                limit,
+                onSnapshot
+              } = await import(FIRESTORE_CDN);
+
+              const user = handles.auth.currentUser || window.currentUser;
+              if (!user) return;
+
+              if (unsubscribeUser) unsubscribeUser();
+              if (unsubscribeRewards) unsubscribeRewards();
+
+              unsubscribeUser = onSnapshot(
+                doc(handles.db, "users", user.uid),
+                (snap) => {
+                  if (!snap.exists()) return;
+                  renderProfile({ uid: user.uid, ...snap.data() });
+                },
+                (error) => console.error("[fancoin] user listener failed:", error)
+              );
+
+              const rewardsQuery = query(
+                collection(handles.db, "rewards"),
+                where("uid", "==", user.uid),
+                orderBy("createdAt", "desc"),
+                limit(40)
+              );
+
+              unsubscribeRewards = onSnapshot(
+                rewardsQuery,
+                (snapshot) => {
+                  TX_DATA = snapshot.docs.map((docSnap) => {
+                    const t = docSnap.data() || {};
+                    const coins = toNumber(t.coins, 0);
+                    return {
+                      label: t.reason || "Reward",
+                      amount: (coins >= 0 ? "+" : "") + coins,
+                      type: coins >= 0 ? "plus" : "minus",
+                      date: formatTxDate(t.createdAt)
+                    };
+                  });
+                  renderTX(txShowAll);
+                },
+                (error) => {
+                  console.warn("[fancoin] reward history index/query failed; using real rewards without orderBy.", error);
+
+                  const fallbackQuery = query(
+                    collection(handles.db, "rewards"),
+                    where("uid", "==", user.uid)
+                  );
+
+                  onSnapshot(
+                    fallbackQuery,
+                    (snapshot) => {
+                      TX_DATA = snapshot.docs
+                        .map((docSnap) => {
+                          const t = docSnap.data() || {};
+                          const coins = toNumber(t.coins, 0);
+                          return {
+                            label: t.reason || "Reward",
+                            amount: (coins >= 0 ? "+" : "") + coins,
+                            type: coins >= 0 ? "plus" : "minus",
+                            date: formatTxDate(t.createdAt),
+                            _time: timestampToDate(t.createdAt)?.getTime() || 0
+                          };
+                        })
+                        .sort((a, b) => b._time - a._time)
+                        .slice(0, 40)
+                        .map(({ _time, ...row }) => row);
+
+                      renderTX(txShowAll);
+                    },
+                    (fallbackError) => {
+                      console.error("[fancoin] reward history fallback failed:", fallbackError);
+                      TX_DATA = [];
+                      renderTX(txShowAll);
+                    }
+                  );
+                }
+              );
+            } catch (e) {
+              console.error("[fancoin] Firestore initialization failed:", e);
+            }
+          }
+
+          window.addEventListener("fanconnact:user-profile-updated", (event) => {
+            if (event.detail) renderProfile(event.detail);
+            if (!unsubscribeUser) loadFanCoin();
+          });
+
           renderTX(false);
+
+          if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", loadFanCoin, { once: true });
+          } else {
+            loadFanCoin();
+          }
         </script>
 
         </div>
