@@ -63,7 +63,9 @@ export async function processPredictionResult(prediction, match, uid = null){
 
     const correctOption = getCorrectOption(prediction, match);
 
-    if(correctOption == null){
+    // Never publish an empty/unknown answer. A missing answer means the result
+    // is still unresolved, not LOST.
+    if(!isUsableOptionId(prediction, correctOption)){
         return false;
     }
 
@@ -89,6 +91,70 @@ export async function processPredictionResult(prediction, match, uid = null){
 
 function normalizeText(value){
     return String(value ?? "").trim().toLowerCase();
+}
+
+function isUsableOptionId(prediction, optionId){
+    if(optionId == null) return false;
+    const id = String(optionId).trim();
+    if(!id || !Array.isArray(prediction?.options)) return false;
+    return prediction.options.some(option => String(option?.id ?? "").trim() === id);
+}
+
+function teamDisplayName(team){
+    if(!team) return "";
+    if(typeof team === "string") return team.trim();
+    return String(
+        team.name ?? team.teamname ?? team.teamName ?? team.shortName ??
+        team.displayName ?? team.team_name ?? ""
+    ).trim();
+}
+
+function inferWinnerFromMatchText(match){
+    const home = teamDisplayName(match?.homeTeam);
+    const away = teamDisplayName(match?.awayTeam);
+    const texts = [
+        match?.result?.winner,
+        match?.result?.winningTeam,
+        match?.result?.message,
+        match?.result?.text,
+        match?.result,
+        match?.statusText,
+        match?.status,
+        match?.message,
+        match?.resultText
+    ].filter(v => typeof v === "string").map(v => v.trim());
+
+    for(const text of texts){
+        if(!text) continue;
+        const lower = text.toLowerCase();
+        // Prefer an explicit winner phrase. This avoids guessing from unrelated
+        // status text such as "Team A opt to bat".
+        if(/won|winner|victory|defeated|beat|wins/.test(lower)){
+            if(home && lower.includes(home.toLowerCase())) return home;
+            if(away && lower.includes(away.toLowerCase())) return away;
+        }
+    }
+
+    // Provider scorecards often omit a winner field but keep final scores on
+    // the two team objects. Infer a winner only when the scores are numeric and
+    // unambiguous; never guess on a tie/no-result.
+    const scoreOf = team => {
+        const candidates = [
+            team?.score, team?.runs, team?.totalRuns, team?.totalScore,
+            team?.scorecard?.runs, team?.scorecard?.totalRuns
+        ];
+        for(const value of candidates){
+            const n = Number(String(value ?? "").match(/-?\d+(?:\.\d+)?/)?.[0]);
+            if(Number.isFinite(n)) return n;
+        }
+        return null;
+    };
+    const hs = scoreOf(match?.homeTeam);
+    const as = scoreOf(match?.awayTeam);
+    if(hs != null && as != null && hs !== as){
+        return hs > as ? home : away;
+    }
+    return null;
 }
 
 function objectIdOrName(value){
@@ -326,9 +392,15 @@ function getCorrectOption(prediction, match){
     switch(type){
 
         case "MATCH_WINNER": {
-            const value = match.winner ?? match.winnerId ?? match.result?.winner;
-            return resolveTeamOrPlayerOption(prediction, value) ??
-                (value != null ? String(value) : null);
+            const value = match.winner ??
+                match.winnerTeam ??
+                match.winnerName ??
+                match.winnerId ??
+                match.result?.winner ??
+                match.result?.winningTeam ??
+                match.result?.winnerTeam ??
+                inferWinnerFromMatchText(match);
+            return resolveTeamOrPlayerOption(prediction, value);
         }
 
         case "TOSS_WINNER": {
@@ -340,13 +412,13 @@ function getCorrectOption(prediction, match){
         case "HIGHEST_SCORER": {
             const value = match.highestScorerId ?? match.highestScorer?.id ??
                 match.highestScorer?.playerId ?? match.highestScorer?.name;
-            return resolveTeamOrPlayerOption(prediction, value) ??
-                (value != null ? String(value) : null);
+            return resolveTeamOrPlayerOption(prediction, value);
         }
 
         case "TOTAL_RUNS": {
             const actual = match.totalRuns ?? match.totalScore ??
-                match.firstInningsRuns ?? match.innings?.[0]?.runs;
+                match.firstInningsRuns ?? match.innings?.[0]?.runs ??
+                match.scorecardTeamTotals?.[0]?.runs;
             return resolveRangeOption(prediction, actual) ??
                 resolveOptionByValue(prediction, match.totalRunsRange);
         }

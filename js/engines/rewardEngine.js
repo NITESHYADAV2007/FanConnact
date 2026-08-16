@@ -6,7 +6,8 @@
 import * as predictionService from "../services/predictionService.js";
 
 import {
-    givePredictionRewardOnce
+    givePredictionRewardOnce,
+    reconcilePredictionReward
 } from "../services/userService.js";
 
 import {
@@ -90,6 +91,22 @@ async function rewardUser(prediction, userPrediction){
         prediction.difficulty,
         isCorrect
     );
+
+    // If an older result was repaired to WON/LOST after it had already been
+    // rewarded, idempotency prevents a second normal reward. Reconcile the
+    // stored amount so the persisted reward matches the final result and
+    // difficulty instead of leaving an old LOST-sized reward behind.
+    if(result?.alreadyRewarded && typeof reconcilePredictionReward === "function") {
+        const corrected = await reconcilePredictionReward(
+            userPrediction.id,
+            uid,
+            prediction.difficulty,
+            isCorrect
+        );
+        if(corrected?.repaired){
+            return { rewarded:true, repaired:true, reward:corrected };
+        }
+    }
 
     return result;
 }

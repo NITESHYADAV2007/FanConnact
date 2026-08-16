@@ -85,8 +85,27 @@ export async function closeExpiredPredictions(){
     }
 }
 
-export async function handleMatchFinished(match){
+export async function handleMatchFinished(match, uid = null){
     if(!match || !isFinishedMatch(match)) return false;
-    await processMatchResults(match, auth.currentUser?.uid || null);
+
+    // Always obtain the authoritative final provider snapshot + scorecard here.
+    // The normal live match object may contain only lifecycle/status text and
+    // not the final winner/scorecard fields required to resolve predictions.
+    let finalMatch = match;
+    try{
+        const fresh = await predictionService.getMatch(match.id, true);
+        if(fresh) finalMatch = { ...match, ...fresh };
+    }catch(error){
+        console.warn("Final provider snapshot refresh failed:", error);
+    }
+
+    // IMPORTANT:
+    // The Prediction page already knows the exact signed-in user's UID.
+    // Prefer that explicit UID over auth.currentUser because Firebase Auth can
+    // still be initializing when a finished match is finalized. Without this,
+    // the result can become WON/LOST while the user's reward stays PENDING.
+    const rewardUid = uid || auth.currentUser?.uid || null;
+
+    await processMatchResults(finalMatch, rewardUid);
     return true;
 }

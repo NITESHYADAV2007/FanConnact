@@ -7,6 +7,9 @@ import * as predictionService from "../services/predictionService.js";
 import * as userService from "../services/userService.js";
 import { auth } from "../firebase-config.js";
 import {
+    handleMatchFinished
+} from "../engines/predictionLifecycle.js";
+import {
     onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
@@ -55,6 +58,7 @@ const state = {
     countdownTimer: null,
     matchPollTimer: null,
     matchPollBusy: false,
+    resultProcessing: false,
     selectedOptions: new Map(),
 };
 
@@ -1119,6 +1123,21 @@ async function loadPredictions(){
     //    getLivePredictions-only path because it hides pre-match questions.
     state.predictions = await loadMatchPredictions();
 
+    // Repair the signed-in user's old PENDING/incorrectly persisted result as
+    // soon as the authoritative prediction document is COMPLETED. This is what
+    // makes an old Firestore PENDING record become WON or LOST after refresh.
+    if(state.user?.uid && state.predictions.length){
+        try {
+            await predictionService.repairUserPredictionResults(
+                state.user.uid,
+                state.matchId,
+                state.predictions
+            );
+        } catch(error){
+            console.warn('Prediction result repair skipped:', error);
+        }
+    }
+
     /*
      * The prediction engine is the single source of truth for question
      * generation. There is intentionally NO page-level "Who will win?"
@@ -1504,9 +1523,18 @@ function renderResults(){
         return;
     }
 
-    const completed = state.history.filter(item =>
-        item.prediction && item.prediction.status === "COMPLETED"
-    );
+    const completed = state.history.filter(item => {
+        const prediction = item?.prediction;
+        const userPrediction = item?.userPrediction;
+        const correct = String(prediction?.correctOption ?? "").trim();
+        const selected = String(userPrediction?.selectedOption ?? "").trim();
+        const result = String(userPrediction?.result ?? "").toUpperCase();
+        return prediction &&
+            String(prediction.status || "").toUpperCase() === "COMPLETED" &&
+            correct &&
+            selected &&
+            (result === "WON" || result === "LOST" || result === "");
+    });
 
     if(!completed.length){
         showMessage("No completed predictions for this match yet.");
@@ -1516,8 +1544,9 @@ function renderResults(){
     ui.container.innerHTML = completed.map(({userPrediction, prediction}) => {
         const selected = prediction.options?.find(o => String(o.id) === String(userPrediction.selectedOption));
         const correct = prediction.options?.find(o => String(o.id) === String(prediction.correctOption));
-        const won = String(userPrediction.result || "").toUpperCase() === "WON" ||
-            String(userPrediction.selectedOption) === String(prediction.correctOption);
+        // Once a real correctOption exists, result is deterministic. Never
+        // default an unresolved/blank answer to LOST.
+        const won = String(userPrediction.selectedOption) === String(prediction.correctOption);
 
         return `
             <div class="prediction-card">
@@ -1703,6 +1732,39 @@ function listenRealtime(){
     );
 }
 
+/* ==========================================================
+   MATCH RESULT FINALIZATION
+
+   IMPORTANT: loadMatch() can correctly detect FINISHED, but detecting the
+   status alone does not finalize Firestore predictions. The lifecycle/result
+   engine must be called explicitly. This also repairs matches that finished
+   while the Prediction page was closed.
+========================================================== */
+
+async function finalizeFinishedMatch(match){
+    const status = String(match?.status || "").toUpperCase();
+
+    if(status !== "FINISHED" && status !== "COMPLETED") return false;
+    if(state.resultProcessing) return false;
+
+    state.resultProcessing = true;
+
+    try{
+        const rewardUid =
+            state.user?.uid ||
+            auth.currentUser?.uid ||
+            null;
+
+        await handleMatchFinished(match, rewardUid);
+        return true;
+    }catch(error){
+        console.error("Finished match result processing failed:", error);
+        return false;
+    }finally{
+        state.resultProcessing = false;
+    }
+}
+
 function showToast(message, type = "success"){
     if(window.showToast){
         window.showToast(message, type);
@@ -1728,10 +1790,16 @@ async function refreshPredictionMatch(){
         const latest = await loadMatch();
         if(!latest) return;
 
+        // CRITICAL FIX: status detection and result finalization are two
+        // separate operations. Finalize the match BEFORE rebuilding the UI.
+        // This updates prediction.correctOption, COMPLETED status and the
+        // current user's WON/LOST + REWARDED record.
+        const finished = await finalizeFinishedMatch(latest);
+
         await runPredictionEngine();
         await loadPredictions();
 
-        if(
+        if(finished ||
             String(latest.status || "").toUpperCase() === "FINISHED" ||
             String(latest.status || "").toUpperCase() === "COMPLETED"
         ){
@@ -1771,6 +1839,18 @@ async function init(){
         // The prediction board must load even if auth is not ready.
         const match = await loadMatch();
         if(!match) return;
+
+        // Before finalizing a finished match, make sure Firebase Auth has
+        // resolved the current user. Result publication can work without a
+        // user, but rewards are user-owned and require the exact UID.
+        if(!state.user){
+            await loadCurrentUser();
+        }
+
+        // CRITICAL FIX: also finalize an already-finished match on page open.
+        // This repairs predictions that remained PENDING because the match
+        // ended while the user/page was offline or closed.
+        await finalizeFinishedMatch(match);
 
         // Cricket-only: the Cricket pill is the only active sport option.
         state.sport = "cricket";

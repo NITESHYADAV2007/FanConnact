@@ -910,13 +910,199 @@ export async function getDefaultPredictionMatch(){
         GET MATCH
 =====================================*/
 
-export async function getMatch(matchId) {
+function extractFinalResultFromScorecard(rawScorecard, match){
+    if(!rawScorecard || typeof rawScorecard !== "object") return {};
+
+    const root = rawScorecard?.data || rawScorecard;
+    const source = root?.scorecard && !Array.isArray(root.scorecard)
+        ? root.scorecard
+        : root;
+
+    const allObjects = [];
+    const seen = new Set();
+    const walk = (value, depth = 0) => {
+        if(value == null || depth > 8) return;
+        if(typeof value !== "object") return;
+        if(seen.has(value)) return;
+        seen.add(value);
+        allObjects.push(value);
+        if(Array.isArray(value)){
+            for(const item of value) walk(item, depth + 1);
+        }else{
+            for(const child of Object.values(value)){
+                if(child && typeof child === "object") walk(child, depth + 1);
+            }
+        }
+    };
+    walk(source);
+
+    const teamName = team => {
+        if(!team) return "";
+        if(typeof team === "string") return team.trim();
+        return String(
+            team.name ?? team.teamname ?? team.teamName ??
+            team.shortName ?? team.teamSName ?? team.teamsname ??
+            team.displayName ?? team.team_name ?? ""
+        ).trim();
+    };
+
+    const home = teamName(match?.homeTeam);
+    const away = teamName(match?.awayTeam);
+
+    const textFields = [];
+    for(const obj of allObjects){
+        for(const key of [
+            "winner","winningTeam","winnerTeam","winnerName","result",
+            "resultText","message","statusText","status","description","text"
+        ]){
+            const value = obj?.[key];
+            if(typeof value === "string" && value.trim()) textFields.push(value.trim());
+            else if(value && typeof value === "object"){
+                const nested = teamName(value);
+                if(nested) textFields.push(nested);
+                for(const nk of ["name","text","message","winner","winningTeam"]){
+                    if(typeof value?.[nk] === "string" && value[nk].trim()) textFields.push(value[nk].trim());
+                }
+            }
+        }
+    }
+
+    let winner = null;
+    for(const text of textFields){
+        const lower = text.toLowerCase();
+        if(!/won|winner|victory|defeated|beat|wins|result/.test(lower)) continue;
+        if(home && lower.includes(home.toLowerCase()) && /won|winner|victory|defeated|beat|wins/.test(lower)){
+            winner = home; break;
+        }
+        if(away && lower.includes(away.toLowerCase()) && /won|winner|victory|defeated|beat|wins/.test(lower)){
+            winner = away; break;
+        }
+    }
+
+    // Scorecard team totals: infer winner only when exactly two final numeric
+    // team scores are available and they are unequal.
+    const scoreNumber = value => {
+        if(value == null) return null;
+        if(typeof value === "number" && Number.isFinite(value)) return value;
+        const matchNum = String(value).replace(/,/g, "").match(/\d+(?:\.\d+)?/);
+        return matchNum ? Number(matchNum[0]) : null;
+    };
+
+    const teamScores = [];
+    for(const obj of allObjects){
+        const name = teamName(obj);
+        if(!name) continue;
+        for(const key of ["totalRuns","totalScore","runs","score","scoreText"]){
+            const n = scoreNumber(obj?.[key]);
+            if(n != null){
+                teamScores.push({name, runs:n});
+                break;
+            }
+        }
+    }
+
+    const bestTeamScore = name => teamScores
+        .filter(x => x.name.toLowerCase() === String(name || "").toLowerCase())
+        .sort((a,b) => b.runs-a.runs)[0];
+
+    if(!winner && home && away){
+        const hs = bestTeamScore(home)?.runs;
+        const as = bestTeamScore(away)?.runs;
+        if(Number.isFinite(hs) && Number.isFinite(as) && hs !== as){
+            winner = hs > as ? home : away;
+        }
+    }
+
+    // Player rows for highest-scorer resolution.
+    const players = [];
+    for(const obj of allObjects){
+        const name = String(
+            obj?.playerName ?? obj?.batsmanName ?? obj?.batsman ??
+            obj?.name ?? obj?.displayName ?? ""
+        ).trim();
+        const runs = scoreNumber(
+            obj?.runs ?? obj?.runsScored ?? obj?.batRuns ??
+            obj?.batsmanRuns ?? obj?.score
+        );
+        if(name && Number.isFinite(runs) && (
+            obj?.batsman || obj?.batsmanName || obj?.batRuns != null ||
+            obj?.runsScored != null || obj?.batsmanRuns != null ||
+            obj?.batRuns != null || obj?.batting === true
+        )){
+            players.push({
+                name,
+                id: obj?.playerId ?? obj?.batsmanId ?? obj?.id ?? null,
+                runs
+            });
+        }
+    }
+
+    const highest = players.sort((a,b) => b.runs-a.runs)[0] || null;
+
+    // Collect explicit innings/team totals for TOTAL_RUNS.
+    const inningsTotals = [];
+    for(const obj of allObjects){
+        const name = teamName(obj);
+        if(!name) continue;
+        const n = scoreNumber(
+            obj?.totalRuns ?? obj?.totalScore ?? obj?.runs ??
+            obj?.score?.runs ?? obj?.score?.total
+        );
+        if(Number.isFinite(n)) inningsTotals.push({name, runs:n});
+    }
+
+    return {
+        scorecard: rawScorecard,
+        ...(winner ? { winner } : {}),
+        ...(highest ? {
+            highestScorer: { id: highest.id, name: highest.name, runs: highest.runs },
+            highestScorerId: highest.id
+        } : {}),
+        ...(inningsTotals.length ? { scorecardTeamTotals: inningsTotals } : {})
+    };
+}
+
+export async function getMatch(matchId, includeFinalScorecard = false) {
 
     // Match Center is the source of truth for real cricket matches.
     // Firestore is used only as a fallback if the backend/API is temporarily
     // unavailable.
     try{
-        return await getPredictionMatch(matchId);
+        const match = await getPredictionMatch(matchId);
+
+        if(!includeFinalScorecard) return match;
+
+        try{
+            const raw = await predictionApi(
+                `/matches/${encodeURIComponent(matchId)}/scorecard`
+            );
+            const finalData = extractFinalResultFromScorecard(raw, match);
+            const scoreRoot = raw?.data || raw || {};
+            const lifecycleText = String(
+                scoreRoot?.status ??
+                scoreRoot?.state ??
+                scoreRoot?.matchState ??
+                scoreRoot?.matchStatus ??
+                ""
+            ).toLowerCase();
+
+            if(/finished|completed|complete|ended|result|abandon|cancel/.test(lifecycleText)){
+                match.status = "FINISHED";
+            }
+
+            return {
+                ...match,
+                ...finalData,
+                result: {
+                    ...(match.result && typeof match.result === "object" ? match.result : {}),
+                    ...(finalData.winner ? { winner: finalData.winner } : {})
+                }
+            };
+        }catch(scoreError){
+            console.warn("Final scorecard lookup failed; using match result fields:", scoreError);
+        }
+
+        return match;
     }catch(error){
         console.warn("Match Center API lookup failed; checking Firestore:", error);
     }
@@ -977,6 +1163,52 @@ export async function getUserPrediction(uid, predictionId) {
     } catch(error){
         console.error("Get User Prediction Error:", error);
         return null;
+    }
+}
+
+
+/*=====================================
+    REPAIR CURRENT USER RESULTS
+    Only the signed-in user's own documents are touched.
+=====================================*/
+export async function repairUserPredictionResults(uid, matchId, predictions = []) {
+    if(!uid || !matchId || !Array.isArray(predictions) || !predictions.length) return 0;
+
+    try {
+        const rows = await getUserPredictions(uid, matchId);
+        const byPrediction = new Map(
+            predictions.map(prediction => [String(prediction.id), prediction])
+        );
+        let repaired = 0;
+
+        for(const row of rows){
+            const prediction = byPrediction.get(String(row.predictionId));
+            if(!prediction || String(prediction.status || '').toUpperCase() !== PredictionStatus.COMPLETED) continue;
+
+            const correct = String(prediction.correctOption ?? '').trim();
+            const selected = String(row.selectedOption ?? '').trim();
+            if(!correct || !selected) continue;
+
+            const desiredResult = correct === selected ? 'WON' : 'LOST';
+            const currentResult = String(row.result || '').toUpperCase();
+            const currentStatus = String(row.status || '').toUpperCase();
+
+            if(currentResult === desiredResult && currentStatus === PredictionStatus.COMPLETED) continue;
+
+            const ref = doc(db, USER_PREDICTIONS, row.id);
+            await updateDoc(ref, {
+                status: PredictionStatus.COMPLETED,
+                result: desiredResult,
+                correctOption: correct,
+                resultResolvedAt: serverTimestamp()
+            });
+            repaired++;
+        }
+
+        return repaired;
+    } catch(error){
+        console.error('Repair User Prediction Results Error:', error);
+        return 0;
     }
 }
 
@@ -1690,19 +1922,39 @@ export async function publishResult(
 
                 const data = snap.data();
 
-                // Idempotent result publishing. Re-running the result engine
-                // with the same answer is safe and still allows reward recovery.
-                if(data.status === PredictionStatus.COMPLETED){
-                    return data.correctOption === correctOption;
+                if(data.status === PredictionStatus.CANCELLED){
+                    return false;
                 }
 
-                if(data.status === PredictionStatus.CANCELLED){
+                const candidate = String(correctOption ?? "").trim();
+                if(!candidate) return false;
+
+                // A previous buggy result could have marked a prediction
+                // COMPLETED while saving an empty/invalid correctOption. Repair
+                // that record when a fresh, valid provider result is available.
+                // Never overwrite a valid existing answer with a different one.
+                if(data.status === PredictionStatus.COMPLETED){
+                    const existing = String(data.correctOption ?? "").trim();
+                    if(existing === candidate) return true;
+
+                    const validExisting = Array.isArray(data.options) &&
+                        data.options.some(option => String(option?.id ?? "").trim() === existing);
+
+                    if(!existing || !validExisting){
+                        transaction.update(ref, {
+                            correctOption: candidate,
+                            completedAt: data.completedAt || serverTimestamp(),
+                            repairedAt: serverTimestamp()
+                        });
+                        return true;
+                    }
+
                     return false;
                 }
 
                 transaction.update(ref, {
                     status: PredictionStatus.COMPLETED,
-                    correctOption,
+                    correctOption: candidate,
                     completedAt: serverTimestamp()
                 });
 

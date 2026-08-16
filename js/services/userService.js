@@ -973,6 +973,110 @@ export async function givePredictionRewardOnce(
 
 }
 
+/*==================================================
+    REPAIR / RECONCILE ALREADY-REWARDED PREDICTION
+    Keeps result and stored reward amount consistent.
+==================================================*/
+export async function reconcilePredictionReward(
+    userPredictionId,
+    uid,
+    difficulty,
+    isCorrect
+){
+    try{
+        const reward = PREDICTION_REWARDS[difficulty]?.[
+            isCorrect ? "correct" : "wrong"
+        ];
+
+        if(!reward){
+            throw new Error("Invalid prediction difficulty.");
+        }
+
+        const userRef = doc(db, USERS, uid);
+        const predictionRef = doc(db, USER_PREDICTIONS, userPredictionId);
+
+        return await runTransaction(db, async transaction => {
+            const userSnap = await transaction.get(userRef);
+            const predictionSnap = await transaction.get(predictionRef);
+
+            if(!userSnap.exists() || !predictionSnap.exists()) return false;
+
+            const predictionData = predictionSnap.data();
+            if(predictionData.rewardStatus !== "REWARDED") return false;
+
+            const currentXPReward = Number(predictionData.rewardXP) || 0;
+            const currentCoinReward = Number(predictionData.rewardCoins) || 0;
+            const expectedXP = Number(reward.xp) || 0;
+            const expectedCoins = Number(reward.coins) || 0;
+
+            const deltaXP = Math.max(0, expectedXP - currentXPReward);
+            const deltaCoins = Math.max(0, expectedCoins - currentCoinReward);
+
+            const user = userSnap.data();
+            const currentXP = Number(user.xp) || 0;
+            const currentCoins = Number(user.coins) || 0;
+            const today = dayKeyUTC();
+
+            const usedDailyXP =
+                user.predictionRewardDay === today
+                    ? Number(user.predictionRewardXP) || 0
+                    : 0;
+            const usedDailyCoins =
+                user.predictionRewardDay === today
+                    ? Number(user.predictionRewardCoins) || 0
+                    : 0;
+
+            if(deltaXP === 0 && deltaCoins === 0){
+                transaction.update(predictionRef, {
+                    result: isCorrect ? "WON" : "LOST"
+                });
+                return false;
+            }
+
+            const correctionHistoryRef = doc(collection(db, "rewards"));
+
+            const newXP = currentXP + deltaXP;
+            transaction.update(userRef, {
+                xp: newXP,
+                level: calculateLevel(newXP),
+                coins: currentCoins + deltaCoins,
+                predictionRewardDay: today,
+                predictionRewardXP: usedDailyXP + deltaXP,
+                predictionRewardCoins: usedDailyCoins + deltaCoins,
+                updatedAt: serverTimestamp()
+            });
+
+            transaction.update(predictionRef, {
+                result: isCorrect ? "WON" : "LOST",
+                rewardXP: expectedXP,
+                rewardCoins: expectedCoins,
+                rewardAdjustedAt: serverTimestamp()
+            });
+
+            transaction.set(correctionHistoryRef, {
+                uid,
+                reason: "Prediction Reward Correction",
+                xp: deltaXP,
+                coins: deltaCoins,
+                predictionId: predictionData.predictionId || null,
+                userPredictionId,
+                createdAt: serverTimestamp()
+            });
+
+            return {
+                repaired: true,
+                xp: expectedXP,
+                coins: expectedCoins,
+                deltaXP,
+                deltaCoins
+            };
+        });
+    }catch(error){
+        console.error("Prediction Reward Reconciliation Error:", error);
+        return false;
+    }
+}
+
 export async function givePredictionReward(
 
     uid,
