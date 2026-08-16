@@ -330,10 +330,27 @@
     return overs != null && overs !== '' ? String(overs) + ' ov' : '';
   }
 
-  function normalizeStatus(rawStatus, resultText) {
-    const text = String(rawStatus || '').toLowerCase() + ' ' + String(resultText || '').toLowerCase();
+  function normalizeStatus(rawStatus, resultText, match = null) {
+    const raw = String(rawStatus || '').toLowerCase();
+    const result = String(resultText || '').toLowerCase();
+    const text = (raw + ' ' + result).trim();
+
+    // Some cricket providers keep a started Test in /matches/upcoming when
+    // play is stopped by rain. Treat that started Test as LIVE instead.
+    const format = String(match?.matchType || match?.matchFormat || match?.format || match?.type || '').toLowerCase();
+    const score = match?.score || match?.scoreCard || {};
+    const hasScore = Object.keys(score).length > 0 || score?.innings1 != null || score?.innings2 != null || score?.team1Score != null || score?.team2Score != null;
+    const startedTime = Number(match?.startTime);
+    const started = Number.isFinite(startedTime) && startedTime > 0 && startedTime <= Date.now();
+    const isTest = /test/.test(format);
+    const delayedOrInProgress = /(rain|delay|delayed|stumps|lunch|tea|session|day\s*[1-5]|innings break|in progress)/i.test(text);
+
     if (/(complete|completed|finished|result|won|draw|tie|no result|abandon|cancel)/i.test(text)) return 'finished';
-    if (/(live|in progress|innings break|stumps|lunch|tea|day\\s*[1-5]|session|drinks|rain delay|delayed)/i.test(text)) return 'live';
+    if (/(live|in progress|innings break|stumps|lunch|tea|day\s*[1-5]|session|drinks|rain delay|delayed)/i.test(text)) return 'live';
+
+    // Exact fix: status=upcoming + already-started Test + score/delay info.
+    if (isTest && started && (hasScore || delayedOrInProgress)) return 'live';
+
     if (/(upcoming|scheduled|not started|preview|fixture|yet to start|match starts|starts at)/i.test(text)) return 'upcoming';
     return 'upcoming';
   }
@@ -478,7 +495,7 @@
       formatOvers(innings1) ||
       String(score.detail || score.statusLine || match.statusText || '');
 
-    const status = normalizeStatus(match.status || match.state, match.result || match.statusText);
+    const status = normalizeStatus(match.status || match.state, match.result || match.statusText, match);
 
     return {
       id: String(match.id ?? match.matchId ?? ''),
