@@ -4458,8 +4458,8 @@ async function fetchEspnScoreboard(path) {
       });
       const h = team(home), a = team(away);
       return {
-        sport: ev.league ? (ev.league.abbreviation || ev.league.name) : '',
-        league: (ev.league && ev.league.name) || '',
+        sport: comp.league ? (comp.league.abbreviation || comp.league.name) : '',
+        league: (comp.league && comp.league.name) || '',
         status,
         state,
         time: st.shortDetail || st.description || ev.date || '',
