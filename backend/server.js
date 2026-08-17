@@ -4434,6 +4434,25 @@ const MATCH_SPORT_PATHS = {
   esports: null,
 };
 
+// ESPN's scoreboard returns an EMPTY league object for soccer, so derive the
+// human-readable league name from the path itself.
+const ESPN_LEAGUE_NAMES = {
+  'soccer/eng.1': 'Premier League',
+  'soccer/esp.1': 'La Liga',
+  'soccer/ita.1': 'Serie A',
+  'soccer/ger.1': 'Bundesliga',
+  'soccer/fra.1': 'Ligue 1',
+  'soccer/usa.1': 'MLS',
+  'basketball/nba': 'NBA',
+  'hockey/nhl': 'NHL',
+  'baseball/mlb': 'MLB',
+  'tennis/atp': 'ATP Tour',
+  'tennis/wta': 'WTA Tour',
+  'football/nfl': 'NFL',
+  'mma/ufc': 'UFC',
+  'volleyball/ncaa-wvb': 'NCAA Volleyball',
+};
+
 async function fetchEspnScoreboard(path) {
   const url = `https://site.web.api.espn.com/apis/site/v2/sports/${path}/scoreboard`;
   const ctrl = new AbortController();
@@ -4459,7 +4478,7 @@ async function fetchEspnScoreboard(path) {
       const h = team(home), a = team(away);
       return {
         sport: comp.league ? (comp.league.abbreviation || comp.league.name) : '',
-        league: (comp.league && comp.league.name) || '',
+        league: (comp.league && comp.league.name) || ESPN_LEAGUE_NAMES[path] || '',
         status,
         state,
         time: st.shortDetail || st.description || ev.date || '',
@@ -4561,6 +4580,49 @@ async function enrichWithLogos(sportKey, matches) {
     const awayLogo = m.awayLogo || logos[m.awayName] || '';
     return { ...m, homeLogo, awayLogo };
   });
+}
+
+// TheSportsDB free logo lookup — fills ANY team missing a logo (basketball,
+// tennis, hockey, volleyball, golf, mma, kabaddi, tabletennis, esports rows).
+// Results cached in-memory forever; bounded to 15 lookups per refresh so the
+// free tier rate limit is never hammered.
+const _tsdbLogo = new Map(); // team name -> logo url
+async function tsdbTeamLogo(name) {
+  if (!name || name === "TBD") return "";
+  if (_tsdbLogo.has(name)) return _tsdbLogo.get(name);
+  try {
+    const q = encodeURIComponent(name.replace(/[^a-zA-Z0-9 ]/g, "").trim().slice(0, 30));
+    const r = await fetch(`https://www.thesportsdb.com/api/v1/json/3/searchteams.php?t=${q}`, {
+      signal: AbortSignal.timeout(10000),
+    });
+    const j = await r.json().catch(() => null);
+    const teams = (j && j.teams) || [];
+    const exact = teams.find((t) => (t.strTeam || "").toLowerCase() === name.toLowerCase());
+    const t = exact || teams[0] || {};
+    const logo = (t.strTeamBadge || t.strTeamLogo || t.strBadge || "") || "";
+    _tsdbLogo.set(name, logo);
+    return logo;
+  } catch (e) {
+    _tsdbLogo.set(name, "");
+    return "";
+  }
+}
+async function fillMissingLogos(matches) {
+  if (!matches || !matches.length) return matches;
+  const missing = new Set();
+  for (const m of matches) {
+    if (!m.homeLogo && m.homeName) missing.add(m.homeName);
+    if (!m.awayLogo && m.awayName) missing.add(m.awayName);
+  }
+  if (!missing.size) return matches;
+  const batch = [...missing].slice(0, 15);
+  const logos = {};
+  await Promise.all(batch.map(async (name) => { logos[name] = await tsdbTeamLogo(name); }));
+  return matches.map((m) => ({
+    ...m,
+    homeLogo: m.homeLogo || logos[m.homeName] || "",
+    awayLogo: m.awayLogo || logos[m.awayName] || "",
+  }));
 }
 
 // Static fallback (used when ESPN has no data or is unreachable).
@@ -5524,7 +5586,7 @@ async function fetchCricbuzzLive() {
           const team2 = info.team2 || {};
           const state = (info.state || "").toLowerCase();
           let statusStr = "UPCOMING";
-          if (state.includes("live") || state.includes("in progress")) statusStr = "LIVE";
+          if (state.includes("live") || state.includes("in progress") || state.includes("toss")) statusStr = "LIVE";
           else if (state.includes("complete") || state.includes("finished")) statusStr = "COMPLETED";
 
           // Extract real cricket scores from matchScore (innings runs/overs).
@@ -5836,6 +5898,7 @@ app.get("/api/live-matches", async (req, res) => {
         const cricket = await fetchCricbuzzLive();
         const others = await fetchAllSportsForAll();
         results = [...cricket, ...others];
+        results = await fillMissingLogos(results);
       } else if (sport === "cricket") {
         // Cricket data from cricbuzz-cricket (live + upcoming + recent) — the
         // only cricket API with a key in .env.
@@ -5848,6 +5911,7 @@ app.get("/api/live-matches", async (req, res) => {
         results = slug && slug.length ? slug : [];
         if (!results.length) results = staticMatchesFor(sport);
         results = await enrichWithLogos(sport, results);
+        results = await fillMissingLogos(results);
       }
     }
     if (results.length === 0) {
