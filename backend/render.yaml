@@ -22,9 +22,9 @@ services:
       - key: CRICBUZZ_API_KEY
         sync: false
       - key: CRICBUZZ_API_HOST
-        value: cricbuzz-cricket.p.rapidapi.com
+        value: cricbuzz-cricket2.p.rapidapi.com
       - key: CRICBUZZ_BASE_URL
-        value: https://cricbuzz-cricket.p.rapidapi.com
+        value: https://cricbuzz-cricket2.p.rapidapi.com
       - key: NEWSDATA_KEY
         sync: false
       - key: ALLSPORTS_KEY

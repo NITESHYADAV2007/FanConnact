@@ -34,3 +34,9 @@ services:
         sync: false
       - key: CRICKET_KEY
         sync: false
+      - key: CRICBUZZ_API_KEY
+        sync: false
+      - key: CRICBUZZ_API_HOST
+        value: cricbuzz-cricket2.p.rapidapi.com
+      - key: CRICBUZZ_BASE_URL
+        value: https://cricbuzz-cricket2.p.rapidapi.com
