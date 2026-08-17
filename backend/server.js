@@ -5090,9 +5090,10 @@ const REEL_SOURCES = {
 
 async function fetchReelViaFetchSocial(url) {
   const ctrl = new AbortController();
-  const t = setTimeout(() => ctrl.abort(), 15000);
+  const t = setTimeout(() => ctrl.abort(), 40000);
   try {
-    const r = await fetch(`https://${FS_HOST}/rapidapi/v1/fetch`, {
+    // Current listing endpoint (verified 2026-08): POST /openapi/rapidapi/v1/video
+    const r = await fetch(`https://${FS_HOST}/openapi/rapidapi/v1/video`, {
       method: "POST",
       signal: ctrl.signal,
       headers: {
@@ -5105,25 +5106,26 @@ async function fetchReelViaFetchSocial(url) {
     if (!r.ok) throw new Error("fetchsocial " + r.status);
     const j = await r.json();
     const data = j && j.data ? j.data : {};
-    const media = Array.isArray(data.media) ? data.media : [];
-    const video = media.find((m) => m.type === "video") ||
-      media.find((m) => (m.url || "").toLowerCase().endsWith(".mp4"));
-    if (!video || !video.url) return null;
-    const img = media.find((m) => m.type === "image");
-    const author = data.author || {};
+    const dl = data.downloadUrlList || {};
+    const videoUrl =
+      (typeof dl === "string" ? dl : dl.sourceUrl || dl.url || "") || "";
+    if (!videoUrl) return null;
+    const cover =
+      (typeof dl === "object" && dl ? dl.cover || dl.thumb || "" : "") || "";
+    const idFromUrl = String(url).split("/").filter(Boolean).pop() || "fs";
     return {
-      code: String((j.url || url).split("/").filter(Boolean).pop() || "fs"),
+      code: String(data.secUid || data.platformCreatorId || data.id || idFromUrl),
       type: 2,
-      caption: data.content || data.title || "",
+      caption: data.title || data.description || "",
       likeCount: 0,
       commentCount: 0,
       viewCount: 0,
       takenAt: Math.floor(Date.now() / 1000),
-      videoUrl: video.url,
-      imageUrl: img ? img.url : "",
-      link: j.url || url,
-      source: j.platform || "social",
-      user: { username: author.name || "", avatar: author.url || "" },
+      videoUrl,
+      imageUrl: cover,
+      link: url,
+      source: data.platform || "social",
+      user: { username: data.name || "", avatar: data.avatar || "" },
     };
   } catch (e) {
     console.error("FetchSocial resolve failed for", url, e.message);
