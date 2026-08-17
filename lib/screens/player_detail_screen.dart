@@ -1,11 +1,11 @@
-// Player detail screen — shows real player info fetched from the RapidAPI
-// cricket endpoint (cricket-live-line-advance). For other sports we show the
-// basic info we have from the rankings payload.
+// Player detail screen — real player data via the BACKEND proxy:
+//   cricket: /api/players/resolve/:name + /api/players/:id/profile (cricbuzz)
+//   NBA/MLB/NHL: /api/players/espn/:league/:athleteId (ESPN core API)
 
 import 'package:flutter/material.dart';
 import '../theme.dart';
 import '../data.dart';
-import '../services/rapid_api_service.dart';
+import '../services/player_detail_service.dart';
 import '../services/news_service.dart';
 
 class PlayerDetailScreen extends StatefulWidget {
@@ -28,6 +28,7 @@ class PlayerDetailScreen extends StatefulWidget {
 
 class _PlayerDetailScreenState extends State<PlayerDetailScreen> {
   Map<String, dynamic>? _player;
+  Map<String, dynamic>? _espnProfile;
   List<NewsItem> _news = [];
   bool _loading = true;
 
@@ -57,36 +58,35 @@ class _PlayerDetailScreenState extends State<PlayerDetailScreen> {
   }
 
   Future<void> _load() async {
-    int? pid;
     if (widget.sportKey == 'cricket') {
-      pid = int.tryParse(widget.extra?['pid']?.toString() ??
+      int? pid = int.tryParse(widget.extra?['pid']?.toString() ??
           widget.extra?['playerId']?.toString() ??
-          widget.extra?['player_id']?.toString() ?? '');
-      // No pid was passed (e.g. tapped from a scorecard/squad row). Resolve
-      // it by name so we can still show the full Crex-style profile.
+          widget.extra?['player_id']?.toString() ??
+          '');
+      // No pid was passed (e.g. tapped from a scorecard/squad row or a
+      // rankings row). Resolve it by name so we can still show the full
+      // Crex-style profile.
       if (pid == null && widget.name.isNotEmpty) {
-        try {
-          pid = await RapidApiService.fetchCricketPlayerIdByName(widget.name);
-        } catch (_) {
-          pid = null;
-        }
+        pid = await PlayerDetailService.resolveCricketPlayerId(widget.name);
       }
       if (pid != null) {
-        // Rich Crex-style profile from cricket-live-line-advance
-        // /players/{pid}/stats (real API, no backend). Falls back to
-        // cricket-live-line1 /player/{pid} if the advance endpoint fails.
-        try {
-          _player = await RapidApiService.fetchCricketPlayerStats(pid);
-        } catch (_) {
-          _player = null;
-        }
-        if (_player == null) {
-          try {
-            _player = await RapidApiService.fetchCricketPlayerDetail(pid);
-          } catch (_) {
-            _player = null;
-          }
-        }
+        // Full Crex-style profile from the backend cricbuzz proxy
+        // (/api/players/:id/profile → info + batting + bowling + career).
+        _player = await PlayerDetailService.fetchCricketProfile(pid);
+      }
+    } else if (widget.sportKey == 'basketball' ||
+        widget.sportKey == 'baseball' ||
+        widget.sportKey == 'hockey') {
+      final league = widget.sportKey == 'basketball'
+          ? 'nba'
+          : widget.sportKey == 'baseball'
+              ? 'mlb'
+              : 'nhl';
+      final athleteId =
+          (widget.extra?['athleteId'] ?? widget.extra?['id'] ?? '').toString();
+      if (athleteId.isNotEmpty) {
+        _espnProfile =
+            await PlayerDetailService.fetchEspnProfile(league, athleteId);
       }
     }
     // Real news about this player from the backend news feed.
@@ -115,29 +115,38 @@ class _PlayerDetailScreenState extends State<PlayerDetailScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     // The new /players/{pid}/stats endpoint returns the full response directly
     final p = _player;
-    // The API returns {player:{...}, batting:{...}, bowling:{...}, bio, ...}
-    final playerData = p?['player'] as Map<String, dynamic>?;
+    final basic = p?['basic'] as Map<String, dynamic>?;
+    final espn = _espnProfile;
     final name = widget.name.isNotEmpty
         ? widget.name
-        : (playerData?['name']?.toString() ?? playerData?['title']?.toString() ?? 'Player');
+        : (basic?['name']?.toString() ??
+            espn?['name']?.toString() ??
+            (p?['player'] is Map
+                ? (p!['player'] as Map)['name']?.toString()
+                : null) ??
+            'Player');
 
     // Resolve display fields from whichever source has data.
-    final imageUrl = (p?['profile_image']?.toString().isNotEmpty == true
-            ? p!['profile_image'].toString()
-            : (p?['image']?.toString().isNotEmpty == true
-                ? p!['image'].toString()
-                : (widget.extra?['image']?.toString() ??
-                    widget.extra?['img']?.toString() ??
-                    '')))
-        .toString();
+    final imageUrl = (basic?['image']?.toString().isNotEmpty == true)
+        ? basic!['image'].toString()
+        : (espn?['image']?.toString().isNotEmpty == true)
+            ? espn!['image'].toString()
+            : (p?['profile_image']?.toString().isNotEmpty == true)
+                ? p!['profile_image'].toString()
+                : (p?['image']?.toString().isNotEmpty == true)
+                    ? p!['image'].toString()
+                    : (widget.extra?['image']?.toString() ??
+                        widget.extra?['img']?.toString() ??
+                        '');
     final country = widget.country ??
-        (p?['nationality']?.toString()) ??
-        (p?['country'] != null ? p!['country'].toString().toUpperCase() : null) ??
-        (widget.extra?['country']?.toString()) ??
-        (p?['birth_place'] != null ? p!['birth_place'].toString() : null);
-    final role = (p?['playing_role']?.toString()) ??
-        (widget.extra?['category']?.toString()) ??
-        (widget.extra?['role']?.toString());
+        basic?['country']?.toString() ??
+        espn?['country']?.toString() ??
+        widget.extra?['country']?.toString() ??
+        (p?['nationality']?.toString());
+    final role = basic?['role']?.toString() ??
+        espn?['position']?.toString() ??
+        widget.extra?['category']?.toString() ??
+        widget.extra?['role']?.toString();
 
     // Stat fields for non-cricket sports (everything in extra minus skips).
     final statEntries = <MapEntry<String, String>>[];
@@ -258,21 +267,26 @@ class _PlayerDetailScreenState extends State<PlayerDetailScreen> {
                 ),
                 const SizedBox(height: 16),
 
-                // ── Cricket-specific info + career ──
+                // ── Cricket: full Crex-style profile from backend cricbuzz ──
                 if (widget.sportKey == 'cricket') ...[
                   if (_player != null) ...[
                     _InfoTile('Batting Style',
-                        p?['batting_style']?.toString() ?? '—'),
+                        (basic?['battingStyle'] ?? '—').toString()),
                     _InfoTile('Bowling Style',
-                        p?['bowling_style']?.toString() ?? '—'),
-                    _InfoTile('Born', p?['birthdate']?.toString() ?? '—'),
-                    _InfoTile('Birth Place',
-                        p?['birthplace']?.toString() ?? '—'),
-                    if (p?['bio'] != null && p!['bio'].toString().isNotEmpty)
+                        (basic?['bowlingStyle'] ?? '—').toString()),
+                    if (basic?['team'] != null &&
+                        basic!['team'].toString().isNotEmpty)
+                      _InfoTile('Team', basic['team'].toString()),
+                    if (basic?['jersey'] != null &&
+                        basic!['jersey'].toString().isNotEmpty)
+                      _InfoTile('Jersey', basic['jersey'].toString()),
+                    _InfoTile('Born', (basic?['born'] ?? '—').toString()),
+                    if (p?['profile'] is Map &&
+                        _profileBio(p!['profile'] as Map).isNotEmpty)
                       Padding(
                         padding: const EdgeInsets.only(top: 12),
                         child: Text(
-                          _stripHtml(p['bio'].toString()),
+                          _stripHtml(_profileBio(p['profile'] as Map)),
                           style: TextStyle(
                             fontSize: 13,
                             color: isDark ? Colors.white70 : Colors.black54,
@@ -280,18 +294,21 @@ class _PlayerDetailScreenState extends State<PlayerDetailScreen> {
                           ),
                         ),
                       ),
-                    // Career stats from /players/{pid}/stats (batting + bowling)
-                    if (_player?['batting'] is Map)
-                      _buildFormatStats('Batting Career',
-                          _player!['batting'] as Map, isDark),
-                    if (_player?['bowling'] is Map)
-                      _buildFormatStats('Bowling Career',
-                          _player!['bowling'] as Map, isDark),
+                    // Career stats from the backend proxy (batting + bowling)
+                    if (p?['batting'] is Map)
+                      _buildCricbuzzTable('Batting Career',
+                          p!['batting'] as Map, isDark),
+                    if (p?['bowling'] is Map)
+                      _buildCricbuzzTable('Bowling Career',
+                          p!['bowling'] as Map, isDark),
                   ] else ...[
                     // No linked profile yet — show the real ICC ranking data
                     // we already have (rating / points / format / rank).
                     _buildRankingSnapshot(isDark),
                   ],
+                ] else if (espn != null) ...[
+                  // ── NBA / MLB / NHL: real ESPN bio + season stats ──
+                  _buildEspnSection(espn, statEntries, isDark),
                 ] else ...[
                   // ── Generic Crex-style stat grid for all other sports ──
                   if (statEntries.isNotEmpty) ...[
@@ -304,47 +321,7 @@ class _PlayerDetailScreenState extends State<PlayerDetailScreen> {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    GridView.count(
-                      crossAxisCount: 2,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      mainAxisSpacing: 8,
-                      crossAxisSpacing: 8,
-                      childAspectRatio: 2.6,
-                      children: statEntries
-                          .map((e) => Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 12, vertical: 8),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(12),
-                                  color:
-                                      isDark ? AppColors.darkCard : Colors.white,
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      e.key,
-                                      style: const TextStyle(
-                                          fontSize: 10, color: Colors.grey),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    const SizedBox(height: 2),
-                                    Text(
-                                      e.value,
-                                      style: const TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w800),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ],
-                                ),
-                              ))
-                          .toList(),
-                    ),
+                    _buildStatGrid(statEntries, isDark),
                   ] else
                     const Padding(
                       padding: EdgeInsets.only(top: 8),
@@ -374,7 +351,9 @@ class _PlayerDetailScreenState extends State<PlayerDetailScreen> {
   }
 
   Widget _buildFormatStats(String title, Map stats, bool isDark) {
-    // stats: {test:{...}, odi:{...}, t20i:{...}, t20:{...}, lista:{...}}
+    // Legacy shape: {test:{...}, odi:{...}, t20i:{...}, t20:{...}, lista:{...}}
+    // (handled here) — cricbuzz {headers, values} shape is handled by
+    // _buildCricbuzzTable below.
     final order = ['test', 'odi', 't20i', 't20', 'lista'];
     final formats = order
         .where((f) => stats[f] is Map && (stats[f] as Map).isNotEmpty)
@@ -447,6 +426,179 @@ class _PlayerDetailScreenState extends State<PlayerDetailScreen> {
             ),
           );
         }),
+      ],
+    );
+  }
+
+  // Cricbuzz career table: {headers:['ROWHEADER','Test','ODI',...],
+  // values:[{values:['Matches','123','314',...]}, ...]} — falls back to the
+  // legacy per-format map renderer when the shape doesn't match.
+  Widget _buildCricbuzzTable(String title, Map stats, bool isDark) {
+    final headers = stats['headers'];
+    final values = stats['values'];
+    if (headers is! List || values is! List || values.isEmpty) {
+      return _buildFormatStats(title, stats, isDark);
+    }
+    final cols = headers.map((h) => h?.toString() ?? '').toList();
+    final data = <List<String>>[];
+    for (final row in values) {
+      final v = row is Map ? row['values'] : null;
+      if (v is List && v.isNotEmpty) {
+        data.add(v.map((x) => x?.toString() ?? '').toList());
+      }
+    }
+    if (data.isEmpty) return const SizedBox.shrink();
+    final labelCol = cols.isNotEmpty ? cols[0] : '';
+    final fmtCols = cols.length > 1 ? cols.sublist(1) : <String>[];
+    final cellBg = isDark ? AppColors.darkCard : Colors.white;
+    final labelStyle = TextStyle(
+        fontSize: 10,
+        fontWeight: FontWeight.w700,
+        color: isDark ? Colors.white54 : Colors.grey.shade600);
+    final valStyle = TextStyle(
+        fontSize: 11.5,
+        fontWeight: FontWeight.w700,
+        color: isDark ? Colors.white : Colors.black87);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 16),
+        Text(title,
+            style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w800,
+                color: AppColors.brandBlue)),
+        const SizedBox(height: 8),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: Container(
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey.withValues(alpha: 0.15)),
+              color: cellBg,
+            ),
+            child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: DataTable(
+              headingRowColor: WidgetStatePropertyAll(
+                  AppColors.brandBlue.withValues(alpha: 0.08)),
+              columnSpacing: 16,
+              horizontalMargin: 12,
+              dataRowMinHeight: 32,
+              columns: [
+                DataColumn(label: Text(labelCol, style: labelStyle)),
+                ...fmtCols.map((c) => DataColumn(
+                    label: Text(c, style: labelStyle),
+                    numeric: true)),
+              ],
+              rows: data.map((r) {
+                return DataRow(cells: [
+                  for (var i = 0; i < cols.length; i++)
+                    DataCell(Text(
+                      i < r.length ? r[i] : '',
+                      style: i == 0 ? labelStyle : valStyle,
+                      textAlign: i == 0 ? TextAlign.left : TextAlign.right,
+                    )),
+                ]);
+              }).toList(),
+            ),
+          ),
+        ),
+        ),
+      ],
+    );
+  }
+
+  String _profileBio(Map profile) {
+    for (final k in ['bio', 'description', 'about', 'longBio', 'introduction']) {
+      final v = profile[k];
+      if (v != null && v.toString().trim().isNotEmpty) return v.toString();
+    }
+    return '';
+  }
+
+  Widget _buildStatGrid(List<MapEntry<String, String>> entries, bool isDark) {
+    return GridView.count(
+      crossAxisCount: 2,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      mainAxisSpacing: 8,
+      crossAxisSpacing: 8,
+      childAspectRatio: 2.6,
+      children: entries
+          .map((e) => Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  color: isDark ? AppColors.darkCard : Colors.white,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      e.key,
+                      style:
+                          const TextStyle(fontSize: 10, color: Colors.grey),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      e.value,
+                      style: const TextStyle(
+                          fontSize: 15, fontWeight: FontWeight.w800),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ))
+          .toList(),
+    );
+  }
+
+  // NBA / MLB / NHL — real ESPN athlete bio + season stats from rankings.
+  Widget _buildEspnSection(Map espn, List<MapEntry<String, String>> statEntries,
+      bool isDark) {
+    final league = (espn['league'] ?? '').toString().toUpperCase();
+    final team = widget.extra?['team']?.toString() ?? '';
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('$league PLAYER',
+            style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w800,
+                color: AppColors.brandBlue)),
+        const SizedBox(height: 8),
+        _InfoTile('Position', (espn['position'] ?? '—').toString()),
+        _InfoTile('Team', team.isNotEmpty ? team : '—'),
+        _InfoTile('Height', (espn['height'] ?? '—').toString()),
+        _InfoTile('Weight', (espn['weight'] ?? '—').toString()),
+        if (espn['age'] != null) _InfoTile('Age', espn['age'].toString()),
+        if (espn['jersey'] != null && espn['jersey'].toString().isNotEmpty)
+          _InfoTile('Jersey', espn['jersey'].toString()),
+        if (espn['experience'] != null &&
+            espn['experience'].toString().isNotEmpty)
+          _InfoTile('Experience', espn['experience'].toString()),
+        if (espn['debutYear'] != null &&
+            espn['debutYear'].toString().isNotEmpty)
+          _InfoTile('Debut Year', espn['debutYear'].toString()),
+        if (espn['draft'] != null && espn['draft'].toString().isNotEmpty)
+          _InfoTile('Draft', espn['draft'].toString()),
+        if (espn['birthPlace'] != null &&
+            espn['birthPlace'].toString().isNotEmpty)
+          _InfoTile('Birth Place', espn['birthPlace'].toString()),
+        if (statEntries.isNotEmpty) ...[
+          const SizedBox(height: 14),
+          const Text('SEASON STATS',
+              style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.brandBlue)),
+          const SizedBox(height: 8),
+          _buildStatGrid(statEntries, isDark),
+        ],
       ],
     );
   }

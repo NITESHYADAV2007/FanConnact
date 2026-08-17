@@ -250,6 +250,7 @@ async function fetchESPNRankings(sport, category) {  const endpoints = {
           return {
             rank: i + 1,
             name: ath.displayName || '',
+            athleteId: ath.id || '',
             team: ath.teamShortName || '',
             position: ath.position?.abbreviation || '',
             points: parseFloat(o[0]) || 0,
@@ -273,6 +274,7 @@ async function fetchESPNRankings(sport, category) {  const endpoints = {
           return {
             rank: i + 1,
             name: ath.displayName || '',
+            athleteId: ath.id || '',
             team: ath.teamShortName || '',
             position: ath.position?.abbreviation || '',
             hr: parseInt(v[7]) || 0,
@@ -296,6 +298,7 @@ async function fetchESPNRankings(sport, category) {  const endpoints = {
           return {
             rank: i + 1,
             name: ath.displayName || '',
+            athleteId: ath.id || '',
             team: ath.teamShortName || '',
             position: ath.position?.abbreviation || '',
             goals: parseInt(o[0]) || 0,

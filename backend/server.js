@@ -124,6 +124,10 @@ app.get("/api/rankings/teams", (req, res) => {
   }
 });
 
+// Only these upstream sources are considered REAL ranking data. Rows without
+// one of these (procedurally generated) are never served to the app.
+const REAL_RANKING_SOURCES = new Set(["icc-advance", "sportscore", "espn", "allsportsapi"]);
+
 app.get("/api/rankings/:sport/:category?", async (req, res, next) => {
   const { sport: sportId } = req.params;
   const category = req.params.category || req.query.category || null;
@@ -135,44 +139,33 @@ app.get("/api/rankings/:sport/:category?", async (req, res, next) => {
 
   let players = [];
 
-  // Load from player-rankings.json if available
+  // Load from player-rankings.json if available. REAL-ONLY: generated/mock
+  // rows (no _source) are filtered out — the app never receives fake numbers.
   if (PLAYER_RANKINGS[resolvedId] && PLAYER_RANKINGS[resolvedId][cat]) {
-    players = PLAYER_RANKINGS[resolvedId][cat];
+    players = (PLAYER_RANKINGS[resolvedId][cat] || []).filter(
+      (p) => p._source && REAL_RANKING_SOURCES.has(p._source)
+    );
     // Re-rank to ensure correct order
     players.forEach((p, i) => (p.rank = i + 1));
-  } else {
-    // Fallback: generate procedurally
+  }
+
+  // No real rows in the DB for this category — try the live real APIs only.
+  // The procedural make* generators are intentionally NOT used anymore.
+  if (players.length === 0) {
     switch (resolvedId) {
-      case "cricket": {
-        const parts = cat.split("_");
-        const format = parts[0];
-        const role = parts[1];
-        const gender = parts[2] || "men";
-        const stat = parts[3] || "runs";
-        players = getCricketData(format, role, gender, stat);
-        break;
-      }
       case "football": {
         const fParts = cat.split("_");
         const fStat = fParts[0];
         const fGender = fParts[1] || "men";
         if ((fStat === "scorers" || fStat === "assists") && fGender === "men") {
           const apiPlayers = await fetchFootballScorers(fStat);
-          if (apiPlayers) {
-            players = apiPlayers;
-            break;
-          }
+          if (apiPlayers) players = apiPlayers;
         }
-        players = makeFootballPlayers(fStat, fGender);
         break;
       }
       case "basketball": {
         const apiBasketball = await fetchBasketballFromESPN(cat);
-        if (apiBasketball) {
-          players = apiBasketball;
-          break;
-        }
-        players = getBasketballData(cat);
+        if (apiBasketball) players = apiBasketball;
         break;
       }
       case "tennis": {
@@ -181,78 +174,25 @@ app.get("/api/rankings/:sport/:category?", async (req, res, next) => {
         const tCat = tParts[1] || "singles";
         if (tCat === "singles") {
           const apiTennis = await fetchTennisFromESPN(tType);
-          if (apiTennis) {
-            players = apiTennis;
-            break;
-          }
+          if (apiTennis) players = apiTennis;
         }
-        players = makeTennisPlayers(tType, tCat);
         break;
       }
       case "baseball": {
         const apiBaseball = await fetchBaseballFromESPN(cat);
-        if (apiBaseball) {
-          players = apiBaseball;
-          break;
-        }
-        players = makeBaseballPlayers(cat);
+        if (apiBaseball) players = apiBaseball;
         break;
       }
-      case "hockey": {
-        const hParts = cat.split("_");
-        const hStat = hParts[0];
-        const hGender = hParts[1] || "men";
-        players = makeHockeyPlayers(hStat, hGender);
-        break;
-      }
-      case "volleyball": {
-        const vParts = cat.split("_");
-        const vStat = vParts[0];
-        const vGender = vParts[1] || "men";
-        players = makeVolleyballPlayers(vStat, vGender);
-        break;
-      }
-      case "kabbaddi": {
-        players = makeKabaddiPlayers(cat);
-        break;
-      }
-      case "e-sports": {
-        players = makeEsportsPlayers(cat);
-        break;
-      }
-      case "table-tennis": {
-        const ttParts = cat.split("_");
-        const ttCat = ttParts[0];
-        const ttGender = ttParts[1] || "men";
-        players = makeTableTennisPlayers(ttCat, ttGender);
-        break;
-      }
-      case "rugby": {
-        const rParts = cat.split("_");
-        const rStat = rParts[0];
-        const rGender = rParts[1] || "men";
-        players = makeRugbyPlayers(rStat, rGender);
-        break;
-      }
-      case "golf": {
-        players = makeGolfPlayers(cat);
-        break;
-      }
-      case "mma": {
-        players = makeMmaPlayers(cat);
-        break;
-      }
+      case "hockey":
+      case "cricket":
       default:
-        return next();
+        // Hockey real data (goals_men) lives in the DB; cricket in the DB.
+        // No other sport has a real ranking source — serve empty.
+        break;
     }
   }
 
-  var dataSource = "generated";
-  if (PLAYER_RANKINGS[resolvedId] && PLAYER_RANKINGS[resolvedId][cat]) {
-    dataSource = "database";
-  } else if (players.length > 0 && players[0]._source) {
-    dataSource = players[0]._source;
-  }
+  var dataSource = players.length > 0 && players[0]._source ? players[0]._source : "none";
   const cleaned = players.slice(0, 100).map(function (p) {
     if (p._source) {
       var o = {};
@@ -277,6 +217,49 @@ app.get("/api/rankings/:sport/:category?", async (req, res, next) => {
     players: cleaned,
     _lastSync: (pd._meta && pd._meta.lastSync) || null,
   });
+});
+
+// ─── ESPN PLAYER DETAIL (NBA / MLB / NHL — real bio + headshot) ────────────
+// Free ESPN core API: https://sports.core.api.espn.com/v2/sports/{sport}/leagues/{league}/athletes/{id}
+const ESPN_SPORT_BY_LEAGUE = { nba: "basketball", mlb: "baseball", nhl: "hockey" };
+const _espnAthleteCache = new Map(); // league|id -> { ts, data } (24h)
+app.get("/api/players/espn/:league/:athleteId", async (req, res) => {
+  const league = (req.params.league || "").toLowerCase();
+  const sport = ESPN_SPORT_BY_LEAGUE[league];
+  const id = (req.params.athleteId || "").replace(/[^0-9]/g, "");
+  if (!sport || !id) return res.status(400).json({ error: "unsupported league or id" });
+  const cacheKey = `${league}|${id}`;
+  const cached = _espnAthleteCache.get(cacheKey);
+  if (cached && Date.now() - cached.ts < 24 * 3600 * 1000) return res.json(cached.data);
+  try {
+    const r = await fetch(
+      `https://sports.core.api.espn.com/v2/sports/${sport}/leagues/${league}/athletes/${id}?lang=en&region=us`,
+      { signal: AbortSignal.timeout(12000) }
+    );
+    if (!r.ok) return res.status(r.status).json({ error: "athlete fetch failed " + r.status });
+    const a = await r.json();
+    const data = {
+      name: a.displayName || a.fullName || "",
+      image: (a.headshot && a.headshot.href) || "",
+      position: (a.position && a.position.displayName) || "",
+      league,
+      sport,
+      country: (a.birthPlace && a.birthPlace.country) || "",
+      birthPlace: (a.birthPlace && a.birthPlace.city) || "",
+      height: a.displayHeight || "",
+      weight: a.displayWeight || "",
+      age: a.age != null ? a.age : null,
+      jersey: a.jersey || "",
+      experience: (a.experience && a.experience.years != null) ? a.experience.years : "",
+      debutYear: a.debutYear || "",
+      active: a.active != null ? a.active : null,
+      draft: (a.draft && (a.draft.displayText || a.draft.text)) || "",
+    };
+    _espnAthleteCache.set(cacheKey, { ts: Date.now(), data });
+    res.json(data);
+  } catch (e) {
+    res.status(502).json({ error: e.message });
+  }
 });
 
 app.use("/api/rankings", rankingRoutes);
@@ -4615,7 +4598,7 @@ async function fillMissingLogos(matches) {
     if (!m.awayLogo && m.awayName) missing.add(m.awayName);
   }
   if (!missing.size) return matches;
-  const batch = [...missing].slice(0, 15);
+  const batch = [...missing].slice(0, 24);
   const logos = {};
   await Promise.all(batch.map(async (name) => { logos[name] = await tsdbTeamLogo(name); }));
   return matches.map((m) => ({
@@ -5612,10 +5595,10 @@ async function fetchCricbuzzLive() {
             matchId: info.matchId || "",
             homeName: team1.teamName || "TBD",
             homeAbbr: team1.teamSName || "",
-            homeLogo: team1.imageId ? `https://www.cricbuzz.com/thumbnails/${team1.imageId}.png` : "",
+            homeLogo: "", // cricbuzz thumbnails host is dead/blocked; filled via TheSportsDB
             awayName: team2.teamName || "TBD",
             awayAbbr: team2.teamSName || "",
-            awayLogo: team2.imageId ? `https://www.cricbuzz.com/thumbnails/${team2.imageId}.png` : "",
+            awayLogo: "",
             homeScore: scoreStr("team1Score"),
             awayScore: scoreStr("team2Score"),
             venue: (info.venueInfo && info.venueInfo.ground) || "",
@@ -5903,6 +5886,7 @@ app.get("/api/live-matches", async (req, res) => {
         // Cricket data from cricbuzz-cricket (live + upcoming + recent) — the
         // only cricket API with a key in .env.
         results = await fetchCricbuzzLive();
+        results = await fillMissingLogos(results);
       } else {
         // FlashLive (real, with logos) for football + the sports allsportsapi2
         // doesn't cover (volleyball, kabaddi, table-tennis, esports, rugby,

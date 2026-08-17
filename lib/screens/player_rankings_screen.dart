@@ -12,6 +12,12 @@ import '../services/player_ranking_service.dart';
 import 'player_detail_screen.dart';
 import 'team_matches_screen.dart';
 
+// Sports with REAL ranking data (ICC / FIFA / ESPN / allsportsapi2). Every
+// other sport previously served generated/mock numbers and is hidden now.
+const Set<String> realRankingSports = {
+  'cricket', 'football', 'basketball', 'baseball', 'hockey', 'tennis',
+};
+
 class PlayerRankingsScreen extends StatefulWidget {
   final String sportKey;
   final String? initialCategory;
@@ -45,7 +51,11 @@ class _PlayerRankingsScreenState extends State<PlayerRankingsScreen> {
   @override
   void initState() {
     super.initState();
-    _load();
+    if (realRankingSports.contains(widget.sportKey)) {
+      _load();
+    } else {
+      _loading = false;
+    }
   }
 
   String get _sportEmoji {
@@ -266,7 +276,10 @@ class _PlayerRankingsScreenState extends State<PlayerRankingsScreen> {
                   child: Text(_error!,
                       style: const TextStyle(color: Colors.grey)),
                 )
-              : Column(
+              : !realRankingSports.contains(widget.sportKey) ||
+                      (_data != null && _data!.players.isEmpty)
+                  ? _NoDataView(sportName: _sportName, emoji: _sportEmoji)
+                  : Column(
                   children: [
                     if (widget.sportKey == 'cricket')
                       Column(
@@ -665,6 +678,49 @@ class _PlayerRow extends StatelessWidget {
             ),
           );
         }).toList(),
+      ),
+    );
+  }
+}
+
+class _NoDataView extends StatelessWidget {
+  final String sportName;
+  final String emoji;
+  const _NoDataView({required this.sportName, required this.emoji});
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(emoji, style: const TextStyle(fontSize: 44)),
+            const SizedBox(height: 12),
+            Text(
+              'No real rankings available for $sportName yet',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontWeight: FontWeight.w700,
+                fontSize: 15,
+                color: isDark ? Colors.white70 : Colors.black87,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              'We only show real rankings sourced from official APIs. '
+              'Volleyball, kabaddi, esports, table tennis, rugby, golf and '
+              'MMA have no reliable ranking source yet.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 12,
+                color: isDark ? Colors.white38 : Colors.grey,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

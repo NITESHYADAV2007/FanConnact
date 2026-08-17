@@ -4978,6 +4978,7 @@
       {
         "rank": 1,
         "name": "Luka Doncic",
+        "athleteId": "3945274",
         "team": "LAL",
         "position": "G",
         "points": 33.484375,
@@ -4990,6 +4991,7 @@
       {
         "rank": 2,
         "name": "Shai Gilgeous-Alexander",
+        "athleteId": "4278073",
         "team": "OKC",
         "position": "G",
         "points": 31.132353,
@@ -5002,6 +5004,7 @@
       {
         "rank": 3,
         "name": "Anthony Edwards",
+        "athleteId": "4594268",
         "team": "MIN",
         "position": "G",
         "points": 28.803278,
@@ -5014,6 +5017,7 @@
       {
         "rank": 4,
         "name": "Jaylen Brown",
+        "athleteId": "3917376",
         "team": "PHI",
         "position": "G",
         "points": 28.704226,
@@ -5026,6 +5030,7 @@
       {
         "rank": 5,
         "name": "Tyrese Maxey",
+        "athleteId": "4431678",
         "team": "PHI",
         "position": "G",
         "points": 28.285715,
@@ -5038,6 +5043,7 @@
       {
         "rank": 6,
         "name": "Kawhi Leonard",
+        "athleteId": "6450",
         "team": "LAC",
         "position": "F",
         "points": 27.892307,
@@ -5050,6 +5056,7 @@
       {
         "rank": 7,
         "name": "Donovan Mitchell",
+        "athleteId": "3908809",
         "team": "CLE",
         "position": "G",
         "points": 27.885714,
@@ -5062,6 +5069,7 @@
       {
         "rank": 8,
         "name": "Nikola Jokic",
+        "athleteId": "3112335",
         "team": "DEN",
         "position": "C",
         "points": 27.676924,
@@ -5074,6 +5082,7 @@
       {
         "rank": 9,
         "name": "Devin Booker",
+        "athleteId": "3136193",
         "team": "PHX",
         "position": "G",
         "points": 26.0625,
@@ -5086,6 +5095,7 @@
       {
         "rank": 10,
         "name": "Jalen Brunson",
+        "athleteId": "3934672",
         "team": "NY",
         "position": "G",
         "points": 26.04054,
@@ -5098,6 +5108,7 @@
       {
         "rank": 11,
         "name": "Kevin Durant",
+        "athleteId": "3202",
         "team": "HOU",
         "position": "F",
         "points": 25.97436,
@@ -5110,6 +5121,7 @@
       {
         "rank": 12,
         "name": "Jamal Murray",
+        "athleteId": "3936299",
         "team": "DEN",
         "position": "G",
         "points": 25.4,
@@ -5122,6 +5134,7 @@
       {
         "rank": 13,
         "name": "Victor Wembanyama",
+        "athleteId": "5104157",
         "team": "SA",
         "position": "F",
         "points": 25,
@@ -5134,6 +5147,7 @@
       {
         "rank": 14,
         "name": "Deni Avdija",
+        "athleteId": "4683021",
         "team": "POR",
         "position": "F",
         "points": 24.212122,
@@ -5146,6 +5160,7 @@
       {
         "rank": 15,
         "name": "Pascal Siakam",
+        "athleteId": "3149673",
         "team": "IND",
         "position": "F",
         "points": 23.951612,
@@ -5158,6 +5173,7 @@
       {
         "rank": 16,
         "name": "Cade Cunningham",
+        "athleteId": "4432166",
         "team": "DET",
         "position": "G",
         "points": 23.921875,
@@ -5170,6 +5186,7 @@
       {
         "rank": 17,
         "name": "James Harden",
+        "athleteId": "3992",
         "team": "CLE",
         "position": "G",
         "points": 23.6,
@@ -5182,6 +5199,7 @@
       {
         "rank": 18,
         "name": "Jalen Johnson",
+        "athleteId": "4701230",
         "team": "ATL",
         "position": "F",
         "points": 22.51389,
@@ -5194,6 +5212,7 @@
       {
         "rank": 19,
         "name": "Paolo Banchero",
+        "athleteId": "4432573",
         "team": "ORL",
         "position": "F",
         "points": 22.208334,
@@ -5206,6 +5225,7 @@
       {
         "rank": 20,
         "name": "Norman Powell",
+        "athleteId": "2595516",
         "team": "CHI",
         "position": "G",
         "points": 21.741379,
@@ -5218,6 +5238,7 @@
       {
         "rank": 21,
         "name": "Trey Murphy III",
+        "athleteId": "4397688",
         "team": "NO",
         "position": "F",
         "points": 21.515152,
@@ -5230,6 +5251,7 @@
       {
         "rank": 22,
         "name": "Brandon Ingram",
+        "athleteId": "3913176",
         "team": "TOR",
         "position": "F",
         "points": 21.493507,
@@ -5242,6 +5264,7 @@
       {
         "rank": 23,
         "name": "Julius Randle",
+        "athleteId": "3064514",
         "team": "BKN",
         "position": "F",
         "points": 21.101265,
@@ -5254,6 +5277,7 @@
       {
         "rank": 24,
         "name": "Cooper Flagg",
+        "athleteId": "5041939",
         "team": "DAL",
         "position": "F",
         "points": 21.042856,
@@ -5266,6 +5290,7 @@
       {
         "rank": 25,
         "name": "Zion Williamson",
+        "athleteId": "4395628",
         "team": "NO",
         "position": "F",
         "points": 21,
@@ -5278,6 +5303,7 @@
       {
         "rank": 26,
         "name": "LeBron James",
+        "athleteId": "1966",
         "team": "PHI",
         "position": "F",
         "points": 20.933332,
@@ -5290,6 +5316,7 @@
       {
         "rank": 27,
         "name": "Nickeil Alexander-Walker",
+        "athleteId": "4278039",
         "team": "ATL",
         "position": "G",
         "points": 20.820513,
@@ -5302,6 +5329,7 @@
       {
         "rank": 28,
         "name": "Alperen Sengun",
+        "athleteId": "4871144",
         "team": "HOU",
         "position": "C",
         "points": 20.36111,
@@ -5314,6 +5342,7 @@
       {
         "rank": 29,
         "name": "Brandon Miller",
+        "athleteId": "4433287",
         "team": "CHA",
         "position": "F",
         "points": 20.169231,
@@ -5326,6 +5355,7 @@
       {
         "rank": 30,
         "name": "Bam Adebayo",
+        "athleteId": "4066261",
         "team": "MIA",
         "position": "C",
         "points": 20.109589,
@@ -5338,6 +5368,7 @@
       {
         "rank": 31,
         "name": "Desmond Bane",
+        "athleteId": "4066320",
         "team": "ORL",
         "position": "G",
         "points": 20.085365,
@@ -5350,6 +5381,7 @@
       {
         "rank": 32,
         "name": "LaMelo Ball",
+        "athleteId": "4432816",
         "team": "MIN",
         "position": "G",
         "points": 20.069445,
@@ -5362,6 +5394,7 @@
       {
         "rank": 33,
         "name": "Karl-Anthony Towns",
+        "athleteId": "3136195",
         "team": "NY",
         "position": "C",
         "points": 20.053333,
@@ -5374,6 +5407,7 @@
       {
         "rank": 34,
         "name": "Jalen Duren",
+        "athleteId": "4433621",
         "team": "DET",
         "position": "C",
         "points": 19.5,
@@ -5386,6 +5420,7 @@
       {
         "rank": 35,
         "name": "CJ McCollum",
+        "athleteId": "2490149",
         "team": "ATL",
         "position": "G",
         "points": 18.736841,
@@ -5398,6 +5433,7 @@
       {
         "rank": 36,
         "name": "De'Aaron Fox",
+        "athleteId": "4066259",
         "team": "SA",
         "position": "G",
         "points": 18.555555,
@@ -5410,6 +5446,7 @@
       {
         "rank": 37,
         "name": "Kon Knueppel",
+        "athleteId": "5061575",
         "team": "CHA",
         "position": "G",
         "points": 18.493828,
@@ -5422,6 +5459,7 @@
       {
         "rank": 38,
         "name": "DeMar DeRozan",
+        "athleteId": "3978",
         "team": "SAC",
         "position": "G",
         "points": 18.428572,
@@ -5434,6 +5472,7 @@
       {
         "rank": 39,
         "name": "Amen Thompson",
+        "athleteId": "4684740",
         "team": "HOU",
         "position": "G",
         "points": 18.265823,
@@ -5446,6 +5485,7 @@
       {
         "rank": 40,
         "name": "Evan Mobley",
+        "athleteId": "4432158",
         "team": "CLE",
         "position": "C",
         "points": 18.153847,
@@ -5458,6 +5498,7 @@
       {
         "rank": 41,
         "name": "Scottie Barnes",
+        "athleteId": "4433134",
         "team": "TOR",
         "position": "F",
         "points": 18.1,
@@ -5470,6 +5511,7 @@
       {
         "rank": 42,
         "name": "Saddiq Bey",
+        "athleteId": "4397136",
         "team": "NO",
         "position": "G",
         "points": 17.652779,
@@ -5482,6 +5524,7 @@
       {
         "rank": 43,
         "name": "Ryan Rollins",
+        "athleteId": "4591725",
         "team": "MIL",
         "position": "G",
         "points": 17.31081,
@@ -5494,6 +5537,7 @@
       {
         "rank": 44,
         "name": "Chet Holmgren",
+        "athleteId": "4433255",
         "team": "OKC",
         "position": "C",
         "points": 17.115942,
@@ -5506,6 +5550,7 @@
       {
         "rank": 45,
         "name": "Miles Bridges",
+        "athleteId": "4066383",
         "team": "PHX",
         "position": "F",
         "points": 17.064936,
@@ -5518,6 +5563,7 @@
       {
         "rank": 46,
         "name": "Payton Pritchard",
+        "athleteId": "4066354",
         "team": "BOS",
         "position": "G",
         "points": 17.025316,
@@ -5530,6 +5576,7 @@
       {
         "rank": 47,
         "name": "OG Anunoby",
+        "athleteId": "3934719",
         "team": "NY",
         "position": "F",
         "points": 16.686567,
@@ -5542,6 +5589,7 @@
       {
         "rank": 48,
         "name": "Stephon Castle",
+        "athleteId": "4845367",
         "team": "SA",
         "position": "G",
         "points": 16.661764,
@@ -5554,6 +5602,7 @@
       {
         "rank": 49,
         "name": "Derrick White",
+        "athleteId": "3078576",
         "team": "BOS",
         "position": "G",
         "points": 16.454546,
@@ -5566,6 +5615,7 @@
       {
         "rank": 50,
         "name": "Immanuel Quickley",
+        "athleteId": "4395724",
         "team": "TOR",
         "position": "G",
         "points": 16.428572,
@@ -5578,6 +5628,7 @@
       {
         "rank": 51,
         "name": "Matas Buzelis",
+        "athleteId": "4711294",
         "team": "CHI",
         "position": "F",
         "points": 16.25974,
@@ -5590,6 +5641,7 @@
       {
         "rank": 52,
         "name": "VJ Edgecombe",
+        "athleteId": "5124612",
         "team": "PHI",
         "position": "G",
         "points": 15.986667,
@@ -5602,6 +5654,7 @@
       {
         "rank": 53,
         "name": "Jabari Smith Jr.",
+        "athleteId": "4432639",
         "team": "HOU",
         "position": "F",
         "points": 15.779221,
@@ -5614,6 +5667,7 @@
       {
         "rank": 54,
         "name": "Collin Sexton",
+        "athleteId": "4277811",
         "team": "LAL",
         "position": "G",
         "points": 15.441176,
@@ -5626,6 +5680,7 @@
       {
         "rank": 55,
         "name": "Andrew Wiggins",
+        "athleteId": "3059319",
         "team": "MIA",
         "position": "F",
         "points": 15.367647,
@@ -5638,6 +5693,7 @@
       {
         "rank": 56,
         "name": "Jaime Jaquez Jr.",
+        "athleteId": "4432848",
         "team": "MIL",
         "position": "F",
         "points": 15.36,
@@ -5650,6 +5706,7 @@
       {
         "rank": 57,
         "name": "Naji Marshall",
+        "athleteId": "4278594",
         "team": "DAL",
         "position": "F",
         "points": 15.243243,
@@ -5662,6 +5719,7 @@
       {
         "rank": 58,
         "name": "Onyeka Okongwu",
+        "athleteId": "4431680",
         "team": "ATL",
         "position": "F",
         "points": 15.175675,
@@ -5674,6 +5732,7 @@
       {
         "rank": 59,
         "name": "Russell Westbrook",
+        "athleteId": "3468",
         "team": "SAC",
         "position": "G",
         "points": 15.171875,
@@ -5686,6 +5745,7 @@
       {
         "rank": 60,
         "name": "Nikola Vucevic",
+        "athleteId": "6478",
         "team": "ORL",
         "position": "C",
         "points": 15.078125,
@@ -5698,6 +5758,7 @@
       {
         "rank": 61,
         "name": "Anthony Black",
+        "athleteId": "4712849",
         "team": "ORL",
         "position": "G",
         "points": 14.984375,
@@ -5710,6 +5771,7 @@
       {
         "rank": 62,
         "name": "Brice Sensabaugh",
+        "athleteId": "5105839",
         "team": "UTAH",
         "position": "F",
         "points": 14.88,
@@ -5722,6 +5784,7 @@
       {
         "rank": 63,
         "name": "Jaden McDaniels",
+        "athleteId": "4431671",
         "team": "MIN",
         "position": "F",
         "points": 14.849315,
@@ -5734,6 +5797,7 @@
       {
         "rank": 64,
         "name": "Ayo Dosunmu",
+        "athleteId": "4397002",
         "team": "MIN",
         "position": "G",
         "points": 14.811594,
@@ -5746,6 +5810,7 @@
       {
         "rank": 65,
         "name": "Mikal Bridges",
+        "athleteId": "3147657",
         "team": "NY",
         "position": "G",
         "points": 14.402439,
@@ -5758,6 +5823,7 @@
       {
         "rank": 66,
         "name": "Jeremiah Fears",
+        "athleteId": "5144091",
         "team": "NO",
         "position": "G",
         "points": 14.256098,
@@ -5770,6 +5836,7 @@
       {
         "rank": 67,
         "name": "Tre Jones",
+        "athleteId": "4395626",
         "team": "CHI",
         "position": "G",
         "points": 14.061539,
@@ -5782,6 +5849,7 @@
       {
         "rank": 68,
         "name": "Devin Vassell",
+        "athleteId": "4395630",
         "team": "SA",
         "position": "G",
         "points": 13.910448,
@@ -5794,6 +5862,7 @@
       {
         "rank": 69,
         "name": "Brandin Podziemski",
+        "athleteId": "4709138",
         "team": "GS",
         "position": "G",
         "points": 13.817073,
@@ -5806,6 +5875,7 @@
       {
         "rank": 70,
         "name": "Ace Bailey",
+        "athleteId": "4873138",
         "team": "UTAH",
         "position": "G",
         "points": 13.791667,
@@ -5818,6 +5888,7 @@
       {
         "rank": 71,
         "name": "Bobby Portis",
+        "athleteId": "3064482",
         "team": "MIA",
         "position": "F",
         "points": 13.656716,
@@ -5830,6 +5901,7 @@
       {
         "rank": 72,
         "name": "Cedric Coward",
+        "athleteId": "4903027",
         "team": "MEM",
         "position": "F",
         "points": 13.596774,
@@ -5842,6 +5914,7 @@
       {
         "rank": 73,
         "name": "Naz Reid",
+        "athleteId": "4396971",
         "team": "CHA",
         "position": "C",
         "points": 13.584415,
@@ -5854,6 +5927,7 @@
       {
         "rank": 74,
         "name": "John Collins",
+        "athleteId": "3908845",
         "team": "DET",
         "position": "F",
         "points": 13.550725,
@@ -5866,6 +5940,7 @@
       {
         "rank": 75,
         "name": "Reed Sheppard",
+        "athleteId": "4711272",
         "team": "HOU",
         "position": "G",
         "points": 13.536586,
@@ -5878,6 +5953,7 @@
       {
         "rank": 76,
         "name": "Tim Hardaway Jr.",
+        "athleteId": "2528210",
         "team": "MIA",
         "position": "G",
         "points": 13.4875,
@@ -5890,6 +5966,7 @@
       {
         "rank": 77,
         "name": "Toumani Camara",
+        "athleteId": "4431736",
         "team": "POR",
         "position": "F",
         "points": 13.414634,
@@ -5902,6 +5979,7 @@
       {
         "rank": 78,
         "name": "Quentin Grimes",
+        "athleteId": "4397014",
         "team": "LAL",
         "position": "G",
         "points": 13.413333,
@@ -5914,6 +5992,7 @@
       {
         "rank": 79,
         "name": "Tobias Harris",
+        "athleteId": "6440",
         "team": "SA",
         "position": "F",
         "points": 13.269841,
@@ -5926,6 +6005,7 @@
       {
         "rank": 80,
         "name": "Jaylon Tyson",
+        "athleteId": "4683747",
         "team": "CLE",
         "position": "G",
         "points": 13.212121,
@@ -5938,6 +6018,7 @@
       {
         "rank": 81,
         "name": "Keldon Johnson",
+        "athleteId": "4395723",
         "team": "SA",
         "position": "F",
         "points": 13.182927,
@@ -5950,6 +6031,7 @@
       {
         "rank": 82,
         "name": "Brandon Williams",
+        "athleteId": "4397040",
         "team": "DAL",
         "position": "G",
         "points": 13.015152,
@@ -5962,6 +6044,7 @@
       {
         "rank": 83,
         "name": "Kyle Kuzma",
+        "athleteId": "3134907",
         "team": "MIL",
         "position": "F",
         "points": 12.985507,
@@ -5974,6 +6057,7 @@
       {
         "rank": 84,
         "name": "Collin Gillespie",
+        "athleteId": "4278585",
         "team": "PHX",
         "position": "G",
         "points": 12.65,
@@ -5986,6 +6070,7 @@
       {
         "rank": 85,
         "name": "Jaylen Wells",
+        "athleteId": "5112087",
         "team": "MEM",
         "position": "F",
         "points": 12.536232,
@@ -5998,6 +6083,7 @@
       {
         "rank": 86,
         "name": "Maxime Raynaud",
+        "athleteId": "4898371",
         "team": "SAC",
         "position": "C",
         "points": 12.459459,
@@ -6010,6 +6096,7 @@
       {
         "rank": 87,
         "name": "Deandre Ayton",
+        "athleteId": "4278129",
         "team": "WSH",
         "position": "C",
         "points": 12.458333,
@@ -6022,6 +6109,7 @@
       {
         "rank": 88,
         "name": "Malik Monk",
+        "athleteId": "4066262",
         "team": "SAC",
         "position": "G",
         "points": 12.451612,
@@ -6034,6 +6122,7 @@
       {
         "rank": 89,
         "name": "Max Christie",
+        "athleteId": "4432582",
         "team": "DAL",
         "position": "G",
         "points": 12.272727,
@@ -6046,6 +6135,7 @@
       {
         "rank": 90,
         "name": "Noah Clowney",
+        "athleteId": "4712896",
         "team": "BKN",
         "position": "F",
         "points": 12.257576,
@@ -6058,6 +6148,7 @@
       {
         "rank": 91,
         "name": "Tre Johnson",
+        "athleteId": "5238230",
         "team": "WSH",
         "position": "G",
         "points": 12.216666,
@@ -6070,6 +6161,7 @@
       {
         "rank": 92,
         "name": "Donte DiVincenzo",
+        "athleteId": "3934673",
         "team": "MIN",
         "position": "G",
         "points": 12.195122,
@@ -6082,6 +6174,7 @@
       {
         "rank": 93,
         "name": "Duncan Robinson",
+        "athleteId": "3157465",
         "team": "DET",
         "position": "F",
         "points": 12.194805,
@@ -6094,6 +6187,7 @@
       {
         "rank": 94,
         "name": "Moses Moody",
+        "athleteId": "4432171",
         "team": "GS",
         "position": "G",
         "points": 12.133333,
@@ -6106,6 +6200,7 @@
       {
         "rank": 95,
         "name": "Donovan Clingan",
+        "athleteId": "5105565",
         "team": "POR",
         "position": "C",
         "points": 12.12987,
@@ -6118,6 +6213,7 @@
       {
         "rank": 96,
         "name": "Josh Hart",
+        "athleteId": "3062679",
         "team": "NY",
         "position": "G",
         "points": 12,
@@ -6130,6 +6226,7 @@
       {
         "rank": 97,
         "name": "Myles Turner",
+        "athleteId": "3133628",
         "team": "MIL",
         "position": "C",
         "points": 11.915493,
@@ -6142,6 +6239,7 @@
       {
         "rank": 98,
         "name": "Dyson Daniels",
+        "athleteId": "4869342",
         "team": "ATL",
         "position": "G",
         "points": 11.855263,
@@ -6154,6 +6252,7 @@
       {
         "rank": 99,
         "name": "Wendell Carter Jr.",
+        "athleteId": "4277847",
         "team": "ORL",
         "position": "C",
         "points": 11.820513,
@@ -6166,6 +6265,7 @@
       {
         "rank": 100,
         "name": "Dylan Harper",
+        "athleteId": "5037871",
         "team": "SA",
         "position": "G",
         "points": 11.782609,
@@ -29396,6 +29496,7 @@
       {
         "rank": 1,
         "name": "Yordan Alvarez",
+        "athleteId": "36018",
         "team": "HOU",
         "position": "DH",
         "hr": 36,
@@ -29408,6 +29509,7 @@
       {
         "rank": 2,
         "name": "Luis Arraez",
+        "athleteId": "39572",
         "team": "PHI",
         "position": "2B",
         "hr": 5,
@@ -29420,6 +29522,7 @@
       {
         "rank": 3,
         "name": "Chandler Simpson",
+        "athleteId": "4679983",
         "team": "TB",
         "position": "LF",
         "hr": 0,
@@ -29432,6 +29535,7 @@
       {
         "rank": 4,
         "name": "Gabriel Moreno",
+        "athleteId": "42464",
         "team": "ARI",
         "position": "C",
         "hr": 9,
@@ -29444,6 +29548,7 @@
       {
         "rank": 5,
         "name": "Otto Lopez",
+        "athleteId": "41917",
         "team": "MIA",
         "position": "SS",
         "hr": 9,
@@ -29456,6 +29561,7 @@
       {
         "rank": 6,
         "name": "Nick Gonzales",
+        "athleteId": "4311634",
         "team": "PIT",
         "position": "3B",
         "hr": 6,
@@ -29468,6 +29574,7 @@
       {
         "rank": 7,
         "name": "Yandy Diaz",
+        "athleteId": "33481",
         "team": "TB",
         "position": "DH",
         "hr": 17,
@@ -29480,6 +29587,7 @@
       {
         "rank": 8,
         "name": "Freddie Freeman",
+        "athleteId": "30193",
         "team": "LAD",
         "position": "1B",
         "hr": 15,
@@ -29492,6 +29600,7 @@
       {
         "rank": 9,
         "name": "Jake McCarthy",
+        "athleteId": "41197",
         "team": "COL",
         "position": "LF",
         "hr": 13,
@@ -29504,6 +29613,7 @@
       {
         "rank": 10,
         "name": "Josh Jung",
+        "athleteId": "42437",
         "team": "TEX",
         "position": "3B",
         "hr": 9,
@@ -29516,6 +29626,7 @@
       {
         "rank": 11,
         "name": "Jung Hoo Lee",
+        "athleteId": "5134621",
         "team": "SF",
         "position": "RF",
         "hr": 9,
@@ -29528,6 +29639,7 @@
       {
         "rank": 12,
         "name": "TJ Rumfield",
+        "athleteId": "5014349",
         "team": "COL",
         "position": "1B",
         "hr": 13,
@@ -29540,6 +29652,7 @@
       {
         "rank": 13,
         "name": "Shohei Ohtani",
+        "athleteId": "39832",
         "team": "LAD",
         "position": "DH",
         "hr": 27,
@@ -29552,6 +29665,7 @@
       {
         "rank": 14,
         "name": "Alec Burleson",
+        "athleteId": "4345070",
         "team": "STL",
         "position": "1B",
         "hr": 21,
@@ -29564,6 +29678,7 @@
       {
         "rank": 15,
         "name": "Michael Harris II",
+        "athleteId": "42470",
         "team": "ATL",
         "position": "CF",
         "hr": 20,
@@ -29576,6 +29691,7 @@
       {
         "rank": 16,
         "name": "Chase DeLauter",
+        "athleteId": "4619649",
         "team": "CLE",
         "position": "RF",
         "hr": 13,
@@ -29588,6 +29704,7 @@
       {
         "rank": 17,
         "name": "Ceddanne Rafaela",
+        "athleteId": "4987382",
         "team": "BOS",
         "position": "CF",
         "hr": 16,
@@ -29600,6 +29717,7 @@
       {
         "rank": 18,
         "name": "Jonathan Aranda",
+        "athleteId": "40810",
         "team": "TB",
         "position": "1B",
         "hr": 15,
@@ -29612,6 +29730,7 @@
       {
         "rank": 19,
         "name": "Xavier Edwards",
+        "athleteId": "41326",
         "team": "MIA",
         "position": "2B",
         "hr": 6,
@@ -29624,6 +29743,7 @@
       {
         "rank": 20,
         "name": "Jordan Walker",
+        "athleteId": "4684778",
         "team": "STL",
         "position": "RF",
         "hr": 24,
@@ -29636,6 +29756,7 @@
       {
         "rank": 21,
         "name": "Liam Hicks",
+        "athleteId": "4725251",
         "team": "TB",
         "position": "C",
         "hr": 16,
@@ -29648,6 +29769,7 @@
       {
         "rank": 22,
         "name": "Bobby Witt Jr.",
+        "athleteId": "42403",
         "team": "KC",
         "position": "SS",
         "hr": 14,
@@ -29660,6 +29782,7 @@
       {
         "rank": 23,
         "name": "Ernie Clement",
+        "athleteId": "41287",
         "team": "TOR",
         "position": "2B",
         "hr": 9,
@@ -29672,6 +29795,7 @@
       {
         "rank": 24,
         "name": "Kevin McGonigle",
+        "athleteId": "5149072",
         "team": "DET",
         "position": "SS",
         "hr": 12,
@@ -29684,6 +29808,7 @@
       {
         "rank": 25,
         "name": "Fernando Tatis Jr.",
+        "athleteId": "35983",
         "team": "SD",
         "position": "RF",
         "hr": 13,
@@ -29696,6 +29821,7 @@
       {
         "rank": 26,
         "name": "Nolan Schanuel",
+        "athleteId": "4739755",
         "team": "LAA",
         "position": "1B",
         "hr": 7,
@@ -29708,6 +29834,7 @@
       {
         "rank": 27,
         "name": "Willson Contreras",
+        "athleteId": "32532",
         "team": "BOS",
         "position": "1B",
         "hr": 24,
@@ -29720,6 +29847,7 @@
       {
         "rank": 28,
         "name": "Luis Garcia Jr.",
+        "athleteId": "40459",
         "team": "NYY",
         "position": "1B",
         "hr": 24,
@@ -29732,6 +29860,7 @@
       {
         "rank": 29,
         "name": "Chase Meidroth",
+        "athleteId": "5136929",
         "team": "CHW",
         "position": "2B",
         "hr": 12,
@@ -29744,6 +29873,7 @@
       {
         "rank": 30,
         "name": "CJ Abrams",
+        "athleteId": "42402",
         "team": "WSH",
         "position": "SS",
         "hr": 29,
@@ -29756,6 +29886,7 @@
       {
         "rank": 31,
         "name": "Randy Arozarena",
+        "athleteId": "36488",
         "team": "SEA",
         "position": "LF",
         "hr": 17,
@@ -29768,6 +29899,7 @@
       {
         "rank": 32,
         "name": "Pete Crow-Armstrong",
+        "athleteId": "4717833",
         "team": "CHC",
         "position": "CF",
         "hr": 28,
@@ -29780,6 +29912,7 @@
       {
         "rank": 33,
         "name": "Jackson Chourio",
+        "athleteId": "4917869",
         "team": "MIL",
         "position": "LF",
         "hr": 17,
@@ -29792,6 +29925,7 @@
       {
         "rank": 34,
         "name": "Sam Antonacci",
+        "athleteId": "5207167",
         "team": "CHW",
         "position": "LF",
         "hr": 8,
@@ -29804,6 +29938,7 @@
       {
         "rank": 35,
         "name": "Jake Bauers",
+        "athleteId": "35013",
         "team": "MIL",
         "position": "1B",
         "hr": 21,
@@ -29816,6 +29951,7 @@
       {
         "rank": 36,
         "name": "Brandon Marsh",
+        "athleteId": "40803",
         "team": "PHI",
         "position": "LF",
         "hr": 17,
@@ -29828,6 +29964,7 @@
       {
         "rank": 37,
         "name": "Drake Baldwin",
+        "athleteId": "4810190",
         "team": "ATL",
         "position": "C",
         "hr": 20,
@@ -29840,6 +29977,7 @@
       {
         "rank": 38,
         "name": "Junior Caminero",
+        "athleteId": "4905921",
         "team": "TB",
         "position": "3B",
         "hr": 35,
@@ -29852,6 +29990,7 @@
       {
         "rank": 39,
         "name": "Seiya Suzuki",
+        "athleteId": "4142424",
         "team": "CHC",
         "position": "RF",
         "hr": 21,
@@ -29864,6 +30003,7 @@
       {
         "rank": 40,
         "name": "Riley Greene",
+        "athleteId": "42179",
         "team": "DET",
         "position": "LF",
         "hr": 16,
@@ -29876,6 +30016,7 @@
       {
         "rank": 41,
         "name": "Carson Benge",
+        "athleteId": "4925604",
         "team": "NYM",
         "position": "RF",
         "hr": 14,
@@ -29888,6 +30029,7 @@
       {
         "rank": 42,
         "name": "Jac Caglianone",
+        "athleteId": "4926296",
         "team": "KC",
         "position": "RF",
         "hr": 22,
@@ -29900,6 +30042,7 @@
       {
         "rank": 43,
         "name": "Casey Schmitt",
+        "athleteId": "4301949",
         "team": "SF",
         "position": "LF",
         "hr": 21,
@@ -29912,6 +30055,7 @@
       {
         "rank": 44,
         "name": "Brandon Nimmo",
+        "athleteId": "32159",
         "team": "TEX",
         "position": "RF",
         "hr": 13,
@@ -29924,6 +30068,7 @@
       {
         "rank": 45,
         "name": "Ryan O'Hearn",
+        "athleteId": "35183",
         "team": "PIT",
         "position": "RF",
         "hr": 17,
@@ -29936,6 +30081,7 @@
       {
         "rank": 46,
         "name": "Andy Pages",
+        "athleteId": "42468",
         "team": "LAD",
         "position": "CF",
         "hr": 21,
@@ -29948,6 +30094,7 @@
       {
         "rank": 47,
         "name": "Brice Turang",
+        "athleteId": "41179",
         "team": "MIL",
         "position": "2B",
         "hr": 16,
@@ -29960,6 +30107,7 @@
       {
         "rank": 48,
         "name": "Josh Naylor",
+        "athleteId": "35066",
         "team": "SEA",
         "position": "1B",
         "hr": 10,
@@ -29972,6 +30120,7 @@
       {
         "rank": 49,
         "name": "Bo Bichette",
+        "athleteId": "38904",
         "team": "NYM",
         "position": "3B",
         "hr": 12,
@@ -29984,6 +30133,7 @@
       {
         "rank": 50,
         "name": "Luke Keaschall",
+        "athleteId": "4977664",
         "team": "MIN",
         "position": "2B",
         "hr": 7,
@@ -29996,6 +30146,7 @@
       {
         "rank": 51,
         "name": "Steven Kwan",
+        "athleteId": "41996",
         "team": "CLE",
         "position": "LF",
         "hr": 2,
@@ -30008,6 +30159,7 @@
       {
         "rank": 52,
         "name": "Pete Alonso",
+        "athleteId": "37498",
         "team": "BAL",
         "position": "1B",
         "hr": 27,
@@ -30020,6 +30172,7 @@
       {
         "rank": 53,
         "name": "James Wood",
+        "athleteId": "4918256",
         "team": "WSH",
         "position": "RF",
         "hr": 30,
@@ -30032,6 +30185,7 @@
       {
         "rank": 54,
         "name": "Bryson Stott",
+        "athleteId": "42417",
         "team": "PHI",
         "position": "2B",
         "hr": 9,
@@ -30044,6 +30198,7 @@
       {
         "rank": 55,
         "name": "Kyle Karros",
+        "athleteId": "5203102",
         "team": "COL",
         "position": "3B",
         "hr": 10,
@@ -30056,6 +30211,7 @@
       {
         "rank": 56,
         "name": "Bryan Reynolds",
+        "athleteId": "38980",
         "team": "PIT",
         "position": "LF",
         "hr": 15,
@@ -30068,6 +30224,7 @@
       {
         "rank": 57,
         "name": "Matt Olson",
+        "athleteId": "32767",
         "team": "ATL",
         "position": "1B",
         "hr": 36,
@@ -30080,6 +30237,7 @@
       {
         "rank": 58,
         "name": "Shea Langeliers",
+        "athleteId": "42598",
         "team": "ATH",
         "position": "C",
         "hr": 23,
@@ -30092,6 +30250,7 @@
       {
         "rank": 59,
         "name": "Ezequiel Duran",
+        "athleteId": "42457",
         "team": "TEX",
         "position": "SS",
         "hr": 13,
@@ -30104,6 +30263,7 @@
       {
         "rank": 60,
         "name": "Vladimir Guerrero Jr.",
+        "athleteId": "35002",
         "team": "TOR",
         "position": "1B",
         "hr": 7,
@@ -30116,6 +30276,7 @@
       {
         "rank": 61,
         "name": "Mauricio Dubon",
+        "athleteId": "35304",
         "team": "ATL",
         "position": "LF",
         "hr": 10,
@@ -30128,6 +30289,7 @@
       {
         "rank": 62,
         "name": "Willi Castro",
+        "athleteId": "34230",
         "team": "COL",
         "position": "2B",
         "hr": 13,
@@ -30140,6 +30302,7 @@
       {
         "rank": 63,
         "name": "Elly De La Cruz",
+        "athleteId": "4917694",
         "team": "CIN",
         "position": "SS",
         "hr": 20,
@@ -30152,6 +30315,7 @@
       {
         "rank": 64,
         "name": "Cole Young",
+        "athleteId": "5080641",
         "team": "SEA",
         "position": "2B",
         "hr": 15,
@@ -30164,6 +30328,7 @@
       {
         "rank": 65,
         "name": "Isaac Paredes",
+        "athleteId": "39706",
         "team": "HOU",
         "position": "3B",
         "hr": 16,
@@ -30176,6 +30341,7 @@
       {
         "rank": 66,
         "name": "Nico Hoerner",
+        "athleteId": "41219",
         "team": "CHC",
         "position": "2B",
         "hr": 7,
@@ -30188,6 +30354,7 @@
       {
         "rank": 67,
         "name": "Cody Bellinger",
+        "athleteId": "33912",
         "team": "NYY",
         "position": "LF",
         "hr": 11,
@@ -30200,6 +30367,7 @@
       {
         "rank": 68,
         "name": "Sal Stewart",
+        "athleteId": "5080771",
         "team": "CIN",
         "position": "1B",
         "hr": 26,
@@ -30212,6 +30380,7 @@
       {
         "rank": 69,
         "name": "Dillon Dingler",
+        "athleteId": "4345620",
         "team": "DET",
         "position": "C",
         "hr": 26,
@@ -30224,6 +30393,7 @@
       {
         "rank": 70,
         "name": "Julio Rodriguez",
+        "athleteId": "41044",
         "team": "SEA",
         "position": "CF",
         "hr": 19,
@@ -30236,6 +30406,7 @@
       {
         "rank": 71,
         "name": "William Contreras",
+        "athleteId": "39895",
         "team": "MIL",
         "position": "C",
         "hr": 12,
@@ -30248,6 +30419,7 @@
       {
         "rank": 72,
         "name": "Wilyer Abreu",
+        "athleteId": "4990055",
         "team": "BOS",
         "position": "RF",
         "hr": 22,
@@ -30260,6 +30432,7 @@
       {
         "rank": 73,
         "name": "Bryce Harper",
+        "athleteId": "30951",
         "team": "PHI",
         "position": "1B",
         "hr": 25,
@@ -30272,6 +30445,7 @@
       {
         "rank": 74,
         "name": "Nick Kurtz",
+        "athleteId": "4966637",
         "team": "ATH",
         "position": "1B",
         "hr": 21,
@@ -30284,6 +30458,7 @@
       {
         "rank": 75,
         "name": "Brayan Rocchio",
+        "athleteId": "41217",
         "team": "CLE",
         "position": "SS",
         "hr": 10,
@@ -30296,6 +30471,7 @@
       {
         "rank": 76,
         "name": "Josh Bell",
+        "athleteId": "32517",
         "team": "MIN",
         "position": "DH",
         "hr": 16,
@@ -30308,6 +30484,7 @@
       {
         "rank": 77,
         "name": "Brandon Lowe",
+        "athleteId": "39961",
         "team": "PIT",
         "position": "2B",
         "hr": 26,
@@ -30320,6 +30497,7 @@
       {
         "rank": 78,
         "name": "Caleb Durbin",
+        "athleteId": "5007615",
         "team": "BOS",
         "position": "3B",
         "hr": 12,
@@ -30332,6 +30510,7 @@
       {
         "rank": 79,
         "name": "Hunter Goodman",
+        "athleteId": "4416591",
         "team": "COL",
         "position": "C",
         "hr": 34,
@@ -30344,6 +30523,7 @@
       {
         "rank": 80,
         "name": "Alex Bregman",
+        "athleteId": "34886",
         "team": "CHC",
         "position": "3B",
         "hr": 16,
@@ -30356,6 +30536,7 @@
       {
         "rank": 81,
         "name": "Ben Rice",
+        "athleteId": "5016968",
         "team": "NYY",
         "position": "DH",
         "hr": 33,
@@ -30368,6 +30549,7 @@
       {
         "rank": 82,
         "name": "Ozzie Albies",
+        "athleteId": "33783",
         "team": "ATL",
         "position": "2B",
         "hr": 20,
@@ -30380,6 +30562,7 @@
       {
         "rank": 83,
         "name": "Ketel Marte",
+        "athleteId": "32512",
         "team": "ARI",
         "position": "2B",
         "hr": 21,
@@ -30392,6 +30575,7 @@
       {
         "rank": 84,
         "name": "Max Muncy",
+        "athleteId": "33303",
         "team": "LAD",
         "position": "3B",
         "hr": 24,
@@ -30404,6 +30588,7 @@
       {
         "rank": 85,
         "name": "Ivan Herrera",
+        "athleteId": "41889",
         "team": "STL",
         "position": "DH",
         "hr": 13,
@@ -30416,6 +30601,7 @@
       {
         "rank": 86,
         "name": "Garrett Mitchell",
+        "athleteId": "4313442",
         "team": "MIL",
         "position": "CF",
         "hr": 8,
@@ -30428,6 +30614,7 @@
       {
         "rank": 87,
         "name": "Corbin Carroll",
+        "athleteId": "42404",
         "team": "ARI",
         "position": "RF",
         "hr": 18,
@@ -30440,6 +30627,7 @@
       {
         "rank": 88,
         "name": "Trea Turner",
+        "athleteId": "33710",
         "team": "PHI",
         "position": "SS",
         "hr": 17,
@@ -30452,6 +30640,7 @@
       {
         "rank": 89,
         "name": "Kyle Schwarber",
+        "athleteId": "33712",
         "team": "PHI",
         "position": "DH",
         "hr": 37,
@@ -30464,6 +30653,7 @@
       {
         "rank": 90,
         "name": "Geraldo Perdomo",
+        "athleteId": "41355",
         "team": "ARI",
         "position": "SS",
         "hr": 9,
@@ -30476,6 +30666,7 @@
       {
         "rank": 91,
         "name": "Rafael Devers",
+        "athleteId": "33859",
         "team": "SF",
         "position": "1B",
         "hr": 25,
@@ -30488,6 +30679,7 @@
       {
         "rank": 92,
         "name": "Michael Busch",
+        "athleteId": "42415",
         "team": "CHC",
         "position": "1B",
         "hr": 14,
@@ -30500,6 +30692,7 @@
       {
         "rank": 93,
         "name": "Jose Altuve",
+        "athleteId": "31662",
         "team": "HOU",
         "position": "2B",
         "hr": 13,
@@ -30512,6 +30705,7 @@
       {
         "rank": 94,
         "name": "Daylen Lile",
+        "athleteId": "4917889",
         "team": "WSH",
         "position": "LF",
         "hr": 15,
@@ -30524,6 +30718,7 @@
       {
         "rank": 95,
         "name": "Tyler Soderstrom",
+        "athleteId": "4686066",
         "team": "ATH",
         "position": "LF",
         "hr": 19,
@@ -30536,6 +30731,7 @@
       {
         "rank": 96,
         "name": "Brooks Lee",
+        "athleteId": "4629081",
         "team": "MIN",
         "position": "3B",
         "hr": 18,
@@ -30548,6 +30744,7 @@
       {
         "rank": 97,
         "name": "Jackson Merrill",
+        "athleteId": "4872691",
         "team": "SD",
         "position": "CF",
         "hr": 19,
@@ -30560,6 +30757,7 @@
       {
         "rank": 98,
         "name": "JJ Wetherholt",
+        "athleteId": "4941056",
         "team": "STL",
         "position": "2B",
         "hr": 16,
@@ -30572,6 +30770,7 @@
       {
         "rank": 99,
         "name": "Kyle Stowers",
+        "athleteId": "42796",
         "team": "MIA",
         "position": "1B",
         "hr": 16,
@@ -30584,6 +30783,7 @@
       {
         "rank": 100,
         "name": "Mike Trout",
+        "athleteId": "30836",
         "team": "LAA",
         "position": "CF",
         "hr": 20,
@@ -33906,6 +34106,7 @@
       {
         "rank": 1,
         "name": "Connor McDavid",
+        "athleteId": "3895074",
         "team": "EDM",
         "position": "C",
         "goals": 48,
@@ -33918,6 +34119,7 @@
       {
         "rank": 2,
         "name": "Nikita Kucherov",
+        "athleteId": "2563060",
         "team": "TB",
         "position": "RW",
         "goals": 44,
@@ -33930,6 +34132,7 @@
       {
         "rank": 3,
         "name": "Nathan MacKinnon",
+        "athleteId": "3041969",
         "team": "COL",
         "position": "C",
         "goals": 53,
@@ -33942,6 +34145,7 @@
       {
         "rank": 4,
         "name": "Macklin Celebrini",
+        "athleteId": "5206628",
         "team": "SJ",
         "position": "C",
         "goals": 45,
@@ -33954,6 +34158,7 @@
       {
         "rank": 5,
         "name": "Mark Scheifele",
+        "athleteId": "2562632",
         "team": "WPG",
         "position": "C",
         "goals": 36,
@@ -33966,6 +34171,7 @@
       {
         "rank": 6,
         "name": "Nick Suzuki",
+        "athleteId": "4233594",
         "team": "MTL",
         "position": "C",
         "goals": 29,
@@ -33978,6 +34184,7 @@
       {
         "rank": 7,
         "name": "David Pastrnak",
+        "athleteId": "3114778",
         "team": "BOS",
         "position": "RW",
         "goals": 29,
@@ -33990,6 +34197,7 @@
       {
         "rank": 8,
         "name": "Martin Necas",
+        "athleteId": "4233586",
         "team": "COL",
         "position": "C",
         "goals": 38,
@@ -34002,6 +34210,7 @@
       {
         "rank": 9,
         "name": "Leon Draisaitl",
+        "athleteId": "3114727",
         "team": "EDM",
         "position": "C",
         "goals": 35,
@@ -34014,6 +34223,7 @@
       {
         "rank": 10,
         "name": "Jason Robertson",
+        "athleteId": "4233875",
         "team": "DAL",
         "position": "LW",
         "goals": 45,
@@ -34026,6 +34236,7 @@
       {
         "rank": 11,
         "name": "Evan Bouchard",
+        "athleteId": "4352722",
         "team": "EDM",
         "position": "D",
         "goals": 21,
@@ -34038,6 +34249,7 @@
       {
         "rank": 12,
         "name": "Kyle Connor",
+        "athleteId": "3899952",
         "team": "WPG",
         "position": "LW",
         "goals": 39,
@@ -34050,6 +34262,7 @@
       {
         "rank": 13,
         "name": "Jack Eichel",
+        "athleteId": "3648002",
         "team": "VGK",
         "position": "C",
         "goals": 27,
@@ -34062,6 +34275,7 @@
       {
         "rank": 14,
         "name": "Kirill Kaprizov",
+        "athleteId": "3942335",
         "team": "MIN",
         "position": "LW",
         "goals": 45,
@@ -34074,6 +34288,7 @@
       {
         "rank": 15,
         "name": "Jake Guentzel",
+        "athleteId": "3042083",
         "team": "TB",
         "position": "C",
         "goals": 38,
@@ -34086,6 +34301,7 @@
       {
         "rank": 16,
         "name": "Clayton Keller",
+        "athleteId": "4024857",
         "team": "UTA",
         "position": "RW",
         "goals": 26,
@@ -34098,6 +34314,7 @@
       {
         "rank": 17,
         "name": "Cole Caufield",
+        "athleteId": "4565236",
         "team": "MTL",
         "position": "RW",
         "goals": 51,
@@ -34110,6 +34327,7 @@
       {
         "rank": 18,
         "name": "Wyatt Johnston",
+        "athleteId": "4874740",
         "team": "DAL",
         "position": "C",
         "goals": 45,
@@ -34122,6 +34340,7 @@
       {
         "rank": 19,
         "name": "Matt Boldy",
+        "athleteId": "4565233",
         "team": "MIN",
         "position": "LW",
         "goals": 42,
@@ -34134,6 +34353,7 @@
       {
         "rank": 20,
         "name": "Alex DeBrincat",
+        "athleteId": "4063433",
         "team": "DET",
         "position": "RW",
         "goals": 41,
@@ -34146,6 +34366,7 @@
       {
         "rank": 21,
         "name": "Artemi Panarin",
+        "athleteId": "3891952",
         "team": "LA",
         "position": "LW",
         "goals": 28,
@@ -34158,6 +34379,7 @@
       {
         "rank": 22,
         "name": "Tim Stutzle",
+        "athleteId": "4697384",
         "team": "OTT",
         "position": "C",
         "goals": 34,
@@ -34170,6 +34392,7 @@
       {
         "rank": 23,
         "name": "Zach Werenski",
+        "athleteId": "3899972",
         "team": "CBJ",
         "position": "D",
         "goals": 22,
@@ -34182,6 +34405,7 @@
       {
         "rank": 24,
         "name": "Tage Thompson",
+        "athleteId": "4024988",
         "team": "BUF",
         "position": "C",
         "goals": 40,
@@ -34194,6 +34418,7 @@
       {
         "rank": 25,
         "name": "Mitch Marner",
+        "athleteId": "3899937",
         "team": "VGK",
         "position": "RW",
         "goals": 24,
@@ -34206,6 +34431,7 @@
       {
         "rank": 26,
         "name": "Sebastian Aho",
+        "athleteId": "3904173",
         "team": "CAR",
         "position": "C",
         "goals": 27,
@@ -34218,6 +34444,7 @@
       {
         "rank": 27,
         "name": "William Nylander",
+        "athleteId": "3114736",
         "team": "TOR",
         "position": "RW",
         "goals": 30,
@@ -34230,6 +34457,7 @@
       {
         "rank": 28,
         "name": "Cale Makar",
+        "athleteId": "4233563",
         "team": "COL",
         "position": "D",
         "goals": 20,
@@ -34242,6 +34470,7 @@
       {
         "rank": 29,
         "name": "Mika Zibanejad",
+        "athleteId": "2562637",
         "team": "NYR",
         "position": "C",
         "goals": 34,
@@ -34254,6 +34483,7 @@
       {
         "rank": 30,
         "name": "Lane Hutson",
+        "athleteId": "5080230",
         "team": "MTL",
         "position": "D",
         "goals": 12,
@@ -34266,6 +34496,7 @@
       {
         "rank": 31,
         "name": "Jack Hughes",
+        "athleteId": "4565222",
         "team": "NJ",
         "position": "C",
         "goals": 27,
@@ -34278,6 +34509,7 @@
       {
         "rank": 32,
         "name": "Mikko Rantanen",
+        "athleteId": "3899938",
         "team": "DAL",
         "position": "RW",
         "goals": 22,
@@ -34290,6 +34522,7 @@
       {
         "rank": 33,
         "name": "Quinn Hughes",
+        "athleteId": "4320548",
         "team": "MIN",
         "position": "D",
         "goals": 7,
@@ -34302,6 +34535,7 @@
       {
         "rank": 34,
         "name": "Lucas Raymond",
+        "athleteId": "4697385",
         "team": "DET",
         "position": "LW",
         "goals": 25,
@@ -34314,6 +34548,7 @@
       {
         "rank": 35,
         "name": "Connor Bedard",
+        "athleteId": "5149125",
         "team": "CHI",
         "position": "C",
         "goals": 30,
@@ -34326,6 +34561,7 @@
       {
         "rank": 36,
         "name": "Filip Forsberg",
+        "athleteId": "2968772",
         "team": "NSH",
         "position": "LW",
         "goals": 40,
@@ -34338,6 +34574,7 @@
       {
         "rank": 37,
         "name": "Sidney Crosby",
+        "athleteId": "3114",
         "team": "PIT",
         "position": "C",
         "goals": 29,
@@ -34350,6 +34587,7 @@
       {
         "rank": 38,
         "name": "Ryan O'Reilly",
+        "athleteId": "5208",
         "team": "NSH",
         "position": "C",
         "goals": 25,
@@ -34362,6 +34600,7 @@
       {
         "rank": 39,
         "name": "Nick Schmaltz",
+        "athleteId": "3114770",
         "team": "UTA",
         "position": "C",
         "goals": 33,
@@ -34374,6 +34613,7 @@
       {
         "rank": 40,
         "name": "Brandon Hagel",
+        "athleteId": "4065019",
         "team": "TB",
         "position": "LW",
         "goals": 36,
@@ -34386,6 +34626,7 @@
       {
         "rank": 41,
         "name": "Rasmus Dahlin",
+        "athleteId": "4294163",
         "team": "BUF",
         "position": "D",
         "goals": 19,
@@ -34398,6 +34639,7 @@
       {
         "rank": 42,
         "name": "Mark Stone",
+        "athleteId": "5545",
         "team": "VGK",
         "position": "RW",
         "goals": 28,
@@ -34410,6 +34652,7 @@
       {
         "rank": 43,
         "name": "Adrian Kempe",
+        "athleteId": "3114802",
         "team": "LA",
         "position": "RW",
         "goals": 36,
@@ -34422,6 +34665,7 @@
       {
         "rank": 44,
         "name": "Dylan Guenther",
+        "athleteId": "4874723",
         "team": "UTA",
         "position": "RW",
         "goals": 40,
@@ -34434,6 +34678,7 @@
       {
         "rank": 45,
         "name": "Juraj Slafkovsky",
+        "athleteId": "4915349",
         "team": "MTL",
         "position": "LW",
         "goals": 30,
@@ -34446,6 +34691,7 @@
       {
         "rank": 46,
         "name": "Mathew Barzal",
+        "athleteId": "3899946",
         "team": "NYI",
         "position": "C",
         "goals": 19,
@@ -34458,6 +34704,7 @@
       {
         "rank": 47,
         "name": "John Tavares",
+        "athleteId": "5160",
         "team": "TOR",
         "position": "C",
         "goals": 31,
@@ -34470,6 +34717,7 @@
       {
         "rank": 48,
         "name": "Nikolaj Ehlers",
+        "athleteId": "3114741",
         "team": "CAR",
         "position": "LW",
         "goals": 26,
@@ -34482,6 +34730,7 @@
       {
         "rank": 49,
         "name": "Jesper Bratt",
+        "athleteId": "4268771",
         "team": "NJ",
         "position": "LW",
         "goals": 22,
@@ -34494,6 +34743,7 @@
       {
         "rank": 50,
         "name": "Drake Batherson",
+        "athleteId": "4271734",
         "team": "OTT",
         "position": "RW",
         "goals": 33,
@@ -34506,6 +34756,7 @@
       {
         "rank": 51,
         "name": "Darren Raddysh",
+        "athleteId": "3149843",
         "team": "TOR",
         "position": "D",
         "goals": 22,
@@ -34518,6 +34769,7 @@
       {
         "rank": 52,
         "name": "Andrei Svechnikov",
+        "athleteId": "4352683",
         "team": "CAR",
         "position": "RW",
         "goals": 31,
@@ -34530,6 +34782,7 @@
       {
         "rank": 53,
         "name": "Cutter Gauthier",
+        "athleteId": "5080145",
         "team": "ANA",
         "position": "LW",
         "goals": 41,
@@ -34542,6 +34795,7 @@
       {
         "rank": 54,
         "name": "Gabriel Vilardi",
+        "athleteId": "4233583",
         "team": "WPG",
         "position": "C",
         "goals": 30,
@@ -34554,6 +34808,7 @@
       {
         "rank": 55,
         "name": "Travis Konecny",
+        "athleteId": "3900169",
         "team": "PHI",
         "position": "RW",
         "goals": 27,
@@ -34566,6 +34821,7 @@
       {
         "rank": 56,
         "name": "Morgan Geekie",
+        "athleteId": "4268466",
         "team": "BOS",
         "position": "C",
         "goals": 39,
@@ -34578,6 +34834,7 @@
       {
         "rank": 57,
         "name": "Dylan Larkin",
+        "athleteId": "3114755",
         "team": "DET",
         "position": "C",
         "goals": 34,
@@ -34590,6 +34847,7 @@
       {
         "rank": 58,
         "name": "Trevor Zegras",
+        "athleteId": "4565230",
         "team": "PHI",
         "position": "C",
         "goals": 26,
@@ -34602,6 +34860,7 @@
       {
         "rank": 59,
         "name": "Kirill Marchenko",
+        "athleteId": "4587996",
         "team": "CBJ",
         "position": "RW",
         "goals": 27,
@@ -34614,6 +34873,7 @@
       {
         "rank": 60,
         "name": "Leo Carlsson",
+        "athleteId": "5149153",
         "team": "ANA",
         "position": "C",
         "goals": 29,
@@ -34626,6 +34886,7 @@
       {
         "rank": 61,
         "name": "Seth Jarvis",
+        "athleteId": "4697396",
         "team": "CAR",
         "position": "C",
         "goals": 32,
@@ -34638,6 +34899,7 @@
       {
         "rank": 62,
         "name": "Matthew Knies",
+        "athleteId": "4874919",
         "team": "TOR",
         "position": "LW",
         "goals": 23,
@@ -34650,6 +34912,7 @@
       {
         "rank": 63,
         "name": "Steven Stamkos",
+        "athleteId": "5037",
         "team": "NSH",
         "position": "C",
         "goals": 42,
@@ -34662,6 +34925,7 @@
       {
         "rank": 64,
         "name": "Erik Karlsson",
+        "athleteId": "5164",
         "team": "PIT",
         "position": "D",
         "goals": 15,
@@ -34674,6 +34938,7 @@
       {
         "rank": 65,
         "name": "Alex Tuch",
+        "athleteId": "3114766",
         "team": "WSH",
         "position": "RW",
         "goals": 33,
@@ -34686,6 +34951,7 @@
       {
         "rank": 66,
         "name": "Nico Hischier",
+        "athleteId": "4233555",
         "team": "NJ",
         "position": "C",
         "goals": 28,
@@ -34698,6 +34964,7 @@
       {
         "rank": 67,
         "name": "Brock Nelson",
+        "athleteId": "5798",
         "team": "COL",
         "position": "C",
         "goals": 33,
@@ -34710,6 +34977,7 @@
       {
         "rank": 68,
         "name": "Bryan Rust",
+        "athleteId": "2591155",
         "team": "PIT",
         "position": "RW",
         "goals": 29,
@@ -34722,6 +34990,7 @@
       {
         "rank": 69,
         "name": "Pavel Zacha",
+        "athleteId": "3899949",
         "team": "BOS",
         "position": "C",
         "goals": 30,
@@ -34734,6 +35003,7 @@
       {
         "rank": 70,
         "name": "Alex Ovechkin",
+        "athleteId": "3101",
         "team": "WSH",
         "position": "LW",
         "goals": 32,
@@ -34746,6 +35016,7 @@
       {
         "rank": 71,
         "name": "Anthony Mantha",
+        "athleteId": "3042037",
         "team": "NJ",
         "position": "RW",
         "goals": 33,
@@ -34758,6 +35029,7 @@
       {
         "rank": 72,
         "name": "Robert Thomas",
+        "athleteId": "4233637",
         "team": "STL",
         "position": "C",
         "goals": 25,
@@ -34770,6 +35042,7 @@
       {
         "rank": 73,
         "name": "Pavel Dorofeyev",
+        "athleteId": "4587588",
         "team": "NYR",
         "position": "RW",
         "goals": 37,
@@ -34782,6 +35055,7 @@
       {
         "rank": 74,
         "name": "Miro Heiskanen",
+        "athleteId": "4233536",
         "team": "DAL",
         "position": "D",
         "goals": 9,
@@ -34794,6 +35068,7 @@
       {
         "rank": 75,
         "name": "Tom Wilson",
+        "athleteId": "2970615",
         "team": "WSH",
         "position": "RW",
         "goals": 30,
@@ -34806,6 +35081,7 @@
       {
         "rank": 76,
         "name": "Ivan Demidov",
+        "athleteId": "5216860",
         "team": "MTL",
         "position": "RW",
         "goals": 19,
@@ -34818,6 +35094,7 @@
       {
         "rank": 77,
         "name": "Evgeni Malkin",
+        "athleteId": "3124",
         "team": "PIT",
         "position": "C",
         "goals": 19,
@@ -34830,6 +35107,7 @@
       {
         "rank": 78,
         "name": "Sam Reinhart",
+        "athleteId": "3114722",
         "team": "FLA",
         "position": "C",
         "goals": 29,
@@ -34842,6 +35120,7 @@
       {
         "rank": 79,
         "name": "Ivan Barbashev",
+        "athleteId": "3114985",
         "team": "VGK",
         "position": "LW",
         "goals": 23,
@@ -34854,6 +35133,7 @@
       {
         "rank": 80,
         "name": "Charlie McAvoy",
+        "athleteId": "3988803",
         "team": "BOS",
         "position": "D",
         "goals": 11,
@@ -34866,6 +35146,7 @@
       {
         "rank": 81,
         "name": "John Carlson",
+        "athleteId": "5118",
         "team": "TB",
         "position": "D",
         "goals": 14,
@@ -34878,6 +35159,7 @@
       {
         "rank": 82,
         "name": "Jakob Chychrun",
+        "athleteId": "4024950",
         "team": "WSH",
         "position": "D",
         "goals": 26,
@@ -34890,6 +35172,7 @@
       {
         "rank": 83,
         "name": "Moritz Seider",
+        "athleteId": "4565227",
         "team": "DET",
         "position": "D",
         "goals": 10,
@@ -34902,6 +35185,7 @@
       {
         "rank": 84,
         "name": "Beckett Sennecke",
+        "athleteId": "5216858",
         "team": "ANA",
         "position": "RW",
         "goals": 23,
@@ -34914,6 +35198,7 @@
       {
         "rank": 85,
         "name": "Dylan Cozens",
+        "athleteId": "4565228",
         "team": "OTT",
         "position": "C",
         "goals": 28,
@@ -34926,6 +35211,7 @@
       {
         "rank": 86,
         "name": "Adam Fantilli",
+        "athleteId": "5136617",
         "team": "CBJ",
         "position": "C",
         "goals": 24,
@@ -34938,6 +35224,7 @@
       {
         "rank": 87,
         "name": "Will Smith",
+        "athleteId": "5149155",
         "team": "SJ",
         "position": "C",
         "goals": 24,
@@ -34950,6 +35237,7 @@
       {
         "rank": 88,
         "name": "Matthew Schaefer",
+        "athleteId": "5291933",
         "team": "NYI",
         "position": "D",
         "goals": 23,
@@ -34962,6 +35250,7 @@
       {
         "rank": 89,
         "name": "Mikhail Sergachev",
+        "athleteId": "4024868",
         "team": "UTA",
         "position": "D",
         "goals": 10,
@@ -34974,6 +35263,7 @@
       {
         "rank": 90,
         "name": "Brady Tkachuk",
+        "athleteId": "4319858",
         "team": "FLA",
         "position": "LW",
         "goals": 22,
@@ -34986,6 +35276,7 @@
       {
         "rank": 91,
         "name": "Charlie Coyle",
+        "athleteId": "2555315",
         "team": "CBJ",
         "position": "C",
         "goals": 20,
@@ -34998,6 +35289,7 @@
       {
         "rank": 92,
         "name": "Tomas Hertl",
+        "athleteId": "2976844",
         "team": "VGK",
         "position": "C",
         "goals": 24,
@@ -35010,6 +35302,7 @@
       {
         "rank": 93,
         "name": "Tyler Bertuzzi",
+        "athleteId": "3042056",
         "team": "CHI",
         "position": "LW",
         "goals": 32,
@@ -35022,6 +35315,7 @@
       {
         "rank": 94,
         "name": "Sam Bennett",
+        "athleteId": "3114732",
         "team": "FLA",
         "position": "C",
         "goals": 26,
@@ -35034,6 +35328,7 @@
       {
         "rank": 95,
         "name": "Dylan Strome",
+        "athleteId": "3899933",
         "team": "WSH",
         "position": "C",
         "goals": 19,
@@ -35046,6 +35341,7 @@
       {
         "rank": 96,
         "name": "Jackson LaCombe",
+        "athleteId": "4565262",
         "team": "ANA",
         "position": "D",
         "goals": 10,
@@ -35058,6 +35354,7 @@
       {
         "rank": 97,
         "name": "Alexis Lafreniere",
+        "athleteId": "4697382",
         "team": "NYR",
         "position": "LW",
         "goals": 24,
@@ -35070,6 +35367,7 @@
       {
         "rank": 98,
         "name": "Patrick Kane",
+        "athleteId": "3735",
         "team": "DET",
         "position": "RW",
         "goals": 16,
@@ -35082,6 +35380,7 @@
       {
         "rank": 99,
         "name": "Bo Horvat",
+        "athleteId": "3042002",
         "team": "NYI",
         "position": "C",
         "goals": 31,
@@ -35094,6 +35393,7 @@
       {
         "rank": 100,
         "name": "Troy Terry",
+        "athleteId": "3942905",
         "team": "ANA",
         "position": "RW",
         "goals": 19,
@@ -57056,7 +57356,7 @@
     ]
   },
   "_meta": {
-    "lastSync": "2026-08-17T13:16:17.282Z",
+    "lastSync": "2026-08-17T19:46:08.217Z",
     "syncInterval": "6h"
   },
   "cricket": {
