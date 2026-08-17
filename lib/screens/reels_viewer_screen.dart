@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:video_player/video_player.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 import '../theme.dart';
 import '../services/reels_service.dart';
 import '../services/social_service.dart';
@@ -112,6 +113,7 @@ class _ReelPageState extends State<_ReelPage> {
   bool _liked = false;
   int _likeCount = 0;
   int _commentCount = 0;
+  String? _ytId;
 
   @override
   void initState() {
@@ -119,9 +121,31 @@ class _ReelPageState extends State<_ReelPage> {
     _likeCount = widget.reel.likeCount;
     _commentCount = widget.reel.commentCount;
     if (widget.reel.isVideo && widget.reel.videoUrl != null) {
-      _initVideo(widget.reel.videoUrl!);
+      final url = widget.reel.videoUrl!;
+      final uri = Uri.tryParse(url);
+      final isYt = uri != null &&
+          (uri.host == 'youtube.com' || uri.host.endsWith('youtube.com'));
+      if (isYt) {
+        _ytId = _ytIdFromUrl(url);
+      } else {
+        _initVideo(url);
+      }
     }
     _loadStats();
+  }
+
+  String? _ytIdFromUrl(String url) {
+    final uri = Uri.tryParse(url);
+    if (uri == null) return null;
+    if (uri.path.contains('/shorts/')) {
+      return uri.pathSegments.lastWhere((s) => s.isNotEmpty, orElse: () => '');
+    }
+    if (uri.path.contains('/embed/')) {
+      return uri.pathSegments.lastWhere((s) => s.isNotEmpty, orElse: () => '');
+    }
+    final v = uri.queryParameters['v'];
+    if (v != null && v.isNotEmpty) return v;
+    return null;
   }
 
   Future<void> _loadStats() async {
@@ -255,7 +279,9 @@ class _ReelPageState extends State<_ReelPage> {
         fit: StackFit.expand,
         children: [
           // Media layer
-          if (hasVideo)
+          if (_ytId != null)
+            _ytPlayer()
+          else if (hasVideo)
             Center(child: AspectRatio(
               aspectRatio: _controller!.value.aspectRatio,
               child: VideoPlayer(_controller!),
@@ -395,6 +421,40 @@ class _ReelPageState extends State<_ReelPage> {
         ),
         Text(label, style: const TextStyle(color: Colors.white, fontSize: 12)),
       ],
+    );
+  }
+
+  Widget _ytPlayer() {
+    final id = _ytId!;
+    final embed = 'https://www.youtube.com/embed/$id'
+        '?autoplay=1&mute=1&playsinline=1&loop=1&playlist=$id&rel=0&modestbranding=1&color=white';
+    return Container(
+      color: Colors.black,
+      child: Center(
+        child: AspectRatio(
+          aspectRatio: 9 / 16,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(6),
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                Image.network(
+                  widget.reel.imageUrl ?? '',
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, _, _) => const SizedBox.shrink(),
+                ),
+                WebViewWidget(
+                  controller: WebViewController()
+                    ..setJavaScriptMode(JavaScriptMode.unrestricted)
+                    ..setBackgroundColor(const Color(0xFF000000))
+                    ..enableZoom(false)
+                    ..loadRequest(Uri.parse(embed)),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 

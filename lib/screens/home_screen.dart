@@ -10,7 +10,6 @@ import '../theme.dart';
 import '../l10n.dart';
 import '../services/reels_service.dart';
 import '../services/live_match_service.dart';
-import '../services/rapid_api_service.dart';
 import '../services/currents_service.dart';
 import '../widgets/reels_card.dart';
 import '../widgets/live_score_card.dart';
@@ -20,6 +19,7 @@ import '../screens/profile_screen.dart';
 import '../screens/settings_screen.dart';
 import '../screens/news_screen.dart';
 import '../screens/login_screen.dart';
+import '../screens/fancoin_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final Locale locale;
@@ -155,12 +155,16 @@ class _HomeScreenState extends State<HomeScreen> {
       sport: 'all',
       force: true,
     );
-    final cricketFuture = RapidApiService.fetchCricketLiveMatches();
+    // Cricket comes from the backend proxy too (sport=cricket) — the legacy
+    // direct-RapidAPI path has no key and always returned empty.
+    final cricketFuture = LiveMatchService.fetchLiveMatches(
+      sport: 'cricket',
+      force: true,
+    );
 
     final results = await Future.wait([
       fetched,
-      cricketFuture.then((raw) => raw.map((m) => MatchItem.fromCricketAdvance(m)).toList())
-          .catchError((_) => <MatchItem>[]),
+      cricketFuture.then((raw) => raw.toList()).catchError((_) => <MatchItem>[]),
     ]);
 
     final allMatches = results[0];
@@ -682,6 +686,67 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       actions: [
+        // Fan Coins balance (live from the signed-in account)
+        Builder(
+          builder: (ctx) {
+            final u = FirebaseAuth.instance.currentUser;
+            if (u == null) return const SizedBox.shrink();
+            return StreamBuilder<DocumentSnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(u.uid)
+                  .snapshots(),
+              builder: (ctx, snap) {
+                final data = snap.data?.data() as Map<String, dynamic>?;
+                final coins = (data?['coins'] is num)
+                    ? (data!['coins'] as num).toInt()
+                    : (data?['coins'] is String
+                        ? int.tryParse(data!['coins'] as String) ?? 100
+                        : 100);
+                return GestureDetector(
+                  onTap: () => Navigator.of(ctx).push(
+                    MaterialPageRoute(
+                      builder: (_) => FanCoinScreen(
+                        locale: widget.locale,
+                        isDark: widget.isDark,
+                      ),
+                    ),
+                  ),
+                  child: Container(
+                    margin: const EdgeInsets.only(right: 2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.brandBlue.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: AppColors.brandBlue.withValues(alpha: 0.35),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        const Text('🪙', style: TextStyle(fontSize: 13)),
+                        const SizedBox(width: 4),
+                        Text(
+                          '$coins',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w800,
+                            color: isCustom
+                                ? widget.accentColor
+                                : AppColors.brandBlue,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            );
+          },
+        ),
         // Notifications
         IconButton(
           icon: const Icon(Icons.notifications_outlined),

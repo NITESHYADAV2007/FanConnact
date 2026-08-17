@@ -5155,14 +5155,6 @@ app.get("/api/reels", async (req, res) => {
       const results = await Promise.allSettled(urls.map((u) => fetchReelViaFetchSocial(u)));
       reels = results.filter((x) => x.status === "fulfilled" && x.value).map((x) => x.value);
     }
-    // Fallback: curated Instagram accounts (existing flow) — keeps feed alive if FetchSocial is down.
-    if (reels.length === 0 && Date.now() - lastReelsThrottle > 60000) {
-      const accounts = REEL_SPORT_ACCOUNTS[sport] || REEL_SPORT_ACCOUNTS.all;
-      if (!quotaExhausted()) {
-        const lists = await Promise.all(accounts.map((u) => fetchReelsForAccount(u)));
-        reels = lists.flat();
-      }
-    }
     // De-dupe by link/code
     const seen = new Set();
     reels = reels.filter((r) => {
