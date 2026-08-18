@@ -434,6 +434,33 @@ player.ranking = {
     rating: player.rating
 };
 
+// Recent matches — merge batting & bowling rows from the raw PLAYER_INFO
+// payload by match id: {id, batting, bowling, opponent, format, date}
+const recent = [];
+const rawInfo = playerData.info || {};
+const batRows = (rawInfo.recentBatting && Array.isArray(rawInfo.recentBatting.rows)) ? rawInfo.recentBatting.rows : [];
+const bowlRows = (rawInfo.recentBowling && Array.isArray(rawInfo.recentBowling.rows)) ? rawInfo.recentBowling.rows : [];
+const bowlById = new Map();
+for (const b of bowlRows) {
+    const v = (b && b.values) ? b.values : [];
+    if (v[0]) bowlById.set(String(v[0]), b);
+}
+for (const b of batRows) {
+    const v = (b && b.values) ? b.values : [];
+    if (!v[0]) continue;
+    const bw = bowlById.get(String(v[0]));
+    const bwv = (bw && bw.values) ? bw.values : [];
+    recent.push({
+        id: String(v[0]),
+        batting: v[1] || "",
+        opponent: v[2] || "",
+        format: v[3] || "",
+        date: v[4] || "",
+        bowling: bwv[1] || ""
+    });
+}
+player.recent = recent;
+
 return player;
 
         }

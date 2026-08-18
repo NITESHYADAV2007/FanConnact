@@ -31,6 +31,7 @@ class _PlayerDetailScreenState extends State<PlayerDetailScreen> {
   Map<String, dynamic>? _espnProfile;
   List<NewsItem> _news = [];
   bool _loading = true;
+  bool _bioExpanded = false;
 
   // Keys we never want to show as a "stat" tile.
   static const Set<String> _skipKeys = {
@@ -127,17 +128,22 @@ class _PlayerDetailScreenState extends State<PlayerDetailScreen> {
             'Player');
 
     // Resolve display fields from whichever source has data.
-    final imageUrl = (basic?['image']?.toString().isNotEmpty == true)
-        ? basic!['image'].toString()
-        : (espn?['image']?.toString().isNotEmpty == true)
-            ? espn!['image'].toString()
-            : (p?['profile_image']?.toString().isNotEmpty == true)
-                ? p!['profile_image'].toString()
-                : (p?['image']?.toString().isNotEmpty == true)
-                    ? p!['image'].toString()
-                    : (widget.extra?['image']?.toString() ??
-                        widget.extra?['img']?.toString() ??
-                        '');
+    // Priority: ESPN headshot (real, per-athlete) → ranking-row image
+    // (entitysport for cricket / ESPN CDN for NBA-MLB-NHL — both live) →
+    // cricbuzz basic image (dead host, last resort).
+    final imageUrl = (espn?['image']?.toString().isNotEmpty == true)
+        ? espn!['image'].toString()
+        : (widget.extra?['image']?.toString().isNotEmpty == true)
+            ? widget.extra!['image'].toString()
+            : (widget.extra?['img']?.toString().isNotEmpty == true)
+                ? widget.extra!['img'].toString()
+                : (basic?['image']?.toString().isNotEmpty == true)
+                    ? basic!['image'].toString()
+                    : (p?['profile_image']?.toString().isNotEmpty == true)
+                        ? p!['profile_image'].toString()
+                        : (p?['image']?.toString().isNotEmpty == true)
+                            ? p!['image'].toString()
+                            : '';
     final country = widget.country ??
         basic?['country']?.toString() ??
         espn?['country']?.toString() ??
@@ -282,11 +288,23 @@ class _PlayerDetailScreenState extends State<PlayerDetailScreen> {
                       _InfoTile('Jersey', basic['jersey'].toString()),
                     _InfoTile('Born', (basic?['born'] ?? '—').toString()),
                     if (p?['profile'] is Map &&
-                        _profileBio(p!['profile'] as Map).isNotEmpty)
+                        _profileBio(p!['profile'] as Map).isNotEmpty) ...[
+                      const Padding(
+                        padding: EdgeInsets.only(top: 16),
+                        child: Text('ABOUT',
+                            style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w800,
+                                color: AppColors.brandBlue)),
+                      ),
                       Padding(
-                        padding: const EdgeInsets.only(top: 12),
+                        padding: const EdgeInsets.only(top: 6),
                         child: Text(
                           _stripHtml(_profileBio(p['profile'] as Map)),
+                          maxLines: _bioExpanded ? null : 4,
+                          overflow: _bioExpanded
+                              ? TextOverflow.visible
+                              : TextOverflow.ellipsis,
                           style: TextStyle(
                             fontSize: 13,
                             color: isDark ? Colors.white70 : Colors.black54,
@@ -294,6 +312,38 @@ class _PlayerDetailScreenState extends State<PlayerDetailScreen> {
                           ),
                         ),
                       ),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton.icon(
+                          onPressed: () =>
+                              setState(() => _bioExpanded = !_bioExpanded),
+                          style: TextButton.styleFrom(
+                            visualDensity: VisualDensity.compact,
+                            padding: const EdgeInsets.symmetric(horizontal: 6),
+                          ),
+                          icon: Icon(
+                            _bioExpanded
+                                ? Icons.expand_less
+                                : Icons.expand_more,
+                            size: 15,
+                            color: AppColors.brandBlue,
+                          ),
+                          label: Text(
+                            _bioExpanded ? 'Show Less' : 'View All',
+                            style: const TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.brandBlue,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                    // Recent matches (real cricbuzz data, merged bat+bowl)
+                    if (p?['recent'] is List &&
+                        (p?['recent'] as List).isNotEmpty)
+                      _buildRecentMatches(
+                          p?['recent'] as List, isDark),
                     // Career stats from the backend proxy (batting + bowling)
                     if (p?['batting'] is Map)
                       _buildCricbuzzTable('Batting Career',
@@ -430,7 +480,98 @@ class _PlayerDetailScreenState extends State<PlayerDetailScreen> {
     );
   }
 
-  // Cricbuzz career table: {headers:['ROWHEADER','Test','ODI',...],
+  // Recent matches — real cricbuzz data: {id, batting, bowling, opponent,
+  // format, date} — rendered Crex-style (date chip + format + scores).
+  Widget _buildRecentMatches(List recent, bool isDark) {
+    final cellBg = isDark ? AppColors.darkCard : Colors.white;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 16),
+        const Text('RECENT MATCHES',
+            style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w800,
+                color: AppColors.brandBlue)),
+        const SizedBox(height: 8),
+        for (var i = 0; i < recent.length; i++) ...[
+          if (i > 0) const SizedBox(height: 6),
+          _recentMatchCard(recent[i], cellBg, isDark),
+        ],
+      ],
+    );
+  }
+
+  Widget _recentMatchCard(dynamic m, Color cellBg, bool isDark) {
+    final batting = m is Map ? (m['batting']?.toString() ?? '') : '';
+    final bowling = m is Map ? (m['bowling']?.toString() ?? '') : '';
+    final opponent = m is Map ? (m['opponent']?.toString() ?? '') : '';
+    final format = m is Map ? (m['format']?.toString() ?? '') : '';
+    final date = m is Map ? (m['date']?.toString() ?? '') : '';
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: cellBg,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.withValues(alpha: 0.12)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+            decoration: BoxDecoration(
+              color: AppColors.brandBlue.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Text(format.isNotEmpty ? format : '—',
+                style: const TextStyle(
+                    fontSize: 9,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.brandBlue)),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  batting.isNotEmpty ? batting : '—',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w800,
+                    color: isDark ? Colors.white : Colors.black87,
+                  ),
+                ),
+                if (bowling.isNotEmpty)
+                  Text(
+                    'Bowling: $bowling',
+                    style: TextStyle(
+                        fontSize: 11,
+                        color: isDark ? Colors.white60 : Colors.black54),
+                  ),
+              ],
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text('vs $opponent',
+                  style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: isDark ? Colors.white70 : Colors.black54)),
+              const SizedBox(height: 2),
+              Text(date,
+                  style: TextStyle(
+                      fontSize: 10, color: Colors.grey)),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+// Cricbuzz career table: {headers:['ROWHEADER','Test','ODI',...],
   // values:[{values:['Matches','123','314',...]}, ...]} — falls back to the
   // legacy per-format map renderer when the shape doesn't match.
   Widget _buildCricbuzzTable(String title, Map stats, bool isDark) {

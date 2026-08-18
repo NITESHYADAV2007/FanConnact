@@ -192,6 +192,18 @@ app.get("/api/rankings/:sport/:category?", async (req, res, next) => {
     }
   }
 
+  // ESPN CDN headshots for nba/mlb/nhl rows that carry athleteId — free
+  // deterministic URL, no API call (rankings-sync rows + live fallbacks).
+  const ESPND_HEADSHOT_LEAGUE = { basketball: "nba", baseball: "mlb", hockey: "nhl" };
+  const hdLeague = ESPND_HEADSHOT_LEAGUE[resolvedId];
+  if (hdLeague) {
+    players.forEach((p) => {
+      if (!p.image && p.athleteId) {
+        p.image = `https://a.espncdn.com/i/headshots/${hdLeague}/players/full/${p.athleteId}.png`;
+      }
+    });
+  }
+
   var dataSource = players.length > 0 && players[0]._source ? players[0]._source : "none";
   const cleaned = players.slice(0, 100).map(function (p) {
     if (p._source) {
