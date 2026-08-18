@@ -123,10 +123,17 @@ class MatchItem {
 
   // Build from the backend /api/matches payload (ESPN real data).
   factory MatchItem.fromApi(Map<String, dynamic> m, {String sportKey = 'all'}) {
+    // The All tab passes sportKey='all' - the per-match sport lives in the
+    // payload. Without it every match would be treated as a generic sport.
+    final actualSport = sportKey == 'all'
+        ? (m['sport']?.toString().isNotEmpty == true
+            ? m['sport'].toString()
+            : 'all')
+        : sportKey;
     const emojiMap = {
       'football': '⚽',
       'basketball': '🏀',
-      'hockey': '🏑',
+      'hockey': '🏒',
       'baseball': '⚾',
       'tennis': '🎾',
       'cricket': '🏏',
@@ -134,11 +141,14 @@ class MatchItem {
       'tabletennis': '🏓',
       'kabaddi': '🤼',
       'esports': '🎮',
+      'rugby': '🏉',
+      'golf': '⛳',
+      'mma': '🥊',
 
     };
     return MatchItem(
-      sport: sportKey,
-      sportEmoji: emojiMap[sportKey] ?? '🏟️',
+      sport: actualSport,
+      sportEmoji: emojiMap[actualSport] ?? '🏟️',
       series: (m['league'] ?? '').toString(),
       teamA: (m['homeName'] ?? 'TBD').toString(),
       teamB: (m['awayName'] ?? 'TBD').toString(),

@@ -7,6 +7,7 @@ import '../theme.dart';
 import '../data.dart';
 import '../services/player_detail_service.dart';
 import '../services/news_service.dart';
+import 'match_detail_screen.dart';
 
 class PlayerDetailScreen extends StatefulWidget {
   final String sportKey;
@@ -191,17 +192,21 @@ class _PlayerDetailScreenState extends State<PlayerDetailScreen> {
           : ListView(
               padding: const EdgeInsets.all(16),
               children: [
-                // Header card
+                // Header card — Crex-style gradient
                 Container(
                   padding: const EdgeInsets.all(18),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(16),
-                    color: isDark ? AppColors.darkCard : Colors.white,
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF0d1b3e), Color(0xFF3b2a6d)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
+                        color: const Color(0xFF0d1b3e).withValues(alpha: 0.35),
+                        blurRadius: 12,
+                        offset: const Offset(0, 5),
                       ),
                     ],
                   ),
@@ -209,7 +214,7 @@ class _PlayerDetailScreenState extends State<PlayerDetailScreen> {
                     children: [
                       CircleAvatar(
                         radius: 34,
-                        backgroundColor: AppColors.brandBlue,
+                        backgroundColor: Colors.white.withValues(alpha: 0.15),
                         backgroundImage: imageUrl.isNotEmpty
                             ? NetworkImage(imageUrl)
                             : null,
@@ -230,9 +235,12 @@ class _PlayerDetailScreenState extends State<PlayerDetailScreen> {
                           children: [
                             Text(
                               name,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
                               style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.w800,
+                                color: Colors.white,
                               ),
                             ),
                             if (country != null)
@@ -240,27 +248,32 @@ class _PlayerDetailScreenState extends State<PlayerDetailScreen> {
                                 padding: const EdgeInsets.only(top: 4),
                                 child: Text(
                                   country,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                   style: const TextStyle(
-                                      fontSize: 13, color: Colors.grey),
+                                      fontSize: 13,
+                                      color: Colors.white70),
                                 ),
                               ),
                             if (role != null && role.isNotEmpty)
                               Padding(
-                                padding: const EdgeInsets.only(top: 4),
+                                padding: const EdgeInsets.only(top: 6),
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(
-                                      horizontal: 8, vertical: 2),
+                                      horizontal: 8, vertical: 3),
                                   decoration: BoxDecoration(
-                                    color: AppColors.brandBlue
-                                        .withValues(alpha: 0.12),
+                                    color: Colors.white.withValues(alpha: 0.14),
                                     borderRadius: BorderRadius.circular(6),
                                   ),
                                   child: Text(
                                     role.toUpperCase(),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
                                     style: const TextStyle(
-                                      fontSize: 11,
+                                      fontSize: 10,
                                       fontWeight: FontWeight.w800,
-                                      color: AppColors.brandBlue,
+                                      color: Colors.amberAccent,
+                                      letterSpacing: 0.6,
                                     ),
                                   ),
                                 ),
@@ -508,65 +521,136 @@ class _PlayerDetailScreenState extends State<PlayerDetailScreen> {
     final opponent = m is Map ? (m['opponent']?.toString() ?? '') : '';
     final format = m is Map ? (m['format']?.toString() ?? '') : '';
     final date = m is Map ? (m['date']?.toString() ?? '') : '';
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      decoration: BoxDecoration(
-        color: cellBg,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.withValues(alpha: 0.12)),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
-            decoration: BoxDecoration(
-              color: AppColors.brandBlue.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(6),
+    final id = m is Map ? (m['id']?.toString() ?? '') : '';
+    final url = m is Map ? (m['url']?.toString() ?? '') : '';
+    return InkWell(
+      borderRadius: BorderRadius.circular(12),
+      onTap: id.isNotEmpty
+          ? () => _openRecentMatch(id, url, format, date)
+          : null,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        decoration: BoxDecoration(
+          color: cellBg,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.grey.withValues(alpha: 0.12)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+              decoration: BoxDecoration(
+                color: AppColors.brandBlue.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Text(format.isNotEmpty ? format : '—',
+                  style: const TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.brandBlue)),
             ),
-            child: Text(format.isNotEmpty ? format : '—',
-                style: const TextStyle(
-                    fontSize: 9,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.brandBlue)),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  batting.isNotEmpty ? batting : '—',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w800,
-                    color: isDark ? Colors.white : Colors.black87,
-                  ),
-                ),
-                if (bowling.isNotEmpty)
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                   Text(
-                    'Bowling: $bowling',
+                    batting.isNotEmpty ? batting : '—',
                     style: TextStyle(
-                        fontSize: 11,
-                        color: isDark ? Colors.white60 : Colors.black54),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w800,
+                      color: isDark ? Colors.white : Colors.black87,
+                    ),
                   ),
-              ],
+                  if (bowling.isNotEmpty)
+                    Text(
+                      'Bowling: $bowling',
+                      style: TextStyle(
+                          fontSize: 11,
+                          color: isDark ? Colors.white60 : Colors.black54),
+                    ),
+                ],
+              ),
             ),
+            const SizedBox(width: 8),
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 130),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text('vs $opponent',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: isDark ? Colors.white70 : Colors.black54)),
+                  const SizedBox(height: 2),
+                  Text(date,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                          fontSize: 10, color: Colors.grey)),
+                ],
+              ),
+            ),
+            const SizedBox(width: 4),
+            Icon(Icons.chevron_right,
+                size: 18,
+                color: isDark ? Colors.white30 : Colors.grey.shade400),
+          ],
+        ),
+      ),
+    );
+  }
+
+  static const Set<String> _seriesDropWords = {
+    '1st', '2nd', '3rd', '4th', '5th', '6th', '7th',
+    'test', 'tests', 'odi', 'odis', 't20', 't20i', 't20is', 't20s',
+    'match', 'final', 'semi', 'semi-final', 'qualifier', 'only',
+  };
+
+  void _openRecentMatch(String id, String url, String format, String date) {
+    var teamA = 'Team A';
+    var teamB = 'Team B';
+    var series = format.isNotEmpty ? format : 'Match';
+    final segments = url
+        .split('/')
+        .where((s) => s.isNotEmpty)
+        .toList();
+    if (segments.isNotEmpty) {
+      final slug = segments.last;
+      final parts = slug.split('-').where((s) => s.isNotEmpty).toList();
+      if (parts.length >= 2) {
+        teamA = parts[0].toUpperCase();
+        teamB = parts[1].toUpperCase();
+        final rest = parts
+            .sublist(2)
+            .where((w) => !_seriesDropWords.contains(w.toLowerCase()))
+            .toList();
+        if (rest.isNotEmpty) {
+          series = rest
+              .map((w) => w[0].toUpperCase() + w.substring(1))
+              .join(' ');
+        }
+      }
+    }
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => MatchDetailScreen(
+          match: MatchItem(
+            sport: 'cricket',
+            sportEmoji: '🏏',
+            series: series,
+            teamA: teamA,
+            teamB: teamB,
+            status: 'COMPLETED',
+            time: date,
+            matchId: id,
+            matchType: format.isNotEmpty ? format : null,
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text('vs $opponent',
-                  style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
-                      color: isDark ? Colors.white70 : Colors.black54)),
-              const SizedBox(height: 2),
-              Text(date,
-                  style: TextStyle(
-                      fontSize: 10, color: Colors.grey)),
-            ],
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -925,6 +1009,7 @@ class _PlayerDetailScreenState extends State<PlayerDetailScreen> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         color: isDark ? AppColors.darkCard : Colors.white,
+        border: Border.all(color: Colors.grey.withValues(alpha: 0.1)),
       ),
       child: Row(
         children: [
@@ -934,10 +1019,15 @@ class _PlayerDetailScreenState extends State<PlayerDetailScreen> {
               style: const TextStyle(fontSize: 13, color: Colors.grey),
             ),
           ),
-          Text(
-            value,
-            style: const TextStyle(
-                fontSize: 14, fontWeight: FontWeight.w700),
+          Flexible(
+            child: Text(
+              value,
+              textAlign: TextAlign.right,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                  fontSize: 14, fontWeight: FontWeight.w700),
+            ),
           ),
         ],
       ),

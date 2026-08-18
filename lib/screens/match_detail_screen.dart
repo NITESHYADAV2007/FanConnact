@@ -3126,9 +3126,15 @@ class _CricketPitchView extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _PlayerChip(name: 'BAT', label: match.teamA, isDark: isDark, color: AppColors.brandBlue),
+            Expanded(
+                child: Center(
+                    child: _PlayerChip(
+                        name: 'BAT', label: match.teamA, isDark: isDark, color: AppColors.brandBlue))),
             const Text('VS', style: TextStyle(color: Colors.white38, fontWeight: FontWeight.w800)),
-            _PlayerChip(name: 'BOWL', label: match.teamB, isDark: isDark, color: AppColors.liveRed),
+            Expanded(
+                child: Center(
+                    child: _PlayerChip(
+                        name: 'BOWL', label: match.teamB, isDark: isDark, color: AppColors.liveRed))),
           ],
         ),
         const SizedBox(height: 16),
@@ -3207,10 +3213,10 @@ class _PlayerChip extends StatelessWidget {
             color: color.withOpacity(0.2),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Text(name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 13)),
+          child: Text(name, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 13)),
         ),
         const SizedBox(height: 4),
-        Text(label, style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 10)),
+        Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 10)),
       ],
     );
   }

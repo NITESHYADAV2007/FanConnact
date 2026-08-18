@@ -456,7 +456,8 @@ for (const b of batRows) {
         opponent: v[2] || "",
         format: v[3] || "",
         date: v[4] || "",
-        bowling: bwv[1] || ""
+        bowling: bwv[1] || "",
+        url: (b.followUpLinkText || b.followUpLink || "") || ""
     });
 }
 player.recent = recent;
