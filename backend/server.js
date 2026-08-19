@@ -6107,7 +6107,7 @@ app.get("/api/tournament-stats", async (req, res) => {
       if (!r.ok) return { type, values: [] };
       const j = await r.json().catch(() => null);
       if (!j) return { type, values: [] };
-      const list = j.odiStatsList || j.t20StatsList;
+      const list = j.testStatsList || j.odiStatsList || j.t20StatsList;
       const values = (list && Array.isArray(list.values)) ? list.values.map((v) => v.values) : [];
       return { type, values };
     }));
