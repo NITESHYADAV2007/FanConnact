@@ -1,12 +1,18 @@
-// Player detail screen — real player data via the BACKEND proxy:
-//   cricket: /api/players/resolve/:name + /api/players/:id/profile (cricbuzz)
+// Player detail screen — matches the website's player profile design:
+// hero (portrait, flag, name, role, rank/rating/status cards, follow button),
+// info grid (born/age/batting/bowling/height/weight/jersey/debut), tabbed
+// Overview / Stats / News / Teams / Achievements with real API data:
+//   cricket: /api/players/:id/profile (cricbuzz)
 //   NBA/MLB/NHL: /api/players/espn/:league/:athleteId (ESPN core API)
+//   other sports: real ranking data + derived stats
 
 import 'package:flutter/material.dart';
 import '../theme.dart';
 import '../data.dart';
 import '../services/player_detail_service.dart';
 import '../services/news_service.dart';
+import '../services/wikipedia_service.dart';
+import '../widgets/team_logo.dart';
 import 'match_detail_screen.dart';
 
 class PlayerDetailScreen extends StatefulWidget {
@@ -32,25 +38,13 @@ class _PlayerDetailScreenState extends State<PlayerDetailScreen> {
   Map<String, dynamic>? _espnProfile;
   List<NewsItem> _news = [];
   bool _loading = true;
-  bool _bioExpanded = false;
+  bool _following = false;
+  String? _wikiPhoto;
+  String _format = 'all';
 
-  // Keys we never want to show as a "stat" tile.
   static const Set<String> _skipKeys = {
-    'image',
-    'img',
-    'photo',
-    'logo',
-    'flag',
-    'pid',
-    'playerId',
-    'player_id',
-    'teamId',
-    'team_id',
-    'id',
-    'category',
-    'name',
-    'country',
-    'rank',
+    'image', 'img', 'photo', 'logo', 'flag', 'pid', 'playerId', 'player_id',
+    'teamId', 'team_id', 'id', 'category', 'name', 'country', 'rank',
   };
 
   @override
@@ -65,15 +59,10 @@ class _PlayerDetailScreenState extends State<PlayerDetailScreen> {
           widget.extra?['playerId']?.toString() ??
           widget.extra?['player_id']?.toString() ??
           '');
-      // No pid was passed (e.g. tapped from a scorecard/squad row or a
-      // rankings row). Resolve it by name so we can still show the full
-      // Crex-style profile.
       if (pid == null && widget.name.isNotEmpty) {
         pid = await PlayerDetailService.resolveCricketPlayerId(widget.name);
       }
       if (pid != null) {
-        // Full Crex-style profile from the backend cricbuzz proxy
-        // (/api/players/:id/profile → info + batting + bowling + career).
         _player = await PlayerDetailService.fetchCricketProfile(pid);
       }
     } else if (widget.sportKey == 'basketball' ||
@@ -91,7 +80,6 @@ class _PlayerDetailScreenState extends State<PlayerDetailScreen> {
             await PlayerDetailService.fetchEspnProfile(league, athleteId);
       }
     }
-    // Real news about this player from the backend news feed.
     try {
       final sport = widget.sportKey == 'cricket' ? 'cricket' : widget.sportKey;
       final items = await NewsService.fetchNews(sport: sport);
@@ -107,415 +95,901 @@ class _PlayerDetailScreenState extends State<PlayerDetailScreen> {
     } catch (_) {
       _news = [];
     }
-    if (mounted) {
-      setState(() => _loading = false);
-    }
+    WikipediaService.fetchImage('${widget.name} sports player').then((u) {
+      if (mounted && u != null) setState(() => _wikiPhoto = u);
+    });
+    if (mounted) setState(() => _loading = false);
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    // The new /players/{pid}/stats endpoint returns the full response directly
-    final p = _player;
-    final basic = p?['basic'] as Map<String, dynamic>?;
+  // ── Resolvers ────────────────────────────────────────────────────────────
+  Map<String, dynamic>? get _basic =>
+      _player?['basic'] as Map<String, dynamic>?;
+
+  Map<String, dynamic>? get _profile {
+    final p = _player?['profile'];
+    return p is Map ? Map<String, dynamic>.from(p) : null;
+  }
+
+  String _pick(List<String> keys,
+      [Map<String, dynamic>? src, Map<String, dynamic>? src2]) {
+    final sources = [
+      if (src != null) src,
+      if (src2 != null) src2,
+      if (src == null && src2 == null) ..._profile == null ? [] : [_profile!],
+    ];
+    for (final m in sources) {
+      for (final k in keys) {
+        final v = m[k];
+        if (v != null && v.toString().trim().isNotEmpty) return v.toString();
+      }
+    }
+    return '';
+  }
+
+  String get _name {
+    final basic = _basic;
     final espn = _espnProfile;
-    final name = widget.name.isNotEmpty
+    return widget.name.isNotEmpty
         ? widget.name
         : (basic?['name']?.toString() ??
             espn?['name']?.toString() ??
-            (p?['player'] is Map
-                ? (p!['player'] as Map)['name']?.toString()
-                : null) ??
+            (widget.extra?['name']?.toString()) ??
             'Player');
+  }
 
-    // Resolve display fields from whichever source has data.
-    // Priority: ESPN headshot (real, per-athlete) → ranking-row image
-    // (entitysport for cricket / ESPN CDN for NBA-MLB-NHL — both live) →
-    // cricbuzz basic image (dead host, last resort).
-    final imageUrl = (espn?['image']?.toString().isNotEmpty == true)
-        ? espn!['image'].toString()
-        : (widget.extra?['image']?.toString().isNotEmpty == true)
-            ? widget.extra!['image'].toString()
-            : (widget.extra?['img']?.toString().isNotEmpty == true)
-                ? widget.extra!['img'].toString()
-                : (basic?['image']?.toString().isNotEmpty == true)
-                    ? basic!['image'].toString()
-                    : (p?['profile_image']?.toString().isNotEmpty == true)
-                        ? p!['profile_image'].toString()
-                        : (p?['image']?.toString().isNotEmpty == true)
-                            ? p!['image'].toString()
-                            : '';
-    final country = widget.country ??
-        basic?['country']?.toString() ??
-        espn?['country']?.toString() ??
+  String get _country {
+    final c = _pick(['country', 'nationality']);
+    if (c.isNotEmpty) return c;
+    return widget.country ??
+        _basic?['country']?.toString() ??
+        _espnProfile?['country']?.toString() ??
         widget.extra?['country']?.toString() ??
-        (p?['nationality']?.toString());
-    final role = basic?['role']?.toString() ??
-        espn?['position']?.toString() ??
-        widget.extra?['category']?.toString() ??
-        widget.extra?['role']?.toString();
+        '';
+  }
 
-    // Stat fields for non-cricket sports (everything in extra minus skips).
-    final statEntries = <MapEntry<String, String>>[];
-    widget.extra?.forEach((k, v) {
-      if (_skipKeys.contains(k)) return;
-      if (v == null) return;
-      final s = v.toString();
-      if (s.isEmpty) return;
-      final pretty = k
-          .replaceAll('_', ' ')
-          .replaceAll(RegExp(r'\s+'), ' ')
-          .trim()
-          .split(' ')
-          .map((w) => w.isEmpty ? w : w[0].toUpperCase() + w.substring(1))
-          .join(' ');
-      statEntries.add(MapEntry(pretty, s));
-    });
+  String get _role {
+    final r = _pick(['role', 'playingRole', 'battingStyle']);
+    if (r.isNotEmpty) return r;
+    return _espnProfile?['position']?.toString() ??
+        widget.extra?['category']?.toString() ??
+        widget.extra?['role']?.toString() ??
+        '';
+  }
+
+  String get _imageUrl {
+    final espn = _espnProfile;
+    if (espn?['image']?.toString().isNotEmpty == true) {
+      return espn!['image'].toString();
+    }
+    for (final k in ['image', 'img']) {
+      final v = widget.extra?[k]?.toString();
+      if (v != null && v.isNotEmpty) return v;
+    }
+    final basic = _basic;
+    if (basic?['image']?.toString().isNotEmpty == true) {
+      return basic!['image'].toString();
+    }
+    for (final k in ['profile_image', 'image']) {
+      final v = _player?[k]?.toString();
+      if (v != null && v.isNotEmpty) return v;
+    }
+    return _wikiPhoto ?? '';
+  }
+
+  int? get _rank {
+    final r = _player?['rank']?.toString() ??
+        _player?['ranking']?['rank']?.toString() ??
+        widget.extra?['rank']?.toString();
+    final n = int.tryParse(r ?? '');
+    return (n != null && n > 0) ? n : null;
+  }
+
+  String? get _rating {
+    for (final k in ['rating', 'points', 'ratingPoints']) {
+      final v = _player?[k]?.toString() ??
+          (widget.extra?[k]?.toString() ?? '');
+      if (v.isNotEmpty && v != '0') return v;
+    }
+    return null;
+  }
+
+  String get _status {
+    if (_rank != null && _rank! <= 3) return 'TOP ${_rank}';
+    if (_rank != null) return 'RANKED';
+    if (_rating != null) return 'ACTIVE';
+    return 'ACTIVE';
+  }
+
+  String get _bio => _stripHtml(
+      _profile == null
+          ? ''
+          : _pick(['bio', 'description', 'about', 'longBio', 'introduction'],
+              _profile));
+
+  List<MapEntry<String, String>> get _infoGrid {
+    final out = <MapEntry<String, String>>[];
+    void add(String label, String value) {
+      if (value.trim().isNotEmpty) {
+        out.add(MapEntry(label, value.trim()));
+      }
+    }
+
+    add('Born', _pick(['born', 'dateOfBirth', 'birthDate'], _profile));
+    add('Age', _pick(['age'], _profile));
+    add('Batting',
+        _pick(['battingStyle', 'batting', 'battingStyle'], _basic, _profile));
+    add('Bowling',
+        _pick(['bowlingStyle', 'bowling', 'bowlingStyle'], _basic, _profile));
+    add('Height', _pick(['height', 'height2'], _profile, _espnProfile));
+    add('Weight', _pick(['weight', 'weight2'], _profile, _espnProfile));
+    add('Jersey', _pick(['jersey', 'jersey'], _basic, _espnProfile));
+    add('Debut',
+        _pick(['debut', 'debutYear', 'debutYear'], _profile, _espnProfile));
+    return out;
+  }
+
+  Map<String, dynamic>? get _career {
+    final c = _player?['career'];
+    return c is Map ? Map<String, dynamic>.from(c) : null;
+  }
+
+  List<String> get _formats {
+    final career = _career;
+    if (career == null) return const [];
+    const order = ['all', 'test', 'odi', 't20i', 't20', 'lista', 'domestic'];
+    return order
+        .where((f) => career[f] is Map && (career[f] as Map).isNotEmpty)
+        .toList();
+  }
+
+  // ── UI ───────────────────────────────────────────────────────────────────
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final name = _name;
 
     return Scaffold(
       appBar: AppBar(
         title: Text(name,
             style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 18)),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.share_outlined),
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Profile link copied')),
-              );
-            },
-          ),
-        ],
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
-          : ListView(
-              padding: const EdgeInsets.all(16),
+          : Column(
               children: [
-                // Header card — Crex-style gradient
-                Container(
-                  padding: const EdgeInsets.all(18),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF0d1b3e), Color(0xFF3b2a6d)],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFF0d1b3e).withValues(alpha: 0.35),
-                        blurRadius: 12,
-                        offset: const Offset(0, 5),
-                      ),
-                    ],
-                  ),
-                  child: Row(
+                _buildHero(isDark),
+                TabBar(
+                  indicatorColor: AppColors.brandBlue,
+                  labelColor: AppColors.brandBlue,
+                  unselectedLabelColor:
+                      isDark ? Colors.white54 : Colors.black45,
+                  labelStyle: const TextStyle(
+                      fontWeight: FontWeight.w700, fontSize: 12.5),
+                  tabs: const [
+                    Tab(text: 'Overview'),
+                    Tab(text: 'Stats'),
+                    Tab(text: 'News'),
+                    Tab(text: 'Teams'),
+                    Tab(text: 'Achievements'),
+                  ],
+                ),
+                Expanded(
+                  child: TabBarView(
                     children: [
-                      CircleAvatar(
-                        radius: 34,
-                        backgroundColor: Colors.white.withValues(alpha: 0.15),
-                        backgroundImage: imageUrl.isNotEmpty
-                            ? NetworkImage(imageUrl)
-                            : null,
-                        child: imageUrl.isEmpty
-                            ? Text(
-                                name.isNotEmpty
-                                    ? name[0].toUpperCase()
-                                    : '?',
-                                style: const TextStyle(
-                                    fontSize: 28, color: Colors.white),
-                              )
-                            : null,
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              name,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.w800,
-                                color: Colors.white,
-                              ),
-                            ),
-                            if (country != null)
-                              Padding(
-                                padding: const EdgeInsets.only(top: 4),
-                                child: Text(
-                                  country,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                      fontSize: 13,
-                                      color: Colors.white70),
-                                ),
-                              ),
-                            if (role != null && role.isNotEmpty)
-                              Padding(
-                                padding: const EdgeInsets.only(top: 6),
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 8, vertical: 3),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white.withValues(alpha: 0.14),
-                                    borderRadius: BorderRadius.circular(6),
-                                  ),
-                                  child: Text(
-                                    role.toUpperCase(),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.w800,
-                                      color: Colors.amberAccent,
-                                      letterSpacing: 0.6,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                          ],
-                        ),
-                      ),
+                      _buildOverview(isDark),
+                      _buildStatsTab(isDark),
+                      _buildNewsTab(isDark),
+                      _buildTeamsTab(isDark),
+                      _buildAchievementsTab(isDark),
                     ],
                   ),
                 ),
-                const SizedBox(height: 16),
-
-                // ── Cricket: full Crex-style profile from backend cricbuzz ──
-                if (widget.sportKey == 'cricket') ...[
-                  if (_player != null) ...[
-                    _InfoTile('Batting Style',
-                        (basic?['battingStyle'] ?? '—').toString()),
-                    _InfoTile('Bowling Style',
-                        (basic?['bowlingStyle'] ?? '—').toString()),
-                    if (basic?['team'] != null &&
-                        basic!['team'].toString().isNotEmpty)
-                      _InfoTile('Team', basic['team'].toString()),
-                    if (basic?['jersey'] != null &&
-                        basic!['jersey'].toString().isNotEmpty)
-                      _InfoTile('Jersey', basic['jersey'].toString()),
-                    _InfoTile('Born', (basic?['born'] ?? '—').toString()),
-                    if (p?['profile'] is Map &&
-                        _profileBio(p!['profile'] as Map).isNotEmpty) ...[
-                      const Padding(
-                        padding: EdgeInsets.only(top: 16),
-                        child: Text('ABOUT',
-                            style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w800,
-                                color: AppColors.brandBlue)),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 6),
-                        child: Text(
-                          _stripHtml(_profileBio(p['profile'] as Map)),
-                          maxLines: _bioExpanded ? null : 4,
-                          overflow: _bioExpanded
-                              ? TextOverflow.visible
-                              : TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: isDark ? Colors.white70 : Colors.black54,
-                            height: 1.5,
-                          ),
-                        ),
-                      ),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: TextButton.icon(
-                          onPressed: () =>
-                              setState(() => _bioExpanded = !_bioExpanded),
-                          style: TextButton.styleFrom(
-                            visualDensity: VisualDensity.compact,
-                            padding: const EdgeInsets.symmetric(horizontal: 6),
-                          ),
-                          icon: Icon(
-                            _bioExpanded
-                                ? Icons.expand_less
-                                : Icons.expand_more,
-                            size: 15,
-                            color: AppColors.brandBlue,
-                          ),
-                          label: Text(
-                            _bioExpanded ? 'Show Less' : 'View All',
-                            style: const TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.brandBlue,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                    // Recent matches (real cricbuzz data, merged bat+bowl)
-                    if (p?['recent'] is List &&
-                        (p?['recent'] as List).isNotEmpty)
-                      _buildRecentMatches(
-                          p?['recent'] as List, isDark),
-                    // Career stats from the backend proxy (batting + bowling)
-                    if (p?['batting'] is Map)
-                      _buildCricbuzzTable('Batting Career',
-                          p!['batting'] as Map, isDark),
-                    if (p?['bowling'] is Map)
-                      _buildCricbuzzTable('Bowling Career',
-                          p!['bowling'] as Map, isDark),
-                  ] else ...[
-                    // No linked profile yet — show the real ICC ranking data
-                    // we already have (rating / points / format / rank).
-                    _buildRankingSnapshot(isDark),
-                  ],
-                ] else if (espn != null) ...[
-                  // ── NBA / MLB / NHL: real ESPN bio + season stats ──
-                  _buildEspnSection(espn, statEntries, isDark),
-                ] else ...[
-                  // ── Generic Crex-style stat grid for all other sports ──
-                  if (statEntries.isNotEmpty) ...[
-                    const Text(
-                      'STATS',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.brandBlue,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    _buildStatGrid(statEntries, isDark),
-                  ] else
-                    const Padding(
-                      padding: EdgeInsets.only(top: 8),
-                      child: Text(
-                        'No additional stats available for this player.',
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                    ),
-                  // ── Latest news about this player (real backend news) ──
-                  if (_news.isNotEmpty) ...[
-                    const SizedBox(height: 18),
-                    const Text(
-                      'LATEST NEWS',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.brandBlue,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    ..._news.map((n) => _NewsCard(item: n, isDark: isDark)),
-                  ],
-                ],
               ],
             ),
     );
   }
 
-  Widget _buildFormatStats(String title, Map stats, bool isDark) {
-    // Legacy shape: {test:{...}, odi:{...}, t20i:{...}, t20:{...}, lista:{...}}
-    // (handled here) — cricbuzz {headers, values} shape is handled by
-    // _buildCricbuzzTable below.
-    final order = ['test', 'odi', 't20i', 't20', 'lista'];
-    final formats = order
-        .where((f) => stats[f] is Map && (stats[f] as Map).isNotEmpty)
-        .toList();
-    if (formats.isEmpty) return const SizedBox.shrink();
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: 16),
-        Text(
-          title,
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w800,
-            color: AppColors.brandBlue,
-          ),
+  // Hero — portrait, flag, name, role, rank/rating/status cards, follow.
+  Widget _buildHero(bool isDark) {
+    final name = _name;
+    final country = _country;
+    final role = _role;
+    final image = _imageUrl;
+    final flag = country.isEmpty
+        ? ''
+        : _flagFor(country);
+    return Container(
+      padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFF0d1b3e), Color(0xFF3b2a6d)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
-        const SizedBox(height: 8),
-        ...formats.map((f) {
-          final m = Map<String, dynamic>.from(stats[f] as Map);
-          final rows = <String, String>{};
-          m.forEach((k, v) {
-            if (v == null) return;
-            final s = v.toString();
-            if (s.isEmpty) return;
-            rows[k] = s;
-          });
-          return Container(
+      ),
+      child: Column(
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Portrait
+              Container(
+                width: 88,
+                height: 88,
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: Colors.white24),
+                ),
+                clipBehavior: Clip.antiAlias,
+                child: image.isNotEmpty
+                    ? Image.network(image,
+                        width: 88, height: 88, fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => _initialsBox(name, isDark))
+                    : _initialsBox(name, isDark),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(name,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                  fontSize: 19,
+                                  fontWeight: FontWeight.w800,
+                                  color: Colors.white,
+                                  height: 1.15)),
+                        ),
+                        const SizedBox(width: 4),
+                        const Icon(Icons.verified,
+                            size: 16, color: Color(0xFF4FC3F7)),
+                      ],
+                    ),
+                    if (role.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Text(role.toUpperCase(),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                                fontSize: 10.5,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.amberAccent,
+                                letterSpacing: 0.6)),
+                      ),
+                    if (country.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Text(
+                          flag.isNotEmpty ? '$flag $country' : country,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                              fontSize: 13, color: Colors.white70),
+                        ),
+                      ),
+                    const SizedBox(height: 8),
+                    // Follow button
+                    GestureDetector(
+                      onTap: () {
+                        setState(() => _following = !_following);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(_following
+                                ? 'Following $name'
+                                : 'Unfollowed $name'),
+                            duration: const Duration(seconds: 1),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 6),
+                        decoration: BoxDecoration(
+                          gradient: _following
+                              ? null
+                              : const LinearGradient(
+                                  colors: [
+                                    Color(0xFF4FC3F7),
+                                    Color(0xFF2196F3),
+                                  ],
+                                ),
+                          color:
+                              _following ? Colors.white.withValues(alpha: 0.15) : null,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                              color: _following ? Colors.white54 : Colors.transparent),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(_following ? Icons.check : Icons.person_add,
+                                size: 14, color: Colors.white),
+                            const SizedBox(width: 5),
+                            Text(_following ? 'FOLLOWING' : 'FOLLOW',
+                                style: const TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w800,
+                                    color: Colors.white,
+                                    letterSpacing: 0.5)),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          // Rank / Rating / Status glass cards
+          Row(
+            children: [
+              _glassCard('RANK', _rank != null ? '#$_rank' : '—', Icons.emoji_events),
+              const SizedBox(width: 8),
+              _glassCard('RATING', _rating ?? '—', Icons.star),
+              const SizedBox(width: 8),
+              _glassCard('STATUS', _status, Icons.bolt),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _glassCard(String label, String value, IconData icon) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 6),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.10),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: Colors.white12),
+        ),
+        child: Column(
+          children: [
+            Icon(icon, size: 14, color: Colors.amber.shade300),
+            const SizedBox(height: 3),
+            Text(value,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white)),
+            Text(label,
+                style: TextStyle(
+                    fontSize: 8.5,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.5,
+                    color: Colors.white.withValues(alpha: 0.6))),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _initialsBox(String name, bool isDark) {
+    final initials = name
+        .split(' ')
+        .where((w) => w.isNotEmpty)
+        .take(2)
+        .map((w) => w[0].toUpperCase())
+        .join();
+    return Container(
+      width: 88,
+      height: 88,
+      color: Colors.white.withValues(alpha: 0.15),
+      alignment: Alignment.center,
+      child: Text(
+        initials.isNotEmpty ? initials : '?',
+        style: const TextStyle(fontSize: 30, fontWeight: FontWeight.w800, color: Colors.white),
+      ),
+    );
+  }
+
+  // ── Overview: bio + info grid + recent matches ───────────────────────────
+  Widget _buildOverview(bool isDark) {
+    final bio = _bio;
+    final info = _infoGrid;
+    final recent = _player?['recent'];
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        if (bio.isNotEmpty) ...[
+          _sectionTitle('ABOUT'),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              color: isDark ? AppColors.darkCard : Colors.white,
+              border: Border.all(color: Colors.grey.withValues(alpha: 0.12)),
+            ),
+            child: Text(bio,
+                style: TextStyle(
+                  fontSize: 13,
+                  color: isDark ? Colors.white70 : Colors.black54,
+                  height: 1.5,
+                )),
+          ),
+          const SizedBox(height: 16),
+        ],
+        if (info.isNotEmpty) ...[
+          _sectionTitle('PLAYER INFO'),
+          GridView.count(
+            crossAxisCount: 2,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            mainAxisSpacing: 8,
+            crossAxisSpacing: 8,
+            childAspectRatio: 2.4,
+            children: info.map((e) => _infoCard(e.key, e.value, isDark)).toList(),
+          ),
+          const SizedBox(height: 16),
+        ],
+        if (recent is List && recent.isNotEmpty) ...[
+          _sectionTitle('RECENT MATCHES'),
+          for (var i = 0; i < recent.length; i++) ...[
+            if (i > 0) const SizedBox(height: 6),
+            _recentMatchCard(recent[i], isDark),
+          ],
+        ],
+      ],
+    );
+  }
+
+  Widget _sectionTitle(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        children: [
+          Container(
+            width: 3.5, height: 16,
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                  colors: [AppColors.brandBlue, AppColors.brandGreen]),
+              borderRadius: BorderRadius.circular(4),
+            ),
+          ),
+          const SizedBox(width: 7),
+          Text(title,
+              style: const TextStyle(
+                  fontSize: 13.5, fontWeight: FontWeight.w800, letterSpacing: 0.4)),
+        ],
+      ),
+    );
+  }
+
+  Widget _infoCard(String label, String value, bool isDark) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        color: isDark ? AppColors.darkCard : Colors.white,
+        border: Border.all(color: Colors.grey.withValues(alpha: 0.12)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(label.toUpperCase(),
+              style: const TextStyle(fontSize: 9, color: Colors.grey, fontWeight: FontWeight.w700)),
+          const SizedBox(height: 3),
+          Text(value,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800)),
+        ],
+      ),
+    );
+  }
+
+  // ── Stats: format chips + real career stat cards ─────────────────────────
+  Widget _buildStatsTab(bool isDark) {
+    final career = _career;
+    final formats = _formats;
+    final espn = _espnProfile;
+
+    if (widget.sportKey == 'cricket' && career != null && formats.isNotEmpty) {
+      final selected = _format;
+      final data = career[formats.contains(selected) ? selected : formats.first];
+      final statCards = _statCardsFor(data, isDark);
+      return ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          _sectionTitle('CAREER STATS'),
+          SizedBox(
+            height: 36,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              children: formats.map((f) {
+                final on = f == selected;
+                return Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: GestureDetector(
+                    onTap: () => setState(() => _format = f),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 14),
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        gradient: on
+                            ? const LinearGradient(
+                                colors: [Color(0xFF667EEA), Color(0xFF764BA2)])
+                            : null,
+                        color: on
+                            ? null
+                            : (isDark ? AppColors.darkCard : Colors.white),
+                        borderRadius: BorderRadius.circular(18),
+                        border: Border.all(
+                            color: on
+                                ? Colors.transparent
+                                : Colors.grey.withValues(alpha: 0.3)),
+                      ),
+                      child: Text(
+                        f.toUpperCase(),
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w800,
+                          color: on ? Colors.white : (isDark ? Colors.white70 : Colors.black54),
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+          const SizedBox(height: 12),
+          if (statCards.isNotEmpty)
+            GridView.count(
+              crossAxisCount: 3,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              mainAxisSpacing: 8,
+              crossAxisSpacing: 8,
+              childAspectRatio: 1.15,
+              children: statCards,
+            )
+          else
+            const Text('No career stats for this format.',
+                style: TextStyle(color: Colors.grey)),
+        ],
+      );
+    }
+
+    // Fallbacks: cricbuzz tables, ESPN stats, or ranking snapshot.
+    if (widget.sportKey == 'cricket') {
+      return ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          if (_player?['batting'] is Map)
+            _buildCricbuzzTable('Batting Career', _player!['batting'] as Map, isDark),
+          if (_player?['bowling'] is Map)
+            _buildCricbuzzTable('Bowling Career', _player!['bowling'] as Map, isDark),
+          if (_player?['batting'] is! Map && _player?['bowling'] is! Map)
+            _buildRankingSnapshot(isDark),
+        ],
+      );
+    }
+    if (espn != null) {
+      return _buildEspnSection(espn, isDark);
+    }
+    return _buildRankingSnapshot(isDark);
+  }
+
+  List<Widget> _statCardsFor(dynamic data, bool isDark) {
+    if (data is! Map) return const [];
+    final m = Map<String, dynamic>.from(data);
+    String? v(String key) {
+      for (final k in key.split('|')) {
+        final x = m[k];
+        if (x != null && x.toString().trim().isNotEmpty && x.toString().trim() != '0') {
+          return x.toString().trim();
+        }
+      }
+      return null;
+    }
+
+    final batting = <MapEntry<String, String>>[];
+    void add(String label, String? value) {
+      if (value != null && value.isNotEmpty) {
+        batting.add(MapEntry(label, value));
+      }
+    }
+
+    add('Matches', v('matches|mat|match'));
+    add('Runs', v('runs'));
+    add('Average', v('average|avg'));
+    add('Strike Rate', v('strikeRate|strike_rate|sr'));
+    add('Highest', v('highest|high|hs'));
+    add('100s', v('hundreds|100s|centuries'));
+    add('50s', v('fifties|50s'));
+    add('4s', v('fours'));
+    add('6s', v('sixes'));
+    add('Balls', v('balls'));
+
+    final bowling = <MapEntry<String, String>>[];
+    add2(String label, String? value) {
+      if (value != null && value.isNotEmpty) bowling.add(MapEntry(label, value));
+    }
+
+    add2('Wickets', v('wickets|wkts|wicket'));
+    add2('Economy', v('economy|econ|economyRate'));
+    add2('Best Bowling', v('bestBowling|best|bbi'));
+    add2('5W', v('fiveWickets|five_wkts|fiveWkts|fiveWicket'));
+    add2('Bowl Avg', v('bowlingAvg|bowlAvg|avg'));
+
+    final cards = <Widget>[];
+    for (final e in batting.take(9)) {
+      cards.add(_statCard(e.key, e.value, isDark));
+    }
+    for (final e in bowling.take(4)) {
+      cards.add(_statCard(e.key, e.value, isDark));
+    }
+    return cards;
+  }
+
+  Widget _statCard(String label, String value, bool isDark) {
+    return Container(
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        gradient: LinearGradient(
+          colors: [
+            AppColors.brandBlue.withValues(alpha: isDark ? 0.25 : 0.08),
+            AppColors.brandGreen.withValues(alpha: isDark ? 0.15 : 0.04),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        border: Border.all(color: AppColors.brandBlue.withValues(alpha: 0.2)),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(value,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                  fontSize: 17, fontWeight: FontWeight.w900)),
+          const SizedBox(height: 2),
+          Text(label.toUpperCase(),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontSize: 8.5, color: Colors.grey, fontWeight: FontWeight.w700)),
+        ],
+      ),
+    );
+  }
+
+  // ── News ──────────────────────────────────────────────────────────────────
+  Widget _buildNewsTab(bool isDark) {
+    if (_news.isEmpty) {
+      return const Center(
+        child: Text('No news found for this player.',
+            style: TextStyle(color: Colors.grey)),
+      );
+    }
+    // 2-column grid like the website design.
+    return GridView.builder(
+      padding: const EdgeInsets.all(12),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        mainAxisSpacing: 8,
+        crossAxisSpacing: 8,
+        childAspectRatio: 0.78,
+      ),
+      itemCount: _news.length,
+      itemBuilder: (ctx, i) => _newsCard(_news[i], isDark),
+    );
+  }
+
+  Widget _newsCard(NewsItem item, bool isDark) {
+    return Container(
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        color: isDark ? AppColors.darkCard : Colors.white,
+        border: Border.all(color: Colors.grey.withValues(alpha: 0.12)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (item.image != null && item.image!.isNotEmpty)
+            Image.network(item.image!,
+                height: 78, width: double.infinity, fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => Container(
+                      height: 78,
+                      width: double.infinity,
+                      color: AppColors.brandBlue.withValues(alpha: 0.12),
+                      alignment: Alignment.center,
+                      child: Text(item.sportEmoji,
+                          style: const TextStyle(fontSize: 26)),
+                    ))
+          else
+            Container(
+              height: 78,
+              width: double.infinity,
+              color: AppColors.brandBlue.withValues(alpha: 0.12),
+              alignment: Alignment.center,
+              child: Text(item.sportEmoji, style: const TextStyle(fontSize: 26)),
+            ),
+          Padding(
+            padding: const EdgeInsets.all(8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(item.title,
+                    style: const TextStyle(
+                        fontSize: 12, fontWeight: FontWeight.w700),
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis),
+                const SizedBox(height: 4),
+                Text(item.source,
+                    style: TextStyle(
+                        fontSize: 10,
+                        color: isDark ? Colors.white54 : Colors.black45),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── Teams ─────────────────────────────────────────────────────────────────
+  Widget _buildTeamsTab(bool isDark) {
+    final teams = <String>[];
+    String team = _pick(['team', 'currentTeam', 'nationalTeam'], _profile);
+    if (team.isNotEmpty) teams.add(team);
+    team = _pick(['team'], _basic);
+    if (team.isNotEmpty && !teams.contains(team)) teams.add(team);
+    team = widget.extra?['team']?.toString() ?? '';
+    if (team.isNotEmpty && !teams.contains(team)) teams.add(team);
+    team = _espnProfile?['team']?.toString() ?? '';
+    if (team.isNotEmpty && !teams.contains(team)) teams.add(team);
+
+    if (teams.isEmpty) {
+      return const Center(
+        child: Text('No team info available.',
+            style: TextStyle(color: Colors.grey)),
+      );
+    }
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        _sectionTitle('CURRENT TEAMS'),
+        for (final t in teams)
+          Container(
             margin: const EdgeInsets.only(bottom: 8),
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
               color: isDark ? AppColors.darkCard : Colors.white,
+              border: Border.all(color: Colors.grey.withValues(alpha: 0.12)),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Row(
               children: [
-                Text(
-                  f.toUpperCase(),
-                  style: const TextStyle(
-                      fontWeight: FontWeight.w800, fontSize: 13),
+                TeamLogo(name: t, url: null, size: 38),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(t,
+                      style: const TextStyle(
+                          fontSize: 14, fontWeight: FontWeight.w700)),
                 ),
-                const SizedBox(height: 6),
-                Wrap(
-                  spacing: 10,
-                  runSpacing: 6,
-                  children: rows.entries.take(10).map((e) {
-                    final label = e.key
-                        .replaceAll('_', ' ')
-                        .replaceAll(RegExp(r'\s+'), ' ')
-                        .trim()
-                        .split(' ')
-                        .map((w) =>
-                            w.isEmpty ? w : w[0].toUpperCase() + w.substring(1))
-                        .join(' ');
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(label,
-                            style: const TextStyle(
-                                fontSize: 10, color: Colors.grey)),
-                        Text(e.value,
-                            style: const TextStyle(
-                                fontSize: 13, fontWeight: FontWeight.w700)),
-                      ],
-                    );
-                  }).toList(),
-                ),
+                const Icon(Icons.chevron_right,
+                    size: 18, color: Colors.grey),
               ],
             ),
-          );
-        }),
+          ),
       ],
     );
   }
 
-  // Recent matches — real cricbuzz data: {id, batting, bowling, opponent,
-  // format, date} — rendered Crex-style (date chip + format + scores).
-  Widget _buildRecentMatches(List recent, bool isDark) {
-    final cellBg = isDark ? AppColors.darkCard : Colors.white;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+  // ── Achievements: timeline built from real rank + bio milestones ─────────
+  Widget _buildAchievementsTab(bool isDark) {
+    final milestones = <MapEntry<String, String>>[];
+    if (_rank != null) {
+      milestones.add(MapEntry(
+        'World Rankings',
+        'Currently ranked #$_rank in the world'
+            '${_rating != null ? ' with rating $_rating' : ''}.',
+      ));
+    }
+    final bio = _bio;
+    if (bio.isNotEmpty) {
+      // Pull real bio sentences that carry milestone keywords + a year.
+      final sentences = bio
+          .split(RegExp(r'(?<=[.!?])\s+'))
+          .where((s) => RegExp(r'(19|20)\d{2}').hasMatch(s) &&
+              RegExp(r'debut|won|named|record|award|selected|first|beat|captain|scored|took', caseSensitive: false)
+                  .hasMatch(s))
+          .take(4)
+          .toList();
+      for (final s in sentences) {
+        final year = RegExp(r'(19|20)\d{2}').firstMatch(s)?.group(0) ?? '';
+        milestones.add(MapEntry(
+          year.isNotEmpty ? year : 'Career',
+          s.replaceAll(RegExp(r'\s+'), ' ').trim(),
+        ));
+      }
+    }
+    if (milestones.isEmpty) {
+      return const Center(
+        child: Text('No achievement milestones available.',
+            style: TextStyle(color: Colors.grey)),
+      );
+    }
+    return ListView(
+      padding: const EdgeInsets.all(16),
       children: [
-        const SizedBox(height: 16),
-        const Text('RECENT MATCHES',
-            style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w800,
-                color: AppColors.brandBlue)),
-        const SizedBox(height: 8),
-        for (var i = 0; i < recent.length; i++) ...[
-          if (i > 0) const SizedBox(height: 6),
-          _recentMatchCard(recent[i], cellBg, isDark),
-        ],
+        _sectionTitle('CAREER HIGHLIGHTS'),
+        for (var i = 0; i < milestones.length; i++)
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Column(
+                children: [
+                  Container(
+                    width: 34,
+                    height: 34,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                          colors: [Color(0xFFF093FB), Color(0xFFF5576C)]),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                        i == 0 ? Icons.emoji_events : Icons.stars,
+                        size: 15,
+                        color: Colors.white),
+                  ),
+                  if (i < milestones.length - 1)
+                    Container(
+                      width: 2,
+                      height: 42,
+                      color: isDark ? Colors.white12 : Colors.grey.shade300,
+                    ),
+                ],
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Padding(
+                  padding: EdgeInsets.only(bottom: i < milestones.length - 1 ? 22 : 0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(milestones[i].key.toUpperCase(),
+                          style: const TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w800,
+                              color: AppColors.brandBlue,
+                              letterSpacing: 0.5)),
+                      const SizedBox(height: 3),
+                      Text(milestones[i].value,
+                          style: TextStyle(
+                              fontSize: 13,
+                              height: 1.4,
+                              color: isDark ? Colors.white70 : Colors.black54)),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
       ],
     );
   }
 
-  Widget _recentMatchCard(dynamic m, Color cellBg, bool isDark) {
+  // ── Reused helpers (recent matches / tables / espn / ranking) ────────────
+  Widget _recentMatchCard(dynamic m, bool isDark) {
     final batting = m is Map ? (m['batting']?.toString() ?? '') : '';
     final bowling = m is Map ? (m['bowling']?.toString() ?? '') : '';
     final opponent = m is Map ? (m['opponent']?.toString() ?? '') : '';
@@ -531,7 +1005,7 @@ class _PlayerDetailScreenState extends State<PlayerDetailScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         decoration: BoxDecoration(
-          color: cellBg,
+          color: isDark ? AppColors.darkCard : Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: Colors.grey.withValues(alpha: 0.12)),
         ),
@@ -596,8 +1070,7 @@ class _PlayerDetailScreenState extends State<PlayerDetailScreen> {
             ),
             const SizedBox(width: 4),
             Icon(Icons.chevron_right,
-                size: 18,
-                color: isDark ? Colors.white30 : Colors.grey.shade400),
+                size: 18, color: isDark ? Colors.white30 : Colors.grey.shade400),
           ],
         ),
       ),
@@ -614,10 +1087,7 @@ class _PlayerDetailScreenState extends State<PlayerDetailScreen> {
     var teamA = 'Team A';
     var teamB = 'Team B';
     var series = format.isNotEmpty ? format : 'Match';
-    final segments = url
-        .split('/')
-        .where((s) => s.isNotEmpty)
-        .toList();
+    final segments = url.split('/').where((s) => s.isNotEmpty).toList();
     if (segments.isNotEmpty) {
       final slug = segments.last;
       final parts = slug.split('-').where((s) => s.isNotEmpty).toList();
@@ -655,14 +1125,11 @@ class _PlayerDetailScreenState extends State<PlayerDetailScreen> {
     );
   }
 
-// Cricbuzz career table: {headers:['ROWHEADER','Test','ODI',...],
-  // values:[{values:['Matches','123','314',...]}, ...]} — falls back to the
-  // legacy per-format map renderer when the shape doesn't match.
   Widget _buildCricbuzzTable(String title, Map stats, bool isDark) {
     final headers = stats['headers'];
     final values = stats['values'];
     if (headers is! List || values is! List || values.isEmpty) {
-      return _buildFormatStats(title, stats, isDark);
+      return const SizedBox.shrink();
     }
     final cols = headers.map((h) => h?.toString() ?? '').toList();
     final data = <List<String>>[];
@@ -675,7 +1142,6 @@ class _PlayerDetailScreenState extends State<PlayerDetailScreen> {
     if (data.isEmpty) return const SizedBox.shrink();
     final labelCol = cols.isNotEmpty ? cols[0] : '';
     final fmtCols = cols.length > 1 ? cols.sublist(1) : <String>[];
-    final cellBg = isDark ? AppColors.darkCard : Colors.white;
     final labelStyle = TextStyle(
         fontSize: 10,
         fontWeight: FontWeight.w700,
@@ -687,143 +1153,124 @@ class _PlayerDetailScreenState extends State<PlayerDetailScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(height: 16),
-        Text(title,
-            style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w800,
-                color: AppColors.brandBlue)),
-        const SizedBox(height: 8),
+        _sectionTitle(title.toUpperCase()),
         ClipRRect(
           borderRadius: BorderRadius.circular(12),
           child: Container(
             decoration: BoxDecoration(
               border: Border.all(color: Colors.grey.withValues(alpha: 0.15)),
-              color: cellBg,
+              color: isDark ? AppColors.darkCard : Colors.white,
             ),
             child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: DataTable(
-              headingRowColor: WidgetStatePropertyAll(
-                  AppColors.brandBlue.withValues(alpha: 0.08)),
-              columnSpacing: 16,
-              horizontalMargin: 12,
-              dataRowMinHeight: 32,
-              columns: [
-                DataColumn(label: Text(labelCol, style: labelStyle)),
-                ...fmtCols.map((c) => DataColumn(
-                    label: Text(c, style: labelStyle),
-                    numeric: true)),
-              ],
-              rows: data.map((r) {
-                return DataRow(cells: [
-                  for (var i = 0; i < cols.length; i++)
-                    DataCell(Text(
-                      i < r.length ? r[i] : '',
-                      style: i == 0 ? labelStyle : valStyle,
-                      textAlign: i == 0 ? TextAlign.left : TextAlign.right,
-                    )),
-                ]);
-              }).toList(),
+              scrollDirection: Axis.horizontal,
+              child: DataTable(
+                headingRowColor: WidgetStatePropertyAll(
+                    AppColors.brandBlue.withValues(alpha: 0.08)),
+                columnSpacing: 16,
+                horizontalMargin: 12,
+                dataRowMinHeight: 32,
+                columns: [
+                  DataColumn(label: Text(labelCol, style: labelStyle)),
+                  ...fmtCols.map((c) => DataColumn(
+                      label: Text(c, style: labelStyle), numeric: true)),
+                ],
+                rows: data.map((r) {
+                  return DataRow(cells: [
+                    for (var i = 0; i < cols.length; i++)
+                      DataCell(Text(
+                        i < r.length ? r[i] : '',
+                        style: i == 0 ? labelStyle : valStyle,
+                        textAlign:
+                            i == 0 ? TextAlign.left : TextAlign.right,
+                      )),
+                  ]);
+                }).toList(),
+              ),
             ),
           ),
-        ),
         ),
       ],
     );
   }
 
-  String _profileBio(Map profile) {
-    for (final k in ['bio', 'description', 'about', 'longBio', 'introduction']) {
-      final v = profile[k];
-      if (v != null && v.toString().trim().isNotEmpty) return v.toString();
-    }
-    return '';
-  }
-
-  Widget _buildStatGrid(List<MapEntry<String, String>> entries, bool isDark) {
-    return GridView.count(
-      crossAxisCount: 2,
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      mainAxisSpacing: 8,
-      crossAxisSpacing: 8,
-      childAspectRatio: 2.6,
-      children: entries
-          .map((e) => Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  color: isDark ? AppColors.darkCard : Colors.white,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      e.key,
-                      style:
-                          const TextStyle(fontSize: 10, color: Colors.grey),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      e.value,
-                      style: const TextStyle(
-                          fontSize: 15, fontWeight: FontWeight.w800),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ),
-              ))
-          .toList(),
+  Widget _buildEspnSection(Map espn, bool isDark) {
+    final statEntries = <MapEntry<String, String>>[];
+    widget.extra?.forEach((k, v) {
+      if (_skipKeys.contains(k)) return;
+      if (v == null) return;
+      final s = v.toString();
+      if (s.isEmpty) return;
+      final pretty = k
+          .replaceAll('_', ' ')
+          .replaceAll(RegExp(r'\s+'), ' ')
+          .trim()
+          .split(' ')
+          .map((w) => w.isEmpty ? w : w[0].toUpperCase() + w.substring(1))
+          .join(' ');
+      statEntries.add(MapEntry(pretty, s));
+    });
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        _sectionTitle('SEASON STATS'),
+        if (statEntries.isNotEmpty)
+          GridView.count(
+            crossAxisCount: 3,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            mainAxisSpacing: 8,
+            crossAxisSpacing: 8,
+            childAspectRatio: 1.15,
+            children: statEntries
+                .take(12)
+                .map((e) => _statCard(e.key, e.value, isDark))
+                .toList(),
+          )
+        else
+          const Text('No season stats available.',
+              style: TextStyle(color: Colors.grey)),
+      ],
     );
   }
 
-  // NBA / MLB / NHL — real ESPN athlete bio + season stats from rankings.
-  Widget _buildEspnSection(Map espn, List<MapEntry<String, String>> statEntries,
-      bool isDark) {
-    final league = (espn['league'] ?? '').toString().toUpperCase();
-    final team = widget.extra?['team']?.toString() ?? '';
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildRankingSnapshot(bool isDark) {
+    final extra = widget.extra ?? <String, dynamic>{};
+    final stats = <MapEntry<String, String>>[];
+    String? val(String k) {
+      final v = extra[k];
+      if (v == null) return null;
+      final s = v.toString().trim();
+      if (s.isEmpty || s == '0') return null;
+      return s;
+    }
+
+    final rank = extra['rank']?.toString();
+    if (rank != null && rank.isNotEmpty && rank != '0') {
+      stats.add(MapEntry('Rank', '#$rank'));
+    }
+    for (final k in ['rating', 'points', 'matches', 'runs', 'wkts', 'avg', 'econ']) {
+      final v = val(k);
+      if (v != null) stats.add(MapEntry(k.toUpperCase(), v));
+    }
+    if (stats.isEmpty) {
+      return const Center(
+        child: Text('No ranking stats available for this player.',
+            style: TextStyle(color: Colors.grey)),
+      );
+    }
+    return ListView(
+      padding: const EdgeInsets.all(16),
       children: [
-        Text('$league PLAYER',
-            style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w800,
-                color: AppColors.brandBlue)),
-        const SizedBox(height: 8),
-        _InfoTile('Position', (espn['position'] ?? '—').toString()),
-        _InfoTile('Team', team.isNotEmpty ? team : '—'),
-        _InfoTile('Height', (espn['height'] ?? '—').toString()),
-        _InfoTile('Weight', (espn['weight'] ?? '—').toString()),
-        if (espn['age'] != null) _InfoTile('Age', espn['age'].toString()),
-        if (espn['jersey'] != null && espn['jersey'].toString().isNotEmpty)
-          _InfoTile('Jersey', espn['jersey'].toString()),
-        if (espn['experience'] != null &&
-            espn['experience'].toString().isNotEmpty)
-          _InfoTile('Experience', espn['experience'].toString()),
-        if (espn['debutYear'] != null &&
-            espn['debutYear'].toString().isNotEmpty)
-          _InfoTile('Debut Year', espn['debutYear'].toString()),
-        if (espn['draft'] != null && espn['draft'].toString().isNotEmpty)
-          _InfoTile('Draft', espn['draft'].toString()),
-        if (espn['birthPlace'] != null &&
-            espn['birthPlace'].toString().isNotEmpty)
-          _InfoTile('Birth Place', espn['birthPlace'].toString()),
-        if (statEntries.isNotEmpty) ...[
-          const SizedBox(height: 14),
-          const Text('SEASON STATS',
-              style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.brandBlue)),
-          const SizedBox(height: 8),
-          _buildStatGrid(statEntries, isDark),
-        ],
+        _sectionTitle('RANKING'),
+        GridView.count(
+          crossAxisCount: 3,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          mainAxisSpacing: 8,
+          crossAxisSpacing: 8,
+          childAspectRatio: 1.15,
+          children: stats.map((e) => _statCard(e.key, e.value, isDark)).toList(),
+        ),
       ],
     );
   }
@@ -841,197 +1288,17 @@ class _PlayerDetailScreenState extends State<PlayerDetailScreen> {
         .trim();
   }
 
-  // Real ICC ranking snapshot shown when no linked full-career profile
-  // (pid) is available. Uses the genuine ranking data we already have.
-  Widget _buildRankingSnapshot(bool isDark) {
-    final extra = widget.extra ?? <String, dynamic>{};
-    final stats = <MapEntry<String, String>>[];
-    String? val(String k) {
-      final v = extra[k];
-      if (v == null) return null;
-      final s = v.toString().trim();
-      if (s.isEmpty || s == '0') return null;
-      return s;
-    }
-
-    final rank = extra['rank']?.toString();
-    if (rank != null && rank.isNotEmpty && rank != '0') {
-      stats.add(MapEntry('ICC Rank', '#$rank'));
-    }
-    final rating = val('rating');
-    if (rating != null) stats.add(MapEntry('Rating', rating));
-    final points = val('points');
-    if (points != null) stats.add(MapEntry('Points', points));
-    final matches = val('matches');
-    if (matches != null) stats.add(MapEntry('Matches', matches));
-    final runs = val('runs');
-    if (runs != null) stats.add(MapEntry('Runs', runs));
-    final wkts = val('wkts');
-    if (wkts != null) stats.add(MapEntry('Wickets', wkts));
-    final avg = val('avg');
-    if (avg != null) stats.add(MapEntry('Average', avg));
-    final econ = val('econ');
-    if (econ != null) stats.add(MapEntry('Economy', econ));
-    final format = extra['format']?.toString();
-    if (format != null && format.isNotEmpty) {
-      stats.add(MapEntry('Format', format));
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text('ICC RANKING',
-            style: TextStyle(
-                fontSize: 14, fontWeight: FontWeight.w800, color: AppColors.brandBlue)),
-        const SizedBox(height: 8),
-        if (stats.isEmpty)
-          const Text('No ranking stats available for this player.',
-              style: TextStyle(color: Colors.grey))
-        else
-          GridView.count(
-            crossAxisCount: 2,
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            mainAxisSpacing: 8,
-            crossAxisSpacing: 8,
-            childAspectRatio: 2.6,
-            children: stats
-                .map((e) => Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        color: isDark ? AppColors.darkCard : Colors.white,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(e.key,
-                              style: const TextStyle(fontSize: 10, color: Colors.grey)),
-                          const SizedBox(height: 2),
-                          Text(e.value,
-                              style: const TextStyle(
-                                  fontSize: 15, fontWeight: FontWeight.w800)),
-                        ],
-                      ),
-                    ))
-                .toList(),
-          ),
-        const SizedBox(height: 8),
-        Text(
-          'Full career stats, recent matches and bio load automatically when a '
-          'player profile is linked. Tap a player from a live match scorecard '
-          'to open the complete Crex-style breakdown.',
-          style: TextStyle(
-              fontSize: 11, color: isDark ? Colors.white54 : Colors.black45),
-        ),
-      ],
-    );
-  }
-
-  Widget _NewsCard({required NewsItem item, required bool isDark}) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        color: isDark ? AppColors.darkCard : Colors.white,
-        border: Border.all(color: Colors.grey.withValues(alpha: 0.12)),
-      ),
-      child: Row(
-        children: [
-          if (item.image != null && item.image!.isNotEmpty)
-            ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: Image.network(item.image!,
-                  width: 64, height: 64, fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => _newsThumb(item)),
-            )
-          else
-            _newsThumb(item),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: AppColors.brandBlue.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Text(item.tag,
-                      style: const TextStyle(
-                          fontSize: 9,
-                          fontWeight: FontWeight.w800,
-                          color: AppColors.brandBlue,
-                          letterSpacing: 0.4)),
-                ),
-                const SizedBox(height: 6),
-                Text(item.title,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.w700, fontSize: 13),
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis),
-                const SizedBox(height: 4),
-                Text(item.source,
-                    style: TextStyle(
-                        fontSize: 11,
-                        color: isDark ? Colors.white60 : Colors.black45)),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _newsThumb(NewsItem item) {
-    return Container(
-      width: 64,
-      height: 64,
-      decoration: BoxDecoration(
-        color: AppColors.brandBlue.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Center(
-        child: Text(item.sportEmoji, style: const TextStyle(fontSize: 26)),
-      ),
-    );
-  }
-
-
-  Widget _InfoTile(String label, String value) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        color: isDark ? AppColors.darkCard : Colors.white,
-        border: Border.all(color: Colors.grey.withValues(alpha: 0.1)),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(
-              label,
-              style: const TextStyle(fontSize: 13, color: Colors.grey),
-            ),
-          ),
-          Flexible(
-            child: Text(
-              value,
-              textAlign: TextAlign.right,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                  fontSize: 14, fontWeight: FontWeight.w700),
-            ),
-          ),
-        ],
-      ),
-    );
+  String _flagFor(String country) {
+    const map = {
+      'India': '🇮🇳', 'Australia': '🇦🇺', 'England': '🏴󠁧󠁢󠁥󠁮󠁧󠁿',
+      'South Africa': '🇿🇦', 'New Zealand': '🇳🇿', 'Pakistan': '🇵🇰',
+      'Sri Lanka': '🇱🇰', 'Bangladesh': '🇧🇩', 'Afghanistan': '🇦🇫',
+      'West Indies': '🏳️', 'Ireland': '🇮🇪', 'Zimbabwe': '🇿🇼',
+      'United States': '🇺🇸', 'USA': '🇺🇸', 'Canada': '🇨🇦',
+      'Germany': '🇩🇪', 'France': '🇫🇷', 'Spain': '🇪🇸', 'Italy': '🇮🇹',
+      'Brazil': '🇧🇷', 'Argentina': '🇦🇷', 'Japan': '🇯🇵', 'China': '🇨🇳',
+      'Netherlands': '🇳🇱', 'Scotland': '🏴󠁧󠁢󠁳󠁣󠁴󠁿',
+    };
+    return map[country] ?? '';
   }
 }
-

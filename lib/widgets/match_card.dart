@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../data.dart';
 import '../theme.dart';
 import '../screens/match_detail_screen.dart';
+import 'team_logo.dart';
 
 class MatchCard extends StatelessWidget {
   final MatchItem match;
@@ -156,21 +157,8 @@ class MatchCard extends StatelessWidget {
       child: Row(
         textDirection: isRight ? TextDirection.rtl : TextDirection.ltr,
         children: [
-          // Logo
-          Container(
-            width: 32, height: 32,
-            decoration: BoxDecoration(
-              color: Colors.grey.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: logo != null && logo.isNotEmpty
-                ? ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.network(logo, width: 32, height: 32, fit: BoxFit.contain,
-                        errorBuilder: (_, _, _) => _defaultIcon()),
-                  )
-                : _defaultIcon(),
-          ),
+          // Logo (with Wikipedia fallback when missing)
+          TeamLogo(name: name, url: logo, size: 32),
           const SizedBox(width: 10),
           // Name + overs
           Expanded(
@@ -202,7 +190,5 @@ class MatchCard extends StatelessWidget {
     );
   }
 
-  Widget _defaultIcon() {
-    return const Icon(Icons.sports, size: 18, color: Color(0xFF64748B));
-  }
+
 }

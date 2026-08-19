@@ -12,6 +12,7 @@ import '../screens/team_matches_screen.dart';
 
 import '../screens/player_detail_screen.dart';
 import '../screens/match_detail_screen.dart';
+import '../screens/tournament_stats_screen.dart';
 
 class SportsScreen extends StatefulWidget {
   final Locale locale;
@@ -241,10 +242,25 @@ class _SportsScreenState extends State<SportsScreen> with WidgetsBindingObserver
                         live: _matches.any((m) =>
                             (m.series.isNotEmpty ? m.series : 'Other') == tn &&
                             m.status == 'LIVE'),
-                        onTap: () => setState(() => _selectedTournament = tn),
+                        onTap: () {
+                          setState(() => _selectedTournament = tn);
+                          Navigator.of(context).push(MaterialPageRoute(
+                            builder: (_) => TournamentStatsScreen(
+                              tournament: tn,
+                              sportKey: _selectedSport,
+                              allMatches: _matches,
+                            ),
+                          ));
+                        },
                       )),
                 ],
               ),
+            ),
+          if (_selectedTournament != 'all')
+            TournamentStatsPanel(
+              tournament: _selectedTournament,
+              sportKey: _selectedSport,
+              allMatches: _matches,
             ),
           Expanded(
             child: RefreshIndicator(

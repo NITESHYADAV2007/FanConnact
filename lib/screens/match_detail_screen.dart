@@ -13,6 +13,7 @@ import '../services/news_service.dart';
 import '../services/cricket_hub_service.dart';
 import '../services/match_discussion_service.dart';
 import '../widgets/glow_wrapper.dart';
+import '../widgets/team_logo.dart';
 import '../widgets/match_games.dart';
 import '../widgets/sports_animation_overlay.dart';
 import '../widgets/sport_match_center.dart';
@@ -186,26 +187,24 @@ class _MatchDetailScreenState extends State<MatchDetailScreen>
     }
   }
 
-  Widget _teamLogo(String? logo, {double size = 52}) {
-    if (logo != null && logo.isNotEmpty) {
-      return GlowWrapper(
-        glowColor: AppColors.brandBlue,
-        glowBlur: 12,
-        glowSpread: 1,
+  Widget _teamLogo(String? logo, {double size = 52, String name = ''}) {
+    final fallback = name.isNotEmpty
+        ? TeamLogo(name: name, url: logo, size: size)
+        : (logo != null && logo.isNotEmpty)
+            ? TeamLogo(name: name, url: logo, size: size)
+            : Icon(Icons.sports, size: size * 0.7);
+    return GlowWrapper(
+      glowColor: AppColors.brandBlue,
+      glowBlur: 12,
+      glowSpread: 1,
+      borderRadius: BorderRadius.circular(10),
+      child: ClipRRect(
         borderRadius: BorderRadius.circular(10),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(10),
-          child: Image.network(
-            logo,
-            width: size,
-            height: size,
-            fit: BoxFit.contain,
-            errorBuilder: (_, _, _) => Icon(Icons.sports, size: size * 0.7),
-          ),
-        ),
-      );
-    }
-    return Icon(Icons.sports, size: size * 0.7);
+        child: name.isNotEmpty
+            ? TeamLogo(name: name, url: logo, size: size)
+            : fallback,
+      ),
+    );
   }
 
   @override
@@ -374,7 +373,7 @@ class _CricketScoreHeader extends StatelessWidget {
   final MatchItem match;
   final bool live;
   final Color statusColor;
-  final Widget Function(String?, {double size}) teamLogo;
+  final Widget Function(String?, {double size, String name}) teamLogo;
 
   const _CricketScoreHeader({
     required this.isDark,
@@ -557,7 +556,7 @@ class _CricketScoreHeader extends StatelessWidget {
 class _CricketTeamScore extends StatelessWidget {
   final MatchItem match;
   final bool side;
-  final Widget Function(String?, {double size}) teamLogo;
+  final Widget Function(String?, {double size, String name}) teamLogo;
   const _CricketTeamScore({required this.match, required this.side, required this.teamLogo});
 
   @override
@@ -569,7 +568,7 @@ class _CricketTeamScore extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        teamLogo(logo, size: 56),
+        teamLogo(logo, size: 56, name: name),
         const SizedBox(height: 6),
         Text(
           abbr != null && abbr.isNotEmpty ? abbr : name,

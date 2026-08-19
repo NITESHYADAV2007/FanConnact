@@ -4581,10 +4581,26 @@ async function enrichWithLogos(sportKey, matches) {
 // tennis, hockey, volleyball, golf, mma, kabaddi, tabletennis, esports rows).
 // Results cached in-memory forever; bounded to 15 lookups per refresh so the
 // free tier rate limit is never hammered.
-const _tsdbLogo = new Map(); // team name -> logo url
-async function tsdbTeamLogo(name) {
+const _tsdbLogo = new Map(); // sport|name -> logo url
+// TheSportsDB strSport per app sport key — prevents cross-sport logo theft
+// (e.g. cricket "India" must never get the football badge).
+const TSB_SPORT = {
+  cricket: "Cricket",
+  football: "American Football",
+  basketball: "Basketball",
+  baseball: "Baseball",
+  hockey: "Ice Hockey",
+  volleyball: "Volleyball",
+  tennis: "Tennis",
+  rugby: "Rugby",
+  golf: "Golf",
+  mma: "Boxing",
+  tabletennis: "Table Tennis",
+};
+async function tsdbTeamLogo(name, sportKey) {
   if (!name || name === "TBD") return "";
-  if (_tsdbLogo.has(name)) return _tsdbLogo.get(name);
+  const cacheKey = (sportKey || "") + "|" + name;
+  if (_tsdbLogo.has(cacheKey)) return _tsdbLogo.get(cacheKey);
   try {
     const q = encodeURIComponent(name.replace(/[^a-zA-Z0-9 ]/g, "").trim().slice(0, 30));
     const r = await fetch(`https://www.thesportsdb.com/api/v1/json/3/searchteams.php?t=${q}`, {
@@ -4592,17 +4608,19 @@ async function tsdbTeamLogo(name) {
     });
     const j = await r.json().catch(() => null);
     const teams = (j && j.teams) || [];
-    const exact = teams.find((t) => (t.strTeam || "").toLowerCase() === name.toLowerCase());
-    const t = exact || teams[0] || {};
+    const want = (TSB_SPORT[sportKey] || "").toLowerCase();
+    const sameSport = want ? teams.filter((t) => ((t.strSport || "").toLowerCase() === want)) : teams;
+    const exact = sameSport.find((t) => (t.strTeam || "").toLowerCase() === name.toLowerCase());
+    const t = exact || sameSport[0] || {};
     const logo = (t.strTeamBadge || t.strTeamLogo || t.strBadge || "") || "";
-    _tsdbLogo.set(name, logo);
+    _tsdbLogo.set(cacheKey, logo);
     return logo;
   } catch (e) {
-    _tsdbLogo.set(name, "");
+    _tsdbLogo.set(cacheKey, "");
     return "";
   }
 }
-async function fillMissingLogos(matches) {
+async function fillMissingLogos(matches, sportKey) {
   if (!matches || !matches.length) return matches;
   const missing = new Set();
   for (const m of matches) {
@@ -4612,7 +4630,7 @@ async function fillMissingLogos(matches) {
   if (!missing.size) return matches;
   const batch = [...missing].slice(0, 24);
   const logos = {};
-  await Promise.all(batch.map(async (name) => { logos[name] = await tsdbTeamLogo(name); }));
+  await Promise.all(batch.map(async (name) => { logos[name] = await tsdbTeamLogo(name, sportKey); }));
   return matches.map((m) => ({
     ...m,
     homeLogo: m.homeLogo || logos[m.homeName] || "",
@@ -5193,6 +5211,80 @@ async function fetchReelViaFetchSocial(url) {
   }
 }
 
+// Keyless fallback: real short sports videos from Dailymotion (no quota, no
+// key). Used whenever FetchSocial 429s or returns nothing, so the feed is
+// never empty. Search API + per-video metadata (HLS/mp4) are both public.
+const _dmReelsCache = new Map(); // sport -> {ts, list}
+const DM_SPORT_Q = {
+  all: "sports",
+  cricket: "cricket",
+  football: "football",
+  basketball: "basketball",
+  baseball: "baseball",
+  hockey: "hockey",
+  tennis: "tennis",
+  volleyball: "volleyball",
+  kabaddi: "kabaddi",
+  esports: "esports",
+  tabletennis: "tabletennis",
+  rugby: "rugby",
+};
+async function fetchDailymotionReels(sport) {
+  const key = sport || "all";
+  const hit = _dmReelsCache.get(key);
+  if (hit && Date.now() - hit.ts < 15 * 60 * 1000) return hit.list;
+  const q = DM_SPORT_Q[key] || "sports";
+  let searchResults = [];
+  try {
+    const url = `https://api.dailymotion.com/videos?fields=id,title,thumbnail_360_url,thumbnail_480_url,created_time,views_total,duration,embed_url,owner.screenname&sort=recent&search=${encodeURIComponent(q)}&limit=25`;
+    const r = await fetch(url, { signal: AbortSignal.timeout(15000) });
+    if (!r.ok) throw new Error("dailymotion " + r.status);
+    const j = await r.json();
+    searchResults = (j.list || []).filter(
+      (v) => v && v.id && v.duration && v.duration >= 5 && v.duration <= 90
+    );
+  } catch (e) {
+    console.error("Dailymotion search failed for", key, e.message);
+  }
+  const out = [];
+  const batch = searchResults.slice(0, 10);
+  const metas = await Promise.allSettled(batch.map(async (v) => {
+    try {
+      const m = await fetch(`https://www.dailymotion.com/player/metadata/video/${v.id}`, {
+        signal: AbortSignal.timeout(12000),
+      });
+      const md = await m.json();
+      const quals = md.qualities || {};
+      const entry = ["720", "480", "380", "240", "auto"]
+        .map((k) => quals[k] && quals[k][0])
+        .find((x) => x && x.url);
+      return { v, url: entry ? entry.url : "" };
+    } catch (_) {
+      return { v, url: "" };
+    }
+  }));
+  for (const res of metas) {
+    const { v, url } = res.status === "fulfilled" ? res.value : { v: null, url: "" };
+    if (!v || !url) continue;
+    out.push({
+      code: String(v.id),
+      type: 2,
+      caption: (v.title || "").replace(/&amp;/g, "&"),
+      likeCount: 0,
+      commentCount: 0,
+      viewCount: v.views_total || 0,
+      takenAt: v.created_time || Math.floor(Date.now() / 1000),
+      videoUrl: url,
+      imageUrl: (v.thumbnail_480_url || v.thumbnail_360_url || "").replace(/&amp;/g, "&"),
+      link: v.embed_url || "",
+      source: "dailymotion",
+      user: { username: v["owner.screenname"] || "Dailymotion", avatar: "" },
+    });
+  }
+  _dmReelsCache.set(key, { ts: Date.now(), list: out });
+  return out;
+}
+
 app.get("/api/reels", async (req, res) => {
   try {
     const sport = (req.query.sport || "all").toString();
@@ -5222,14 +5314,25 @@ app.get("/api/reels", async (req, res) => {
       seen.add(k);
       return true;
     });
+    let source = "fetchsocial";
     if (reels.length === 0) {
-      if (last && Array.isArray(last.reels)) reels = last.reels;
-    } else {
-      storeLast("reels", sport, { source: "fetchsocial", sport, count: reels.length, reels });
+      // Fallback 1: persisted feed (still fresh enough to show).
+      if (last && Array.isArray(last.reels) && last.reels.length) {
+        reels = last.reels;
+        source = last.source || "fetchsocial";
+      }
+    }
+    if (reels.length === 0) {
+      // Fallback 2: keyless Dailymotion short videos — always real content.
+      reels = await fetchDailymotionReels(sport);
+      source = "dailymotion";
+      if (reels.length) storeLast("reels", sport, { source, sport, count: reels.length, reels });
+    } else if (source === "fetchsocial") {
+      storeLast("reels", sport, { source, sport, count: reels.length, reels });
     }
     const start = page * pageSize;
     const slice = reels.slice(start, start + pageSize);
-    res.json({ source: "fetchsocial", sport, count: slice.length, page, pageSize, total: reels.length, hasMore: start + pageSize < reels.length, reels: slice, cached: reels.length === 0 && !!last });
+    res.json({ source, sport, count: slice.length, page, pageSize, total: reels.length, hasMore: start + pageSize < reels.length, reels: slice, cached: reels.length === 0 && !!last });
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
@@ -5893,12 +5996,12 @@ app.get("/api/live-matches", async (req, res) => {
         const cricket = await fetchCricbuzzLive();
         const others = await fetchAllSportsForAll();
         results = [...cricket, ...others];
-        results = await fillMissingLogos(results);
+        results = await fillMissingLogos(results, "all");
       } else if (sport === "cricket") {
         // Cricket data from cricbuzz-cricket (live + upcoming + recent) — the
         // only cricket API with a key in .env.
         results = await fetchCricbuzzLive();
-        results = await fillMissingLogos(results);
+        results = await fillMissingLogos(results, "cricket");
       } else {
         // FlashLive (real, with logos) for football + the sports allsportsapi2
         // doesn't cover (volleyball, kabaddi, table-tennis, esports, rugby,
@@ -5907,7 +6010,7 @@ app.get("/api/live-matches", async (req, res) => {
         results = slug && slug.length ? slug : [];
         if (!results.length) results = staticMatchesFor(sport);
         results = await enrichWithLogos(sport, results);
-        results = await fillMissingLogos(results);
+        results = await fillMissingLogos(results, sport);
       }
     }
     if (results.length === 0) {
