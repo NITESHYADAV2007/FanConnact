@@ -10,6 +10,7 @@ import '../theme.dart';
 import '../l10n.dart';
 import '../services/reels_service.dart';
 import '../services/live_match_service.dart';
+import '../services/ad_service.dart';
 import '../services/currents_service.dart';
 import '../widgets/reels_card.dart';
 import '../widgets/live_score_card.dart';
@@ -47,7 +48,7 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   String? _langOverride;
   String _feedSport = 'all';
 
@@ -81,6 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _headlineCtrl = PageController();
     _loadAll();
     _startPolling();
@@ -89,10 +91,21 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _polling = false;
     _headlineTimer?.cancel();
     _headlineCtrl.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // App reopened from background: silently refresh everything in the
+    // background so the user always sees real, current data — no spinner.
+    if (state == AppLifecycleState.resumed) {
+      _loadAll(silent: true);
+      AdService.maybeShowInterstitial();
+    }
   }
 
   void _startPolling() {
@@ -120,7 +133,7 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  Future<void> _loadAll() async {
+  Future<void> _loadAll({bool silent = false}) async {
     // Warm up the Render backend (wakes from free-tier sleep).
     try { await http.get(Uri.parse('$apiBaseUrl/api/live-matches?sport=all')).timeout(const Duration(seconds: 5)); } catch (_) {}
     // Hydrate disk caches first so UI shows data immediately on cold start.
@@ -142,15 +155,19 @@ class _HomeScreenState extends State<HomeScreen> {
     // Fire all fresh network fetches in parallel.
     // Reels load uses current _feedSport so filter takes effect on refresh.
     await Future.wait([
-      _loadMatches(),
-      _loadReels(reset: true),
+      _loadMatches(silent: silent),
+      _loadReels(reset: true, silent: silent),
       _loadHeadlines(),
     ]);
   }
 
-  Future<void> _loadMatches() async {
+  Future<void> _loadMatches({bool silent = false}) async {
     if (!mounted) return;
-    setState(() => _loadingMatches = true);
+    // Show the spinner only on a cold load; silent refreshes (app resume,
+    // polling) keep whatever is on screen until fresh data replaces it.
+    if (!silent || _matches.isEmpty) {
+      setState(() => _loadingMatches = true);
+    }
     final fetched = LiveMatchService.fetchLiveMatches(
       sport: 'all',
       force: true,
@@ -198,9 +215,9 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Future<void> _loadReels({bool reset = false}) async {
+  Future<void> _loadReels({bool reset = false, bool silent = false}) async {
     if (!mounted) return;
-    if (reset) setState(() => _loadingReels = true);
+    if (reset && (!silent || _reels.isEmpty)) setState(() => _loadingReels = true);
     List<ReelItem> fetched;
     bool first = true;
     do {
@@ -542,7 +559,7 @@ class _HomeScreenState extends State<HomeScreen> {
           )
         else
           SizedBox(
-            height: 168,
+            height: 178,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 14),
@@ -870,6 +887,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   _buildBreakingNews(),
                   // ── Live matches (real-time scores) ──
                   _buildLiveMatches(t),
+                  // ── AdMob banner (professional placement under live) ──
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 6),
+                    child: AdService.banner(),
+                  ),
                   const Divider(height: 1),
                   // ── Sport filter for the feed ──
                   Padding(

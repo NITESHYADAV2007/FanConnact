@@ -71,6 +71,8 @@ class LiveScoreCard extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(left: 28, top: 2),
               child: Text('${over} overs',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(fontSize: 10,
                       color: Theme.of(context).brightness == Brightness.dark
                           ? Colors.grey.shade400 : Colors.grey.shade600)),
@@ -160,6 +162,8 @@ class LiveScoreCard extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             match.time,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: TextStyle(
               fontSize: 10,
               color: isDark ? Colors.white54 : Colors.black45,

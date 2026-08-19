@@ -3,6 +3,7 @@ import '../data.dart';
 import '../theme.dart';
 import '../l10n.dart';
 import '../services/live_match_service.dart';
+import '../services/ad_service.dart';
 import '../services/tournament_stats_service.dart';
 import '../services/cricket_hub_service.dart';
 import '../widgets/sport_selector.dart';
@@ -22,7 +23,7 @@ class SportsScreen extends StatefulWidget {
   State<SportsScreen> createState() => _SportsScreenState();
 }
 
-class _SportsScreenState extends State<SportsScreen> {
+class _SportsScreenState extends State<SportsScreen> with WidgetsBindingObserver {
   String _selectedSport = 'all';
   String _filter = 'all';
   String _selectedTournament = 'all';
@@ -35,11 +36,26 @@ class _SportsScreenState extends State<SportsScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _load();
   }
 
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // App reopened: silently refresh so data is always current.
+    if (state == AppLifecycleState.resumed) _load();
+  }
+
   Future<void> _load() async {
-    setState(() => _loading = true);
+    // Silent refresh when data already on screen (no flash); spinner only
+    // on a cold load.
+    if (_matches.isEmpty) setState(() => _loading = true);
     final fetched = await LiveMatchService.fetchLiveMatches(sport: _selectedSport);
     if (mounted) {
       setState(() {
@@ -274,6 +290,11 @@ class _SportsScreenState extends State<SportsScreen> {
                                 },
                               )),
                         ]),
+                  // AdMob banner at the bottom of the match list.
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: AdService.banner(),
+                  ),
                   if (_selectedSport == 'cricket') ..._buildCricketSections(isDark),
                   const SizedBox(height: 16),
                 ],

@@ -7,6 +7,7 @@ import 'firebase_options.dart';
 import 'theme.dart';
 import 'app_prefs.dart';
 import 'services/news_service.dart';
+import 'services/ad_service.dart';
 import 'screens/auth_gate.dart';
 import 'screens/splash_screen.dart';
 
@@ -42,6 +43,7 @@ void main() async {
   } catch (e) {
     debugPrint('Firebase init warning: $e');
   }
+  AdService.init();
   runApp(const FanconnactApp());
 }
 
