@@ -12,11 +12,9 @@ import '../services/player_ranking_service.dart';
 import 'player_detail_screen.dart';
 import 'team_matches_screen.dart';
 
-// Sports with REAL ranking data (ICC / FIFA / ESPN / allsportsapi2). Every
-// other sport previously served generated/mock numbers and is hidden now.
-const Set<String> realRankingSports = {
-  'cricket', 'football', 'basketball', 'baseball', 'hockey', 'tennis',
-};
+// Every sport now gets live real rankings from the backend (cricbuzz for
+// cricket, allsportsapi2/ESPN/sportscore for the rest).
+const Set<String> realRankingSports = {};
 
 class PlayerRankingsScreen extends StatefulWidget {
   final String sportKey;
@@ -51,11 +49,7 @@ class _PlayerRankingsScreenState extends State<PlayerRankingsScreen> {
   @override
   void initState() {
     super.initState();
-    if (realRankingSports.contains(widget.sportKey)) {
-      _load();
-    } else {
-      _loading = false;
-    }
+    _load();
   }
 
   String get _sportEmoji {
@@ -276,8 +270,7 @@ class _PlayerRankingsScreenState extends State<PlayerRankingsScreen> {
                   child: Text(_error!,
                       style: const TextStyle(color: Colors.grey)),
                 )
-              : !realRankingSports.contains(widget.sportKey) ||
-                      (_data != null && _data!.players.isEmpty)
+              : (_data != null && _data!.players.isEmpty)
                   ? _NoDataView(sportName: _sportName, emoji: _sportEmoji)
                   : Column(
                   children: [

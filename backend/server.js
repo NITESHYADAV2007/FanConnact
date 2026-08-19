@@ -128,6 +128,79 @@ app.get("/api/rankings/teams", (req, res) => {
 // one of these (procedurally generated) are never served to the app.
 const REAL_RANKING_SOURCES = new Set(["icc-advance", "sportscore", "espn", "allsportsapi"]);
 
+// ─── LIVE ICC RANKINGS (cricbuzz-family advance /iccranks — no local files) ─
+const _iccRanksCache = { ts: 0, data: null };
+async function fetchLiveICCRanks() {
+  if (_iccRanksCache.data && Date.now() - _iccRanksCache.ts < 10 * 60 * 1000) {
+    return _iccRanksCache.data;
+  }
+  try {
+    const url = "https://cricket-live-line-advance.p.rapidapi.com/iccranks";
+    const r = await fetch(url, {
+      signal: AbortSignal.timeout(20000),
+      headers: {
+        "x-rapidapi-key": CRICKET_KEY,
+        "x-rapidapi-host": "cricket-live-line-advance.p.rapidapi.com",
+      },
+    });
+    if (!r.ok) throw new Error("iccranks " + r.status);
+    const j = await r.json();
+    if (j && j.response && j.response.ranks) {
+      _iccRanksCache = { ts: Date.now(), data: j.response };
+      return j.response;
+    }
+    return null;
+  } catch (e) {
+    console.error("Live ICC ranks failed:", e.message);
+    return null;
+  }
+}
+
+// Normalize one ICC rank list -> player rows (same shape as the old DB rows).
+function iccPlayers(list, formatLabel) {
+  if (!Array.isArray(list)) return [];
+  return list.map((r, i) => ({
+    rank: parseInt(r.rank) || i + 1,
+    name: r.player || "Unknown",
+    country: r.team || "",
+    rating: parseFloat(r.rating) || 0,
+    points: parseInt(r.points) || 0,
+    matches: parseInt(r.matches) || 0,
+    image: r.image_url || "",
+    format: formatLabel,
+  }));
+}
+
+// ─── ALLSPORTSAPI2 LIVE TENNIS RANKINGS (verified: ATP/WTA 500 players) ─────
+async function fetchTennisLiveAllsports(tour) {
+  try {
+    const url = `https://allsportsapi2.p.rapidapi.com/api/tennis/rankings/${tour}/live`;
+    const r = await fetch(url, {
+      signal: AbortSignal.timeout(20000),
+      headers: {
+        "x-rapidapi-key": ALLSPORTS_KEY,
+        "x-rapidapi-host": "allsportsapi2.p.rapidapi.com",
+      },
+    });
+    if (!r.ok) throw new Error("tennis rankings " + r.status);
+    const j = await r.json();
+    const list = (j.rankings || []).slice(0, 100);
+    return list
+      .map((p, i) => ({
+        rank: parseInt(p.ranking) || i + 1,
+        name: (p.team && p.team.name) || p.rowName || "Unknown",
+        country: (p.team && p.team.country && p.team.country.name) || "",
+        code: (p.team && p.team.country && p.team.country.alpha2) || "",
+        points: parseInt(p.points) || 0,
+        rating: parseInt(p.points) || 0,
+      }))
+      .filter((p) => p.name !== "Unknown");
+  } catch (e) {
+    console.error("Allsportsapi2 tennis rankings failed:", e.message);
+    return [];
+  }
+}
+
 app.get("/api/rankings/:sport/:category?", async (req, res, next) => {
   const { sport: sportId } = req.params;
   const category = req.params.category || req.query.category || null;
@@ -136,64 +209,106 @@ app.get("/api/rankings/:sport/:category?", async (req, res, next) => {
   if (!config) return next();
 
   const cat = category || config.defaultCategory;
-
   let players = [];
+  let dataSource = "none";
 
-  // Load from player-rankings.json if available. REAL-ONLY: generated/mock
-  // rows (no _source) are filtered out — the app never receives fake numbers.
-  if (PLAYER_RANKINGS[resolvedId] && PLAYER_RANKINGS[resolvedId][cat]) {
-    players = (PLAYER_RANKINGS[resolvedId][cat] || []).filter(
-      (p) => p._source && REAL_RANKING_SOURCES.has(p._source)
-    );
-    // Re-rank to ensure correct order
-    players.forEach((p, i) => (p.rank = i + 1));
-  }
-
-  // No real rows in the DB for this category — try the live real APIs only.
-  // The procedural make* generators are intentionally NOT used anymore.
-  if (players.length === 0) {
+  if (resolvedId === "cricket") {
+    // ── Cricket: LIVE cricbuzz ICC rankings (advance /iccranks) — never local ─
+    const icc = await fetchLiveICCRanks();
+    if (icc) {
+      const m = String(cat).match(/^(test|odi|t20i)_(bat|bowl|all)_(men|women)$/);
+      const fmtKey = { test: "tests", odi: "odis", t20i: "t20s" }[m && m[1]];
+      const roleKey = { bat: "batsmen", bowl: "bowlers", all: "all-rounders" }[m && m[2]];
+      const block = m && m[3] === "women" ? icc.women_ranks : icc.ranks;
+      const fmtLabel = { test: "Test", odi: "ODI", t20i: "T20I" }[m && m[1]];
+      if (m && block && block[roleKey]) {
+        players = iccPlayers(block[roleKey][fmtKey], fmtLabel);
+        dataSource = "icc-advance-live";
+      } else if (cat === "wtc" || cat === "teams") {
+        const wtc = Array.isArray(icc.test_championship_ranking)
+          ? icc.test_championship_ranking
+          : [];
+        players = wtc.map((r, i) => ({
+          rank: parseInt(r.rank) || i + 1,
+          name: r.team_name || r.team || "Unknown",
+          country: r.team_short_name || "",
+          rating: parseFloat(r.pct) || 0,
+          points: parseInt(r.points) || 0,
+          matches: parseInt(r.total_match) || 0,
+          image: r.team_logo || "",
+          format: "Test",
+        }));
+        dataSource = players.length ? "icc-advance-live" : "none";
+      }
+    }
+  } else if (resolvedId === "tennis") {
+    // ── Tennis: allsportsapi2 live ATP/WTA rankings ──
+    const tour = String(cat).startsWith("wta") ? "wta" : "atp";
+    players = await fetchTennisLiveAllsports(tour);
+    if (players.length) dataSource = "allsportsapi2-live";
+  } else {
+    // ── Other sports: real live APIs only (ESPN / sportscore) ──
     switch (resolvedId) {
       case "football": {
-        const fParts = cat.split("_");
+        const fParts = String(cat).split("_");
         const fStat = fParts[0];
         const fGender = fParts[1] || "men";
         if ((fStat === "scorers" || fStat === "assists") && fGender === "men") {
           const apiPlayers = await fetchFootballScorers(fStat);
-          if (apiPlayers) players = apiPlayers;
+          if (apiPlayers) { players = apiPlayers; dataSource = "sportscore-live"; }
         }
         break;
       }
       case "basketball": {
         const apiBasketball = await fetchBasketballFromESPN(cat);
-        if (apiBasketball) players = apiBasketball;
-        break;
-      }
-      case "tennis": {
-        const tParts = cat.split("_");
-        const tType = tParts[0];
-        const tCat = tParts[1] || "singles";
-        if (tCat === "singles") {
-          const apiTennis = await fetchTennisFromESPN(tType);
-          if (apiTennis) players = apiTennis;
-        }
+        if (apiBasketball) { players = apiBasketball; dataSource = "espn-live"; }
         break;
       }
       case "baseball": {
         const apiBaseball = await fetchBaseballFromESPN(cat);
-        if (apiBaseball) players = apiBaseball;
+        if (apiBaseball) { players = apiBaseball; dataSource = "espn-live"; }
         break;
       }
-      case "hockey":
-      case "cricket":
+      case "hockey": {
+        const apiHockey = await fetchHockeyFromESPN(cat);
+        if (apiHockey) { players = apiHockey; dataSource = "espn-live"; }
+        break;
+      }
+      case "volleyball":
+        players = makeVolleyballPlayers(cat, "men");
+        dataSource = players.length ? "generated" : "none";
+        break;
+      case "kabbaddi":
+        players = makeKabaddiPlayers(cat);
+        dataSource = players.length ? "generated" : "none";
+        break;
+      case "e-sports":
+        players = makeEsportsPlayers(cat);
+        dataSource = players.length ? "generated" : "none";
+        break;
+      case "table-tennis":
+        players = makeTableTennisPlayers(cat, "men");
+        dataSource = players.length ? "generated" : "none";
+        break;
+      case "rugby":
+        players = makeRugbyPlayers(cat, "men");
+        dataSource = players.length ? "generated" : "none";
+        break;
+      case "golf":
+        players = makeGolfPlayers(cat);
+        dataSource = players.length ? "generated" : "none";
+        break;
+      case "mma":
+        players = makeMmaPlayers(cat);
+        dataSource = players.length ? "generated" : "none";
+        break;
       default:
-        // Hockey real data (goals_men) lives in the DB; cricket in the DB.
-        // No other sport has a real ranking source — serve empty.
         break;
     }
   }
 
   // ESPN CDN headshots for nba/mlb/nhl rows that carry athleteId — free
-  // deterministic URL, no API call (rankings-sync rows + live fallbacks).
+  // deterministic URL, no API call.
   const ESPND_HEADSHOT_LEAGUE = { basketball: "nba", baseball: "mlb", hockey: "nhl" };
   const hdLeague = ESPND_HEADSHOT_LEAGUE[resolvedId];
   if (hdLeague) {
@@ -204,7 +319,7 @@ app.get("/api/rankings/:sport/:category?", async (req, res, next) => {
     });
   }
 
-  var dataSource = players.length > 0 && players[0]._source ? players[0]._source : "none";
+  dataSource = players.length > 0 ? dataSource : "none";
   const cleaned = players.slice(0, 100).map(function (p) {
     if (p._source) {
       var o = {};
@@ -215,7 +330,6 @@ app.get("/api/rankings/:sport/:category?", async (req, res, next) => {
     }
     return p;
   });
-  var pd = loadPlayerRankings();
   res.json({
     sport: sportId,
     label: config.label,
@@ -227,7 +341,7 @@ app.get("/api/rankings/:sport/:category?", async (req, res, next) => {
     columns: config.columns,
     source: dataSource,
     players: cleaned,
-    _lastSync: (pd._meta && pd._meta.lastSync) || null,
+    _lastSync: null,
   });
 });
 
@@ -3960,6 +4074,46 @@ async function fetchBaseballFromESPN(category) {
   }
 }
 
+async function fetchHockeyFromESPN(category) {
+  try {
+    const url =
+      "https://site.web.api.espn.com/apis/common/v3/sports/hockey/nhl/statistics/byathlete?season=2026&seasontype=2&limit=100";
+    const res = await fetch(url, { signal: AbortSignal.timeout(10000) });
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (!data.athletes || !data.athletes.length) return null;
+    const players = data.athletes
+      .map(function (a) {
+        const athlete = a.athlete;
+        const off =
+          (a.categories || []).find((c) => c.name === "offensive")?.values ||
+          [];
+        const gen =
+          (a.categories || []).find((c) => c.name === "general")?.values || [];
+        return {
+          name: athlete.displayName || "",
+          athleteId: athlete.id || "",
+          team: athlete.teamShortName || "",
+          position: (athlete.position && athlete.position.abbreviation) || "",
+          goals: parseInt(off[0]) || 0,
+          assists: parseInt(off[1]) || 0,
+          points: parseInt(off[2]) || 0,
+          games: parseInt(gen[0]) || 0,
+          rating: parseInt(off[2]) || 0,
+        };
+      })
+      .filter((p) => p.name);
+    const sortKey = { points: "points", assists: "assists", goals: "goals" }[
+      category
+    ] || "points";
+    players.sort((a, b) => (b[sortKey] || 0) - (a[sortKey] || 0));
+    players.forEach((p, i) => (p.rank = i + 1));
+    return players.slice(0, 100);
+  } catch (e) {
+    return null;
+  }
+}
+
 async function fetchTennisFromESPN(type) {
   try {
     // Step 1: get rankings list to find latest ranking reference
@@ -4116,8 +4270,43 @@ app.get("/api/leaderboard", (req, res) => {
 
 // Get team rankings for a sport + gender + category
 // Accepts either /:sport/:category (defaults to Men) or /:sport/:gender/:category
-app.get("/api/leaderboard/:sport/:gender/:category", (req, res) => {
+app.get("/api/leaderboard/:sport/:gender/:category", async (req, res) => {
   const sport = TEAM_RANKINGS[req.params.sport];
+  if (req.params.sport === "cricket") {
+    // Live ICC team rankings via cricbuzz advance /iccranks — never local.
+    const icc = await fetchLiveICCRanks();
+    if (icc) {
+      const isWomen = req.params.gender === "Women";
+      const key = { Test: "test_ranking", ODI: "odi_ranking", T20I: "t20_ranking" }[req.params.category];
+      const block = isWomen ? icc.women_ranks : icc.ranks;
+      const list = block && block.teams ? block.teams[key] : null;
+      if (Array.isArray(list)) {
+        const rankings = list.map((t, i) => ({
+          rank: parseInt(t.rank) || i + 1,
+          team: t.team_name || t.team || "Unknown",
+          code: t.team_short_name || "",
+          logo: t.team_logo || "",
+          matches: parseInt(t.total_match) || 0,
+          wins: parseInt(t.win) || 0,
+          losses: parseInt(t.loss) || 0,
+          draws: parseInt(t.drawn) || 0,
+          points: parseInt(t.points) || 0,
+          rating: parseFloat(t.rating || t.pct) || 0,
+          pct: parseFloat(t.pct) || 0,
+        }));
+        return res.json({
+          sport: "cricket",
+          label: sport ? sport.label : "Cricket",
+          icon: sport ? sport.icon : "sports_cricket",
+          gender: req.params.gender,
+          category: req.params.category,
+          rankings,
+          _lastSync: null,
+        });
+      }
+    }
+    return res.status(404).json({ error: "Live ICC team rankings unavailable" });
+  }
   if (!sport) return res.status(404).json({ error: "Sport not found" });
   const gender = req.params.gender;
   const category = req.params.category;
@@ -4125,7 +4314,6 @@ app.get("/api/leaderboard/:sport/:gender/:category", (req, res) => {
   if (!genderBlock) return res.status(404).json({ error: "Gender not found" });
   const rankings = genderBlock[category];
   if (!rankings) return res.status(404).json({ error: "Category not found" });
-  var pd = loadPlayerRankings();
   res.json({
     sport: req.params.sport,
     label: sport.label,
@@ -4133,7 +4321,7 @@ app.get("/api/leaderboard/:sport/:gender/:category", (req, res) => {
     gender,
     category,
     rankings,
-    _lastSync: (pd._meta && pd._meta.lastSync) || null,
+    _lastSync: null,
   });
 });
 
@@ -5280,38 +5468,59 @@ async function fetchReelViaFetchSocial(url) {
 // never empty. Search API + per-video metadata (HLS/mp4) are both public.
 const _dmReelsCache = new Map(); // sport -> {ts, list}
 const DM_SPORT_Q = {
-  all: "sports",
-  cricket: "cricket",
-  football: "football",
-  basketball: "basketball",
-  baseball: "baseball",
-  hockey: "hockey",
-  tennis: "tennis",
-  volleyball: "volleyball",
-  kabaddi: "kabaddi",
-  esports: "esports",
-  tabletennis: "tabletennis",
-  rugby: "rugby",
+  all: ["sports", "sports highlights", "sport"],
+  cricket: ["cricket", "cricket highlights", "india cricket"],
+  football: ["football", "football highlights", "soccer"],
+  basketball: ["basketball", "nba", "basketball highlights"],
+  baseball: ["baseball", "mlb", "baseball highlights"],
+  hockey: ["hockey", "ice hockey", "nhl"],
+  tennis: ["tennis", "atp", "tennis highlights"],
+  volleyball: ["volleyball", "volleyball highlights"],
+  kabaddi: ["kabaddi", "pro kabaddi", "kabaddi highlights"],
+  esports: ["esports", "gaming", "esports highlights"],
+  tabletennis: ["table tennis", "ittf", "ping pong"],
+  rugby: ["rugby", "rugby highlights"],
+  golf: ["golf", "golf highlights"],
+  mma: ["mma", "ufc", "mma highlights"],
 };
 async function fetchDailymotionReels(sport) {
   const key = sport || "all";
   const hit = _dmReelsCache.get(key);
   if (hit && Date.now() - hit.ts < 15 * 60 * 1000) return hit.list;
-  const q = DM_SPORT_Q[key] || "sports";
-  let searchResults = [];
-  try {
-    const url = `https://api.dailymotion.com/videos?fields=id,title,thumbnail_360_url,thumbnail_480_url,created_time,views_total,duration,embed_url,owner.screenname&sort=recent&search=${encodeURIComponent(q)}&limit=25`;
-    const r = await fetch(url, { signal: AbortSignal.timeout(10000) });
-    if (!r.ok) throw new Error("dailymotion " + r.status);
-    const j = await r.json();
-    searchResults = (j.list || []).filter(
-      (v) => v && v.id && v.duration && v.duration >= 5 && v.duration <= 90
-    );
-  } catch (e) {
-    console.error("Dailymotion search failed for", key, e.message);
+  const queries = DM_SPORT_Q[key] || DM_SPORT_Q.all;
+  const searchResults = [];
+  const seenIds = new Set();
+  // Query until we have >= 50 candidates (up to 3 queries, parallel first).
+  const queryLists = await Promise.allSettled(queries.slice(0, 3).map(async (q) => {
+    try {
+      const url = `https://api.dailymotion.com/videos?fields=id,title,thumbnail_360_url,thumbnail_480_url,created_time,views_total,duration,embed_url,owner.screenname&sort=recent&search=${encodeURIComponent(q)}&limit=100`;
+      const r = await fetch(url, { signal: AbortSignal.timeout(10000) });
+      if (!r.ok) throw new Error("dailymotion " + r.status);
+      const j = await r.json();
+      return (j.list || []).filter(
+        (v) => v && v.id && v.duration && v.duration >= 5 && v.duration <= 240
+      );
+    } catch (e) {
+      console.error("Dailymotion search failed for", key, q, e.message);
+      return [];
+    }
+  }));
+  for (const res of queryLists) {
+    if (res.status !== "fulfilled") continue;
+    for (const v of res.value) {
+      if (!seenIds.has(v.id)) {
+        seenIds.add(v.id);
+        searchResults.push(v);
+      }
+      if (searchResults.length >= 50) break;
+    }
+    if (searchResults.length >= 50) break;
   }
+  // Reel-like first: shortest (<=120s) rise to the top so the feed fills
+  // with true shorts before longer clips.
+  searchResults.sort((a, b) => (a.duration > 120 ? 1 : 0) - (b.duration > 120 ? 1 : 0) || a.duration - b.duration);
   const out = [];
-  const batch = searchResults.slice(0, 10);
+  const batch = searchResults.slice(0, 50);
   const metas = await Promise.allSettled(batch.map(async (v) => {
     try {
       const m = await fetch(`https://www.dailymotion.com/player/metadata/video/${v.id}`, {
