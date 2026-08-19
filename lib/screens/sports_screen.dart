@@ -3,7 +3,6 @@ import '../data.dart';
 import '../theme.dart';
 import '../l10n.dart';
 import '../services/live_match_service.dart';
-import '../services/ad_service.dart';
 import '../services/tournament_stats_service.dart';
 import '../services/cricket_hub_service.dart';
 import '../widgets/sport_selector.dart';
@@ -306,11 +305,6 @@ class _SportsScreenState extends State<SportsScreen> with WidgetsBindingObserver
                                 },
                               )),
                         ]),
-                  // AdMob banner at the bottom of the match list.
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    child: AdService.banner(),
-                  ),
                   if (_selectedSport == 'cricket') ..._buildCricketSections(isDark),
                   const SizedBox(height: 16),
                 ],

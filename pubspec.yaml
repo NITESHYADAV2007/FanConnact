@@ -31,7 +31,6 @@ dependencies:
   google_mlkit_selfie_segmentation: ^0.11.0
   path_provider: ^2.1.6
   webview_flutter: ^4.14.1
-  google_mobile_ads: ^9.0.0
   # twitter_login: ^4.4.2   # Twitter auth - remove `#` and add API keys when ready
 
 dev_dependencies:

@@ -4596,11 +4596,23 @@ const TSB_SPORT = {
   golf: "Golf",
   mma: "Boxing",
   tabletennis: "Table Tennis",
+  "table-tennis": "Table Tennis",
+  kabbaddi: "Kabaddi",
+  "e-sports": "E-Sports",
+  esports: "E-Sports",
+  all: "",
 };
 async function tsdbTeamLogo(name, sportKey) {
   if (!name || name === "TBD") return "";
   const cacheKey = (sportKey || "") + "|" + name;
   if (_tsdbLogo.has(cacheKey)) return _tsdbLogo.get(cacheKey);
+  const want = (TSB_SPORT[sportKey] || "").toLowerCase();
+  // Unknown sport / "all" feed: NEVER guess a badge from another sport
+  // (that's how cricket got football crests). Only fill known sports.
+  if (!want) {
+    _tsdbLogo.set(cacheKey, "");
+    return "";
+  }
   try {
     const q = encodeURIComponent(name.replace(/[^a-zA-Z0-9 ]/g, "").trim().slice(0, 30));
     const r = await fetch(`https://www.thesportsdb.com/api/v1/json/3/searchteams.php?t=${q}`, {
@@ -4608,8 +4620,7 @@ async function tsdbTeamLogo(name, sportKey) {
     });
     const j = await r.json().catch(() => null);
     const teams = (j && j.teams) || [];
-    const want = (TSB_SPORT[sportKey] || "").toLowerCase();
-    const sameSport = want ? teams.filter((t) => ((t.strSport || "").toLowerCase() === want)) : teams;
+    const sameSport = teams.filter((t) => ((t.strSport || "").toLowerCase() === want));
     const exact = sameSport.find((t) => (t.strTeam || "").toLowerCase() === name.toLowerCase());
     const t = exact || sameSport[0] || {};
     const logo = (t.strTeamBadge || t.strTeamLogo || t.strBadge || "") || "";
@@ -4623,14 +4634,16 @@ async function tsdbTeamLogo(name, sportKey) {
 async function fillMissingLogos(matches, sportKey) {
   if (!matches || !matches.length) return matches;
   const missing = new Set();
+  const nameToSport = new Map();
   for (const m of matches) {
-    if (!m.homeLogo && m.homeName) missing.add(m.homeName);
-    if (!m.awayLogo && m.awayName) missing.add(m.awayName);
+    const ms = m.sport || sportKey;
+    if (!m.homeLogo && m.homeName) { missing.add(m.homeName); nameToSport.set(m.homeName, ms); }
+    if (!m.awayLogo && m.awayName) { missing.add(m.awayName); nameToSport.set(m.awayName, ms); }
   }
   if (!missing.size) return matches;
   const batch = [...missing].slice(0, 24);
   const logos = {};
-  await Promise.all(batch.map(async (name) => { logos[name] = await tsdbTeamLogo(name, sportKey); }));
+  await Promise.all(batch.map(async (name) => { logos[name] = await tsdbTeamLogo(name, nameToSport.get(name) || ""); }));
   return matches.map((m) => ({
     ...m,
     homeLogo: m.homeLogo || logos[m.homeName] || "",
@@ -5216,7 +5229,7 @@ const REEL_SOURCES = {
 
 async function fetchReelViaFetchSocial(url) {
   const ctrl = new AbortController();
-  const t = setTimeout(() => ctrl.abort(), 40000);
+  const t = setTimeout(() => ctrl.abort(), 12000);
   try {
     // Current listing endpoint (verified 2026-08): POST /openapi/rapidapi/v1/video
     const r = await fetch(`https://${FS_HOST}/openapi/rapidapi/v1/video`, {
@@ -5288,7 +5301,7 @@ async function fetchDailymotionReels(sport) {
   let searchResults = [];
   try {
     const url = `https://api.dailymotion.com/videos?fields=id,title,thumbnail_360_url,thumbnail_480_url,created_time,views_total,duration,embed_url,owner.screenname&sort=recent&search=${encodeURIComponent(q)}&limit=25`;
-    const r = await fetch(url, { signal: AbortSignal.timeout(15000) });
+    const r = await fetch(url, { signal: AbortSignal.timeout(10000) });
     if (!r.ok) throw new Error("dailymotion " + r.status);
     const j = await r.json();
     searchResults = (j.list || []).filter(
@@ -5302,7 +5315,7 @@ async function fetchDailymotionReels(sport) {
   const metas = await Promise.allSettled(batch.map(async (v) => {
     try {
       const m = await fetch(`https://www.dailymotion.com/player/metadata/video/${v.id}`, {
-        signal: AbortSignal.timeout(12000),
+        signal: AbortSignal.timeout(8000),
       });
       const md = await m.json();
       const quals = md.qualities || {};
@@ -5350,12 +5363,31 @@ app.get("/api/reels", async (req, res) => {
       return res.json({ ...last, cached: true, page, pageSize, total: all.length, hasMore: start + pageSize < all.length, reels: slice });
     }
     let reels = [];
-    // Primary: FetchSocial single-API resolver (YT Shorts + TikTok + IG Reels).
-    // Throttle: skip API spam for 60s after a 429 so app polling doesn't hammer a dead quota.
-    if (Date.now() - lastReelsThrottle > 60000) {
-      const urls = REEL_SOURCES[sport] || REEL_SOURCES.all;
-      const results = await Promise.allSettled(urls.map((u) => fetchReelViaFetchSocial(u)));
-      reels = results.filter((x) => x.status === "fulfilled" && x.value).map((x) => x.value);
+    let source = "";
+    // 1) Fast + reliable: keyless Dailymotion shorts (no quota, always real).
+    //    Served first so the feed never blocks on the quota-exhausted
+    //    FetchSocial provider (which can hang for 40s).
+    reels = await fetchDailymotionReels(sport);
+    source = "dailymotion";
+    if (reels.length) {
+      storeLast("reels", sport, { source, sport, count: reels.length, reels });
+    } else {
+      // 2) Primary social resolver only when Dailymotion came up empty.
+      //    Throttle: skip API spam for 60s after a 429.
+      if (Date.now() - lastReelsThrottle > 60000) {
+        const urls = REEL_SOURCES[sport] || REEL_SOURCES.all;
+        const results = await Promise.allSettled(urls.map((u) => fetchReelViaFetchSocial(u)));
+        const fsReels = results.filter((x) => x.status === "fulfilled" && x.value).map((x) => x.value);
+        if (fsReels.length) {
+          reels = fsReels;
+          source = "fetchsocial";
+          storeLast("reels", sport, { source, sport, count: reels.length, reels });
+        }
+      }
+      if (!reels.length && last && Array.isArray(last.reels) && last.reels.length) {
+        reels = last.reels;
+        source = last.source || "fetchsocial";
+      }
     }
     // De-dupe by link/code
     const seen = new Set();
@@ -5365,22 +5397,6 @@ app.get("/api/reels", async (req, res) => {
       seen.add(k);
       return true;
     });
-    let source = "fetchsocial";
-    if (reels.length === 0) {
-      // Fallback 1: persisted feed (still fresh enough to show).
-      if (last && Array.isArray(last.reels) && last.reels.length) {
-        reels = last.reels;
-        source = last.source || "fetchsocial";
-      }
-    }
-    if (reels.length === 0) {
-      // Fallback 2: keyless Dailymotion short videos — always real content.
-      reels = await fetchDailymotionReels(sport);
-      source = "dailymotion";
-      if (reels.length) storeLast("reels", sport, { source, sport, count: reels.length, reels });
-    } else if (source === "fetchsocial") {
-      storeLast("reels", sport, { source, sport, count: reels.length, reels });
-    }
     const start = page * pageSize;
     const slice = reels.slice(start, start + pageSize);
     res.json({ source, sport, count: slice.length, page, pageSize, total: reels.length, hasMore: start + pageSize < reels.length, reels: slice, cached: reels.length === 0 && !!last });

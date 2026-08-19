@@ -136,7 +136,7 @@ class ReelsService {
           'pageSize': pageSize.toString(),
         },
       );
-      final res = await http.get(uri).timeout(const Duration(seconds: 10));
+      final res = await http.get(uri).timeout(const Duration(seconds: 30));
       if (res.statusCode == 200) {
         final json = jsonDecode(res.body) as Map<String, dynamic>;
         final reels = (json['reels'] as List?) ?? [];

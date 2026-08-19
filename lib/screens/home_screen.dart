@@ -10,7 +10,6 @@ import '../theme.dart';
 import '../l10n.dart';
 import '../services/reels_service.dart';
 import '../services/live_match_service.dart';
-import '../services/ad_service.dart';
 import '../services/currents_service.dart';
 import '../widgets/reels_card.dart';
 import '../widgets/live_score_card.dart';
@@ -104,7 +103,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     // background so the user always sees real, current data — no spinner.
     if (state == AppLifecycleState.resumed) {
       _loadAll(silent: true);
-      AdService.maybeShowInterstitial();
     }
   }
 
@@ -887,11 +885,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   _buildBreakingNews(),
                   // ── Live matches (real-time scores) ──
                   _buildLiveMatches(t),
-                  // ── AdMob banner (professional placement under live) ──
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 6),
-                    child: AdService.banner(),
-                  ),
                   const Divider(height: 1),
                   // ── Sport filter for the feed ──
                   Padding(
