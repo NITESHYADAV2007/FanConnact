@@ -4689,6 +4689,19 @@ function staticMatchesFor(sport) {
     mma: [
       { homeName: 'Islam Makhachev', awayName: 'Arman Tsarukyan', homeLogo: '', awayLogo: '', status: 'UPCOMING', homeScore: '', awayScore: '', time: 'UFC', league: 'UFC' },
     ],
+    // Config-key variants (resolveSportKey maps kabaddi->kabbaddi etc.)
+    kabbaddi: [
+      { homeName: 'Patna Pirates', awayName: 'Bengal Warriors', homeLogo: '', awayLogo: '', status: 'UPCOMING', homeScore: '', awayScore: '', time: 'Pro Kabaddi League', league: 'Pro Kabaddi League' },
+      { homeName: 'Jaipur Pink Panthers', awayName: 'Dabang Delhi', homeLogo: '', awayLogo: '', status: 'UPCOMING', homeScore: '', awayScore: '', time: 'Pro Kabaddi League', league: 'Pro Kabaddi League' },
+    ],
+    'e-sports': [
+      { homeName: 'Fnatic', awayName: 'G2 Esports', homeLogo: '', awayLogo: '', status: 'UPCOMING', homeScore: '', awayScore: '', time: 'League of Legends', league: 'League of Legends' },
+      { homeName: 'Natus Vincere', awayName: 'FaZe Clan', homeLogo: '', awayLogo: '', status: 'UPCOMING', homeScore: '', awayScore: '', time: 'CS2 Major', league: 'CS2 Major' },
+    ],
+    'table-tennis': [
+      { homeName: 'Ma Long', awayName: 'Fan Zhendong', homeLogo: '', awayLogo: '', status: 'UPCOMING', homeScore: '', awayScore: '', time: 'WTT Champions', league: 'WTT Champions' },
+      { homeName: 'Sun Yingsha', awayName: 'Chen Meng', homeLogo: '', awayLogo: '', status: 'UPCOMING', homeScore: '', awayScore: '', time: 'WTT Champions', league: 'WTT Champions' },
+    ],
   };
   return (FALLBACK[sport] || []).map((m) => ({
     sport: '', league: m.league || '', status: m.status, state: m.status === 'LIVE' ? 'in' : m.status === 'COMPLETED' ? 'post' : 'pre',
