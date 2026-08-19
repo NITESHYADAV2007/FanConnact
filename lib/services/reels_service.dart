@@ -142,7 +142,11 @@ class ReelsService {
         final reels = (json['reels'] as List?) ?? [];
         _hasMore[sport] = json['hasMore'] as bool? ?? false;
         _loadedPages[sport] = page + 1;
-        _cacheTime[sport] = DateTime.now();
+        // Only mark the cache fresh when we actually got content — an empty
+        // response must never block the next fetch for cacheTtl minutes.
+        if (reels.isNotEmpty) {
+          _cacheTime[sport] = DateTime.now();
+        }
         if (reels.isNotEmpty) {
           final parsed = reels.map<ReelItem>((r) {
             final map = r as Map<String, dynamic>;
