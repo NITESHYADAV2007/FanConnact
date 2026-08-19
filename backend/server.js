@@ -4651,6 +4651,44 @@ function staticMatchesFor(sport) {
     basketball: [
       { homeName: 'Lakers', awayName: 'Celtics', homeLogo: '', awayLogo: '', status: 'UPCOMING', homeScore: '', awayScore: '', time: 'Tonight 8:30 PM', league: 'NBA' },
     ],
+    volleyball: [
+      { homeName: 'VakifBank Istanbul', awayName: 'Eczacibasi Istanbul', homeLogo: '', awayLogo: '', status: 'UPCOMING', homeScore: '', awayScore: '', time: 'Sultanlar Ligi', league: 'Sultanlar Ligi' },
+      { homeName: 'Zenit Kazan', awayName: 'Lube Civitanova', homeLogo: '', awayLogo: '', status: 'UPCOMING', homeScore: '', awayScore: '', time: 'CEV Champions League', league: 'CEV Champions League' },
+    ],
+    hockey: [
+      { homeName: 'Maple Leafs', awayName: 'Bruins', homeLogo: '', awayLogo: '', status: 'UPCOMING', homeScore: '', awayScore: '', time: 'NHL', league: 'NHL' },
+      { homeName: 'Oilers', awayName: 'Canucks', homeLogo: '', awayLogo: '', status: 'UPCOMING', homeScore: '', awayScore: '', time: 'NHL', league: 'NHL' },
+    ],
+    baseball: [
+      { homeName: 'Yankees', awayName: 'Red Sox', homeLogo: '', awayLogo: '', status: 'UPCOMING', homeScore: '', awayScore: '', time: 'MLB', league: 'MLB' },
+      { homeName: 'Dodgers', awayName: 'Giants', homeLogo: '', awayLogo: '', status: 'UPCOMING', homeScore: '', awayScore: '', time: 'MLB', league: 'MLB' },
+    ],
+    tennis: [
+      { homeName: 'Carlos Alcaraz', awayName: 'Jannik Sinner', homeLogo: '', awayLogo: '', status: 'UPCOMING', homeScore: '', awayScore: '', time: 'ATP Tour', league: 'ATP Tour' },
+      { homeName: 'Iga Swiatek', awayName: 'Aryna Sabalenka', homeLogo: '', awayLogo: '', status: 'UPCOMING', homeScore: '', awayScore: '', time: 'WTA Tour', league: 'WTA Tour' },
+    ],
+    rugby: [
+      { homeName: 'All Blacks', awayName: 'Springboks', homeLogo: '', awayLogo: '', status: 'UPCOMING', homeScore: '', awayScore: '', time: 'Rugby Championship', league: 'Rugby Championship' },
+      { homeName: 'Leinster', awayName: 'Munster', homeLogo: '', awayLogo: '', status: 'UPCOMING', homeScore: '', awayScore: '', time: 'United Rugby Championship', league: 'United Rugby Championship' },
+    ],
+    kabaddi: [
+      { homeName: 'Patna Pirates', awayName: 'Bengal Warriors', homeLogo: '', awayLogo: '', status: 'UPCOMING', homeScore: '', awayScore: '', time: 'Pro Kabaddi League', league: 'Pro Kabaddi League' },
+      { homeName: 'Jaipur Pink Panthers', awayName: 'Dabang Delhi', homeLogo: '', awayLogo: '', status: 'UPCOMING', homeScore: '', awayScore: '', time: 'Pro Kabaddi League', league: 'Pro Kabaddi League' },
+    ],
+    esports: [
+      { homeName: 'Fnatic', awayName: 'G2 Esports', homeLogo: '', awayLogo: '', status: 'UPCOMING', homeScore: '', awayScore: '', time: 'League of Legends', league: 'League of Legends' },
+      { homeName: 'Natus Vincere', awayName: 'FaZe Clan', homeLogo: '', awayLogo: '', status: 'UPCOMING', homeScore: '', awayScore: '', time: 'CS2 Major', league: 'CS2 Major' },
+    ],
+    tabletennis: [
+      { homeName: 'Ma Long', awayName: 'Fan Zhendong', homeLogo: '', awayLogo: '', status: 'UPCOMING', homeScore: '', awayScore: '', time: 'WTT Champions', league: 'WTT Champions' },
+      { homeName: 'Sun Yingsha', awayName: 'Chen Meng', homeLogo: '', awayLogo: '', status: 'UPCOMING', homeScore: '', awayScore: '', time: 'WTT Champions', league: 'WTT Champions' },
+    ],
+    golf: [
+      { homeName: 'Scottie Scheffler', awayName: 'Rory McIlroy', homeLogo: '', awayLogo: '', status: 'UPCOMING', homeScore: '', awayScore: '', time: 'PGA Tour', league: 'PGA Tour' },
+    ],
+    mma: [
+      { homeName: 'Islam Makhachev', awayName: 'Arman Tsarukyan', homeLogo: '', awayLogo: '', status: 'UPCOMING', homeScore: '', awayScore: '', time: 'UFC', league: 'UFC' },
+    ],
   };
   return (FALLBACK[sport] || []).map((m) => ({
     sport: '', league: m.league || '', status: m.status, state: m.status === 'LIVE' ? 'in' : m.status === 'COMPLETED' ? 'post' : 'pre',
