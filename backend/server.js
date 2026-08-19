@@ -5468,20 +5468,20 @@ async function fetchReelViaFetchSocial(url) {
 // never empty. Search API + per-video metadata (HLS/mp4) are both public.
 const _dmReelsCache = new Map(); // sport -> {ts, list}
 const DM_SPORT_Q = {
-  all: ["sports", "sports highlights", "sport"],
-  cricket: ["cricket", "cricket highlights", "india cricket"],
-  football: ["football", "football highlights", "soccer"],
-  basketball: ["basketball", "nba", "basketball highlights"],
-  baseball: ["baseball", "mlb", "baseball highlights"],
-  hockey: ["hockey", "ice hockey", "nhl"],
-  tennis: ["tennis", "atp", "tennis highlights"],
-  volleyball: ["volleyball", "volleyball highlights"],
-  kabaddi: ["kabaddi", "pro kabaddi", "kabaddi highlights"],
-  esports: ["esports", "gaming", "esports highlights"],
-  tabletennis: ["table tennis", "ittf", "ping pong"],
-  rugby: ["rugby", "rugby highlights"],
-  golf: ["golf", "golf highlights"],
-  mma: ["mma", "ufc", "mma highlights"],
+  all: ["sports", "sports highlights", "sport", "match highlights"],
+  cricket: ["cricket", "cricket highlights", "india cricket", "cricket match"],
+  football: ["football", "football highlights", "soccer", "football match"],
+  basketball: ["basketball", "nba", "basketball highlights", "basketball game"],
+  baseball: ["baseball", "mlb", "baseball highlights", "baseball game"],
+  hockey: ["hockey", "ice hockey", "nhl", "hockey match", "hockey goals"],
+  tennis: ["tennis", "atp", "tennis highlights", "tennis match", "tennis shorts"],
+  volleyball: ["volleyball", "volleyball highlights", "volleyball match"],
+  kabaddi: ["kabaddi", "pro kabaddi", "kabaddi highlights", "kabaddi match"],
+  esports: ["esports", "gaming", "esports highlights", "esports tournament"],
+  tabletennis: ["table tennis", "ittf", "ping pong", "table tennis highlights"],
+  rugby: ["rugby", "rugby highlights", "rugby match"],
+  golf: ["golf", "golf highlights", "golf shots"],
+  mma: ["mma", "ufc", "mma highlights", "combat sports"],
 };
 async function fetchDailymotionReels(sport) {
   const key = sport || "all";
@@ -5490,8 +5490,8 @@ async function fetchDailymotionReels(sport) {
   const queries = DM_SPORT_Q[key] || DM_SPORT_Q.all;
   const searchResults = [];
   const seenIds = new Set();
-  // Query until we have >= 50 candidates (up to 3 queries, parallel first).
-  const queryLists = await Promise.allSettled(queries.slice(0, 3).map(async (q) => {
+  // Query until we have >= 100 candidates (up to 4 queries, parallel first).
+  const queryLists = await Promise.allSettled(queries.slice(0, 4).map(async (q) => {
     try {
       const url = `https://api.dailymotion.com/videos?fields=id,title,thumbnail_360_url,thumbnail_480_url,created_time,views_total,duration,embed_url,owner.screenname&sort=recent&search=${encodeURIComponent(q)}&limit=100`;
       const r = await fetch(url, { signal: AbortSignal.timeout(10000) });
@@ -5512,34 +5512,40 @@ async function fetchDailymotionReels(sport) {
         seenIds.add(v.id);
         searchResults.push(v);
       }
-      if (searchResults.length >= 50) break;
+      if (searchResults.length >= 100) break;
     }
-    if (searchResults.length >= 50) break;
+    if (searchResults.length >= 100) break;
   }
   // Reel-like first: shortest (<=120s) rise to the top so the feed fills
   // with true shorts before longer clips.
   searchResults.sort((a, b) => (a.duration > 120 ? 1 : 0) - (b.duration > 120 ? 1 : 0) || a.duration - b.duration);
   const out = [];
-  const batch = searchResults.slice(0, 50);
-  const metas = await Promise.allSettled(batch.map(async (v) => {
-    try {
-      const m = await fetch(`https://www.dailymotion.com/player/metadata/video/${v.id}`, {
-        signal: AbortSignal.timeout(8000),
-      });
-      const md = await m.json();
-      const quals = md.qualities || {};
-      const entry = ["720", "480", "380", "240", "auto"]
-        .map((k) => quals[k] && quals[k][0])
-        .find((x) => x && x.url);
-      return { v, url: entry ? entry.url : "" };
-    } catch (_) {
-      return { v, url: "" };
-    }
-  }));
-  for (const res of metas) {
-    const { v, url } = res.status === "fulfilled" ? res.value : { v: null, url: "" };
-    if (!v || !url) continue;
-    out.push({
+  // Fetch metadata in small chunks (12) so Dailymotion doesn't rate-limit the
+  // burst; stop as soon as 50 playable URLs are resolved.
+  const batch = searchResults.slice(0, 100);
+  const CHUNK = 12;
+  for (let i = 0; i < batch.length && out.length < 50; i += CHUNK) {
+    const chunk = batch.slice(i, i + CHUNK);
+    const metas = await Promise.allSettled(chunk.map(async (v) => {
+      try {
+        const m = await fetch(`https://www.dailymotion.com/player/metadata/video/${v.id}`, {
+          signal: AbortSignal.timeout(5000),
+        });
+        const md = await m.json();
+        const quals = md.qualities || {};
+        const entry = ["720", "480", "380", "240", "auto"]
+          .map((k) => quals[k] && quals[k][0])
+          .find((x) => x && x.url);
+        return { v, url: entry ? entry.url : "" };
+      } catch (_) {
+        return { v, url: "" };
+      }
+    }));
+    for (const res of metas) {
+      const { v, url } = res.status === "fulfilled" ? res.value : { v: null, url: "" };
+      if (!v || !url) continue;
+      if (out.length >= 50) break;
+      out.push({
       code: String(v.id),
       type: 2,
       caption: (v.title || "").replace(/&amp;/g, "&"),
@@ -5553,6 +5559,7 @@ async function fetchDailymotionReels(sport) {
       source: "dailymotion",
       user: { username: v["owner.screenname"] || "Dailymotion", avatar: "" },
     });
+    }
   }
   _dmReelsCache.set(key, { ts: Date.now(), list: out });
   return out;
