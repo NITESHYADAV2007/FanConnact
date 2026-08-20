@@ -161,8 +161,9 @@ class _PlayerRankingsScreenState extends State<PlayerRankingsScreen> {
       final fmt = _backendFormats[fmtIdx];
       final role = _backendRoles[roleIdx];
       final gender = _cricketGender;
-      // ICC publishes no women's Test rankings — fall back to last good.
-      if (fmt == 'test' && gender == 'women') return _lastGoodCricket;
+      // ICC publishes no women's Test rankings — show empty rather than
+      // misleading men's data.
+      if (fmt == 'test' && gender == 'women') return null;
       final resp = await PlayerRankingService.fetchRankings(
         sport: 'cricket',
         category: '${fmt}_${role}_$gender',

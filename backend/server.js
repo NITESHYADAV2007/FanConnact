@@ -126,49 +126,94 @@ app.get("/api/rankings/teams", (req, res) => {
 
 // Only these upstream sources are considered REAL ranking data. Rows without
 // one of these (procedurally generated) are never served to the app.
-const REAL_RANKING_SOURCES = new Set(["icc-advance", "sportscore", "espn", "allsportsapi"]);
+const REAL_RANKING_SOURCES = new Set(["cricbuzz-cricket", "allsportsapi2"]);
 
-// ─── LIVE ICC RANKINGS (cricbuzz-family advance /iccranks — no local files) ─
-const _iccRanksCache = { ts: 0, data: null };
-async function fetchLiveICCRanks() {
-  if (_iccRanksCache.data && Date.now() - _iccRanksCache.ts < 10 * 60 * 1000) {
-    return _iccRanksCache.data;
-  }
+// ─── LIVE ICC RANKINGS — CRICBUZZ ONLY (cricbuzz-cricket package, no local files) ─
+// Package: cricbuzz-cricket.p.rapidapi.com (publisher: cricketapilive).
+// Player: GET /stats/v1/rankings/{batsmen|bowlers|allrounders}?formatType={test|odi|t20}[&class=women]
+// Teams:  GET /stats/v1/iccstanding/team/matchtype/{test|odi|t20}
+const CRICBUZZ_RANK_HOST = "cricbuzz-cricket.p.rapidapi.com";
+function cricbuzzRankKey() {
+  return process.env.CRICBUZZ_API_KEY || process.env.ALLSPORTS_KEY || "";
+}
+const _cricRanksCache = {}; // key -> { ts, data }
+const CRIC_RANK_TTL = 30 * 60 * 1000;
+
+async function fetchCricbuzzRanks(role, fmt, gender) {
+  const cat = { bat: "batsmen", bowl: "bowlers", all: "allrounders" }[role];
+  const ft = { test: "test", odi: "odi", t20i: "t20" }[fmt];
+  if (!cat || !ft) return [];
+  const cacheKey = `players|${gender}|${fmt}|${role}`;
+  const cached = _cricRanksCache[cacheKey];
+  if (cached && Date.now() - cached.ts < CRIC_RANK_TTL) return cached.data;
   try {
-    const url = "https://cricket-live-line-advance.p.rapidapi.com/iccranks";
-    const r = await fetch(url, {
+    const q = gender === "women" ? "?formatType=" + ft + "&class=women" : "?formatType=" + ft;
+    const r = await fetch(`https://${CRICBUZZ_RANK_HOST}/stats/v1/rankings/${cat}${q}`, {
       signal: AbortSignal.timeout(20000),
       headers: {
-        "x-rapidapi-key": CRICKET_KEY,
-        "x-rapidapi-host": "cricket-live-line-advance.p.rapidapi.com",
+        "x-rapidapi-key": cricbuzzRankKey(),
+        "x-rapidapi-host": CRICBUZZ_RANK_HOST,
       },
     });
-    if (!r.ok) throw new Error("iccranks " + r.status);
+    if (!r.ok) throw new Error("cricbuzz ranks " + r.status);
     const j = await r.json();
-    if (j && j.response && j.response.ranks) {
-      _iccRanksCache = { ts: Date.now(), data: j.response };
-      return j.response;
-    }
-    return null;
+    const list = (j && j.rank) || [];
+    const fmtLabel = { test: "Test", odi: "ODI", t20i: "T20I" }[fmt];
+    const players = list.map((p, i) => ({
+      rank: parseInt(p.rank) || i + 1,
+      name: p.name || p.player || "Unknown",
+      country: p.country || "",
+      rating: parseFloat(p.rating || p.points) || 0,
+      points: parseFloat(p.rating || p.points) || 0,
+      matches: parseInt(p.matches) || 0,
+      runs: 0,
+      wkts: 0,
+      avg: 0,
+      econ: 0,
+      image: p.image || p.image_url || "",
+      format: fmtLabel,
+    }));
+    _cricRanksCache[cacheKey] = { ts: Date.now(), data: players };
+    return players;
   } catch (e) {
-    console.error("Live ICC ranks failed:", e.message);
-    return null;
+    console.error("Cricbuzz ranks failed:", e.message);
+    return [];
   }
 }
 
-// Normalize one ICC rank list -> player rows (same shape as the old DB rows).
-function iccPlayers(list, formatLabel) {
-  if (!Array.isArray(list)) return [];
-  return list.map((r, i) => ({
-    rank: parseInt(r.rank) || i + 1,
-    name: r.player || "Unknown",
-    country: r.team || "",
-    rating: parseFloat(r.rating) || 0,
-    points: parseInt(r.points) || 0,
-    matches: parseInt(r.matches) || 0,
-    image: r.image_url || "",
-    format: formatLabel,
-  }));
+async function fetchCricbuzzTeams(gender, fmt) {
+  const mt = { Test: "test", ODI: "odi", T20I: "t20" }[fmt] || "test";
+  const cacheKey = `teams|${gender}|${fmt}`;
+  const cached = _cricRanksCache[cacheKey];
+  if (cached && Date.now() - cached.ts < CRIC_RANK_TTL) return cached.data;
+  try {
+    const q = gender === "women" ? "?class=women" : "";
+    const r = await fetch(`https://${CRICBUZZ_RANK_HOST}/stats/v1/iccstanding/team/matchtype/${mt}${q}`, {
+      signal: AbortSignal.timeout(20000),
+      headers: {
+        "x-rapidapi-key": cricbuzzRankKey(),
+        "x-rapidapi-host": CRICBUZZ_RANK_HOST,
+      },
+    });
+    if (!r.ok) throw new Error("cricbuzz teams " + r.status);
+    const j = await r.json();
+    const list = (j && j.rank) || (j && j.teams) || [];
+    const teams = list.map((t, i) => ({
+      rank: parseInt(t.rank) || i + 1,
+      team: t.team || t.name || "Unknown",
+      code: t.team_short_name || (t.team || "").slice(0, 3).toUpperCase(),
+      flag: t.flag || "",
+      logo: t.image || t.flag || "",
+      points: parseInt(t.points) || 0,
+      rating: parseFloat(t.rating) || 0,
+      matches: parseInt(t.matches) || 0,
+    }));
+    _cricRanksCache[cacheKey] = { ts: Date.now(), data: teams };
+    return teams;
+  } catch (e) {
+    console.error("Cricbuzz teams failed:", e.message);
+    return [];
+  }
 }
 
 // ─── ALLSPORTSAPI2 LIVE TENNIS RANKINGS (verified: ATP/WTA 500 players) ─────
@@ -201,6 +246,33 @@ async function fetchTennisLiveAllsports(tour) {
   }
 }
 
+// allsportsapi2 global rugby-union team rankings (no league ID required).
+async function fetchAllsportsRugbyUnion() {
+  try {
+    const url = "https://allsportsapi2.p.rapidapi.com/api/rugby/rankings/rugby-union";
+    const r = await fetch(url, {
+      signal: AbortSignal.timeout(20000),
+      headers: {
+        "x-rapidapi-key": ALLSPORTS_KEY,
+        "x-rapidapi-host": "allsportsapi2.p.rapidapi.com",
+      },
+    });
+    if (!r.ok) throw new Error("rugby rankings " + r.status);
+    const j = await r.json();
+    const list = j.rankings || j.data || j.teams || [];
+    if (!Array.isArray(list)) return [];
+    return list.map((t) => ({
+      name: t.name || t.team || "Unknown",
+      code: (t.country && t.country.alpha2) || t.code || "",
+      rating: parseFloat(t.rating || t.points) || 0,
+      flag: (t.country && t.country.flag) || t.flag || "",
+    }));
+  } catch (e) {
+    console.error("Allsportsapi2 rugby rankings failed:", e.message);
+    return [];
+  }
+}
+
 app.get("/api/rankings/:sport/:category?", async (req, res, next) => {
   const { sport: sportId } = req.params;
   const category = req.params.category || req.query.category || null;
@@ -213,98 +285,42 @@ app.get("/api/rankings/:sport/:category?", async (req, res, next) => {
   let dataSource = "none";
 
   if (resolvedId === "cricket") {
-    // ── Cricket: LIVE cricbuzz ICC rankings (advance /iccranks) — never local ─
-    const icc = await fetchLiveICCRanks();
-    if (icc) {
-      const m = String(cat).match(/^(test|odi|t20i)_(bat|bowl|all)_(men|women)$/);
-      const fmtKey = { test: "tests", odi: "odis", t20i: "t20s" }[m && m[1]];
-      const roleKey = { bat: "batsmen", bowl: "bowlers", all: "all-rounders" }[m && m[2]];
-      const block = m && m[3] === "women" ? icc.women_ranks : icc.ranks;
-      const fmtLabel = { test: "Test", odi: "ODI", t20i: "T20I" }[m && m[1]];
-      if (m && block && block[roleKey]) {
-        players = iccPlayers(block[roleKey][fmtKey], fmtLabel);
-        dataSource = "icc-advance-live";
-      } else if (cat === "wtc" || cat === "teams") {
-        const wtc = Array.isArray(icc.test_championship_ranking)
-          ? icc.test_championship_ranking
-          : [];
-        players = wtc.map((r, i) => ({
-          rank: parseInt(r.rank) || i + 1,
-          name: r.team_name || r.team || "Unknown",
-          country: r.team_short_name || "",
-          rating: parseFloat(r.pct) || 0,
-          points: parseInt(r.points) || 0,
-          matches: parseInt(r.total_match) || 0,
-          image: r.team_logo || "",
-          format: "Test",
-        }));
-        dataSource = players.length ? "icc-advance-live" : "none";
-      }
+    // ── Cricket: LIVE cricbuzz ICC rankings (cricbuzz-cricket package) — never local ─
+    const m = String(cat).match(/^(test|odi|t20i)_(bat|bowl|all)_(men|women)$/);
+    if (m) {
+      players = await fetchCricbuzzRanks(m[2], m[1], m[3]);
+      dataSource = players.length ? "cricbuzz-cricket" : "none";
+    } else if (cat === "wtc" || cat === "teams") {
+      players = await fetchCricbuzzTeams("men", "Test");
+      dataSource = players.length ? "cricbuzz-cricket" : "none";
     }
   } else if (resolvedId === "tennis") {
     // ── Tennis: allsportsapi2 live ATP/WTA rankings ──
     const tour = String(cat).startsWith("wta") ? "wta" : "atp";
     players = await fetchTennisLiveAllsports(tour);
     if (players.length) dataSource = "allsportsapi2-live";
+  } else if (resolvedId === "rugby") {
+    // ── Rugby: allsportsapi2 global team rankings (rugby-union) ──
+    const teams = await fetchAllsportsRugbyUnion();
+    players = teams.map((t, i) => ({
+      rank: i + 1,
+      name: t.name,
+      country: t.code,
+      rating: parseFloat(t.rating) || 0,
+      points: parseFloat(t.rating) || 0,
+      matches: 0,
+      runs: 0, wkts: 0, avg: 0, econ: 0,
+      image: t.flag || "",
+      format: "Rugby",
+    }));
+    dataSource = players.length ? "allsportsapi2-live" : "none";
   } else {
-    // ── Other sports: real live APIs only (ESPN / sportscore) ──
-    switch (resolvedId) {
-      case "football": {
-        const fParts = String(cat).split("_");
-        const fStat = fParts[0];
-        const fGender = fParts[1] || "men";
-        if ((fStat === "scorers" || fStat === "assists") && fGender === "men") {
-          const apiPlayers = await fetchFootballScorers(fStat);
-          if (apiPlayers) { players = apiPlayers; dataSource = "sportscore-live"; }
-        }
-        break;
-      }
-      case "basketball": {
-        const apiBasketball = await fetchBasketballFromESPN(cat);
-        if (apiBasketball) { players = apiBasketball; dataSource = "espn-live"; }
-        break;
-      }
-      case "baseball": {
-        const apiBaseball = await fetchBaseballFromESPN(cat);
-        if (apiBaseball) { players = apiBaseball; dataSource = "espn-live"; }
-        break;
-      }
-      case "hockey": {
-        const apiHockey = await fetchHockeyFromESPN(cat);
-        if (apiHockey) { players = apiHockey; dataSource = "espn-live"; }
-        break;
-      }
-      case "volleyball":
-        players = makeVolleyballPlayers(cat, "men");
-        dataSource = players.length ? "generated" : "none";
-        break;
-      case "kabbaddi":
-        players = makeKabaddiPlayers(cat);
-        dataSource = players.length ? "generated" : "none";
-        break;
-      case "e-sports":
-        players = makeEsportsPlayers(cat);
-        dataSource = players.length ? "generated" : "none";
-        break;
-      case "table-tennis":
-        players = makeTableTennisPlayers(cat, "men");
-        dataSource = players.length ? "generated" : "none";
-        break;
-      case "rugby":
-        players = makeRugbyPlayers(cat, "men");
-        dataSource = players.length ? "generated" : "none";
-        break;
-      case "golf":
-        players = makeGolfPlayers(cat);
-        dataSource = players.length ? "generated" : "none";
-        break;
-      case "mma":
-        players = makeMmaPlayers(cat);
-        dataSource = players.length ? "generated" : "none";
-        break;
-      default:
-        break;
-    }
+    // ── All other sports: allsportsapi2 ONLY (no other APIs, no local data) ──
+    // allsportsapi2 exposes global player rankings only for tennis (above) and
+    // rugby (above). For basketball/NFL/hockey/football/volleyball/etc. it
+    // requires per-league tournament+season IDs, so those return empty here
+    // (the app shows NoDataView) until league IDs are wired in.
+    dataSource = "none";
   }
 
   // ESPN CDN headshots for nba/mlb/nhl rows that carry athleteId — free
@@ -4273,37 +4289,32 @@ app.get("/api/leaderboard", (req, res) => {
 app.get("/api/leaderboard/:sport/:gender/:category", async (req, res) => {
   const sport = TEAM_RANKINGS[req.params.sport];
   if (req.params.sport === "cricket") {
-    // Live ICC team rankings via cricbuzz advance /iccranks — never local.
-    const icc = await fetchLiveICCRanks();
-    if (icc) {
-      const isWomen = req.params.gender === "Women";
-      const key = { Test: "test_ranking", ODI: "odi_ranking", T20I: "t20_ranking" }[req.params.category];
-      const block = isWomen ? icc.women_ranks : icc.ranks;
-      const list = block && block.teams ? block.teams[key] : null;
-      if (Array.isArray(list)) {
-        const rankings = list.map((t, i) => ({
-          rank: parseInt(t.rank) || i + 1,
-          team: t.team_name || t.team || "Unknown",
-          code: t.team_short_name || "",
-          logo: t.team_logo || "",
-          matches: parseInt(t.total_match) || 0,
-          wins: parseInt(t.win) || 0,
-          losses: parseInt(t.loss) || 0,
-          draws: parseInt(t.drawn) || 0,
-          points: parseInt(t.points) || 0,
-          rating: parseFloat(t.rating || t.pct) || 0,
-          pct: parseFloat(t.pct) || 0,
-        }));
-        return res.json({
-          sport: "cricket",
-          label: sport ? sport.label : "Cricket",
-          icon: sport ? sport.icon : "sports_cricket",
-          gender: req.params.gender,
-          category: req.params.category,
-          rankings,
-          _lastSync: null,
-        });
-      }
+    // Live ICC team rankings via cricbuzz-cricket (cricbuzz only) — never local.
+    const isWomen = req.params.gender === "Women";
+    const teams = await fetchCricbuzzTeams(isWomen ? "women" : "men", req.params.category);
+    if (teams.length) {
+      const rankings = teams.map((t) => ({
+        rank: t.rank,
+        team: t.team,
+        code: t.code,
+        logo: t.logo,
+        matches: t.matches,
+        wins: 0,
+        losses: 0,
+        draws: 0,
+        points: t.points,
+        rating: t.rating,
+        pct: t.rating,
+      }));
+      return res.json({
+        sport: "cricket",
+        label: sport ? sport.label : "Cricket",
+        icon: sport ? sport.icon : "sports_cricket",
+        gender: req.params.gender,
+        category: req.params.category,
+        rankings,
+        _lastSync: null,
+      });
     }
     return res.status(404).json({ error: "Live ICC team rankings unavailable" });
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../data.dart';
 import '../theme.dart';
 import '../widgets/glow_wrapper.dart';
+import '../widgets/team_logo.dart';
 
 // Compact horizontal "scorecard" used in the Home live-scores carousel.
 class LiveScoreCard extends StatelessWidget {
@@ -28,22 +29,18 @@ class LiveScoreCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              if (logo != null)
-                GlowWrapper(
-                  glowColor: AppColors.brandBlue,
-                  glowBlur: 8,
-                  glowSpread: 1,
-                  borderRadius: BorderRadius.circular(6),
-                  child: Image.network(
-                    logo,
-                    width: 22,
-                    height: 22,
-                  errorBuilder: (_, _, _) =>
-                        const Icon(Icons.sports, size: 18),
-                  ),
-                )
-              else
-                const Icon(Icons.sports, size: 18),
+              GlowWrapper(
+                glowColor: AppColors.brandBlue,
+                glowBlur: 8,
+                glowSpread: 1,
+                borderRadius: BorderRadius.circular(6),
+                child: TeamLogo(
+                  name: name,
+                  url: logo,
+                  size: 22,
+                  radius: 6,
+                ),
+              ),
               const SizedBox(width: 6),
               Expanded(
                 child: Text(
