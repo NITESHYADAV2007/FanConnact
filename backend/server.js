@@ -4290,7 +4290,7 @@ app.get("/api/leaderboard", (req, res) => {
 app.get("/api/leaderboard/:sport/:gender/:category", async (req, res) => {
   const sport = TEAM_RANKINGS[req.params.sport];
   if (req.params.sport === "cricket") {
-    // Live ICC team rankings via cricbuzz-cricket (cricbuzz only) — never local.
+    // Live ICC team rankings via cricbuzz-cricket2 (cricbuzz only) — never local.
     const isWomen = req.params.gender === "Women";
     const teams = await fetchCricbuzzTeams(isWomen ? "women" : "men", req.params.category);
     if (teams.length) {
