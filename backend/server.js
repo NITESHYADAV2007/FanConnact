@@ -128,11 +128,12 @@ app.get("/api/rankings/teams", (req, res) => {
 // one of these (procedurally generated) are never served to the app.
 const REAL_RANKING_SOURCES = new Set(["cricbuzz-cricket", "allsportsapi2"]);
 
-// ─── LIVE ICC RANKINGS — CRICBUZZ ONLY (cricbuzz-cricket package, no local files) ─
-// Package: cricbuzz-cricket.p.rapidapi.com (publisher: cricketapilive).
+// ─── LIVE ICC RANKINGS — CRICBUZZ ONLY (cricbuzz-cricket2 package, no local files) ─
+// Package: cricbuzz-cricket2.p.rapidapi.com (publisher: apiservicesprovider) — the
+// cricbuzz package that is actually subscribed/Ultra on the deployed key.
 // Player: GET /stats/v1/rankings/{batsmen|bowlers|allrounders}?formatType={test|odi|t20}[&class=women]
-// Teams:  GET /stats/v1/iccstanding/team/matchtype/{test|odi|t20}
-const CRICBUZZ_RANK_HOST = "cricbuzz-cricket.p.rapidapi.com";
+// Teams:  GET /stats/v1/rankings/teams?formatType={test|odi|t20}
+const CRICBUZZ_RANK_HOST = "cricbuzz-cricket2.p.rapidapi.com";
 function cricbuzzRankKey() {
   return process.env.CRICBUZZ_API_KEY || process.env.ALLSPORTS_KEY || "";
 }
@@ -187,8 +188,8 @@ async function fetchCricbuzzTeams(gender, fmt) {
   const cached = _cricRanksCache[cacheKey];
   if (cached && Date.now() - cached.ts < CRIC_RANK_TTL) return cached.data;
   try {
-    const q = gender === "women" ? "?class=women" : "";
-    const r = await fetch(`https://${CRICBUZZ_RANK_HOST}/stats/v1/iccstanding/team/matchtype/${mt}${q}`, {
+    const q = gender === "women" ? "?formatType=" + mt + "&class=women" : "?formatType=" + mt;
+    const r = await fetch(`https://${CRICBUZZ_RANK_HOST}/stats/v1/rankings/teams${q}`, {
       signal: AbortSignal.timeout(20000),
       headers: {
         "x-rapidapi-key": cricbuzzRankKey(),
