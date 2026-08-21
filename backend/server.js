@@ -217,6 +217,111 @@ async function fetchCricbuzzTeams(gender, fmt) {
   }
 }
 
+// ─── FREE ESPN PLAYER RANKINGS (no API key) — refreshed ONCE PER DAY ───────
+// ESPN "statistics/byathlete" returns top players per stat, free & keyless.
+// Per user requirement we cache the result on disk and only refetch every
+// 24h (so we never hit ESPN more than once a day per sport/stat).
+const ESPN_RANK_DEFS = {
+  basketball: {
+    espnSport: "basketball", league: "nba", season: 2025, hdLeague: "nba",
+    stats: {
+      points:   ["offensive", "avgPoints", "PPG"],
+      rebounds: ["general",   "avgRebounds", "RPG"],
+      assists:  ["offensive", "avgAssists", "APG"],
+    },
+    default: "points",
+  },
+  football: {
+    espnSport: "football", league: "nfl", season: 2024, hdLeague: "nfl",
+    stats: {
+      pass_yards: ["passing",   "passingYards", "YDS"],
+      rush_yards: ["rushing",   "rushingYards", "RUSH"],
+      rec_yards:  ["receiving", "receivingYards", "REC"],
+    },
+    default: "pass_yards",
+  },
+};
+
+const _espnRankDir = path.join(__dirname, "data");
+const _espnRankFile = path.join(_espnRankDir, "espn-rankings.json");
+let _espnRankCache = { ts: 0, data: {} };
+try {
+  const _r = JSON.parse(fs.readFileSync(_espnRankFile, "utf8"));
+  if (_r && _r.data) _espnRankCache = _r;
+} catch (e) {}
+function _saveEspnRankCache() {
+  try {
+    if (!fs.existsSync(_espnRankDir)) fs.mkdirSync(_espnRankDir, { recursive: true });
+    fs.writeFileSync(_espnRankFile, JSON.stringify(_espnRankCache));
+  } catch (e) {}
+}
+const ESPN_RANK_TTL = 24 * 60 * 60 * 1000;
+
+function _espnStat(a, topCats, catName, statField) {
+  const ci = topCats.findIndex((c) => c.name === catName);
+  if (ci < 0) return 0;
+  const si = (topCats[ci].names || []).indexOf(statField);
+  if (si < 0) return 0;
+  const vals = (a.categories && a.categories[ci] && a.categories[ci].values) || [];
+  return parseFloat(vals[si]) || 0;
+}
+
+async function fetchEspnPlayerRankings(sportKey, category) {
+  const def = ESPN_RANK_DEFS[sportKey];
+  if (!def) return [];
+  const statKey = category && def.stats[category] ? category : def.default;
+  const [catName, statField, statLabel] = def.stats[statKey];
+  const cacheKey = sportKey + "|" + statKey;
+  const now = Date.now();
+  if (_espnRankCache.data[cacheKey] && now - (_espnRankCache.ts || 0) < ESPN_RANK_TTL) {
+    return _espnRankCache.data[cacheKey];
+  }
+  try {
+    const url =
+      `https://site.web.api.espn.com/apis/common/v3/sports/${def.espnSport}/${def.league}/statistics/byathlete?season=${def.season}&seasontype=2&limit=100`;
+    const r = await fetch(url, { signal: AbortSignal.timeout(20000) });
+    if (!r.ok) throw new Error("espn " + r.status);
+    const j = await r.json();
+    const topCats = j.categories || [];
+    const players = (j.athletes || []).map((a) => {
+      const ath = a.athlete || {};
+      const v = _espnStat(a, topCats, catName, statField);
+      const reb = sportKey === "basketball" ? _espnStat(a, topCats, "general", "avgRebounds") : 0;
+      const ast = sportKey === "basketball" ? _espnStat(a, topCats, "offensive", "avgAssists") : 0;
+      const fg = sportKey === "basketball" ? _espnStat(a, topCats, "offensive", "fieldGoalPct") : 0;
+      const headshot = ath.headshot && (ath.headshot.href || ath.headshot) ? (ath.headshot.href || ath.headshot) : "";
+      const img = headshot || `https://a.espncdn.com/i/headshots/${def.hdLeague}/players/full/${ath.id}.png`;
+      const team = ath.teamShortName || ath.teamName || "";
+      return {
+        rank: 0,
+        name: ath.displayName || [ath.firstName, ath.lastName].filter(Boolean).join(" "),
+        team,
+        position: (ath.position && ath.position.abbreviation) || "",
+        country: team,
+        points: v,
+        rebounds: reb,
+        assists: ast,
+        fg_pct: fg,
+        rating: v,
+        image: img,
+        athleteId: ath.id,
+        format: def.league.toUpperCase(),
+        _statLabel: statLabel,
+        _statValue: v,
+      };
+    });
+    players.sort((x, y) => (y.points || 0) - (x.points || 0));
+    players.forEach((p, i) => (p.rank = i + 1));
+    _espnRankCache.ts = now;
+    _espnRankCache.data[cacheKey] = players;
+    _saveEspnRankCache();
+    return players;
+  } catch (e) {
+    console.error("ESPN player rankings failed:", sportKey, statKey, e.message);
+    return _espnRankCache.data[cacheKey] || [];
+  }
+}
+
 // ─── ALLSPORTSAPI2 LIVE TENNIS RANKINGS (verified: ATP/WTA 500 players) ─────
 async function fetchTennisLiveAllsports(tour) {
   try {
@@ -315,12 +420,14 @@ app.get("/api/rankings/:sport/:category?", async (req, res, next) => {
       format: "Rugby",
     }));
     dataSource = players.length ? "allsportsapi2-live" : "none";
+  } else if (ESPN_RANK_DEFS[resolvedId]) {
+    // ── Free ESPN player rankings (no API key, daily cached) ──
+    players = await fetchEspnPlayerRankings(resolvedId, cat);
+    dataSource = players.length ? "espn-free" : "none";
   } else {
-    // ── All other sports: allsportsapi2 ONLY (no other APIs, no local data) ──
-    // allsportsapi2 exposes global player rankings only for tennis (above) and
-    // rugby (above). For basketball/NFL/hockey/football/volleyball/etc. it
-    // requires per-league tournament+season IDs, so those return empty here
-    // (the app shows NoDataView) until league IDs are wired in.
+    // ── All other sports: no real free ranking source available ──
+    // (kabaddi, table-tennis, esports, hockey, etc. have no keyless ranking
+    // API). The app shows NoDataView for these.
     dataSource = "none";
   }
 
@@ -578,38 +685,27 @@ const SPORTS = {
   },
   football: {
     label: "Football",
-    icon: "sports_soccer",
-    title: "Football Top Players",
-    tournament: "FIFA World Cup 2026 & Domestic Leagues",
-    subtitle: "Top ranked footballers — click any row for full profile",
-    defaultCategory: "scorers_men",
+    icon: "sports_football",
+    title: "NFL Top Players",
+    tournament: "National Football League",
+    subtitle: "Top NFL players by season stats — click any row for full profile",
+    defaultCategory: "pass_yards",
     filters: [
       {
         group: "stat",
         label: "Category",
         options: [
-          { value: "scorers", label: "Top Scorers" },
-          { value: "assists", label: "Top Assists" },
-          { value: "rating", label: "Highest Rated" },
-        ],
-      },
-      {
-        group: "gender",
-        label: "Gender",
-        options: [
-          { value: "men", label: "Men" },
-          { value: "women", label: "Women" },
+          { value: "pass_yards", label: "Pass Yards" },
+          { value: "rush_yards", label: "Rush Yards" },
+          { value: "rec_yards", label: "Rec Yards" },
         ],
       },
     ],
     columns: [
       { key: "name", label: "Player" },
-      { key: "country", label: "Country" },
       { key: "team", label: "Team", hide: "sm" },
       { key: "position", label: "Pos", align: "center", hide: "md" },
-      { key: "goals", label: "Goals", align: "center" },
-      { key: "assists", label: "Assists", align: "center", hide: "md" },
-      { key: "matches", label: "Mat", align: "center", hide: "sm" },
+      { key: "points", label: "Yards", align: "center" },
       { key: "rating", label: "Rating", align: "center", hide: "lg" },
     ],
   },
@@ -743,36 +839,23 @@ const SPORTS = {
   volleyball: {
     label: "Volleyball",
     icon: "sports_volleyball",
-    title: "FIVB Volleyball Rankings",
-    subtitle: "Top ranked volleyball players — click any row for full profile",
-    defaultCategory: "points_men",
+    title: "NCAA Volleyball Rankings",
+    subtitle: "Top NCAA volleyball players by kills — click any row for full profile",
+    defaultCategory: "kills",
     filters: [
       {
         group: "stat",
         label: "Category",
         options: [
-          { value: "points", label: "Total Points" },
-          { value: "spikes", label: "Best Spiker" },
-          { value: "blocks", label: "Best Blocker" },
-        ],
-      },
-      {
-        group: "gender",
-        label: "Gender",
-        options: [
-          { value: "men", label: "Men" },
-          { value: "women", label: "Women" },
+          { value: "kills", label: "Kills" },
         ],
       },
     ],
     columns: [
       { key: "name", label: "Player" },
-      { key: "country", label: "Country" },
+      { key: "team", label: "Team", hide: "sm" },
       { key: "position", label: "Pos", align: "center", hide: "md" },
-      { key: "points", label: "Points", align: "center" },
-      { key: "spikes", label: "Spikes", align: "center", hide: "md" },
-      { key: "blocks", label: "Blocks", align: "center", hide: "md" },
-      { key: "aces", label: "Aces", align: "center", hide: "lg" },
+      { key: "points", label: "Kills", align: "center" },
       { key: "rating", label: "Rating", align: "center", hide: "lg" },
     ],
   },
