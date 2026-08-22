@@ -6128,7 +6128,9 @@ const CRICKET_NATION_FLAG = {
 };
 function cricketNationFlag(name) {
   const iso = CRICKET_NATION_FLAG[(name || "").trim()];
-  return iso ? `https://flagcdn.com/${iso}.svg` : "";
+  // flagcdn serves SVG by default, which Flutter's Image can't render — use the
+  // PNG variant (size-prefixed) so TeamLogo/Image render it without exceptions.
+  return iso ? `https://flagcdn.com/w80/${iso}.png` : "";
 }
 
 // Cricbuzz match-center hscard — used as a fallback for cricket detail when
