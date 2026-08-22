@@ -160,20 +160,27 @@ async function fetchCricbuzzRanks(role, fmt, gender) {
     const j = await r.json();
     const list = (j && j.rank) || [];
     const fmtLabel = { test: "Test", odi: "ODI", t20i: "T20I" }[fmt];
-    const players = list.map((p, i) => ({
-      rank: parseInt(p.rank) || i + 1,
-      name: p.name || p.player || "Unknown",
-      country: p.country || "",
-      rating: parseFloat(p.rating || p.points) || 0,
-      points: parseFloat(p.rating || p.points) || 0,
-      matches: parseInt(p.matches) || 0,
-      runs: 0,
-      wkts: 0,
-      avg: 0,
-      econ: 0,
-      image: p.image || p.image_url || "",
-      format: fmtLabel,
-    }));
+    const players = list.map((p, i) => {
+      // cricbuzz ranking payloads carry no image field, but they include the
+      // player id — build the canonical face-image URL from it (no extra call).
+      const pid = p.id || p.playerId || p.pid || "";
+      return {
+        rank: parseInt(p.rank) || i + 1,
+        name: p.name || p.player || "Unknown",
+        country: p.country || "",
+        rating: parseFloat(p.rating || p.points) || 0,
+        points: parseFloat(p.rating || p.points) || 0,
+        matches: parseInt(p.matches) || 0,
+        runs: parseInt(p.runs) || 0,
+        wkts: parseInt(p.wickets || p.wkts) || 0,
+        avg: parseFloat(p.avg || p.average) || 0,
+        econ: parseFloat(p.econ || p.economy) || 0,
+        image: pid
+          ? `http://i.cricketcb.com/stats/img/faceImages/${pid}.jpg`
+          : (p.image || p.image_url || ""),
+        format: fmtLabel,
+      };
+    });
     _cricRanksCache[cacheKey] = { ts: Date.now(), data: players };
     return players;
   } catch (e) {
