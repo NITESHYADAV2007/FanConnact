@@ -23,7 +23,7 @@
 const express = require("express");
 const router = express.Router();
 const cacheManager = require("../cache/cacheManager");
-const { matches, players, teams, browse, schedule } = require("../providers/cricbuzz");
+const { matches, players, teams, browse, schedule, series, venues } = require("../providers/cricbuzz");
 
 const TTL_INFO = 60;       // seconds
 const TTL_LIVE = 10;
@@ -101,5 +101,41 @@ router.get("/matches/:id/hcomm",
   cached((req) => `CB_HCOMM_${req.params.id}`, TTL_LIVE,
     (req) => matches.getHCommentary(req.params.id, parseInt(req.query.iid, 10) || 1,
       req.query.tms ? parseInt(req.query.tms, 10) : Date.now())));
+
+// Series squads (the real squad source — match-level /squads & /team are 404).
+router.get("/series/:id/squads", cached((req) => `CB_SSQUADS_${req.params.id}`, TTL_HEAVY,
+  (req) => series.getSquads(req.params.id)));
+
+// Team detail endpoints.
+router.get("/teams/:id/players", cached((req) => `CB_TPLAYERS_${req.params.id}`, TTL_HEAVY,
+  (req) => teams.getTeamPlayers(req.params.id)));
+router.get("/teams/:id/schedule", cached((req) => `CB_TSCHED_${req.params.id}`, TTL_HEAVY,
+  (req) => teams.getTeamSchedule(req.params.id)));
+router.get("/teams/:id/results", cached((req) => `CB_TRES_${req.params.id}`, TTL_HEAVY,
+  (req) => teams.getTeamResults(req.params.id)));
+router.get("/teams/:id/stats", cached((req) => `CB_TSTATS_${req.params.id}`, TTL_HEAVY,
+  (req) => teams.getTeamStats(req.params.id)));
+router.get("/teams/:id/news", cached((req) => `CB_TNEWS_${req.params.id}`, TTL_HEAVY,
+  (req) => teams.getTeamNews(req.params.id)));
+
+// Player detail endpoints.
+router.get("/players/:id", cached((req) => `CB_PINFO_${req.params.id}`, TTL_HEAVY,
+  (req) => players.getPlayerInfo(req.params.id)));
+router.get("/players/:id/batting", cached((req) => `CB_PBAT_${req.params.id}`, TTL_HEAVY,
+  (req) => players.getPlayerBatting(req.params.id)));
+router.get("/players/:id/bowling", cached((req) => `CB_PBOWL_${req.params.id}`, TTL_HEAVY,
+  (req) => players.getPlayerBowling(req.params.id)));
+router.get("/players/:id/career", cached((req) => `CB_PCAREER_${req.params.id}`, TTL_HEAVY,
+  (req) => players.getPlayerCareer(req.params.id)));
+router.get("/players/:id/news", cached((req) => `CB_PNEWS_${req.params.id}`, TTL_HEAVY,
+  (req) => players.getPlayerNews(req.params.id)));
+
+// Venue detail endpoints.
+router.get("/venues/:id", cached((req) => `CB_VINFO_${req.params.id}`, TTL_HEAVY,
+  (req) => venues.getVenue(req.params.id)));
+router.get("/venues/:id/matches", cached((req) => `CB_VMATCH_${req.params.id}`, TTL_HEAVY,
+  (req) => venues.getVenueMatches(req.params.id)));
+router.get("/venues/:id/stats", cached((req) => `CB_VSTATS_${req.params.id}`, TTL_HEAVY,
+  (req) => venues.getVenueStats(req.params.id)));
 
 module.exports = router;
