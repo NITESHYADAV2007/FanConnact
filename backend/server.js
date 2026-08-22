@@ -6095,10 +6095,10 @@ async function fetchCricbuzzLive() {
             matchId: info.matchId || "",
             homeName: team1.teamName || "TBD",
             homeAbbr: team1.teamSName || "",
-            homeLogo: "", // cricbuzz thumbnails host is dead/blocked; filled via TheSportsDB
+            homeLogo: cricketNationFlag(team1.teamName), // national teams -> flag; clubs -> TheSportsDB/Wikipedia
             awayName: team2.teamName || "TBD",
             awayAbbr: team2.teamSName || "",
-            awayLogo: "",
+            awayLogo: cricketNationFlag(team2.teamName),
             homeScore: scoreStr("team1Score"),
             awayScore: scoreStr("team2Score"),
             venue: (info.venueInfo && info.venueInfo.ground) || "",
@@ -6114,6 +6114,21 @@ async function fetchCricbuzzLive() {
   } finally {
     clearTimeout(t);
   }
+}
+
+// Cricket national teams -> flagcdn SVG (reliable, correct crests for nations).
+// Club/franchise teams fall through to TheSportsDB/Wikipedia via fillMissingLogos.
+const CRICKET_NATION_FLAG = {
+  "India": "in", "Australia": "au", "Bangladesh": "bd", "England": "gb",
+  "Pakistan": "pk", "South Africa": "za", "New Zealand": "nz", "Sri Lanka": "lk",
+  "Afghanistan": "af", "Ireland": "ie", "Zimbabwe": "zw", "Netherlands": "nl",
+  "Scotland": "sc", "Oman": "om", "Nepal": "np", "Namibia": "na",
+  "Uganda": "ug", "United States of America": "us", "Canada": "ca",
+  "West Indies": "", "United Arab Emirates": "ae",
+};
+function cricketNationFlag(name) {
+  const iso = CRICKET_NATION_FLAG[(name || "").trim()];
+  return iso ? `https://flagcdn.com/${iso}.svg` : "";
 }
 
 // Cricbuzz match-center hscard — used as a fallback for cricket detail when
