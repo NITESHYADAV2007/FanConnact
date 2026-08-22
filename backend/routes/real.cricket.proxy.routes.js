@@ -66,6 +66,10 @@ router.get("/matches/:id/content", cached((req) => `CB_HIGHLIGHTS_${req.params.i
 router.get("/matches/:id/squads", cached((req) => `CB_SQUADS_${req.params.id}`, TTL_HEAVY,
   (req) => matches.getSquads(req.params.id)));
 
+// Playing XI / squad for a specific team in a match (real match-level endpoint).
+router.get("/matches/:id/team/:teamId", cached((req) => `CB_TEAM_${req.params.id}_${req.params.teamId}`, TTL_HEAVY,
+  (req) => matches.getTeamPlayers(req.params.id, req.params.teamId)));
+
 router.get("/matches/:id/overs", cached((req) => `CB_OVERS_${req.params.id}_${req.query.iid || 1}`, TTL_LIVE,
   (req) => matches.getOvers(req.params.id, req.query.iid || 1)));
 

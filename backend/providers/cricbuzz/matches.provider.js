@@ -99,17 +99,29 @@ async getScorecard(matchId){
 
 }
 
-async getSquads(matchId){
+    async getSquads(matchId){
 
-    const { data } = await api.get(
+        const { data } = await api.get(
 
-        endpoints.SQUADS(matchId)
+            endpoints.SQUADS(matchId)
 
-    );
+        );
 
-    return data;
+        return data;
 
-}
+    }
+
+    async getTeamPlayers(matchId, teamId){
+
+        const { data } = await api.get(
+
+            endpoints.TEAM(matchId, teamId)
+
+        );
+
+        return data;
+
+    }
 
 async getOvers(matchId, iid = 1, tms = Date.now()){
 

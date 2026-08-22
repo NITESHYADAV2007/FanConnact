@@ -36,6 +36,9 @@ module.exports = {
     SQUADS: id =>
         `/mcenter/v1/${id}/squads`,
 
+    TEAM: (id, teamId) =>
+        `/mcenter/v1/${id}/team/${teamId}`,
+
     OVERS: (id, iid = 1, tms = Date.now()) =>
         `/mcenter/v1/${id}/overs?iid=${iid}&tms=${tms}`,
 
