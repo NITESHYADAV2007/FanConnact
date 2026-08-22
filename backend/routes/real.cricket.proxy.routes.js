@@ -26,7 +26,7 @@ const cacheManager = require("../cache/cacheManager");
 const { matches, players, teams, browse, schedule } = require("../providers/cricbuzz");
 
 const TTL_INFO = 60;       // seconds
-const TTL_LIVE = 30;
+const TTL_LIVE = 10;
 const TTL_LIST = 300;
 const TTL_HEAVY = 21600;   // 6h — graphs / squads / highlights
 
@@ -89,6 +89,13 @@ router.get("/matches/:id/oddshistory", cached((req) => `CB_ODDS_${req.params.id}
 router.get("/matches/:id/innings/:iid/commentary",
   cached((req) => `CB_COMM_${req.params.id}_${req.params.iid}_${req.query.tms || 0}`, TTL_LIVE,
     (req) => matches.getCommentary(req.params.id, parseInt(req.params.iid, 10) || 1,
+      req.query.tms ? parseInt(req.query.tms, 10) : Date.now())));
+
+// Full-match commentary (all balls, every innings) — used to show the complete
+// ball-by-ball history instead of only the latest window.
+router.get("/matches/:id/hcomm",
+  cached((req) => `CB_HCOMM_${req.params.id}`, TTL_LIVE,
+    (req) => matches.getHCommentary(req.params.id, parseInt(req.query.iid, 10) || 1,
       req.query.tms ? parseInt(req.query.tms, 10) : Date.now())));
 
 module.exports = router;
