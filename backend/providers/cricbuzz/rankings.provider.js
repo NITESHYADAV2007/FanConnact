@@ -99,19 +99,29 @@ class RankingsProvider {
 
             if (!id) continue;
 
-            const [stats, profile] = await Promise.all([
-                playersProvider.getBattingSummary(id),
-                playersProvider.getPlayerProfile(id)
-            ]);
-
             player.playerId = id;
 
-            player.matches = stats.matches;
-            player.runs = stats.runs;
-            player.avg = stats.avg;
-            player.econ = stats.strikeRate;
+            try {
+                const profile = await playersProvider.getPlayerProfile(id);
+                player.profile = profile;
+                player.image =
+                    profile?.basic?.image ||
+                    profile?.image ||
+                    player.image ||
+                    '';
+            } catch (e) {
+                console.log("Profile Merge Failed:", player.name);
+            }
 
-            player.profile = profile;
+            try {
+                const stats = await playersProvider.getBattingSummary(id);
+                player.matches = stats.matches;
+                player.runs = stats.runs;
+                player.avg = stats.avg;
+                player.econ = stats.strikeRate;
+            } catch (e) {
+                console.log("Stats Merge Failed:", player.name);
+            }
 
         } catch (e) {
 
@@ -146,19 +156,29 @@ class RankingsProvider {
 
             if (!id) continue;
 
-            const [stats, profile] = await Promise.all([
-                playersProvider.getBowlingSummary(id),
-                playersProvider.getPlayerProfile(id)
-            ]);
-
             player.playerId = id;
 
-            player.matches = stats.matches;
-            player.wkts = stats.wickets;
-            player.econ = stats.economy;
-            player.avg = stats.average;
+            try {
+                const profile = await playersProvider.getPlayerProfile(id);
+                player.profile = profile;
+                player.image =
+                    profile?.basic?.image ||
+                    profile?.image ||
+                    player.image ||
+                    '';
+            } catch (e) {
+                console.log("Profile Merge Failed:", player.name);
+            }
 
-            player.profile = profile;
+            try {
+                const stats = await playersProvider.getBowlingSummary(id);
+                player.matches = stats.matches;
+                player.wkts = stats.wickets;
+                player.econ = stats.economy;
+                player.avg = stats.average;
+            } catch (e) {
+                console.log("Stats Merge Failed:", player.name);
+            }
 
         } catch (e) {
 
@@ -193,24 +213,36 @@ async getAllRounders(format, women) {
 
             if (!id) continue;
 
-            const [bat, bowl, profile] = await Promise.all([
-
-                playersProvider.getBattingSummary(id),
-                playersProvider.getBowlingSummary(id),
-                playersProvider.getPlayerProfile(id)
-
-            ]);
-
             player.playerId = id;
 
-            player.matches = bat.matches;
-            player.runs = bat.runs;
-            player.avg = bat.avg;
+            try {
+                const profile = await playersProvider.getPlayerProfile(id);
+                player.profile = profile;
+                player.image =
+                    profile?.basic?.image ||
+                    profile?.image ||
+                    player.image ||
+                    '';
+            } catch (e) {
+                console.log("Profile Merge Failed:", player.name);
+            }
 
-            player.wkts = bowl.wickets;
-            player.econ = bowl.economy;
+            try {
+                const bat = await playersProvider.getBattingSummary(id);
+                player.matches = bat.matches;
+                player.runs = bat.runs;
+                player.avg = bat.avg;
+            } catch (e) {
+                console.log("Batting Merge Failed:", player.name);
+            }
 
-            player.profile = profile;
+            try {
+                const bowl = await playersProvider.getBowlingSummary(id);
+                player.wkts = bowl.wickets;
+                player.econ = bowl.economy;
+            } catch (e) {
+                console.log("Bowling Merge Failed:", player.name);
+            }
 
         } catch (e) {
 

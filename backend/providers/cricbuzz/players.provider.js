@@ -389,6 +389,7 @@ async getPlayerProfile(playerId) {
                     "",
 
                 image:
+                    info?.basic?.image ||
                     info?.image ||
                     info?.faceImageId ||
                     info?.imageUrl ||
