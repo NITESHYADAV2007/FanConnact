@@ -88,6 +88,7 @@ router.get("/matches/:id/oddshistory", cached((req) => `CB_ODDS_${req.params.id}
 
 router.get("/matches/:id/innings/:iid/commentary",
   cached((req) => `CB_COMM_${req.params.id}_${req.params.iid}`, TTL_LIVE,
-    (req) => matches.getCommentary(req.params.id, parseInt(req.params.iid, 10) || 1)));
+    (req) => matches.getCommentary(req.params.id, parseInt(req.params.iid, 10) || 1,
+      req.query.tms ? parseInt(req.query.tms, 10) : 0)));
 
 module.exports = router;

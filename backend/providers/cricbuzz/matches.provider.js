@@ -63,7 +63,7 @@ class MatchesProvider {
 return normalizeMatchDetails(data);
     }
 
-    async getCommentary(matchId, iid = 1, tms = Date.now()){
+    async getCommentary(matchId, iid = 1, tms = 0){
 
     const { data } = await api.get(
 
